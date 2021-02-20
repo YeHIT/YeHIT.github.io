@@ -98,61 +98,6 @@
       </tags>
   </entry>
   <entry>
-    <title>ConcurrentHashMap分析</title>
-    <url>/2021/02/20/JavaBasicKnowledge/ConcurrentHashMap/</url>
-    <content><![CDATA[<h1 id="ConcurrentHashMap"><a href="#ConcurrentHashMap" class="headerlink" title="ConcurrentHashMap"></a>ConcurrentHashMap</h1><h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><blockquote>
-<p>无参构造</p>
-<p>带初始容量的构造</p>
-<p>带初始容量和负载因子的构造</p>
-<p>带初始容量和负载因子及并发级别的构造：并发级别会规定初始化时最少需要的大小</p>
-<p>传入Map的构造</p>
-</blockquote>
-<h2 id="Put操作"><a href="#Put操作" class="headerlink" title="Put操作"></a>Put操作</h2><blockquote>
-<p>先计算key的hash值，然后判断当前是否存在table，若不存在table则调用initTable方法，这里使用了线程相关及CAS</p>
-<p>若存在table判断则判断当前桶位是否为null，为null则创建新结点插入，这里使用CAS锁(会有ABA问题)</p>
-<p>然后判断当前结点hash值是否为MOVE，(本质上就是判断当前结点是否为ForwardingNode)，若为MOVE则帮助扩容(此时已经有线程在执行扩容操作了)。</p>
-<p>若不是则进行插入操作，此时使用synchronized(f)将当前结点锁住，然后再次判断当前结点f是否为需要插入的位置。</p>
-<p>插入完成后判断bitcount是否超过TREEIFY_THRESHOLD，若超过则树化。</p>
-<p>最后让集合的大小加一，使用了同步方法。</p>
-</blockquote>
-<h2 id="initTable"><a href="#initTable" class="headerlink" title="initTable"></a>initTable</h2><blockquote>
-<p>sizeCtl为-1时表示在初始化</p>
-<p>当table为空或table长度为0时无限循环，判断此时sizeCtl是否小于0，(当一个线程抢夺成功后会让sizeCtl值为-1，其他线程抢占失败后会进入Thread.yield())，抢夺成功的线程则会判断当前sc值是否大于0，若大于0说明初始化时传入了初始容量，使用该容量创建数组，然后将sc值改为当前容量的0.75。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">while</span> ((tab = table) == <span class="keyword">null</span> || tab.length == <span class="number">0</span>) &#123;</span><br><span class="line"> <span class="keyword">if</span> ((sc = sizeCtl) &lt; <span class="number">0</span>)</span><br><span class="line">     Thread.yield(); <span class="comment">// lost initialization race; just spin</span></span><br><span class="line"> <span class="keyword">else</span> <span class="keyword">if</span> (U.compareAndSwapInt(<span class="keyword">this</span>, SIZECTL, sc, -<span class="number">1</span>)) &#123;</span><br><span class="line">     <span class="keyword">try</span> &#123;</span><br><span class="line">         <span class="keyword">if</span> ((tab = table) == <span class="keyword">null</span> || tab.length == <span class="number">0</span>) &#123;</span><br><span class="line">             <span class="keyword">int</span> n = (sc &gt; <span class="number">0</span>) ? sc : DEFAULT_CAPACITY;</span><br><span class="line">             <span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">             Node&lt;K,V&gt;[] nt = (Node&lt;K,V&gt;[])<span class="keyword">new</span> Node&lt;?,?&gt;[n];</span><br><span class="line">             table = tab = nt;</span><br><span class="line">             sc = n - (n &gt;&gt;&gt; <span class="number">2</span>);</span><br><span class="line">         &#125;</span><br><span class="line">     &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">         sizeCtl = sc;</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="keyword">break</span>;</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</blockquote>
-<h2 id="扩容"><a href="#扩容" class="headerlink" title="扩容"></a>扩容</h2><blockquote>
-<p>sizeCtl &lt; 0时表示在扩容</p>
-<p>sizeCtl在扩容时高16位表示扩容标识，低16位表示并行扩容线程数+1。</p>
-<p>计算扩容戳本质上是计算当前table长度的前导0个数再或运算一个1000 0000 0000 0000。目的是让sizeCtl在移位后变为负数。</p>
-<p>帮助扩容：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">final</span> Node&lt;K,V&gt;[] helpTransfer(Node&lt;K,V&gt;[] tab, Node&lt;K,V&gt; f) &#123;</span><br><span class="line">Node&lt;K,V&gt;[] nextTab; <span class="keyword">int</span> sc;</span><br><span class="line"><span class="comment">// 当table不为空且当前结点为ForwardingNode且当前结点存在nextTable时</span></span><br><span class="line"><span class="keyword">if</span> (tab != <span class="keyword">null</span> &amp;&amp; (f <span class="keyword">instanceof</span> ForwardingNode) &amp;&amp;</span><br><span class="line">(nextTab = ((ForwardingNode&lt;K,V&gt;)f).nextTable) != <span class="keyword">null</span>) &#123;</span><br><span class="line"><span class="comment">//产生扩容戳</span></span><br><span class="line"><span class="keyword">int</span> rs = resizeStamp(tab.length);</span><br><span class="line"><span class="keyword">while</span> (nextTab == nextTable &amp;&amp; table == tab &amp;&amp;</span><br><span class="line">      (sc = sizeCtl) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">   <span class="keyword">if</span> ((sc &gt;&gt;&gt; RESIZE_STAMP_SHIFT) != rs || sc == rs + <span class="number">1</span> ||</span><br><span class="line">       sc == rs + MAX_RESIZERS || transferIndex &lt;= <span class="number">0</span>)</span><br><span class="line">       <span class="keyword">break</span>;</span><br><span class="line">   <span class="keyword">if</span> (U.compareAndSwapInt(<span class="keyword">this</span>, SIZECTL, sc, sc + <span class="number">1</span>)) &#123;</span><br><span class="line">       transfer(tab, nextTab);</span><br><span class="line">       <span class="keyword">break</span>;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> nextTab;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> table;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>具体的扩容方法：</p>
-<p>先利用CPU数和当前table大小同最小区间间隔进行比较，如果小于最小区间间隔则将间隔设置为MIN_TRANSFER_STRIDE即16。</p>
-<p>具体扩容则是每个线程抢夺table的一个区间区间大小为设置的区间间隔大小，如[nextIndex - stride，nextIndex - 1]，抢夺区间的操作使用CAS。</p>
-<p>每个线程对于对应区间都会进行依次操作，这里使用synchronized来锁住当前操作的结点。</p>
-<p>处理完成后，最后一个正在进行的线程会判断设置finishing标志，最终完成扩容，并设置sizeCtl为原table的1.5倍，即新table的0.75倍。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">transfer</span><span class="params">(Node&lt;K,V&gt;[] tab, Node&lt;K,V&gt;[] nextTab)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n = tab.length, stride;</span><br><span class="line">    <span class="keyword">if</span> ((stride = (NCPU &gt; <span class="number">1</span>) ? (n &gt;&gt;&gt; <span class="number">3</span>) / NCPU : n) &lt; MIN_TRANSFER_STRIDE)</span><br><span class="line">        stride = MIN_TRANSFER_STRIDE; <span class="comment">// subdivide range</span></span><br><span class="line">    <span class="keyword">if</span> (nextTab == <span class="keyword">null</span>) &#123;            <span class="comment">// initiating</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">            Node&lt;K,V&gt;[] nt = (Node&lt;K,V&gt;[])<span class="keyword">new</span> Node&lt;?,?&gt;[n &lt;&lt; <span class="number">1</span>];</span><br><span class="line">            nextTab = nt;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Throwable ex) &#123;      <span class="comment">// try to cope with OOME</span></span><br><span class="line">            sizeCtl = Integer.MAX_VALUE;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        nextTable = nextTab;</span><br><span class="line">        transferIndex = n;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> nextn = nextTab.length;</span><br><span class="line">    ForwardingNode&lt;K,V&gt; fwd = <span class="keyword">new</span> ForwardingNode&lt;K,V&gt;(nextTab);</span><br><span class="line">    <span class="keyword">boolean</span> advance = <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">boolean</span> finishing = <span class="keyword">false</span>; <span class="comment">// to ensure sweep before committing nextTab</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>, bound = <span class="number">0</span>;;) &#123;</span><br><span class="line">        Node&lt;K,V&gt; f; <span class="keyword">int</span> fh;</span><br><span class="line">        <span class="keyword">while</span> (advance) &#123;</span><br><span class="line">            <span class="keyword">int</span> nextIndex, nextBound;</span><br><span class="line">            <span class="keyword">if</span> (--i &gt;= bound || finishing)</span><br><span class="line">                advance = <span class="keyword">false</span>;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> ((nextIndex = transferIndex) &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">                i = -<span class="number">1</span>;</span><br><span class="line">                advance = <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (U.compareAndSwapInt</span><br><span class="line">                     (<span class="keyword">this</span>, TRANSFERINDEX, nextIndex,</span><br><span class="line">                      nextBound = (nextIndex &gt; stride ?</span><br><span class="line">                                   nextIndex - stride : <span class="number">0</span>))) &#123;</span><br><span class="line">                bound = nextBound;</span><br><span class="line">                i = nextIndex - <span class="number">1</span>;</span><br><span class="line">                advance = <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (i &lt; <span class="number">0</span> || i &gt;= n || i + n &gt;= nextn) &#123;</span><br><span class="line">            <span class="keyword">int</span> sc;</span><br><span class="line">            <span class="keyword">if</span> (finishing) &#123;</span><br><span class="line">                nextTable = <span class="keyword">null</span>;</span><br><span class="line">                table = nextTab;</span><br><span class="line">                sizeCtl = (n &lt;&lt; <span class="number">1</span>) - (n &gt;&gt;&gt; <span class="number">1</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (U.compareAndSwapInt(<span class="keyword">this</span>, SIZECTL, sc = sizeCtl, sc - <span class="number">1</span>)) &#123;</span><br><span class="line">                <span class="keyword">if</span> ((sc - <span class="number">2</span>) != resizeStamp(n) &lt;&lt; RESIZE_STAMP_SHIFT)</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                finishing = advance = <span class="keyword">true</span>;</span><br><span class="line">                i = n; <span class="comment">// recheck before commit</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> ((f = tabAt(tab, i)) == <span class="keyword">null</span>)</span><br><span class="line">            advance = casTabAt(tab, i, <span class="keyword">null</span>, fwd);</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> ((fh = f.hash) == MOVED)</span><br><span class="line">            advance = <span class="keyword">true</span>; <span class="comment">// already processed</span></span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (f) &#123;</span><br><span class="line">                <span class="keyword">if</span> (tabAt(tab, i) == f) &#123;</span><br><span class="line">                    Node&lt;K,V&gt; ln, hn;</span><br><span class="line">                    <span class="keyword">if</span> (fh &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">                        <span class="keyword">int</span> runBit = fh &amp; n;</span><br><span class="line">                        Node&lt;K,V&gt; lastRun = f;</span><br><span class="line">                        <span class="keyword">for</span> (Node&lt;K,V&gt; p = f.next; p != <span class="keyword">null</span>; p = p.next) &#123;</span><br><span class="line">                            <span class="keyword">int</span> b = p.hash &amp; n;</span><br><span class="line">                            <span class="keyword">if</span> (b != runBit) &#123;</span><br><span class="line">                                runBit = b;</span><br><span class="line">                                lastRun = p;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">if</span> (runBit == <span class="number">0</span>) &#123;</span><br><span class="line">                            ln = lastRun;</span><br><span class="line">                            hn = <span class="keyword">null</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">else</span> &#123;</span><br><span class="line">                            hn = lastRun;</span><br><span class="line">                            ln = <span class="keyword">null</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">for</span> (Node&lt;K,V&gt; p = f; p != lastRun; p = p.next) &#123;</span><br><span class="line">                            <span class="keyword">int</span> ph = p.hash; K pk = p.key; V pv = p.val;</span><br><span class="line">                            <span class="keyword">if</span> ((ph &amp; n) == <span class="number">0</span>)</span><br><span class="line">                                ln = <span class="keyword">new</span> Node&lt;K,V&gt;(ph, pk, pv, ln);</span><br><span class="line">                            <span class="keyword">else</span></span><br><span class="line">                                hn = <span class="keyword">new</span> Node&lt;K,V&gt;(ph, pk, pv, hn);</span><br><span class="line">                        &#125;</span><br><span class="line">                        setTabAt(nextTab, i, ln);</span><br><span class="line">                        setTabAt(nextTab, i + n, hn);</span><br><span class="line">                        setTabAt(tab, i, fwd);</span><br><span class="line">                        advance = <span class="keyword">true</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">else</span> <span class="keyword">if</span> (f <span class="keyword">instanceof</span> TreeBin) &#123;</span><br><span class="line">                        TreeBin&lt;K,V&gt; t = (TreeBin&lt;K,V&gt;)f;</span><br><span class="line">                        TreeNode&lt;K,V&gt; lo = <span class="keyword">null</span>, loTail = <span class="keyword">null</span>;</span><br><span class="line">                        TreeNode&lt;K,V&gt; hi = <span class="keyword">null</span>, hiTail = <span class="keyword">null</span>;</span><br><span class="line">                        <span class="keyword">int</span> lc = <span class="number">0</span>, hc = <span class="number">0</span>;</span><br><span class="line">                        <span class="keyword">for</span> (Node&lt;K,V&gt; e = t.first; e != <span class="keyword">null</span>; e = e.next) &#123;</span><br><span class="line">                            <span class="keyword">int</span> h = e.hash;</span><br><span class="line">                            TreeNode&lt;K,V&gt; p = <span class="keyword">new</span> TreeNode&lt;K,V&gt;</span><br><span class="line">                                (h, e.key, e.val, <span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line">                            <span class="keyword">if</span> ((h &amp; n) == <span class="number">0</span>) &#123;</span><br><span class="line">                                <span class="keyword">if</span> ((p.prev = loTail) == <span class="keyword">null</span>)</span><br><span class="line">                                    lo = p;</span><br><span class="line">                                <span class="keyword">else</span></span><br><span class="line">                                    loTail.next = p;</span><br><span class="line">                                loTail = p;</span><br><span class="line">                                ++lc;</span><br><span class="line">                            &#125;</span><br><span class="line">                            <span class="keyword">else</span> &#123;</span><br><span class="line">                                <span class="keyword">if</span> ((p.prev = hiTail) == <span class="keyword">null</span>)</span><br><span class="line">                                    hi = p;</span><br><span class="line">                                <span class="keyword">else</span></span><br><span class="line">                                    hiTail.next = p;</span><br><span class="line">                                hiTail = p;</span><br><span class="line">                                ++hc;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                        ln = (lc &lt;= UNTREEIFY_THRESHOLD) ? untreeify(lo) :</span><br><span class="line">                            (hc != <span class="number">0</span>) ? <span class="keyword">new</span> TreeBin&lt;K,V&gt;(lo) : t;</span><br><span class="line">                        hn = (hc &lt;= UNTREEIFY_THRESHOLD) ? untreeify(hi) :</span><br><span class="line">                            (lc != <span class="number">0</span>) ? <span class="keyword">new</span> TreeBin&lt;K,V&gt;(hi) : t;</span><br><span class="line">                        setTabAt(nextTab, i, ln);</span><br><span class="line">                        setTabAt(nextTab, i + n, hn);</span><br><span class="line">                        setTabAt(tab, i, fwd);</span><br><span class="line">                        advance = <span class="keyword">true</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-</blockquote>
-<h2 id="tips"><a href="#tips" class="headerlink" title="tips"></a>tips</h2><blockquote>
-<p>最大容量为2^30，默认容量16，默认并发级别16(为了兼容之前的版本)，默认负载因子0.75。最大数字大小Integer.MAX_VALUE - 8。</p>
-<p>树阈值8，链表阈值6。最小树化容量64(只有大于该值时才会树化)</p>
-<p>若key为null，会报空指针异常。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-        <tag>容器</tag>
-        <tag>并发</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>2.垃圾收集</title>
     <url>/2021/02/20/JVMKnowledge/2.%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86/</url>
     <content><![CDATA[<h1 id="垃圾收集"><a href="#垃圾收集" class="headerlink" title="垃圾收集"></a>垃圾收集</h1><blockquote>
@@ -286,6 +231,61 @@
       <tags>
         <tag>JVM</tag>
         <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ConcurrentHashMap分析</title>
+    <url>/2021/02/20/JavaBasicKnowledge/ConcurrentHashMap/</url>
+    <content><![CDATA[<h1 id="ConcurrentHashMap"><a href="#ConcurrentHashMap" class="headerlink" title="ConcurrentHashMap"></a>ConcurrentHashMap</h1><h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><blockquote>
+<p>无参构造</p>
+<p>带初始容量的构造</p>
+<p>带初始容量和负载因子的构造</p>
+<p>带初始容量和负载因子及并发级别的构造：并发级别会规定初始化时最少需要的大小</p>
+<p>传入Map的构造</p>
+</blockquote>
+<h2 id="Put操作"><a href="#Put操作" class="headerlink" title="Put操作"></a>Put操作</h2><blockquote>
+<p>先计算key的hash值，然后判断当前是否存在table，若不存在table则调用initTable方法，这里使用了线程相关及CAS</p>
+<p>若存在table判断则判断当前桶位是否为null，为null则创建新结点插入，这里使用CAS锁(会有ABA问题)</p>
+<p>然后判断当前结点hash值是否为MOVE，(本质上就是判断当前结点是否为ForwardingNode)，若为MOVE则帮助扩容(此时已经有线程在执行扩容操作了)。</p>
+<p>若不是则进行插入操作，此时使用synchronized(f)将当前结点锁住，然后再次判断当前结点f是否为需要插入的位置。</p>
+<p>插入完成后判断bitcount是否超过TREEIFY_THRESHOLD，若超过则树化。</p>
+<p>最后让集合的大小加一，使用了同步方法。</p>
+</blockquote>
+<h2 id="initTable"><a href="#initTable" class="headerlink" title="initTable"></a>initTable</h2><blockquote>
+<p>sizeCtl为-1时表示在初始化</p>
+<p>当table为空或table长度为0时无限循环，判断此时sizeCtl是否小于0，(当一个线程抢夺成功后会让sizeCtl值为-1，其他线程抢占失败后会进入Thread.yield())，抢夺成功的线程则会判断当前sc值是否大于0，若大于0说明初始化时传入了初始容量，使用该容量创建数组，然后将sc值改为当前容量的0.75。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">while</span> ((tab = table) == <span class="keyword">null</span> || tab.length == <span class="number">0</span>) &#123;</span><br><span class="line"> <span class="keyword">if</span> ((sc = sizeCtl) &lt; <span class="number">0</span>)</span><br><span class="line">     Thread.yield(); <span class="comment">// lost initialization race; just spin</span></span><br><span class="line"> <span class="keyword">else</span> <span class="keyword">if</span> (U.compareAndSwapInt(<span class="keyword">this</span>, SIZECTL, sc, -<span class="number">1</span>)) &#123;</span><br><span class="line">     <span class="keyword">try</span> &#123;</span><br><span class="line">         <span class="keyword">if</span> ((tab = table) == <span class="keyword">null</span> || tab.length == <span class="number">0</span>) &#123;</span><br><span class="line">             <span class="keyword">int</span> n = (sc &gt; <span class="number">0</span>) ? sc : DEFAULT_CAPACITY;</span><br><span class="line">             <span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">             Node&lt;K,V&gt;[] nt = (Node&lt;K,V&gt;[])<span class="keyword">new</span> Node&lt;?,?&gt;[n];</span><br><span class="line">             table = tab = nt;</span><br><span class="line">             sc = n - (n &gt;&gt;&gt; <span class="number">2</span>);</span><br><span class="line">         &#125;</span><br><span class="line">     &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">         sizeCtl = sc;</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="keyword">break</span>;</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h2 id="扩容"><a href="#扩容" class="headerlink" title="扩容"></a>扩容</h2><blockquote>
+<p>sizeCtl &lt; 0时表示在扩容</p>
+<p>sizeCtl在扩容时高16位表示扩容标识，低16位表示并行扩容线程数+1。</p>
+<p>计算扩容戳本质上是计算当前table长度的前导0个数再或运算一个1000 0000 0000 0000。目的是让sizeCtl在移位后变为负数。</p>
+<p>帮助扩容：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">final</span> Node&lt;K,V&gt;[] helpTransfer(Node&lt;K,V&gt;[] tab, Node&lt;K,V&gt; f) &#123;</span><br><span class="line">Node&lt;K,V&gt;[] nextTab; <span class="keyword">int</span> sc;</span><br><span class="line"><span class="comment">// 当table不为空且当前结点为ForwardingNode且当前结点存在nextTable时</span></span><br><span class="line"><span class="keyword">if</span> (tab != <span class="keyword">null</span> &amp;&amp; (f <span class="keyword">instanceof</span> ForwardingNode) &amp;&amp;</span><br><span class="line">(nextTab = ((ForwardingNode&lt;K,V&gt;)f).nextTable) != <span class="keyword">null</span>) &#123;</span><br><span class="line"><span class="comment">//产生扩容戳</span></span><br><span class="line"><span class="keyword">int</span> rs = resizeStamp(tab.length);</span><br><span class="line"><span class="keyword">while</span> (nextTab == nextTable &amp;&amp; table == tab &amp;&amp;</span><br><span class="line">      (sc = sizeCtl) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">   <span class="keyword">if</span> ((sc &gt;&gt;&gt; RESIZE_STAMP_SHIFT) != rs || sc == rs + <span class="number">1</span> ||</span><br><span class="line">       sc == rs + MAX_RESIZERS || transferIndex &lt;= <span class="number">0</span>)</span><br><span class="line">       <span class="keyword">break</span>;</span><br><span class="line">   <span class="keyword">if</span> (U.compareAndSwapInt(<span class="keyword">this</span>, SIZECTL, sc, sc + <span class="number">1</span>)) &#123;</span><br><span class="line">       transfer(tab, nextTab);</span><br><span class="line">       <span class="keyword">break</span>;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> nextTab;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> table;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体的扩容方法：</p>
+<p>先利用CPU数和当前table大小同最小区间间隔进行比较，如果小于最小区间间隔则将间隔设置为MIN_TRANSFER_STRIDE即16。</p>
+<p>具体扩容则是每个线程抢夺table的一个区间区间大小为设置的区间间隔大小，如[nextIndex - stride，nextIndex - 1]，抢夺区间的操作使用CAS。</p>
+<p>每个线程对于对应区间都会进行依次操作，这里使用synchronized来锁住当前操作的结点。</p>
+<p>处理完成后，最后一个正在进行的线程会判断设置finishing标志，最终完成扩容，并设置sizeCtl为原table的1.5倍，即新table的0.75倍。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">transfer</span><span class="params">(Node&lt;K,V&gt;[] tab, Node&lt;K,V&gt;[] nextTab)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n = tab.length, stride;</span><br><span class="line">    <span class="keyword">if</span> ((stride = (NCPU &gt; <span class="number">1</span>) ? (n &gt;&gt;&gt; <span class="number">3</span>) / NCPU : n) &lt; MIN_TRANSFER_STRIDE)</span><br><span class="line">        stride = MIN_TRANSFER_STRIDE; <span class="comment">// subdivide range</span></span><br><span class="line">    <span class="keyword">if</span> (nextTab == <span class="keyword">null</span>) &#123;            <span class="comment">// initiating</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">            Node&lt;K,V&gt;[] nt = (Node&lt;K,V&gt;[])<span class="keyword">new</span> Node&lt;?,?&gt;[n &lt;&lt; <span class="number">1</span>];</span><br><span class="line">            nextTab = nt;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Throwable ex) &#123;      <span class="comment">// try to cope with OOME</span></span><br><span class="line">            sizeCtl = Integer.MAX_VALUE;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        nextTable = nextTab;</span><br><span class="line">        transferIndex = n;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> nextn = nextTab.length;</span><br><span class="line">    ForwardingNode&lt;K,V&gt; fwd = <span class="keyword">new</span> ForwardingNode&lt;K,V&gt;(nextTab);</span><br><span class="line">    <span class="keyword">boolean</span> advance = <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">boolean</span> finishing = <span class="keyword">false</span>; <span class="comment">// to ensure sweep before committing nextTab</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>, bound = <span class="number">0</span>;;) &#123;</span><br><span class="line">        Node&lt;K,V&gt; f; <span class="keyword">int</span> fh;</span><br><span class="line">        <span class="keyword">while</span> (advance) &#123;</span><br><span class="line">            <span class="keyword">int</span> nextIndex, nextBound;</span><br><span class="line">            <span class="keyword">if</span> (--i &gt;= bound || finishing)</span><br><span class="line">                advance = <span class="keyword">false</span>;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> ((nextIndex = transferIndex) &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">                i = -<span class="number">1</span>;</span><br><span class="line">                advance = <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (U.compareAndSwapInt</span><br><span class="line">                     (<span class="keyword">this</span>, TRANSFERINDEX, nextIndex,</span><br><span class="line">                      nextBound = (nextIndex &gt; stride ?</span><br><span class="line">                                   nextIndex - stride : <span class="number">0</span>))) &#123;</span><br><span class="line">                bound = nextBound;</span><br><span class="line">                i = nextIndex - <span class="number">1</span>;</span><br><span class="line">                advance = <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (i &lt; <span class="number">0</span> || i &gt;= n || i + n &gt;= nextn) &#123;</span><br><span class="line">            <span class="keyword">int</span> sc;</span><br><span class="line">            <span class="keyword">if</span> (finishing) &#123;</span><br><span class="line">                nextTable = <span class="keyword">null</span>;</span><br><span class="line">                table = nextTab;</span><br><span class="line">                sizeCtl = (n &lt;&lt; <span class="number">1</span>) - (n &gt;&gt;&gt; <span class="number">1</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (U.compareAndSwapInt(<span class="keyword">this</span>, SIZECTL, sc = sizeCtl, sc - <span class="number">1</span>)) &#123;</span><br><span class="line">                <span class="keyword">if</span> ((sc - <span class="number">2</span>) != resizeStamp(n) &lt;&lt; RESIZE_STAMP_SHIFT)</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                finishing = advance = <span class="keyword">true</span>;</span><br><span class="line">                i = n; <span class="comment">// recheck before commit</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> ((f = tabAt(tab, i)) == <span class="keyword">null</span>)</span><br><span class="line">            advance = casTabAt(tab, i, <span class="keyword">null</span>, fwd);</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> ((fh = f.hash) == MOVED)</span><br><span class="line">            advance = <span class="keyword">true</span>; <span class="comment">// already processed</span></span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (f) &#123;</span><br><span class="line">                <span class="keyword">if</span> (tabAt(tab, i) == f) &#123;</span><br><span class="line">                    Node&lt;K,V&gt; ln, hn;</span><br><span class="line">                    <span class="keyword">if</span> (fh &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">                        <span class="keyword">int</span> runBit = fh &amp; n;</span><br><span class="line">                        Node&lt;K,V&gt; lastRun = f;</span><br><span class="line">                        <span class="keyword">for</span> (Node&lt;K,V&gt; p = f.next; p != <span class="keyword">null</span>; p = p.next) &#123;</span><br><span class="line">                            <span class="keyword">int</span> b = p.hash &amp; n;</span><br><span class="line">                            <span class="keyword">if</span> (b != runBit) &#123;</span><br><span class="line">                                runBit = b;</span><br><span class="line">                                lastRun = p;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">if</span> (runBit == <span class="number">0</span>) &#123;</span><br><span class="line">                            ln = lastRun;</span><br><span class="line">                            hn = <span class="keyword">null</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">else</span> &#123;</span><br><span class="line">                            hn = lastRun;</span><br><span class="line">                            ln = <span class="keyword">null</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">for</span> (Node&lt;K,V&gt; p = f; p != lastRun; p = p.next) &#123;</span><br><span class="line">                            <span class="keyword">int</span> ph = p.hash; K pk = p.key; V pv = p.val;</span><br><span class="line">                            <span class="keyword">if</span> ((ph &amp; n) == <span class="number">0</span>)</span><br><span class="line">                                ln = <span class="keyword">new</span> Node&lt;K,V&gt;(ph, pk, pv, ln);</span><br><span class="line">                            <span class="keyword">else</span></span><br><span class="line">                                hn = <span class="keyword">new</span> Node&lt;K,V&gt;(ph, pk, pv, hn);</span><br><span class="line">                        &#125;</span><br><span class="line">                        setTabAt(nextTab, i, ln);</span><br><span class="line">                        setTabAt(nextTab, i + n, hn);</span><br><span class="line">                        setTabAt(tab, i, fwd);</span><br><span class="line">                        advance = <span class="keyword">true</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">else</span> <span class="keyword">if</span> (f <span class="keyword">instanceof</span> TreeBin) &#123;</span><br><span class="line">                        TreeBin&lt;K,V&gt; t = (TreeBin&lt;K,V&gt;)f;</span><br><span class="line">                        TreeNode&lt;K,V&gt; lo = <span class="keyword">null</span>, loTail = <span class="keyword">null</span>;</span><br><span class="line">                        TreeNode&lt;K,V&gt; hi = <span class="keyword">null</span>, hiTail = <span class="keyword">null</span>;</span><br><span class="line">                        <span class="keyword">int</span> lc = <span class="number">0</span>, hc = <span class="number">0</span>;</span><br><span class="line">                        <span class="keyword">for</span> (Node&lt;K,V&gt; e = t.first; e != <span class="keyword">null</span>; e = e.next) &#123;</span><br><span class="line">                            <span class="keyword">int</span> h = e.hash;</span><br><span class="line">                            TreeNode&lt;K,V&gt; p = <span class="keyword">new</span> TreeNode&lt;K,V&gt;</span><br><span class="line">                                (h, e.key, e.val, <span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line">                            <span class="keyword">if</span> ((h &amp; n) == <span class="number">0</span>) &#123;</span><br><span class="line">                                <span class="keyword">if</span> ((p.prev = loTail) == <span class="keyword">null</span>)</span><br><span class="line">                                    lo = p;</span><br><span class="line">                                <span class="keyword">else</span></span><br><span class="line">                                    loTail.next = p;</span><br><span class="line">                                loTail = p;</span><br><span class="line">                                ++lc;</span><br><span class="line">                            &#125;</span><br><span class="line">                            <span class="keyword">else</span> &#123;</span><br><span class="line">                                <span class="keyword">if</span> ((p.prev = hiTail) == <span class="keyword">null</span>)</span><br><span class="line">                                    hi = p;</span><br><span class="line">                                <span class="keyword">else</span></span><br><span class="line">                                    hiTail.next = p;</span><br><span class="line">                                hiTail = p;</span><br><span class="line">                                ++hc;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                        ln = (lc &lt;= UNTREEIFY_THRESHOLD) ? untreeify(lo) :</span><br><span class="line">                            (hc != <span class="number">0</span>) ? <span class="keyword">new</span> TreeBin&lt;K,V&gt;(lo) : t;</span><br><span class="line">                        hn = (hc &lt;= UNTREEIFY_THRESHOLD) ? untreeify(hi) :</span><br><span class="line">                            (lc != <span class="number">0</span>) ? <span class="keyword">new</span> TreeBin&lt;K,V&gt;(hi) : t;</span><br><span class="line">                        setTabAt(nextTab, i, ln);</span><br><span class="line">                        setTabAt(nextTab, i + n, hn);</span><br><span class="line">                        setTabAt(tab, i, fwd);</span><br><span class="line">                        advance = <span class="keyword">true</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+</blockquote>
+<h2 id="tips"><a href="#tips" class="headerlink" title="tips"></a>tips</h2><blockquote>
+<p>最大容量为2^30，默认容量16，默认并发级别16(为了兼容之前的版本)，默认负载因子0.75。最大数字大小Integer.MAX_VALUE - 8。</p>
+<p>树阈值8，链表阈值6。最小树化容量64(只有大于该值时才会树化)</p>
+<p>若key为null，会报空指针异常。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>容器</tag>
+        <tag>并发</tag>
       </tags>
   </entry>
   <entry>
@@ -448,212 +448,6 @@
       </tags>
   </entry>
   <entry>
-    <title>多线程相关</title>
-    <url>/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/</url>
-    <content><![CDATA[<h1 id="多线程"><a href="#多线程" class="headerlink" title="多线程"></a>多线程</h1><h2 id="进程和线程"><a href="#进程和线程" class="headerlink" title="进程和线程"></a>进程和线程</h2><blockquote>
-<p>进程是执行程序的一次执行过程，是一个动态的概念。是系统资源分配的单位。</p>
-<p>通常一个进程中包含多个线程，一个进程至少含一个线程。线程是CPU调度和执行的单位。</p>
-</blockquote>
-<h3 id="JAVA创建线程的方式"><a href="#JAVA创建线程的方式" class="headerlink" title="JAVA创建线程的方式"></a>JAVA创建线程的方式</h3><blockquote>
-<ol>
-<li>继承Thread类，重写run方法。调用是使用start方法调用，若使用run方法调用则变为单线程。</li>
-<li>实现runnable接口，重写run方法，执行线程需丢入runnable接口实现类，调用start方法。(避免使用继承)</li>
-<li>实现callable接口，需要返回值类型，重写call方法，需要抛出异常。(可以返回结果，可以抛出异常)<img src="/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/%E5%A4%9A%E7%BA%BF%E7%A8%8B%5C%E5%AE%9E%E7%8E%B0callable.png" alt="实现callable"></li>
-</ol>
-</blockquote>
-<h2 id="Java线程的状态"><a href="#Java线程的状态" class="headerlink" title="Java线程的状态"></a>Java线程的状态</h2><blockquote>
-<p>NEW、RUNNABLE、BLOCKED、WAITING、TIMED_WAITING、TERMINATED</p>
-<p>NEW：线程还没有启动。</p>
-<p>RUNNABLE：线程已经在jvm中运行了，但可能还在等待操作系统的处理器之类的资源。</p>
-<p>BLOCKED：线程等待monitor lock。</p>
-<p>WAITING：正在等待另一个线程执行的状态。</p>
-<p>TIMED_WAITING：有着指定特定等待时间等待另一个线程执行的状态。</p>
-<p>TERMINATED：线程终止，线程已经结束执行。</p>
-<p>线程分为用户线程和守护线程(Daemon)，虚拟机必须确保用户线程执行完毕，虚拟机不用等待守护线程执行完毕。可以通过调用线程的setDaemon(true)，将某个线程变为守护线程</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-        <tag>并发</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Linux介绍及基本指令</title>
-    <url>/2021/02/20/Linux/Linux%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%9F%BA%E6%9C%AC%E6%8C%87%E4%BB%A4/</url>
-    <content><![CDATA[<h1 id="Linux介绍及基本指令"><a href="#Linux介绍及基本指令" class="headerlink" title="Linux介绍及基本指令"></a>Linux介绍及基本指令</h1><h2 id="Linux区别"><a href="#Linux区别" class="headerlink" title="Linux区别"></a>Linux区别</h2><blockquote>
-<p>Ubantu：分为用户版和服务器版。</p>
-<p>​    用户版，有着良好的用户界面，有强大的软件支持。</p>
-<p>​    服务器版比较少用。</p>
-<p>Debian：系统十分稳定，内核非常小。</p>
-<p>RedHat：是一个商用的操作系统，性能非常好，软件支持也非常好。</p>
-<p>Centos：基本上相当于RedHat的复刻版本。免费。</p>
-</blockquote>
-<h2 id="根目录下各目录对应的功能"><a href="#根目录下各目录对应的功能" class="headerlink" title="根目录下各目录对应的功能"></a>根目录下各目录对应的功能</h2><h2 id="在linux中获取帮助"><a href="#在linux中获取帮助" class="headerlink" title="在linux中获取帮助"></a>在linux中获取帮助</h2><blockquote>
-<p>man 命令名：查看命令的操作说明</p>
-<p>命令行 –help：查看命令的语法</p>
-</blockquote>
-<h2 id="Linux基本命令"><a href="#Linux基本命令" class="headerlink" title="Linux基本命令"></a>Linux基本命令</h2><blockquote>
-<p>ls：查看当前目录中所有文件及目录</p>
-<p>ll：查看当前目录内所有文件及目录详细信息。详细信息具体查看方式。以drwxr-xr-x为例(第一个字符拆出，然后每三个字符表示一个内容)：</p>
-<p>d：文件类型，目录。rwx：拥有者权限，可读，可写，可执行。r-x：用户组权限，可读，不可写，可执行。r-x：其他组权限，可读，不可写，可执行。</p>
-<p>具体文件类型有：d：路径。*-*：文件。 l ：连接(快捷方式)。b：表示可按块随机读写的设备。c：设备文件里的串行端口设备，如键盘、设备。</p>
-<p>表示权限的三个字符可以用0~7的数字表示。如rwx为7，r-x为5。</p>
-<p>ls -al：查看所有文件及目录包括隐藏目录。</p>
-<p>pwd：查看当前所在层级</p>
-<p>echo xxx：打印xxx</p>
-<p>date：查看日期</p>
-<p>cal：查看日历</p>
-<p>grep xxx：用于查看包含xxx的对象。</p>
-<p>curl 网址：向对应网址发出http请求。curl -i <a href="http://www.baidu.com/">www.baidu.com</a> ：向百度首页发出请求，会返回响应头。</p>
-<p>history：查看先前输入过的命令。</p>
-<p>df：查看磁盘使用情况。</p>
-</blockquote>
-<h2 id="文件基本命令"><a href="#文件基本命令" class="headerlink" title="文件基本命令"></a>文件基本命令</h2><blockquote>
-<p>vi xxx：打开临时记事本，基本可以认为是创建文件。</p>
-<p>mkdir xxx：创建文件夹</p>
-<p>rm -rf xxx：删除目录。</p>
-<p>cp a b ：把a文件复制到b处</p>
-<p>mv a b ：把a文件移动到b处（也可以当做重命名使用）</p>
-<p>tail -number xx：查看文件最后number行内容(可以用于监控日志使用tail -F/-f xxx)-F，-f分别为追踪文件名和追踪文件索引。</p>
-<p>cat xxx：查看文件内容，往往伴随着grep使用如 cat a.txt | grep “a:xxx”。</p>
-<p>less xxx：查看文件一页的内容。</p>
-<p>find xxx：查找文件(可以查找所有文件)。</p>
-<p>whereis xx：查找命令所在目录(只能查找二进制类的文件)。</p>
-<p>which xxx：在PATH变量指定的路径中搜索指定的系统命令的位置。</p>
-<p>sh xxx.sh：执行shell命令。这种执行sh文件不需要本身具有权限。</p>
-<p>path/xxx.sh：执行shell命令。sh文件本身需要有权限。(如./xxx.sh其中.表示当前目录)</p>
-</blockquote>
-<h2 id="文件解压缩"><a href="#文件解压缩" class="headerlink" title="文件解压缩"></a>文件解压缩</h2><blockquote>
-<p>zip -r 压缩后路径加名字 需要压缩的文件：压缩，如zip -r a.zip a.txt。这个命令需要yum install zip</p>
-<p>unzip -d 解压缩到的路径 解压缩的包：解压缩，如unzip -d . a.zip。这个命令需要yum install unzip。</p>
-<p>tar -cvf 压缩后路径加名字 需要压缩的文件：压缩，如tar -cvf a.txt。</p>
-<p>tar -zcvf 压缩后路径加名字 需要压缩的文件：压缩，如tar -zcvf a.txt。压缩后占的空间更少</p>
-<p>tar -xvf 解压缩到的路径 解压缩的包：解压缩，如tar -xvf a.txt。</p>
-<p>tar -zxvf 解压缩到的路径 解压缩的包：压缩，如tar -zxvf a.txt。</p>
-<p>tar的参数：c：表示create，即压缩，z：约等于zip，即打包后空间会更小，v：压缩后展示压缩包中文件名字。f：表示结束。x：extract，即解压缩。</p>
-<p>b：表示查看压缩包内容。其中c、x、b同时只能存在一个。</p>
-</blockquote>
-<h2 id="文件传输"><a href="#文件传输" class="headerlink" title="文件传输"></a>文件传输</h2><blockquote>
-<p>scp 目录加文件名 用户名@IP地址:目录加文件名：将文件传输利用网络传输到另一个服务器。如scp ./a.txt <a href="mailto:&#x72;&#111;&#111;&#116;&#x40;&#x31;&#x30;&#46;&#48;&#46;&#50;&#46;&#54;">&#x72;&#111;&#111;&#116;&#x40;&#x31;&#x30;&#46;&#48;&#46;&#50;&#46;&#54;</a>:~/b.txt</p>
-</blockquote>
-<h2 id="进程管理命令"><a href="#进程管理命令" class="headerlink" title="进程管理命令"></a>进程管理命令</h2><blockquote>
-<p>top ：查看当前系统使用情况。</p>
-<p>ps：查看进程情况。</p>
-<p>ps aux：查看所有正在执行的进程。经常和grep配合使用。如ps aux | grep “top”</p>
-<p>lsof -i:port ：根据端口号查看进程。需要yum install lsof</p>
-<p>kill 进程号：杀死进程。</p>
-<p>kill -9 进程号：强制杀死进程。</p>
-<p>service xxx start：启动服务。</p>
-<p>service xxxx stop：关闭服务。</p>
-</blockquote>
-<h2 id="权限管理命令"><a href="#权限管理命令" class="headerlink" title="权限管理命令"></a>权限管理命令</h2><blockquote>
-<p>chmod xxx aaa：设置aaa的权限为xxx。第一个x为拥有者权限，第二个x为用户组权限，第三个x为其他组权限。如chmod 777 a.txt：表示将a.txt的权限均设为可读、可写、可执行。</p>
-</blockquote>
-<h2 id="软件安装命令"><a href="#软件安装命令" class="headerlink" title="软件安装命令"></a>软件安装命令</h2><blockquote>
-<p>yum install xxxx：安装xxxx</p>
-<p>yum install ifconfig -y：安装时自动同意。</p>
-</blockquote>
-<h2 id="安全相关命令"><a href="#安全相关命令" class="headerlink" title="安全相关命令"></a>安全相关命令</h2><blockquote>
-<p>systemctl disable firewalld ：关闭防火墙。</p>
-</blockquote>
-<h2 id="关机命令"><a href="#关机命令" class="headerlink" title="关机命令"></a>关机命令</h2><blockquote>
-<p>shutdown：关机</p>
-<p>reboot：重启</p>
-<p>poweroff：关机</p>
-<p>halt：进入系统停止的模式，屏幕可能保留一些信息，取决于电源管理模式。</p>
-<p>systemctl suspend：休眠</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>操作系统</category>
-      </categories>
-      <tags>
-        <tag>Linux指令</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Dubbo简单介绍</title>
-    <url>/2021/02/20/codeAnalyse/Dubbo/</url>
-    <content><![CDATA[<h1 id="Dubbo"><a href="#Dubbo" class="headerlink" title="Dubbo"></a>Dubbo</h1><h2 id="RMI-和-RPC"><a href="#RMI-和-RPC" class="headerlink" title="RMI 和 RPC"></a>RMI 和 RPC</h2><blockquote>
-<p>RMI：远程方法调用，是java自带的API可以实现的，依赖JVM。客户端将要调用的方法和参数打包成辅助对象，通过网络socket，发送给服务端辅助对象，服务端接收后进行解包，找到真正被调用的方法，执行这个方法将执行结果，依次返回。服务端辅助对象进行打包，然后客户端辅助对象进行解包，结果返回给真正的调用者。</p>
-<p>IPC：进程间通信。进程是计算机系统资源分配的最小单位，每个进程都是资源隔离的。</p>
-<p>LPC：本地过程调用。</p>
-<p>RPC：远程过程调用。</p>
-</blockquote>
-<h2 id="常用RPC框架"><a href="#常用RPC框架" class="headerlink" title="常用RPC框架"></a>常用RPC框架</h2><h3 id="Dubbo-1"><a href="#Dubbo-1" class="headerlink" title="Dubbo"></a>Dubbo</h3><blockquote>
-<p>阿里开发，基于Spring和Netty，是当前使用最广泛的RPC框架。</p>
-</blockquote>
-<h3 id="BRPC"><a href="#BRPC" class="headerlink" title="BRPC"></a>BRPC</h3><blockquote>
-<p>百度开发，”baidu-rpc”，支持多种协议，性能优良。</p>
-</blockquote>
-<h3 id="GRPC"><a href="#GRPC" class="headerlink" title="GRPC"></a>GRPC</h3><blockquote>
-<p>谷歌开发，基于Netty，服务于TensorFlow的底层通信。</p>
-</blockquote>
-<h3 id="Thrift"><a href="#Thrift" class="headerlink" title="Thrift"></a>Thrift</h3><blockquote>
-<p>Facebook开发。</p>
-</blockquote>
-<h2 id="注册中心-Zookeeper"><a href="#注册中心-Zookeeper" class="headerlink" title="注册中心 - Zookeeper"></a>注册中心 - Zookeeper</h2>]]></content>
-      <categories>
-        <category>框架入门</category>
-      </categories>
-      <tags>
-        <tag>并发</tag>
-        <tag>Dubbo</tag>
-        <tag>分布式</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SpringBoot原理分析</title>
-    <url>/2021/02/20/codeAnalyse/SpringBoot%E5%8E%9F%E7%90%86/</url>
-    <content><![CDATA[<h1 id="SpringBoot原理"><a href="#SpringBoot原理" class="headerlink" title="SpringBoot原理"></a>SpringBoot原理</h1><h2 id="SpringBootApplication"><a href="#SpringBootApplication" class="headerlink" title="@SpringBootApplication"></a>@SpringBootApplication</h2><blockquote>
-<p>本质上是</p>
-<p>@SpringBootConfiguration：实际是@Configuration</p>
-<p>@EnableAutoConfiguration：由@AutoConfigurationPackage、@Import({AutoConfigurationImportSelector.class})组成。</p>
-<p>@ComponentScan：启用自动扫描，默认扫描所在类的同级类和同级目录下的所有类。</p>
-<p>即这个注解实现了注册配置类、启用自动配置、启用自动扫描。</p>
-</blockquote>
-<h2 id="SpringApplication-run-TestApplication-class-args-的实际流程"><a href="#SpringApplication-run-TestApplication-class-args-的实际流程" class="headerlink" title="SpringApplication.run(TestApplication.class,args)的实际流程"></a>SpringApplication.run(TestApplication.class,args)的实际流程</h2><blockquote>
-<p>利用传入的类创建一个SpringApplication实例执行了run方法。</p>
-</blockquote>
-<h3 id="具体创建实例的流程："><a href="#具体创建实例的流程：" class="headerlink" title="具体创建实例的流程："></a>具体创建实例的流程：</h3><blockquote>
-<p><img src="/2021/02/20/codeAnalyse/SpringBoot%E5%8E%9F%E7%90%86/SpringBoot%E5%8E%9F%E7%90%86%5CSpringBootAplication%E5%88%9D%E5%A7%8B%E5%8C%96%E8%BF%87%E7%A8%8B.png" alt="SpringBootAplication初始化过程"></p>
-<p>倒数第四行加载了web应用的配置，具体流程是使用默认的类加载器去查找当前是否使用了对应的类。结果可以得出NONE、SERVLET、REACTIVE。</p>
-<p>倒数三行之前都是加载主配置。</p>
-<p>倒数第三、二行分别是创建初始化器和监听器。创建的流程均为先获取到类加载器，然后查找当前项目中所使用到的初始化器、监听器类名，再利用类名创建类实例，最后将这些实例按优先级排序即可。</p>
-<p>创建类实例的方法即为通过反射调用类的构造方法创建。它们都使用了getSpringFactoriesInstances方法。这个方法是先通过读取META-INF/spring.factories文件内容来获取配置，并将配置放入map中。实际中会读取到项目所有jar包中的META-INF/spring.factories。然后利用传入的类名进行匹配找到所需的初始化器/监听器。</p>
-<p>按优先级排序，Spring则是通过继承OrderComparator(实现了Comparator接口的类来完成的)，这里利用了模板方法模式，通过完成了findOrder方法，通过比较注解的优先级的方式来findOrder，若未设定优先级则设为最低优先级LOWEST_PRECEDENCE这个值为Integer.MAX_VALUE。</p>
-<ul>
-<li>（1）先判断有没有实现PriorityOrdered，实现PriorityOrdered比没实现的有高优先级</li>
-<li>（2）第一步如果比较不出来，判断有没有实现Ordered，如果实现了，取实现方法的int值比较</li>
-<li>  前两步都是OrderComparator的默认实现。</li>
-<li>（3）如果没有实现Ordered，判断有没有org.springframework.core.annotation.Order注解， 有注解，取注解上的order值，进行比较</li>
-<li>（4）如果没有Order注解，判断有没有javax.annotation.Priority注解，取注解上的值比较</li>
-<li>  若以上都没找到则spring会返回null</li>
-<li>（5）OrderComparator接收到null，返回Integer.MAX_VALUE即LOWEST_PRECEDENCE，值越大优先级越低</li>
-</ul>
-<p>最后一行找到主程序类是通过获取当前程序运行栈，通过找到栈中执行main方法的类，得到主程序类名。</p>
-</blockquote>
-<h3 id="创建实例后执行run方法的流程"><a href="#创建实例后执行run方法的流程" class="headerlink" title="创建实例后执行run方法的流程"></a>创建实例后执行run方法的流程</h3><blockquote>
-</blockquote>
-<h2 id="自动配置原理"><a href="#自动配置原理" class="headerlink" title="自动配置原理"></a>自动配置原理</h2><blockquote>
-<p>@EnableAutoConfiguration = @AutoConfigurationPackage + @Import({AutoConfigurationImportSelector.class})</p>
-<p>@AutoConfigurationPackage = @Import({Registrar.class})</p>
-<p>故@EnableAutoConfiguration实际上相当于引入了AutoConfigurationImportSelector和Registrar。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>源码分析</category>
-      </categories>
-      <tags>
-        <tag>Springboot</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>并发相关内容</title>
     <url>/2021/02/20/JavaBasicKnowledge/%E5%B9%B6%E5%8F%91%E7%9B%B8%E5%85%B3/</url>
     <content><![CDATA[<h1 id="并发相关"><a href="#并发相关" class="headerlink" title="并发相关"></a>并发相关</h1><h2 id="可见性"><a href="#可见性" class="headerlink" title="可见性"></a>可见性</h2><blockquote>
@@ -775,6 +569,212 @@
       <tags>
         <tag>Java</tag>
         <tag>并发</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>多线程相关</title>
+    <url>/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/</url>
+    <content><![CDATA[<h1 id="多线程"><a href="#多线程" class="headerlink" title="多线程"></a>多线程</h1><h2 id="进程和线程"><a href="#进程和线程" class="headerlink" title="进程和线程"></a>进程和线程</h2><blockquote>
+<p>进程是执行程序的一次执行过程，是一个动态的概念。是系统资源分配的单位。</p>
+<p>通常一个进程中包含多个线程，一个进程至少含一个线程。线程是CPU调度和执行的单位。</p>
+</blockquote>
+<h3 id="JAVA创建线程的方式"><a href="#JAVA创建线程的方式" class="headerlink" title="JAVA创建线程的方式"></a>JAVA创建线程的方式</h3><blockquote>
+<ol>
+<li>继承Thread类，重写run方法。调用是使用start方法调用，若使用run方法调用则变为单线程。</li>
+<li>实现runnable接口，重写run方法，执行线程需丢入runnable接口实现类，调用start方法。(避免使用继承)</li>
+<li>实现callable接口，需要返回值类型，重写call方法，需要抛出异常。(可以返回结果，可以抛出异常)<img src="/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/%E5%A4%9A%E7%BA%BF%E7%A8%8B%5C%E5%AE%9E%E7%8E%B0callable.png" alt="实现callable"></li>
+</ol>
+</blockquote>
+<h2 id="Java线程的状态"><a href="#Java线程的状态" class="headerlink" title="Java线程的状态"></a>Java线程的状态</h2><blockquote>
+<p>NEW、RUNNABLE、BLOCKED、WAITING、TIMED_WAITING、TERMINATED</p>
+<p>NEW：线程还没有启动。</p>
+<p>RUNNABLE：线程已经在jvm中运行了，但可能还在等待操作系统的处理器之类的资源。</p>
+<p>BLOCKED：线程等待monitor lock。</p>
+<p>WAITING：正在等待另一个线程执行的状态。</p>
+<p>TIMED_WAITING：有着指定特定等待时间等待另一个线程执行的状态。</p>
+<p>TERMINATED：线程终止，线程已经结束执行。</p>
+<p>线程分为用户线程和守护线程(Daemon)，虚拟机必须确保用户线程执行完毕，虚拟机不用等待守护线程执行完毕。可以通过调用线程的setDaemon(true)，将某个线程变为守护线程</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>并发</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux介绍及基本指令</title>
+    <url>/2021/02/20/Linux/Linux%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%9F%BA%E6%9C%AC%E6%8C%87%E4%BB%A4/</url>
+    <content><![CDATA[<h1 id="Linux介绍及基本指令"><a href="#Linux介绍及基本指令" class="headerlink" title="Linux介绍及基本指令"></a>Linux介绍及基本指令</h1><h2 id="Linux区别"><a href="#Linux区别" class="headerlink" title="Linux区别"></a>Linux区别</h2><blockquote>
+<p>Ubantu：分为用户版和服务器版。</p>
+<p>​    用户版，有着良好的用户界面，有强大的软件支持。</p>
+<p>​    服务器版比较少用。</p>
+<p>Debian：系统十分稳定，内核非常小。</p>
+<p>RedHat：是一个商用的操作系统，性能非常好，软件支持也非常好。</p>
+<p>Centos：基本上相当于RedHat的复刻版本。免费。</p>
+</blockquote>
+<h2 id="根目录下各目录对应的功能"><a href="#根目录下各目录对应的功能" class="headerlink" title="根目录下各目录对应的功能"></a>根目录下各目录对应的功能</h2><h2 id="在linux中获取帮助"><a href="#在linux中获取帮助" class="headerlink" title="在linux中获取帮助"></a>在linux中获取帮助</h2><blockquote>
+<p>man 命令名：查看命令的操作说明</p>
+<p>命令行 –help：查看命令的语法</p>
+</blockquote>
+<h2 id="Linux基本命令"><a href="#Linux基本命令" class="headerlink" title="Linux基本命令"></a>Linux基本命令</h2><blockquote>
+<p>ls：查看当前目录中所有文件及目录</p>
+<p>ll：查看当前目录内所有文件及目录详细信息。详细信息具体查看方式。以drwxr-xr-x为例(第一个字符拆出，然后每三个字符表示一个内容)：</p>
+<p>d：文件类型，目录。rwx：拥有者权限，可读，可写，可执行。r-x：用户组权限，可读，不可写，可执行。r-x：其他组权限，可读，不可写，可执行。</p>
+<p>具体文件类型有：d：路径。*-*：文件。 l ：连接(快捷方式)。b：表示可按块随机读写的设备。c：设备文件里的串行端口设备，如键盘、设备。</p>
+<p>表示权限的三个字符可以用0~7的数字表示。如rwx为7，r-x为5。</p>
+<p>ls -al：查看所有文件及目录包括隐藏目录。</p>
+<p>pwd：查看当前所在层级</p>
+<p>echo xxx：打印xxx</p>
+<p>date：查看日期</p>
+<p>cal：查看日历</p>
+<p>grep xxx：用于查看包含xxx的对象。</p>
+<p>curl 网址：向对应网址发出http请求。curl -i <a href="http://www.baidu.com/">www.baidu.com</a> ：向百度首页发出请求，会返回响应头。</p>
+<p>history：查看先前输入过的命令。</p>
+<p>df：查看磁盘使用情况。</p>
+</blockquote>
+<h2 id="文件基本命令"><a href="#文件基本命令" class="headerlink" title="文件基本命令"></a>文件基本命令</h2><blockquote>
+<p>vi xxx：打开临时记事本，基本可以认为是创建文件。</p>
+<p>mkdir xxx：创建文件夹</p>
+<p>rm -rf xxx：删除目录。</p>
+<p>cp a b ：把a文件复制到b处</p>
+<p>mv a b ：把a文件移动到b处（也可以当做重命名使用）</p>
+<p>tail -number xx：查看文件最后number行内容(可以用于监控日志使用tail -F/-f xxx)-F，-f分别为追踪文件名和追踪文件索引。</p>
+<p>cat xxx：查看文件内容，往往伴随着grep使用如 cat a.txt | grep “a:xxx”。</p>
+<p>less xxx：查看文件一页的内容。</p>
+<p>find xxx：查找文件(可以查找所有文件)。</p>
+<p>whereis xx：查找命令所在目录(只能查找二进制类的文件)。</p>
+<p>which xxx：在PATH变量指定的路径中搜索指定的系统命令的位置。</p>
+<p>sh xxx.sh：执行shell命令。这种执行sh文件不需要本身具有权限。</p>
+<p>path/xxx.sh：执行shell命令。sh文件本身需要有权限。(如./xxx.sh其中.表示当前目录)</p>
+</blockquote>
+<h2 id="文件解压缩"><a href="#文件解压缩" class="headerlink" title="文件解压缩"></a>文件解压缩</h2><blockquote>
+<p>zip -r 压缩后路径加名字 需要压缩的文件：压缩，如zip -r a.zip a.txt。这个命令需要yum install zip</p>
+<p>unzip -d 解压缩到的路径 解压缩的包：解压缩，如unzip -d . a.zip。这个命令需要yum install unzip。</p>
+<p>tar -cvf 压缩后路径加名字 需要压缩的文件：压缩，如tar -cvf a.txt。</p>
+<p>tar -zcvf 压缩后路径加名字 需要压缩的文件：压缩，如tar -zcvf a.txt。压缩后占的空间更少</p>
+<p>tar -xvf 解压缩到的路径 解压缩的包：解压缩，如tar -xvf a.txt。</p>
+<p>tar -zxvf 解压缩到的路径 解压缩的包：压缩，如tar -zxvf a.txt。</p>
+<p>tar的参数：c：表示create，即压缩，z：约等于zip，即打包后空间会更小，v：压缩后展示压缩包中文件名字。f：表示结束。x：extract，即解压缩。</p>
+<p>b：表示查看压缩包内容。其中c、x、b同时只能存在一个。</p>
+</blockquote>
+<h2 id="文件传输"><a href="#文件传输" class="headerlink" title="文件传输"></a>文件传输</h2><blockquote>
+<p>scp 目录加文件名 用户名@IP地址:目录加文件名：将文件传输利用网络传输到另一个服务器。如scp ./a.txt <a href="mailto:&#x72;&#111;&#x6f;&#116;&#x40;&#49;&#48;&#46;&#x30;&#46;&#50;&#x2e;&#x36;">&#x72;&#111;&#x6f;&#116;&#x40;&#49;&#48;&#46;&#x30;&#46;&#50;&#x2e;&#x36;</a>:~/b.txt</p>
+</blockquote>
+<h2 id="进程管理命令"><a href="#进程管理命令" class="headerlink" title="进程管理命令"></a>进程管理命令</h2><blockquote>
+<p>top ：查看当前系统使用情况。</p>
+<p>ps：查看进程情况。</p>
+<p>ps aux：查看所有正在执行的进程。经常和grep配合使用。如ps aux | grep “top”</p>
+<p>lsof -i:port ：根据端口号查看进程。需要yum install lsof</p>
+<p>kill 进程号：杀死进程。</p>
+<p>kill -9 进程号：强制杀死进程。</p>
+<p>service xxx start：启动服务。</p>
+<p>service xxxx stop：关闭服务。</p>
+</blockquote>
+<h2 id="权限管理命令"><a href="#权限管理命令" class="headerlink" title="权限管理命令"></a>权限管理命令</h2><blockquote>
+<p>chmod xxx aaa：设置aaa的权限为xxx。第一个x为拥有者权限，第二个x为用户组权限，第三个x为其他组权限。如chmod 777 a.txt：表示将a.txt的权限均设为可读、可写、可执行。</p>
+</blockquote>
+<h2 id="软件安装命令"><a href="#软件安装命令" class="headerlink" title="软件安装命令"></a>软件安装命令</h2><blockquote>
+<p>yum install xxxx：安装xxxx</p>
+<p>yum install ifconfig -y：安装时自动同意。</p>
+</blockquote>
+<h2 id="安全相关命令"><a href="#安全相关命令" class="headerlink" title="安全相关命令"></a>安全相关命令</h2><blockquote>
+<p>systemctl disable firewalld ：关闭防火墙。</p>
+</blockquote>
+<h2 id="关机命令"><a href="#关机命令" class="headerlink" title="关机命令"></a>关机命令</h2><blockquote>
+<p>shutdown：关机</p>
+<p>reboot：重启</p>
+<p>poweroff：关机</p>
+<p>halt：进入系统停止的模式，屏幕可能保留一些信息，取决于电源管理模式。</p>
+<p>systemctl suspend：休眠</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>操作系统</category>
+      </categories>
+      <tags>
+        <tag>Linux指令</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Dubbo简单介绍</title>
+    <url>/2021/02/20/codeAnalyse/Dubbo/</url>
+    <content><![CDATA[<h1 id="Dubbo"><a href="#Dubbo" class="headerlink" title="Dubbo"></a>Dubbo</h1><h2 id="RMI-和-RPC"><a href="#RMI-和-RPC" class="headerlink" title="RMI 和 RPC"></a>RMI 和 RPC</h2><blockquote>
+<p>RMI：远程方法调用，是java自带的API可以实现的，依赖JVM。客户端将要调用的方法和参数打包成辅助对象，通过网络socket，发送给服务端辅助对象，服务端接收后进行解包，找到真正被调用的方法，执行这个方法将执行结果，依次返回。服务端辅助对象进行打包，然后客户端辅助对象进行解包，结果返回给真正的调用者。</p>
+<p>IPC：进程间通信。进程是计算机系统资源分配的最小单位，每个进程都是资源隔离的。</p>
+<p>LPC：本地过程调用。</p>
+<p>RPC：远程过程调用。</p>
+</blockquote>
+<h2 id="常用RPC框架"><a href="#常用RPC框架" class="headerlink" title="常用RPC框架"></a>常用RPC框架</h2><h3 id="Dubbo-1"><a href="#Dubbo-1" class="headerlink" title="Dubbo"></a>Dubbo</h3><blockquote>
+<p>阿里开发，基于Spring和Netty，是当前使用最广泛的RPC框架。</p>
+</blockquote>
+<h3 id="BRPC"><a href="#BRPC" class="headerlink" title="BRPC"></a>BRPC</h3><blockquote>
+<p>百度开发，”baidu-rpc”，支持多种协议，性能优良。</p>
+</blockquote>
+<h3 id="GRPC"><a href="#GRPC" class="headerlink" title="GRPC"></a>GRPC</h3><blockquote>
+<p>谷歌开发，基于Netty，服务于TensorFlow的底层通信。</p>
+</blockquote>
+<h3 id="Thrift"><a href="#Thrift" class="headerlink" title="Thrift"></a>Thrift</h3><blockquote>
+<p>Facebook开发。</p>
+</blockquote>
+<h2 id="注册中心-Zookeeper"><a href="#注册中心-Zookeeper" class="headerlink" title="注册中心 - Zookeeper"></a>注册中心 - Zookeeper</h2>]]></content>
+      <categories>
+        <category>框架入门</category>
+      </categories>
+      <tags>
+        <tag>并发</tag>
+        <tag>Dubbo</tag>
+        <tag>分布式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SpringBoot原理分析</title>
+    <url>/2021/02/20/codeAnalyse/SpringBoot%E5%8E%9F%E7%90%86/</url>
+    <content><![CDATA[<h1 id="SpringBoot原理"><a href="#SpringBoot原理" class="headerlink" title="SpringBoot原理"></a>SpringBoot原理</h1><h2 id="SpringBootApplication"><a href="#SpringBootApplication" class="headerlink" title="@SpringBootApplication"></a>@SpringBootApplication</h2><blockquote>
+<p>本质上是</p>
+<p>@SpringBootConfiguration：实际是@Configuration</p>
+<p>@EnableAutoConfiguration：由@AutoConfigurationPackage、@Import({AutoConfigurationImportSelector.class})组成。</p>
+<p>@ComponentScan：启用自动扫描，默认扫描所在类的同级类和同级目录下的所有类。</p>
+<p>即这个注解实现了注册配置类、启用自动配置、启用自动扫描。</p>
+</blockquote>
+<h2 id="SpringApplication-run-TestApplication-class-args-的实际流程"><a href="#SpringApplication-run-TestApplication-class-args-的实际流程" class="headerlink" title="SpringApplication.run(TestApplication.class,args)的实际流程"></a>SpringApplication.run(TestApplication.class,args)的实际流程</h2><blockquote>
+<p>利用传入的类创建一个SpringApplication实例执行了run方法。</p>
+</blockquote>
+<h3 id="具体创建实例的流程："><a href="#具体创建实例的流程：" class="headerlink" title="具体创建实例的流程："></a>具体创建实例的流程：</h3><blockquote>
+<p><img src="/2021/02/20/codeAnalyse/SpringBoot%E5%8E%9F%E7%90%86/SpringBoot%E5%8E%9F%E7%90%86%5CSpringBootAplication%E5%88%9D%E5%A7%8B%E5%8C%96%E8%BF%87%E7%A8%8B.png" alt="SpringBootAplication初始化过程"></p>
+<p>倒数第四行加载了web应用的配置，具体流程是使用默认的类加载器去查找当前是否使用了对应的类。结果可以得出NONE、SERVLET、REACTIVE。</p>
+<p>倒数三行之前都是加载主配置。</p>
+<p>倒数第三、二行分别是创建初始化器和监听器。创建的流程均为先获取到类加载器，然后查找当前项目中所使用到的初始化器、监听器类名，再利用类名创建类实例，最后将这些实例按优先级排序即可。</p>
+<p>创建类实例的方法即为通过反射调用类的构造方法创建。它们都使用了getSpringFactoriesInstances方法。这个方法是先通过读取META-INF/spring.factories文件内容来获取配置，并将配置放入map中。实际中会读取到项目所有jar包中的META-INF/spring.factories。然后利用传入的类名进行匹配找到所需的初始化器/监听器。</p>
+<p>按优先级排序，Spring则是通过继承OrderComparator(实现了Comparator接口的类来完成的)，这里利用了模板方法模式，通过完成了findOrder方法，通过比较注解的优先级的方式来findOrder，若未设定优先级则设为最低优先级LOWEST_PRECEDENCE这个值为Integer.MAX_VALUE。</p>
+<ul>
+<li>（1）先判断有没有实现PriorityOrdered，实现PriorityOrdered比没实现的有高优先级</li>
+<li>（2）第一步如果比较不出来，判断有没有实现Ordered，如果实现了，取实现方法的int值比较</li>
+<li>  前两步都是OrderComparator的默认实现。</li>
+<li>（3）如果没有实现Ordered，判断有没有org.springframework.core.annotation.Order注解， 有注解，取注解上的order值，进行比较</li>
+<li>（4）如果没有Order注解，判断有没有javax.annotation.Priority注解，取注解上的值比较</li>
+<li>  若以上都没找到则spring会返回null</li>
+<li>（5）OrderComparator接收到null，返回Integer.MAX_VALUE即LOWEST_PRECEDENCE，值越大优先级越低</li>
+</ul>
+<p>最后一行找到主程序类是通过获取当前程序运行栈，通过找到栈中执行main方法的类，得到主程序类名。</p>
+</blockquote>
+<h3 id="创建实例后执行run方法的流程"><a href="#创建实例后执行run方法的流程" class="headerlink" title="创建实例后执行run方法的流程"></a>创建实例后执行run方法的流程</h3><blockquote>
+</blockquote>
+<h2 id="自动配置原理"><a href="#自动配置原理" class="headerlink" title="自动配置原理"></a>自动配置原理</h2><blockquote>
+<p>@EnableAutoConfiguration = @AutoConfigurationPackage + @Import({AutoConfigurationImportSelector.class})</p>
+<p>@AutoConfigurationPackage = @Import({Registrar.class})</p>
+<p>故@EnableAutoConfiguration实际上相当于引入了AutoConfigurationImportSelector和Registrar。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>源码分析</category>
+      </categories>
+      <tags>
+        <tag>Springboot</tag>
       </tags>
   </entry>
   <entry>
