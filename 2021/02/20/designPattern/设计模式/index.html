@@ -22,20 +22,20 @@
     var NexT = window.NexT || {};
     var CONFIG = {"hostname":"49.234.221.130","root":"/","images":"/images","scheme":"Pisces","version":"8.2.1","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
   </script>
-<meta name="description" content="设计模式策略模式 将行为抽象，通过子类实现不同的行为来将某个对象的行为从父类抽取出，通过组合的方式来消除耦合。  命令模式 也是将行为抽象，但是目的是将行为和行为执行者二者解耦，通过将行为和行为执行者组合的方式，加上控制器控制，来便于拓展。  工厂模式 简单工厂即在类中直接添加工厂对象，在工厂对象中直接创建实例。 工厂模式：将工厂的创建实例方法抽象化，通过子类继承并重写对应方法的方式完成。 抽象工">
+<meta name="description" content="设计模式 策略模式  将行为抽象，通过子类实现不同的行为来将某个对象的行为从父类抽取出，通过组合的方式来消除耦合。  命令模式  也是将行为抽象，但是目的是将行为和行为执行者二者解耦，通过将行为和行为执行者组合的方式，加上控制器控制，来便于拓展。  工厂模式  简单工厂即在类中直接添加工厂对象，在工厂对象中直接创建实例。 工厂模式：将工厂的创建实例方法抽象化，通过子类继承并">
 <meta property="og:type" content="article">
 <meta property="og:title" content="常用设计模式介绍">
 <meta property="og:url" content="http://49.234.221.130/2021/02/20/designPattern/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/index.html">
 <meta property="og:site_name" content="Yesomething">
-<meta property="og:description" content="设计模式策略模式 将行为抽象，通过子类实现不同的行为来将某个对象的行为从父类抽取出，通过组合的方式来消除耦合。  命令模式 也是将行为抽象，但是目的是将行为和行为执行者二者解耦，通过将行为和行为执行者组合的方式，加上控制器控制，来便于拓展。  工厂模式 简单工厂即在类中直接添加工厂对象，在工厂对象中直接创建实例。 工厂模式：将工厂的创建实例方法抽象化，通过子类继承并重写对应方法的方式完成。 抽象工">
+<meta property="og:description" content="设计模式 策略模式  将行为抽象，通过子类实现不同的行为来将某个对象的行为从父类抽取出，通过组合的方式来消除耦合。  命令模式  也是将行为抽象，但是目的是将行为和行为执行者二者解耦，通过将行为和行为执行者组合的方式，加上控制器控制，来便于拓展。  工厂模式  简单工厂即在类中直接添加工厂对象，在工厂对象中直接创建实例。 工厂模式：将工厂的创建实例方法抽象化，通过子类继承并">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://49.234.221.130/2021/02/20/designPattern/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%5C%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F.png">
+<meta property="og:image" content="http://49.234.221.130/2021/02/20/designPattern/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/单例模式.png">
 <meta property="article:published_time" content="2021-02-20T04:26:00.000Z">
 <meta property="article:modified_time" content="2021-02-20T09:13:04.468Z">
 <meta property="article:author" content="Ye">
 <meta property="article:tag" content="设计模式">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://49.234.221.130/2021/02/20/designPattern/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%5C%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F.png">
+<meta name="twitter:image" content="http://49.234.221.130/2021/02/20/designPattern/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/单例模式.png">
 
 
 <link rel="canonical" href="http://49.234.221.130/2021/02/20/designPattern/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">
@@ -188,7 +188,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.</span> <span class="nav-text">设计模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.1.</span> <span class="nav-text">策略模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.2.</span> <span class="nav-text">命令模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.3.</span> <span class="nav-text">工厂模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.4.</span> <span class="nav-text">单例模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.5.</span> <span class="nav-text">装饰者模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.6.</span> <span class="nav-text">观察者模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.7.</span> <span class="nav-text">适配器模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%96%E8%A7%82%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.8.</span> <span class="nav-text">外观模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E6%9D%BF%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.9.</span> <span class="nav-text">模板方法模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.10.</span> <span class="nav-text">迭代器模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%84%E5%90%88%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.11.</span> <span class="nav-text">组合模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8A%B6%E6%80%81%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.12.</span> <span class="nav-text">状态模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.13.</span> <span class="nav-text">代理模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MVC"><span class="nav-number">1.14.</span> <span class="nav-text">MVC</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.</span> <span class="nav-text">设计模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.1.</span> <span class="nav-text">策略模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.2.</span> <span class="nav-text">命令模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.3.</span> <span class="nav-text">工厂模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.4.</span> <span class="nav-text">单例模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.5.</span> <span class="nav-text">装饰者模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.6.</span> <span class="nav-text">观察者模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.7.</span> <span class="nav-text">适配器模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%96%E8%A7%82%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.8.</span> <span class="nav-text">外观模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E6%9D%BF%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.9.</span> <span class="nav-text">模板方法模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.10.</span> <span class="nav-text">迭代器模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%84%E5%90%88%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.11.</span> <span class="nav-text">组合模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8A%B6%E6%80%81%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.12.</span> <span class="nav-text">状态模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.13.</span> <span class="nav-text">代理模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mvc"><span class="nav-number">1.14.</span> <span class="nav-text">MVC</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -326,7 +326,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>800</span>
+      <span>804</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -344,53 +344,70 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h1 id="设计模式"><a href="#设计模式" class="headerlink" title="设计模式"></a>设计模式</h1><h2 id="策略模式"><a href="#策略模式" class="headerlink" title="策略模式"></a>策略模式</h2><blockquote>
+        <h1 id="设计模式">设计模式</h1>
+<h2 id="策略模式">策略模式</h2>
+<blockquote>
 <p>将行为抽象，通过子类实现不同的行为来将某个对象的行为从父类抽取出，通过组合的方式来消除耦合。</p>
 </blockquote>
-<h2 id="命令模式"><a href="#命令模式" class="headerlink" title="命令模式"></a>命令模式</h2><blockquote>
+<h2 id="命令模式">命令模式</h2>
+<blockquote>
 <p>也是将行为抽象，但是目的是将行为和行为执行者二者解耦，通过将行为和行为执行者组合的方式，加上控制器控制，来便于拓展。</p>
 </blockquote>
-<h2 id="工厂模式"><a href="#工厂模式" class="headerlink" title="工厂模式"></a>工厂模式</h2><blockquote>
+<h2 id="工厂模式">工厂模式</h2>
+<blockquote>
 <p>简单工厂即在类中直接添加工厂对象，在工厂对象中直接创建实例。</p>
 <p>工厂模式：将工厂的创建实例方法抽象化，通过子类继承并重写对应方法的方式完成。</p>
 <p>抽象工厂模式：将一系列创建实例的方法抽象化，形成接口，子类实现该接口，有点类似工厂模式。</p>
 </blockquote>
-<h2 id="单例模式"><a href="#单例模式" class="headerlink" title="单例模式"></a>单例模式</h2><blockquote>
+<h2 id="单例模式">单例模式</h2>
+<blockquote>
 <p>即让一个类只能有一个对象实例。</p>
 <p>double check方式实现比较好。</p>
-<p><img src="/2021/02/20/designPattern/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%5C%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F.png" alt="单例模式"></p>
+<figure>
+<img src="/2021/02/20/designPattern/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/单例模式.png" alt="单例模式"><figcaption aria-hidden="true">单例模式</figcaption>
+</figure>
 </blockquote>
-<h2 id="装饰者模式"><a href="#装饰者模式" class="headerlink" title="装饰者模式"></a>装饰者模式</h2><blockquote>
+<h2 id="装饰者模式">装饰者模式</h2>
+<blockquote>
 <p>子类继承分类时，不是将父类的方法直接重写，而是在父类方法的基础上添加自己的功能。</p>
 </blockquote>
-<h2 id="观察者模式"><a href="#观察者模式" class="headerlink" title="观察者模式"></a>观察者模式</h2><blockquote>
+<h2 id="观察者模式">观察者模式</h2>
+<blockquote>
 <p>分为主题(observable)和观察者(observer)两个模块，根主题是一种接口/类，提供添加观察者、移除观察者、通知观察者等方法，观察者则需要实现一个接口表示它为观察者，通常要实现update方法。主题的数据改变时可以通知观察者，数据可以有主题直接推送给观察者和观察者向主题拉取数据两个方式。</p>
 </blockquote>
-<h2 id="适配器模式"><a href="#适配器模式" class="headerlink" title="适配器模式"></a>适配器模式</h2><blockquote>
+<h2 id="适配器模式">适配器模式</h2>
+<blockquote>
 <p>将一个类的接口转换成另一个接口，让本来不兼容的类可以合作无间。</p>
 </blockquote>
-<h2 id="外观模式"><a href="#外观模式" class="headerlink" title="外观模式"></a>外观模式</h2><blockquote>
+<h2 id="外观模式">外观模式</h2>
+<blockquote>
 <p>将多个接口简化为一个接口</p>
 </blockquote>
-<h2 id="模板方法模式"><a href="#模板方法模式" class="headerlink" title="模板方法模式"></a>模板方法模式</h2><blockquote>
+<h2 id="模板方法模式">模板方法模式</h2>
+<blockquote>
 <p>将算法分抽象为许多步骤，将统一的流程由父类实现，子类实现具体的不同部分。</p>
 </blockquote>
-<h2 id="迭代器模式"><a href="#迭代器模式" class="headerlink" title="迭代器模式"></a>迭代器模式</h2><blockquote>
+<h2 id="迭代器模式">迭代器模式</h2>
+<blockquote>
 <p>给不同集合一种相同的遍历方法。</p>
 </blockquote>
-<h2 id="组合模式"><a href="#组合模式" class="headerlink" title="组合模式"></a>组合模式</h2><blockquote>
+<h2 id="组合模式">组合模式</h2>
+<blockquote>
 <p>通过一致的方式处理个别对象及对象的组合，如对树和树的叶子节点采用统一的抽象方式。</p>
 </blockquote>
-<h2 id="状态模式"><a href="#状态模式" class="headerlink" title="状态模式"></a>状态模式</h2><blockquote>
+<h2 id="状态模式">状态模式</h2>
+<blockquote>
 <p>状态机，将状态进行抽象，具体的状态类则实现自己具体的行为，状态类自己控制状态的转化。</p>
 </blockquote>
-<h2 id="代理模式"><a href="#代理模式" class="headerlink" title="代理模式"></a>代理模式</h2><blockquote>
+<h2 id="代理模式">代理模式</h2>
+<blockquote>
 <p>给客户一个某种对象的代理，该代理对象控制对原对象的引用，目的是控制客户对对象的访问。</p>
 <p>动态代理、静态代理、远程代理等。</p>
 <p>静态代理</p>
 <p>动态代理：JDK代理和cglib代理。JDK代理需要被代理类实现接口，而cglib没有这个限制</p>
 </blockquote>
-<h2 id="MVC"><a href="#MVC" class="headerlink" title="MVC"></a>MVC</h2><blockquote>
+<h2 id="mvc">MVC</h2>
+<blockquote>
 <p>模型、视图、控制器。</p>
 </blockquote>
 
@@ -554,6 +571,39 @@
   <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 
+
+
+  <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'none'
+      },
+      options: {
+        renderActions: {
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
 
 
 

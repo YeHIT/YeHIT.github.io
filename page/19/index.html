@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-leaf.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-leaf.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-leaf.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"49.234.221.130","root":"/","images":"/images","scheme":"Pisces","version":"8.2.1","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+<meta name="description" content="Ye的个人技术记录博客">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Yesomething">
+<meta property="og:url" content="http://49.234.221.130/page/19/index.html">
+<meta property="og:site_name" content="Yesomething">
+<meta property="og:description" content="Ye的个人技术记录博客">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="Ye">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://49.234.221.130/page/19/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : true,
+    isPost : false,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Yesomething</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Yesomething</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Ye's blog</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fas fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Ye"
+      src="/uploads/photo.jpg">
+  <p class="site-author-name" itemprop="name">Ye</p>
+  <div class="site-description" itemprop="description">Ye的个人技术记录博客</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">25</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/YeHIT" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;YeHIT" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1044377312@qq.com" title="E-Mail → mailto:1044377312@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+  <a href="https://github.com/YeHIT" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/codeAnalyse/nginx%E4%BA%86%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/photo.jpg">
+      <meta itemprop="name" content="Ye">
+      <meta itemprop="description" content="Ye的个人技术记录博客">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Yesomething">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/02/20/codeAnalyse/nginx%E4%BA%86%E8%A7%A3/" class="post-title-link" itemprop="url">Nginx了解</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:13:13" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%A1%86%E6%9E%B6%E5%85%A5%E9%97%A8/" itemprop="url" rel="index"><span itemprop="name">框架入门</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>6k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>5 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="nginx">Nginx</h1>
+<h2 id="概述">概述</h2>
+<blockquote>
+<p>Nginx是高性能的http和反向代理服务器，也是一个IMAP/SMTP/POP3等邮件代理服务器。</p>
+<p>正向代理和反向代理</p>
+<p>正向代理：客户端client通过设置，使用代理服务器proxy去访问远程服务器server。客户端知道代理存在。</p>
+<p>​ | client - proxy | - server</p>
+<p>使用场景：</p>
+<p>​ 可以访问原来无法访问的资源。</p>
+<p>​ 做缓存使用，加快访问速度。</p>
+<p>​ 对客户端授权或记录访问信息。</p>
+<p>反向代理：服务器通过代理服务接收连接请求，再转发给内部网络的服务器，将结果返回给客户端。客户端不知道代理存在。</p>
+<p>​ client - | proxy - server |</p>
+<p>使用场景：</p>
+<p>​ 保证内网安全，阻止web攻击。</p>
+<p>​ 负载均衡。</p>
+</blockquote>
+<h2 id="nginx命令">Nginx命令</h2>
+<blockquote>
+<p>启动命令./Nginx</p>
+<p>杀死进程 kill SIGNAL pid</p>
+<p>​ kill -9 pid 强制停止</p>
+<p>​ kill -TERM pid 快速停止</p>
+<p>​ kill -QUIT pid 平缓停止</p>
+<p>查看版本 ./Nginx -V</p>
+<p>信号处理 ./Nginx -s SIGNAL(stop、quit、reopen、reload)</p>
+<p>​ 关闭 ./Nginx -s stop</p>
+<p>​ 重加载 ./Nginx -s reload</p>
+<p>​ 平缓停止 ./Nginx -s quit</p>
+<p>​ 快速停止 ./Nginx -s stop</p>
+</blockquote>
+<h2 id="nginx配置">Nginx配置</h2>
+<h3 id="全局块">全局块</h3>
+<blockquote>
+<p>全局块：指定运行时的用户组、进程id存放位置、日志存放位置、worker process数量等。</p>
+<p>#user nobody ：配置用户或用户组</p>
+<p>#worker_processes 1 ：运行启动的进程数</p>
+<p>#error_log logs/error.log 级别 ：日志路径及级别设置</p>
+<p>#pid logs/nginx.pid 进程id的文件地址</p>
+</blockquote>
+<h3 id="events块">events块</h3>
+<blockquote>
+<p>events块：影响Nginx服务器和用户网络连接配置，如每个进程最大连接数、选择哪种事件驱动模型、是否序列化events块：影响Nginx服务器和用户网络连接配置，如每个进程最大连接数、选择哪种事件驱动模型、是否序列化。</p>
+<p>events{</p>
+<p>​ #worker_connections 1024：每个进程的最大连接数</p>
+<p>}</p>
+</blockquote>
+<h3 id="http块">http块</h3>
+<blockquote>
+<p>http块：配置代理、缓存、日志等绝大部分功能的地方。可以嵌套多个server块，而不同的server可以对应不同的域名(虚拟主机)。</p>
+<p>虚拟主机：同一台Nginx服务器，可以支持多个网站的运行，每个虚拟主机之间都互相独立，具有完整功能。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 相对路径</span><br><span class="line">			root html;</span><br><span class="line">			# 默认跳转的首页地址</span><br><span class="line">			index index.html index.htm;</span><br><span class="line"></span><br><span class="line">		&#125;	</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>日志配置：可以获取用户地址信息、跳转来源、终端、url访问量等。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#log_format main &#x27;$remote_addr - $remote_user [$time_local] &quot;$request&quot; &#x27;</span><br><span class="line">#                  &#x27;$status $body_bytes_sent &quot;$http_referer&quot; &#x27;</span><br><span class="line">#                  &#x27;&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;&#x27;;</span><br><span class="line"></span><br><span class="line">#access_log logs/access.log main;</span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>remote_addr</td>
+<td>客户端的ip地址</td>
+</tr>
+<tr class="even">
+<td>remote_user</td>
+<td>客户端的用户名称</td>
+</tr>
+<tr class="odd">
+<td>time_local</td>
+<td>访问时间和时区</td>
+</tr>
+<tr class="even">
+<td>request</td>
+<td>请求方法</td>
+</tr>
+<tr class="odd">
+<td>status</td>
+<td>响应状态码 如：200</td>
+</tr>
+<tr class="even">
+<td>body_bytes_sent</td>
+<td>主体内容字节数 如：612</td>
+</tr>
+<tr class="odd">
+<td>http_referer</td>
+<td>记录是从哪个链接访问过来的</td>
+</tr>
+<tr class="even">
+<td>http_user_agent</td>
+<td>用户使用的代理（浏览器）</td>
+</tr>
+<tr class="odd">
+<td>http_x_forwarded_for</td>
+<td>通过代理服务器来记录客户端的ip地址</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<h3 id="反向代理配置">反向代理配置</h3>
+<blockquote>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 相对路径</span><br><span class="line">			root html;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://127.0.0.1:8080</span><br><span class="line">			# 默认跳转的首页地址</span><br><span class="line">			index index.html index.htm;</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>代理多个tomcat服务器，通过路径来映射</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location ~ path1 &#123;</span><br><span class="line">			# 相对路径</span><br><span class="line">			root html;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://127.0.0.1:8080</span><br><span class="line">			# 默认跳转的首页地址</span><br><span class="line">			index index.html index.htm;</span><br><span class="line">        &#125;	</span><br><span class="line">		location ~ path2 &#123;</span><br><span class="line">			# 相对路径</span><br><span class="line">			root html;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://127.0.0.1:8081</span><br><span class="line">			# 默认跳转的首页地址</span><br><span class="line">			index index.html index.htm;</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="负载均衡">负载均衡</h3>
+</blockquote>
+<blockquote>
+<p>早期使用DNS(域名解析系统)做负载，具体来说就是给客户端解析不同的ip地址，让流量直接到达服务器。</p>
+<p>优点： 1） 通过健康检查，避免单点故障 2） 当发现节点故障时，从集群中移除，保证应用的高可用</p>
+<p>四层负载均衡，在OSI模型的传输层，主要是转发。 七层负载均衡，在OSI模型的应用层，主要是代理。</p>
+<p>负载均衡器可以处理HTTP/HTTPS/TCP/UDP等的请求。</p>
+<p>负载均衡的调度算法：</p>
+<p>​ 轮询。</p>
+<p>​ 最小连接：优先选择连接数最少的服务器，适用于会话时间较长的业务处理。</p>
+<p>​ IP映射，根据请求的ip地址进行散列，让同一ip下的请求都映射到同一服务器上，可以解决session问题。</p>
+<p>Nginx设置默认轮询算法</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080;</span><br><span class="line">		server 192.168.1.20:8081;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>设置权重的情况，默认权重是1。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080 weight = 1;</span><br><span class="line">		server 192.168.1.20:8081 weight = 2;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>根据ip地址固定server处理，使用ip_hash。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080 weight = 1;</span><br><span class="line">		server 192.168.1.20:8081 weight = 2;</span><br><span class="line">		ip_hash;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h3 id="动静分离">动静分离</h3>
+<blockquote>
+<p>将静态资源和动态资源分开。</p>
+<p>静态资源直接查找Nginx的静态资源地址。</p>
+<p>动态资源请求通过反向代理映射到tomcat路径下的资源。</p>
+<p>实现方式：</p>
+<p>​ 单独把静态文件放在独立的服务器及独立的域名下(推荐)。</p>
+<p>​ 将动态资源和静态资源混合在一起，通过Nginx分开。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080 weight = 1;</span><br><span class="line">		server 192.168.1.20:8081 weight = 2;</span><br><span class="line">		ip_hash;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 访问动态资源</span><br><span class="line">		location ~ .*.jsp$ &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">		# 访问静态资源</span><br><span class="line">		location ~ .*\.(gif|jpg|css)$ &#123;</span><br><span class="line">			root /usr/local/nginx/image;</span><br><span class="line">			// 缓存时间</span><br><span class="line">			expires 3d;</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="location块的匹配规则">location块的匹配规则</h3>
+</blockquote>
+<blockquote>
+<p>匹配规则：</p>
+<p>​ location = /uri 精确匹配</p>
+<p>​ location ^~ /uri 前缀匹配，顺序在正则之前</p>
+<p>​ location ~ pattern 区分大小写的正则匹配</p>
+<p>​ location ~* pattern 不区分大小写的正则匹配</p>
+<p>​ location /uri 前缀匹配，顺序在正则之后(两种前缀匹配不能同时出现)</p>
+<p>​ location / 通用匹配，接收未匹配到其他location的请求。</p>
+<p>匹配顺序：</p>
+<p>​ 首先会进行精确匹配，然后会进行前缀匹配，具体顺序按指令长度从长到短的顺序依次匹配。</p>
+<p>​ 使用正则匹配时，是按照配置文件的顺序依次匹配的。如果不希望前缀匹配后进行正则匹配，那么使用^~。</p>
+</blockquote>
+<h3 id="url重写">URL重写</h3>
+<blockquote>
+<p>即对URL的规范化处理。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080 weight = 1;</span><br><span class="line">		server 192.168.1.20:8081 weight = 2;</span><br><span class="line">		ip_hash;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		</span><br><span class="line">		# 重写URL</span><br><span class="line">		rewrite ^/(.*) http://www.xxxx.com/xxx;</span><br><span class="line"></span><br><span class="line">		# 访问动态资源</span><br><span class="line">		location ~ .*.jsp$ &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">		# 访问静态资源</span><br><span class="line">		location ~ .*\.(gif|jpg|css)$ &#123;</span><br><span class="line">			root /usr/local/nginx/image;</span><br><span class="line">			// 缓存时间</span><br><span class="line">			expires 3d;</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="nginx安装">Nginx安装</h2>
+</blockquote>
+<blockquote>
+<p>在各官网下载相关组件 nginx openssl zlib pcre 等等</p>
+<p>以openssl为例 1） 通过rz上传压缩包 2） 通过tar -xvf *.tar.gz 进行解压缩 3）cd openssl-1.1.1d 进行配置检查以及编译 ./config 执行配置检查 make &amp; make install 进行编译和安装</p>
+<p>​ 如上过程，适用于zlib和pcre ​ 注意： 对于 pcre而言， 执行检查命令为 ./configure 4) 安装nginx过程中 执行配置检查</p>
+<pre><code>./configure --sbin-path=/usr/local/nginx/nginx \
+--conf-path=/usr/local/nginx/nginx.conf \
+--pid-path=/usr/local/nginx/nginx.pid \
+--with-http_ssl_module \
+--with-pcre=/usr/local/src/pcre-8.44 \
+--with-zlib=/usr/local/src/zlib-1.2.11 \
+--with-openssl=/usr/local/src/openssl-1.1.1d</code></pre>
+<ol start="5" type="1">
+<li>仍然执行 make 以及 make install<br>
+</li>
+<li>nginx安装成功 ./nginx验证</li>
+</ol>
+<p>注意事项：nginx服务器，需要虚拟机开放80端口的访问 防火墙配置 （同样适用于开放8080 8081端口） firewall-cmd --list-all 查看当前配置 firewall-cmd --add-service=http --permanent 开放http访问 firewall-cmd --add-port=80/tcp --permanent 开放80端口 firewall-cmd --reload 重启防火墙保存</p>
+<p>jdk的安装 1） 解压缩 -- 拷贝目录到 /usr/local/java 2) 更改环境变量 vim /etc/profile</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">export JAVA_HOME=/usr/local/java</span><br><span class="line">export JAVA_BIN=$JAVA_HOME/bin</span><br><span class="line">export PATH=$PATH:$JAVA_HOME/bin</span><br><span class="line">export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar</span><br><span class="line">export PATH=$JAVA_HOME/bin:$JRE_HOME/bin:$PATH</span><br></pre></td></tr></table></figure>
+<ol start="3" type="1">
+<li>让环境变量生效 source /etc/profile</li>
+<li>验证版本 java -version</li>
+</ol>
+<p>tomcat的安装 1） 解压缩 -- 拷贝目录到 /usr/local/tomcat 2) 执行启动 ./startup.sh</p>
+</blockquote>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/page/18/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/18/">18</a><span class="page-number current">19</span><a class="page-number" href="/page/20/">20</a><span class="space">&hellip;</span><a class="page-number" href="/page/25/">25</a><a class="extend next" rel="next" href="/page/20/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+  </nav>
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ye</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">74k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:07</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'none'
+      },
+      options: {
+        renderActions: {
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+
+
+</body>
+</html>

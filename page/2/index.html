@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/codeAnalyse/http%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86%E5%8F%8A%E6%94%B9%E8%BF%9B/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/JVMKnowledge/2.%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/codeAnalyse/http%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86%E5%8F%8A%E6%94%B9%E8%BF%9B/" class="post-title-link" itemprop="url">http基本知识及改进</a>
+          <a href="/2021/02/20/JVMKnowledge/2.%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86/" class="post-title-link" itemprop="url">2.垃圾收集</a>
         </h2>
 
         <div class="post-meta-container">
@@ -288,7 +288,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:09:30" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：15:58:55" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -296,11 +296,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
-        </span>
-          ，
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
+          <a href="/categories/JVM/" itemprop="url" rel="index"><span itemprop="name">JVM</span></a>
         </span>
     </span>
 
@@ -312,896 +308,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>1.1k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="http基本知识及改进"><a href="#http基本知识及改进" class="headerlink" title="http基本知识及改进"></a>http基本知识及改进</h1><h2 id="HTTP介绍"><a href="#HTTP介绍" class="headerlink" title="HTTP介绍"></a>HTTP介绍</h2><h3 id="0-9版本"><a href="#0-9版本" class="headerlink" title="0.9版本"></a>0.9版本</h3><blockquote>
-<p>GET /index.html</p>
-<p>服务端只能返回html格式，传输过程只能处理文字</p>
-</blockquote>
-<h3 id="1-0版本"><a href="#1-0版本" class="headerlink" title="1.0版本"></a>1.0版本</h3><blockquote>
-<p>支持任何格式的内容，包括图像、视频、二进制等。</p>
-<p>引入了POST命令、HEAD命令。</p>
-<p>增加了请求头、状态码，以及权限缓存等。</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># 请求包</span><br><span class="line">GET / HTTP/1.0</span><br><span class="line">User-Agent:Mozilla/1.0</span><br><span class="line">Accept: */*</span><br><span class="line"></span><br><span class="line"># 应答包</span><br><span class="line">HTTP/1.0 200 OK</span><br><span class="line">Content-Type: text/plain</span><br><span class="line">Content-Length: 12345</span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"> ....</span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>Content-Type表示当前数据格式：text/html、image/png、application/pdf、video/mp4。</p>
-<p>前面是一级格式，后面是二级类型，用斜杆分隔，还可以增加其他参数，如编码格式</p>
-<p>Content-Type：text/plain；charset=utf-8</p>
-<p>Content-Encoding表示数据压缩的方式：gzip、compress、deflate。</p>
-<p>对应客户端的字段为Accept-Encoding，代表接收哪些压缩方式。</p>
-<h4 id="缺点和问题："><a href="#缺点和问题：" class="headerlink" title="缺点和问题："></a>缺点和问题：</h4><p>每个TCP连接只能发送一个请求，发送完毕连接关闭，使用成本很高，性能较差。</p>
-<p>Connection：keep-alive (非标准字段)</p>
-</blockquote>
-<h2 id="1-1版本"><a href="#1-1版本" class="headerlink" title="1.1版本"></a>1.1版本</h2><blockquote>
-<p>持久连接：默认不关闭TCP连接，可以被多个请求复用。</p>
-<p>管道机制：支持客户端发送多个请求，管理请求的顺序。服务器还是按照接受请求的顺序，返回对应的响应结果。</p>
-<p>Content-Length：用于区分数据包的字段。</p>
-<p>支持了DELETE、PUT、PATCH等命令。</p>
-<h4 id="缺点和问题"><a href="#缺点和问题" class="headerlink" title="缺点和问题"></a>缺点和问题</h4><p>当部分请求耗时较长时，仍会阻塞后续请求的处理速度，这种现象叫做“队头阻塞/线头阻塞”。</p>
-</blockquote>
-<h3 id="2-0版本"><a href="#2-0版本" class="headerlink" title="2.0版本"></a>2.0版本</h3><blockquote>
-<p>解决了队头阻塞的问题。多路复用。</p>
-</blockquote>
-<h2 id="HTTP的缺陷"><a href="#HTTP的缺陷" class="headerlink" title="HTTP的缺陷"></a>HTTP的缺陷</h2><blockquote>
-<p>通信只能由客户端发起，需要一种服务端能够主动推送的能力-websocket。</p>
-<p>这种双向通信的能力，也叫”全双工”，协议标识符：<a target="_blank" rel="noopener" href="http://127.0.0.1/">http://127.0.0.1/</a> 变为 ws://127.0.0.1/ 通信的最小单位是帧frame。</p>
-</blockquote>
-<h2 id="WebSocket"><a href="#WebSocket" class="headerlink" title="WebSocket"></a>WebSocket</h2><blockquote>
-<p>websocket是由浏览器发起的。</p>
-<p>响应码101代表本次协议需要更改为websocket。</p>
-<p>建立连接后，支持文本信息和二进制信息。</p>
-<p>Websocket实现的原理：</p>
-<p>​    通过http协议进行连接的建立，建立连接后不再使用http，而tcp自身是支持双向通信的，所以可以达到全双工的效果。</p>
-<p>通信使用的单位叫帧frame</p>
-<p>客户端：发送时，将消息切割成多个帧。</p>
-<p>服务端：接收时，将关联的帧重新组装。</p>
-</blockquote>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/codeAnalyse/mybatis%E6%B5%81%E7%A8%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/uploads/photo.jpg">
-      <meta itemprop="name" content="Ye">
-      <meta itemprop="description" content="Ye的个人技术记录博客">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Yesomething">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/codeAnalyse/mybatis%E6%B5%81%E7%A8%8B/" class="post-title-link" itemprop="url">Mybatis流程源码分析</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:15:02" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">源码分析</span></a>
-        </span>
-    </span>
-
-  
-      </div>
-      <div class="post-meta">
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>3.5k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>3 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="Mybatis流程"><a href="#Mybatis流程" class="headerlink" title="Mybatis流程"></a>Mybatis流程</h1><h2 id="创建SqlSessionFactory的流程"><a href="#创建SqlSessionFactory的流程" class="headerlink" title="创建SqlSessionFactory的流程"></a>创建SqlSessionFactory的流程</h2><blockquote>
-<p>由于创建工厂需要许多配置，mybatis利用了Builder模式。</p>
-<p>先创建SqlSessionFactoryBuilder，调用SqlSessionFactoryBuilder的build方法，本质上就是通过解析xml文件，将文件内容映射到Configuration对象中，然后利用这个对象产生builder创建工厂所需的配置，然后创建出SqlSessionFactory。</p>
-<p>具体则是先将xml的输入流传给SqlSessionFactoryBuilder，然后创建一个XMLConfigBuilder，负责解析xml内容放入configuration对象，解析的过程中会按类别解析，通过调用不同的方法解析xml的不同部分。解析mapper还有专门的XMLMapperBuilder其中对于二级缓存的处理也在这里进行。解析完成后configuration对象会保存全部的配置信息。</p>
-</blockquote>
-<h2 id="利用SqlSessionFactory创建SqlSession的流程"><a href="#利用SqlSessionFactory创建SqlSession的流程" class="headerlink" title="利用SqlSessionFactory创建SqlSession的流程"></a>利用SqlSessionFactory创建SqlSession的流程</h2><blockquote>
-<p>就是SqlSessionFactory调用openSession，传入ExecutorType、TransactionIsolationLevel、autoCommit三个参数，或让mybatis按默认设置，</p>
-<p>ExecutorType有BatchExecutor、ReuseExecutor、SimpleExecutor、CachingExecutor四种。</p>
-<p>​    BatchExecutor 让update操作变为批处理操作，即让连续的update先累积，等到下一次query操作前再一起执行。是使用List作为批处理存储。对于update操作会复用最近一次的statement。失败了会全部回滚。</p>
-<p>​    ReuseExecutor 复用Statement，利用Map&lt;String, Statement&gt;来判定。</p>
-<p>​    SimpleExecutor 即使用的Statement直接关闭。</p>
-<p>​    CachingExecutor 相当于在前面三个执行者的基础上套了一层缓存机制，让query方法先查看缓存，只有缓存没有时再让三个执行者执行操作。这里的缓存是通过mybatis自己实现的statement对象内部的cache实现的，有些类似hashmap，是利用cache和cachekey获得的结果。</p>
-<p>TransactionIsolationLevel即事物隔离级别。</p>
-<p>​    READ_UNCOMMITTED 读未提交    存在脏读、不可重复读、幻读</p>
-<p>​    READ_COMMITTED    读提交    存在不可重复读、幻读</p>
-<p>​    REPEATABLE_READ 可重复读 存在幻读</p>
-<p>​    SERIALIZABLE 序列化</p>
-<p>autoCommit是否自动提交。</p>
-</blockquote>
-<h2 id="利用SqlSession创建Mapper"><a href="#利用SqlSession创建Mapper" class="headerlink" title="利用SqlSession创建Mapper"></a>利用SqlSession创建Mapper</h2><blockquote>
-<p>SqlSession使用getMapper方法，实际上是调用了configuration中的mapperRegistry的getMapper方法，这里使用了动态代理的设计模式。同时这里还使用了工厂方法，根据不同的类名创建对应的代理工厂。</p>
-<p>这个动态代理是JDK代理，它需要使用对应类加载器，对应类接口，对应的InvocationHandler。在mybatis中InvocationHandler是MapperProxy，MapperProxy的重写的invoke函数逻辑是对于Object自带的方法直接调用，对于接口默认的方法直接调用(这个特性是由于JDK8让接口方法可以有默认实现)。对于接口的方法则创建一个MapperMethod对象，该对象使用了缓存机制，利用Map&lt;Method, MapperMethod&gt;缓存方法。</p>
-<p>而MapperMethod的excuse即为代理方法的实现，该类中含有MethodSignature、SqlCommand两个内部类用于实现解析sql及方法，而具体方法实现是根据判断当前sql是增删改查中的哪种再调用sqlSession的方法来实现的。</p>
-</blockquote>
-<h2 id="Executor与Handler"><a href="#Executor与Handler" class="headerlink" title="Executor与Handler"></a>Executor与Handler</h2><blockquote>
-<p>Executor是通过StatementHandler来执行sql的。StatementHandler先prepare方法配置基础设置，然后使用parameterize来设置statement的参数。若为query操作则StatementHandler会使用ResultSetHandler来处理结果集。</p>
-<p>StatementHandler为抽象interface mybatis基于这个接口实现了抽象类BaseStatementHandler，还实现了路由类RoutingStatementHandler，路由类是用于根据参数创建对应具体类的。而抽象类是作为三个具体类的基础，三个具体类分别为CallableStatementHandler、PreparedStatementHandler、SimpleStatementHandler。</p>
-<p>抽象类提供给三个具体类prepare方法，其中prepare中含有抽象方法instantiateStatement，是由具体子类实现的。(模板方法模式)</p>
-</blockquote>
-<h2 id="mybatis对于数据库操作的整体流程"><a href="#mybatis对于数据库操作的整体流程" class="headerlink" title="mybatis对于数据库操作的整体流程"></a>mybatis对于数据库操作的整体流程</h2><blockquote>
-<p>先使用builder模式，根据输入的xml输入流，利用对应XML解析对象解析，并将结果最终存入Configuration对象，然后利用Configuration对象创建出一个对应的SqlSessionFactory。</p>
-<p>然后需要通过sqlSessionFactory的openSession方法创建一个SqlSession，这里可以设置SqlSession的Executor、TransactionIsolationLevel和autoCommit。Executor代表这个SqlSession采用什么执行器，执行器是对statement对象的处理。具体执行器共有3种：SimpleExecutor 、ReuseExecutor 、BatchExecutor 。同时若启用了缓存cache，则会在执行器外再包装一层CachingExecutor ，相当于对于查询操作提供了二级缓存。这个缓存是位于mybatis的MappedStatement类中。本质上这种缓存就是一个嵌套的哈希结构。Map&lt;Cache, TransactionalCache&gt;，TransactionalCache也是key-value结构。</p>
-<p>而事物隔离即为正常的数据库事物隔离级别。</p>
-<p>创建完SqlSession后，调用SqlSession的getMapper方法获取对应mapper对象。这里使用了动态代理。mybatis是先根据传入的类对象，通过configuration的配置信息中的MapperRegistry类对象找到对应的proxy工厂，利用代理工厂创建对应的代理对象。代理对象的创建使用的是JDK动态代理，即传入需要代理的类加载器、需要代理的接口、以及InvocationHandler。mybatis的handler是先判断方法是否为Object的，然后判断方法是否为接口默认实现的。只有接口未实现的方法才进行特殊处理，处理过程即为根据方法的类型(增删改查)，执行SqlSession的对应方法。</p>
-<p>SqlSession执行对应方法则是利用SqlSession内部的executor执行对应操作的。所以实际上sql操作还是由executor执行的。而executor执行操作需要利用StatementHandler先后执行prepare初始化基本配置和parameterize处理参数。参数的处理利用了ParameterHandler，这个时候typeHandler就会起作用。若为query操作还需要对返回值进行处理，处理时利用了ResultSetHandler，这个时候typeHandler就会起作用。</p>
-</blockquote>
-<h2 id="mybatis的缓存机制"><a href="#mybatis的缓存机制" class="headerlink" title="mybatis的缓存机制"></a>mybatis的缓存机制</h2><blockquote>
-<p>mybatis共有两个缓存机制：一级缓存和二级缓存。</p>
-<p>一级缓存默认开启且无法关闭。</p>
-<p>二级缓存需要配置。</p>
-<p>一级缓存是Executor的基本实现类BaseExecutor中实现的，本质上是个Map&lt;Object, Object&gt;。由于每个SqlSession里都带有一个Executor，故一级缓存是SqlSession层面的。</p>
-<p>二级缓存则需要手动配置，开启后会在具体的Executor之外使用CachingExecutor包装，这里使用了装饰者模式。二级缓存本质上是在namespace层面的缓存。</p>
-</blockquote>
-<h2 id="mybatis是怎么实现和SpringBoot的整合的？"><a href="#mybatis是怎么实现和SpringBoot的整合的？" class="headerlink" title="mybatis是怎么实现和SpringBoot的整合的？"></a>mybatis是怎么实现和SpringBoot的整合的？</h2><blockquote>
-</blockquote>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/codeAnalyse/nginx%E4%BA%86%E8%A7%A3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/uploads/photo.jpg">
-      <meta itemprop="name" content="Ye">
-      <meta itemprop="description" content="Ye的个人技术记录博客">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Yesomething">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/codeAnalyse/nginx%E4%BA%86%E8%A7%A3/" class="post-title-link" itemprop="url">Nginx了解</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:13:13" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%A1%86%E6%9E%B6%E5%85%A5%E9%97%A8/" itemprop="url" rel="index"><span itemprop="name">框架入门</span></a>
-        </span>
-    </span>
-
-  
-      </div>
-      <div class="post-meta">
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>6k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>5 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="Nginx"><a href="#Nginx" class="headerlink" title="Nginx"></a>Nginx</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><blockquote>
-<p>Nginx是高性能的http和反向代理服务器，也是一个IMAP/SMTP/POP3等邮件代理服务器。</p>
-<p>正向代理和反向代理</p>
-<p>正向代理：客户端client通过设置，使用代理服务器proxy去访问远程服务器server。客户端知道代理存在。</p>
-<p>​    | client - proxy | - server</p>
-<p>使用场景：</p>
-<p>​    可以访问原来无法访问的资源。</p>
-<p>​    做缓存使用，加快访问速度。</p>
-<p>​    对客户端授权或记录访问信息。</p>
-<p>反向代理：服务器通过代理服务接收连接请求，再转发给内部网络的服务器，将结果返回给客户端。客户端不知道代理存在。</p>
-<p>​    client - | proxy - server |</p>
-<p>使用场景：</p>
-<p>​    保证内网安全，阻止web攻击。</p>
-<p>​    负载均衡。</p>
-</blockquote>
-<h2 id="Nginx命令"><a href="#Nginx命令" class="headerlink" title="Nginx命令"></a>Nginx命令</h2><blockquote>
-<p>启动命令./Nginx</p>
-<p>杀死进程 kill SIGNAL pid</p>
-<p>​    kill -9 pid 强制停止</p>
-<p>​    kill -TERM pid 快速停止</p>
-<p>​    kill -QUIT pid 平缓停止</p>
-<p>查看版本 ./Nginx -V </p>
-<p>信号处理 ./Nginx -s SIGNAL(stop、quit、reopen、reload)</p>
-<p>​    关闭 ./Nginx -s stop</p>
-<p>​    重加载 ./Nginx -s reload</p>
-<p>​    平缓停止 ./Nginx -s quit</p>
-<p>​    快速停止 ./Nginx -s stop</p>
-</blockquote>
-<h2 id="Nginx配置"><a href="#Nginx配置" class="headerlink" title="Nginx配置"></a>Nginx配置</h2><h3 id="全局块"><a href="#全局块" class="headerlink" title="全局块"></a>全局块</h3><blockquote>
-<p>全局块：指定运行时的用户组、进程id存放位置、日志存放位置、worker process数量等。</p>
-<p>#user nobody ：配置用户或用户组</p>
-<p>#worker_processes 1 ：运行启动的进程数</p>
-<p>#error_log logs/error.log 级别 ：日志路径及级别设置</p>
-<p>#pid logs/nginx.pid 进程id的文件地址</p>
-</blockquote>
-<h3 id="events块"><a href="#events块" class="headerlink" title="events块"></a>events块</h3><blockquote>
-<p>events块：影响Nginx服务器和用户网络连接配置，如每个进程最大连接数、选择哪种事件驱动模型、是否序列化events块：影响Nginx服务器和用户网络连接配置，如每个进程最大连接数、选择哪种事件驱动模型、是否序列化。</p>
-<p>events{</p>
-<p>​        #worker_connections 1024：每个进程的最大连接数</p>
-<p>}</p>
-</blockquote>
-<h3 id="http块"><a href="#http块" class="headerlink" title="http块"></a>http块</h3><blockquote>
-<p>http块：配置代理、缓存、日志等绝大部分功能的地方。可以嵌套多个server块，而不同的server可以对应不同的域名(虚拟主机)。</p>
-<p>虚拟主机：同一台Nginx服务器，可以支持多个网站的运行，每个虚拟主机之间都互相独立，具有完整功能。</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 相对路径</span><br><span class="line">			root html;</span><br><span class="line">			# 默认跳转的首页地址</span><br><span class="line">			index index.html index.htm;</span><br><span class="line"></span><br><span class="line">		&#125;	</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>日志配置：可以获取用户地址信息、跳转来源、终端、url访问量等。</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#log_format main &#x27;$remote_addr - $remote_user [$time_local] &quot;$request&quot; &#x27;</span><br><span class="line">#                  &#x27;$status $body_bytes_sent &quot;$http_referer&quot; &#x27;</span><br><span class="line">#                  &#x27;&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;&#x27;;</span><br><span class="line"></span><br><span class="line">#access_log logs/access.log main;</span><br></pre></td></tr></table></figure>
-
-<table>
-<thead>
-<tr>
-<th></th>
-<th>用途</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>remote_addr</td>
-<td>客户端的ip地址</td>
-</tr>
-<tr>
-<td>remote_user</td>
-<td>客户端的用户名称</td>
-</tr>
-<tr>
-<td>time_local</td>
-<td>访问时间和时区</td>
-</tr>
-<tr>
-<td>request</td>
-<td>请求方法</td>
-</tr>
-<tr>
-<td>status</td>
-<td>响应状态码   如：200</td>
-</tr>
-<tr>
-<td>body_bytes_sent</td>
-<td>主体内容字节数  如：612</td>
-</tr>
-<tr>
-<td>http_referer</td>
-<td>记录是从哪个链接访问过来的</td>
-</tr>
-<tr>
-<td>http_user_agent</td>
-<td>用户使用的代理（浏览器）</td>
-</tr>
-<tr>
-<td>http_x_forwarded_for</td>
-<td>通过代理服务器来记录客户端的ip地址</td>
-</tr>
-</tbody></table>
-</blockquote>
-<h3 id="反向代理配置"><a href="#反向代理配置" class="headerlink" title="反向代理配置"></a>反向代理配置</h3><blockquote>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 相对路径</span><br><span class="line">			root html;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://127.0.0.1:8080</span><br><span class="line">			# 默认跳转的首页地址</span><br><span class="line">			index index.html index.htm;</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>代理多个tomcat服务器，通过路径来映射</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location ~ path1 &#123;</span><br><span class="line">			# 相对路径</span><br><span class="line">			root html;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://127.0.0.1:8080</span><br><span class="line">			# 默认跳转的首页地址</span><br><span class="line">			index index.html index.htm;</span><br><span class="line">        &#125;	</span><br><span class="line">		location ~ path2 &#123;</span><br><span class="line">			# 相对路径</span><br><span class="line">			root html;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://127.0.0.1:8081</span><br><span class="line">			# 默认跳转的首页地址</span><br><span class="line">			index index.html index.htm;</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</blockquote>
-<h3 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h3><blockquote>
-<p>早期使用DNS(域名解析系统)做负载，具体来说就是给客户端解析不同的ip地址，让流量直接到达服务器。</p>
-<p>优点：<br>1） 通过健康检查，避免单点故障<br>2） 当发现节点故障时，从集群中移除，保证应用的高可用</p>
-<p>四层负载均衡，在OSI模型的传输层，主要是转发。<br>七层负载均衡，在OSI模型的应用层，主要是代理。</p>
-<p>负载均衡器可以处理HTTP/HTTPS/TCP/UDP等的请求。</p>
-<p>负载均衡的调度算法：</p>
-<p>​    轮询。</p>
-<p>​    最小连接：优先选择连接数最少的服务器，适用于会话时间较长的业务处理。</p>
-<p>​    IP映射，根据请求的ip地址进行散列，让同一ip下的请求都映射到同一服务器上，可以解决session问题。</p>
-<p>Nginx设置默认轮询算法</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080;</span><br><span class="line">		server 192.168.1.20:8081;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>设置权重的情况，默认权重是1。</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080 weight = 1;</span><br><span class="line">		server 192.168.1.20:8081 weight = 2;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>根据ip地址固定server处理，使用ip_hash。</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080 weight = 1;</span><br><span class="line">		server 192.168.1.20:8081 weight = 2;</span><br><span class="line">		ip_hash;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</blockquote>
-<h3 id="动静分离"><a href="#动静分离" class="headerlink" title="动静分离"></a>动静分离</h3><blockquote>
-<p>将静态资源和动态资源分开。</p>
-<p>静态资源直接查找Nginx的静态资源地址。</p>
-<p>动态资源请求通过反向代理映射到tomcat路径下的资源。</p>
-<p>实现方式：</p>
-<p>​    单独把静态文件放在独立的服务器及独立的域名下(推荐)。</p>
-<p>​    将动态资源和静态资源混合在一起，通过Nginx分开。</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080 weight = 1;</span><br><span class="line">		server 192.168.1.20:8081 weight = 2;</span><br><span class="line">		ip_hash;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 访问动态资源</span><br><span class="line">		location ~ .*.jsp$ &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">		# 访问静态资源</span><br><span class="line">		location ~ .*\.(gif|jpg|css)$ &#123;</span><br><span class="line">			root /usr/local/nginx/image;</span><br><span class="line">			// 缓存时间</span><br><span class="line">			expires 3d;</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</blockquote>
-<h3 id="location块的匹配规则"><a href="#location块的匹配规则" class="headerlink" title="location块的匹配规则"></a>location块的匹配规则</h3><blockquote>
-<p>匹配规则：</p>
-<p>​    location = /uri 精确匹配</p>
-<p>​    location ^~ /uri 前缀匹配，顺序在正则之前</p>
-<p>​    location ~ pattern 区分大小写的正则匹配</p>
-<p>​    location ~* pattern 不区分大小写的正则匹配</p>
-<p>​    location /uri 前缀匹配，顺序在正则之后(两种前缀匹配不能同时出现)</p>
-<p>​    location / 通用匹配，接收未匹配到其他location的请求。</p>
-<p>匹配顺序：</p>
-<p>​    首先会进行精确匹配，然后会进行前缀匹配，具体顺序按指令长度从长到短的顺序依次匹配。</p>
-<p>​    使用正则匹配时，是按照配置文件的顺序依次匹配的。如果不希望前缀匹配后进行正则匹配，那么使用^~。</p>
-</blockquote>
-<h3 id="URL重写"><a href="#URL重写" class="headerlink" title="URL重写"></a>URL重写</h3><blockquote>
-<p>即对URL的规范化处理。</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080 weight = 1;</span><br><span class="line">		server 192.168.1.20:8081 weight = 2;</span><br><span class="line">		ip_hash;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		</span><br><span class="line">		# 重写URL</span><br><span class="line">		rewrite ^/(.*) http://www.xxxx.com/xxx;</span><br><span class="line"></span><br><span class="line">		# 访问动态资源</span><br><span class="line">		location ~ .*.jsp$ &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">		# 访问静态资源</span><br><span class="line">		location ~ .*\.(gif|jpg|css)$ &#123;</span><br><span class="line">			root /usr/local/nginx/image;</span><br><span class="line">			// 缓存时间</span><br><span class="line">			expires 3d;</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</blockquote>
-<h2 id="Nginx安装"><a href="#Nginx安装" class="headerlink" title="Nginx安装"></a>Nginx安装</h2><blockquote>
-<p>在各官网下载相关组件   nginx  openssl  zlib  pcre 等等</p>
-<p>以openssl为例<br>1） 通过rz上传压缩包<br>2） 通过tar -xvf  *.tar.gz 进行解压缩<br>3）cd openssl-1.1.1d    进行配置检查以及编译<br>      ./config   执行配置检查<br>      make &amp; make install  进行编译和安装         </p>
-<p>​      如上过程，适用于zlib和pcre<br>​      注意：  对于 pcre而言，  执行检查命令为 ./configure<br>4)  安装nginx过程中  执行配置检查</p>
-<pre><code>./configure --sbin-path=/usr/local/nginx/nginx \
---conf-path=/usr/local/nginx/nginx.conf \
---pid-path=/usr/local/nginx/nginx.pid \
---with-http_ssl_module \
---with-pcre=/usr/local/src/pcre-8.44 \
---with-zlib=/usr/local/src/zlib-1.2.11 \
---with-openssl=/usr/local/src/openssl-1.1.1d
-</code></pre>
-<ol start="5">
-<li> 仍然执行 make  以及  make install  </li>
-<li> nginx安装成功   ./nginx验证</li>
-</ol>
-<p>注意事项：nginx服务器，需要虚拟机开放80端口的访问<br>防火墙配置 （同样适用于开放8080  8081端口）<br>firewall-cmd –list-all   查看当前配置<br>firewall-cmd –add-service=http –permanent   开放http访问<br>firewall-cmd –add-port=80/tcp –permanent  开放80端口<br>firewall-cmd –reload  重启防火墙保存</p>
-<p>jdk的安装<br>1） 解压缩 – 拷贝目录到 /usr/local/java<br>2)   更改环境变量   vim /etc/profile</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">export JAVA_HOME=/usr/local/java</span><br><span class="line">export JAVA_BIN=$JAVA_HOME/bin</span><br><span class="line">export PATH=$PATH:$JAVA_HOME/bin</span><br><span class="line">export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar</span><br><span class="line">export PATH=$JAVA_HOME/bin:$JRE_HOME/bin:$PATH</span><br></pre></td></tr></table></figure>
-
-<ol start="3">
-<li> 让环境变量生效  source  /etc/profile</li>
-<li> 验证版本   java -version</li>
-</ol>
-<p>tomcat的安装<br>1） 解压缩 –  拷贝目录到 /usr/local/tomcat<br>2)    执行启动 ./startup.sh</p>
-</blockquote>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/codeAnalyse/redis%E4%BD%BF%E7%94%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/uploads/photo.jpg">
-      <meta itemprop="name" content="Ye">
-      <meta itemprop="description" content="Ye的个人技术记录博客">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Yesomething">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/codeAnalyse/redis%E4%BD%BF%E7%94%A8/" class="post-title-link" itemprop="url">Redis入门</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:15:08" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
-        </span>
-          ，
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%A1%86%E6%9E%B6%E5%85%A5%E9%97%A8/" itemprop="url" rel="index"><span itemprop="name">框架入门</span></a>
-        </span>
-          ，
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
-        </span>
-    </span>
-
-  
-      </div>
-      <div class="post-meta">
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>6.3k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>6 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="Redis使用"><a href="#Redis使用" class="headerlink" title="Redis使用"></a>Redis使用</h1><h2 id="传统数据库的发展"><a href="#传统数据库的发展" class="headerlink" title="传统数据库的发展"></a>传统数据库的发展</h2><blockquote>
-<p>单库 -&gt; 单库加缓存 -&gt;  主从分离+缓存(主写从读) -&gt; 分库分表(水平拆分(将一个库拆成多个库)、垂直拆分(按模块拆分))</p>
-</blockquote>
-<h3 id="传统数据库特点ACID"><a href="#传统数据库特点ACID" class="headerlink" title="传统数据库特点ACID"></a>传统数据库特点ACID</h3><blockquote>
-<p>A(Atomicity)：原子性</p>
-<p>C(Consistency)：一致性</p>
-<p>I(Isolation)：隔离性</p>
-<p>D(Durability)：持久性</p>
-</blockquote>
-<h3 id="Mysql的数据类型"><a href="#Mysql的数据类型" class="headerlink" title="Mysql的数据类型"></a>Mysql的数据类型</h3><blockquote>
-<p>数值型</p>
-<p>​    整数型</p>
-<p>​    小数型</p>
-<p>日期时间类型</p>
-<p>字符串型</p>
-</blockquote>
-<h2 id="NoSQL"><a href="#NoSQL" class="headerlink" title="NoSQL"></a>NoSQL</h2><blockquote>
-<p>易拓展：没有关系型数据库的关系型特性。</p>
-<p>性能高：NoSQL读写性能高。且cache一般是细粒度的。</p>
-<p>数据类型灵活。</p>
-</blockquote>
-<h3 id="NoSQL分类"><a href="#NoSQL分类" class="headerlink" title="NoSQL分类"></a>NoSQL分类</h3><blockquote>
-<p>K-V：Memcache、Redis</p>
-<p>列族：Hbase</p>
-<p>文档：MongoDB</p>
-<p>图：Neo4j</p>
-</blockquote>
-<h3 id="NoSQL-CAP定理"><a href="#NoSQL-CAP定理" class="headerlink" title="NoSQL CAP定理"></a>NoSQL CAP定理</h3><blockquote>
-<p>CAP定理：一个分布式系统不可能同时很好的满足一致性、可用性、分区容忍性这三个需求，最多只能同时较好的满足两个。</p>
-<p>C(Consistency)：所有节点在同一时间有相同的数据。</p>
-<p>A(Availability)：保证每个请求不管成功或者失败都有响应。</p>
-<p>P(Partition tolerance)：系统中任意信息丢失或失败不会影响系统继续运作。</p>
-<p>满足CA：单点集群。</p>
-<p>满足CP：满足一致性、分区容忍性的系统，性能一般不高</p>
-<p>满足AP：满足可用性、分区容忍性的系统，一致性要求较低。</p>
-</blockquote>
-<h3 id="NoSQL-BASE特点"><a href="#NoSQL-BASE特点" class="headerlink" title="NoSQL BASE特点"></a>NoSQL BASE特点</h3><blockquote>
-<p>BA： Basically Availble基本可用。</p>
-<p>S：Soft-state：软状态/柔性事务，无连接</p>
-<p>E：Eventual Consistency 最终一致性。</p>
-</blockquote>
-<h2 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h2><h3 id="Redis命令"><a href="#Redis命令" class="headerlink" title="Redis命令"></a>Redis命令</h3><blockquote>
-<p>redis-server：启动服务端</p>
-<p>redis-benchmark：压测</p>
-<p>redis-cli -p 端口号：启动客户端。</p>
-<p>set key1 “xxxx”：设置key1的值为xxxx</p>
-<p>get key1：获取key1对应的值</p>
-<p>exit：退出当前连接</p>
-<p>shutdown：关闭服务端</p>
-<p>keys pattern：表示查找符合pattern的key。如keys *</p>
-<p>dbsize：展示数据库key个数。</p>
-<p>flushdb：删除当前数据库的操作。</p>
-<p>flushall：删除所有数据库的数据。</p>
-<p>exists xxx：判断xxx的键是否存在。</p>
-<p>type xxx：判断xxx的键存储的值类型。</p>
-<p>expire key 秒数(n)：设置key值的有效时间为n秒，过期后该key即被删除。</p>
-<p>ttl key：查看key的有效时间，正数未过期。返回-1时说明key没有设置有效时间，返回-2说明key已不存在。</p>
-<p>pexpire key 毫秒数：设置key值的有效时间为x毫秒。</p>
-<p>pttl key：查看key的有效时间，毫秒为单位。</p>
-<p>persist key：让key始终存在。</p>
-<p>del key：删去key。</p>
-<p>rename key1 key2： 把key1重命名为key2。</p>
-<p>randomkey：随机找到一个key。</p>
-<p>move key dbId ：把key移动到第dbId个数据库下。</p>
-</blockquote>
-<h3 id="Redis配置："><a href="#Redis配置：" class="headerlink" title="Redis配置："></a>Redis配置：</h3><blockquote>
-<p>database 16：默认16个数据库，可以通过select x来选择当前使用的数据库。可以通过ip：6379【x】中x值判断当前是哪个数据库。</p>
-</blockquote>
-<h3 id="Redis数据结构"><a href="#Redis数据结构" class="headerlink" title="Redis数据结构"></a>Redis数据结构</h3><h4 id="基本数据结构"><a href="#基本数据结构" class="headerlink" title="基本数据结构"></a>基本数据结构</h4><h5 id="String"><a href="#String" class="headerlink" title="String"></a>String</h5><blockquote>
-<p>命令：</p>
-<p>​    strlen key ：获取key存储的字符串长度</p>
-<p>​    append key “xxx” ：在原有的基础上添加字符串。</p>
-<p>​    getrange key strat end： 获取子串</p>
-<p>​    getset key value ：修改原key对应的值并将旧值返回。</p>
-<p>当值为整数时，直接进行数学运算。</p>
-<p>​    incr key ：key对应的值自增1</p>
-<p>​    incrby key number ：key对应的值自增number </p>
-<p>​    decr key：key对应的值自减1</p>
-<p>​    decrby key number ：key对应的值自减number </p>
-<p>​    setex key 秒数 值：相当于同时设置了过期时间和值。</p>
-<p>​    setnx key：不存在时才设置。</p>
-<p>​    mget key1 key2…..：一次获取多个key对应的值</p>
-<p>​    mset key1 value1 key2 value2…..：一次设置多个key-value。</p>
-<p>​    msetnx key1 value1 key2 value2…..：一次设置多个key-value，具体set操作同setnx。</p>
-<p>原理：</p>
-<p>​    redis字符串是动态字符串，内部类似于ArrayList。采用预分配冗余空间的方式减少内存的频繁分配。当字符串长度&lt;1MB，扩容方式是直接加倍，若&gt;1MB，一次扩容只扩容1MB，直到扩大到512MB。</p>
-</blockquote>
-<h5 id="List"><a href="#List" class="headerlink" title="List"></a>List</h5><blockquote>
-<p>lpush key value1 value2 value3 …. ：从左侧存放值。</p>
-<p>lpop key：从左侧弹出。</p>
-<p>rpush key  value1 value2 value3 …. ：从右侧存放值。</p>
-<p>rpop key：从右侧弹出。</p>
-<p>lrange key start end：按范围查看值。</p>
-<p>llen key：查看长度</p>
-<p>lindex key index：获取key对应index位置的值。</p>
-<p>lrem key count value：移除count绝对值个和value相同的值。</p>
-<p>ltrim key start end：截取范围内的值重新赋值给key。</p>
-<p>linsert key before/after oldValue newValue 插入数据到某个数据前/后。</p>
-<p>lpushx key value ：在列表头部插入数据。</p>
-<p>rpushx key value：在列表尾部插入数据。</p>
-<p>lset key pos value：把列表的第pos个位置改为value。</p>
-<p>最多可存储$2^{32}-1$个元素</p>
-<p>原理：</p>
-<p>​    底层是一个快速链表，在列表元素较少时使用连续的内存压缩列表ziplist。当数据量较多时，改为quicklist，即将多个ziplist使用双向指针串起来使用。</p>
-</blockquote>
-<h5 id="Hash"><a href="#Hash" class="headerlink" title="Hash"></a>Hash</h5><blockquote>
-<p>本质上类似于HashMap&lt;String,Map&gt;</p>
-<p>hset key field value</p>
-<p>hget key field</p>
-<p>hkeys key </p>
-<p>hvals key</p>
-<p>hmset key field1 value1 field2 value2 ….</p>
-<p>hmget key field1 field2 …..</p>
-<p>hdel key field</p>
-<p>hgetall key </p>
-<p>hexists key field</p>
-<p>hsetnx key field value</p>
-<p>hincrby key field increment 让field增加increment </p>
-<p>原理：</p>
-<p>​    底层同HashMap，也是数组+链表，但是redis的值只能为字符串，且二者rehash的方式不同，java的HashMap是一次全部rehash，redis采用渐进式rehash。具体操作为同时保留新旧两个hash结构，然后逐步搬迁。</p>
-</blockquote>
-<h5 id="Set"><a href="#Set" class="headerlink" title="Set"></a>Set</h5><blockquote>
-<p>类似于HashSet，也是通过哈希表实现的，相当于所有value都是空的。通过计算hash的方式快速排除重复。</p>
-<p>sadd key value1 value2 value3 value4</p>
-<p>scard key 查看当前set的元素个数</p>
-<p>smembers key 查看当前set的具体元素值</p>
-<p>srem key value1 value2 value3 value4 移除元素</p>
-<p>sismember key value 判断value是不是set中的元素</p>
-<p>srandmember key number 在set中随机查看number个元素。</p>
-<p>spop key number 在set中随机弹出number个元素。</p>
-<p>smove key1 key2 value 移动元素value从key1到key2</p>
-<p>sinter key1 key2 求key1、key2的交集</p>
-<p>sunion key1 key2 求key1、key2的并集</p>
-<p>sdiff key1 key2 求key1、key2的差集</p>
-<p>sunionstore des key1 key2 求出key1、key2的并集然后存入des中</p>
-</blockquote>
-<h5 id="Zset-有序集合"><a href="#Zset-有序集合" class="headerlink" title="Zset(有序集合)"></a>Zset(有序集合)</h5><blockquote>
-<p>和无序集合的区别是每个元素除了值之外还有一个浮点数的分数。内部实现使用了跳表。分数可重复，但值不可重复。</p>
-<p>zadd key score1 value1 score2 value2 score3 value3 ….</p>
-<p>zrange key start end [with scores] 查看范围内的值，加了with scores可以看见对应分数。</p>
-<p>zrangebyscore key min max [limit offset num]查看对应分数范围内的值。 分数前加(表示开区间，[表示闭区间。如 zrangebyscore  key (1 [99。加上【】内语句可以分页。</p>
-<p>zrem key value 删除</p>
-<p>zcard key 统计元素个数</p>
-<p>zcount key min max 统计分数在min，max内的值个数</p>
-<p>zscore key member 查询指定成员分数</p>
-<p>zrank key member 查询指定成员分数排名(正序，从小到大排名)</p>
-<p>zrevrank key member 查询指定成员分数排名(逆序，从大到小排名)</p>
-</blockquote>
-<h4 id="拓展数据结构"><a href="#拓展数据结构" class="headerlink" title="拓展数据结构"></a>拓展数据结构</h4><h5 id="GEO"><a href="#GEO" class="headerlink" title="GEO"></a>GEO</h5><blockquote>
-<p>基于zset的拓展，用于存储地理位置信息。</p>
-<p>geoadd key 经度1 纬度1 member1 经度2 纬度2 member2…..</p>
-<p>zrange key start end withscores</p>
-<p>geodis key value1 value2  距离单位(m/km) 求两个位置之间的距离。</p>
-<p>geopos key value 查询某地位置</p>
-<p>geohash key value 对value进行hash</p>
-<p>georadius key 经度 纬度 半径长度 长度单位 [withdist/withcoord/withhash]：以某个经纬度位置为中心，然后指定半径，返回满足条件的地址。</p>
-</blockquote>
-<h5 id="Bitmap"><a href="#Bitmap" class="headerlink" title="Bitmap"></a>Bitmap</h5><blockquote>
-<p>setbit key index 0/1 零存</p>
-<p>set key value 整存</p>
-<p>getbit key index 零取</p>
-<p>get key 整取</p>
-<p>bitcount key 计算有几个1</p>
-<p>bitcount key start end 从第start个字符到第end个字符有几个1</p>
-</blockquote>
-<h5 id="HyperLogLog-基数统计"><a href="#HyperLogLog-基数统计" class="headerlink" title="HyperLogLog(基数统计)"></a>HyperLogLog(基数统计)</h5><blockquote>
-<p>pfadd key field 添加指定元素，若已存储返回0</p>
-<p>pfcount key    返回基数值</p>
-</blockquote>
-<h5 id="Stream"><a href="#Stream" class="headerlink" title="Stream"></a>Stream</h5><blockquote>
-<p>具体指令格式省略。</p>
-<p>xadd  生成消息，返回消息id(时间戳+顺序)，顺序指该毫秒下消息的顺序。</p>
-<p>xlen 查看消息列表长度</p>
-<p>xrange 查看消息</p>
-<p>xdel 删去消息</p>
-<p>xread 读取消息</p>
-</blockquote>
-<h3 id="发布和订阅"><a href="#发布和订阅" class="headerlink" title="发布和订阅"></a>发布和订阅</h3><blockquote>
-<p>发布者发布消息到调度中心，订阅者从订阅中心订阅消息。类似于观察者模式。</p>
-<p>redis中使用subscribe channel订阅，使用publish channel message发布消息。</p>
-</blockquote>
-<h3 id="Redis配置"><a href="#Redis配置" class="headerlink" title="Redis配置"></a>Redis配置</h3><h3 id="Redis淘汰策略"><a href="#Redis淘汰策略" class="headerlink" title="Redis淘汰策略"></a>Redis淘汰策略</h3><blockquote>
-<p>volatile-lru：对超时key采用最近最少使用策略。</p>
-<p>allkeys-lru：对所有key采用最近最少使用策略。</p>
-<p>volatile-random：对超时的key采用随机淘汰策略。</p>
-<p>allkeys-random：对所有key采用随机淘汰策略。</p>
-<p>volatile-ttl：采用删除存活时间最短的键值对策略。</p>
-<p>noeviction：不淘汰，当内存已满时再进行写操作会返回错误。</p>
-<p>这里的LRU算法和TTL算法都是近似算法，redis使用抽样的方式执行。可以配置maxmemory-samples的值来控制抽样范围。</p>
-</blockquote>
-<h3 id="Redis持久化"><a href="#Redis持久化" class="headerlink" title="Redis持久化"></a>Redis持久化</h3><h4 id="RDB"><a href="#RDB" class="headerlink" title="RDB"></a>RDB</h4><blockquote>
-<p>在指定时间间隔对数据进行快照存储。是全量备份。</p>
-<p>命令触发：</p>
-<p>​    save：阻塞当前Redis服务器，直到持久化完成。</p>
-<p>​    bgsave：fork一个子进程，由子进程负责持久化过程。</p>
-<p>自动触发：</p>
-<p>​    根据配置的save m n 配置规则自动触发</p>
-<p>​    从结点全量复制时，主节点发送rdb文件给从节点完成复制操作，主节点触发bgsave</p>
-<p>​    执行debug reload时</p>
-<p>​    执行shutdown若没有开启aof时也会触发。</p>
-<p>恢复方式：</p>
-<p>​    将备份文件(dump.rdb)移动到redis安装目录并启动服务即可。</p>
-</blockquote>
-<h4 id="AOF"><a href="#AOF" class="headerlink" title="AOF"></a>AOF</h4><blockquote>
-<p>以日志文本形式记录服务器所处理的每个数据更改指令，通过重放来恢复数据，是增量备份。</p>
-<p>本质上就是以日志的形式记录服务器处理的每个更改操作。</p>
-<p>但是实际中由于更改操作可能数量巨大，导致恢复数据较慢，所以会对日志进行重写，即让某些操作合并。</p>
-<p>具体流程：命令写入-&gt; 追加到aof_buf -&gt; 同步到aof磁盘</p>
-<p>aof重写：</p>
-<p>​    手动触发：bgrewriteaof</p>
-<p>​    自动触发：根据配置规则来触发。</p>
-<p>写入aof文件时若redis服务器宕机，日志文件会出现格式错误，重启时服务器会拒绝载入。可以通过redis-check-aof -fix file.aof来修复。</p>
-</blockquote>
-<h3 id="Redis分布式锁"><a href="#Redis分布式锁" class="headerlink" title="Redis分布式锁"></a>Redis分布式锁</h3><h4 id="乐观锁"><a href="#乐观锁" class="headerlink" title="乐观锁"></a>乐观锁</h4><blockquote>
-<p>每次处理数据时都认为别人都不会去修改数据，所以每次拿数据时都不会上锁。但如果想要更新数据，会在更新前检查在读取至更新这段时间内别人是否修改过这个数据，若修改过则重新读取，再次尝试更新，循环步骤直至成功。</p>
-<p>乐观锁回滚重试，适用于写比较少的情况。</p>
-<p>CAS算法(非阻塞同步)：</p>
-<p>​    读取一个A，在将其更新到B前，检查值是否还是A。</p>
-<p>​    若还是A则将A更新为B，否则什么也不做。</p>
-<p>CAS缺点：ABA问题。</p>
-</blockquote>
-<h4 id="悲观锁"><a href="#悲观锁" class="headerlink" title="悲观锁"></a>悲观锁</h4><blockquote>
-<p>每次处理数据时都认为别人都会去修改数据，所以每次拿数据时都会上锁。</p>
-<p>悲观锁阻塞事务，适用于写比较多的情况。</p>
-</blockquote>
-<h4 id="分布式锁"><a href="#分布式锁" class="headerlink" title="分布式锁"></a>分布式锁</h4><blockquote>
-<p>三种方式：数据库乐观锁、基于Redis的分布式锁、基于ZooKeeper的分布式锁。</p>
-<p>分布式锁需要满足四个条件：</p>
-<p>​    互斥性。任意时刻只有一个客户端能持有锁。</p>
-<p>​    不会发生死锁。即使一个客户端崩溃了未能主动解锁，其他客户端也能加锁。</p>
-<p>​    具有容错性。</p>
-<p>​    加锁和解锁必须是同一个客户端。</p>
-<p>redis实现分布式锁：</p>
-<p>​    通过setnx，和del来实现加锁和解锁的功能。</p>
-<p>​    其中setnx key value ex 在加锁的同时加上锁的过期时间，避免产生死锁。</p>
-<p>​    也可能配合lua脚本使用，因为lua可以保证连续多个子命令的原子性执行的。</p>
-</blockquote>
-<h2 id="主从模式"><a href="#主从模式" class="headerlink" title="主从模式"></a>主从模式</h2><blockquote>
-<p>slave of</p>
-<p> 从节点只允许读。</p>
-<p>复制过程：</p>
-<p>​    旧版是SYNC：主库先生成一个RDB文件，然后将这个文件通过网络发送给从库</p>
-<p>​    新版(2.8以后)是PSYNC：分为完整重同步和部分重同步。完整重同步用于初次复制，类似于旧版的SYNC。部分重同步用于处理断线后重复制的情况。当从服务器断线后重连主服务器时，条件允许的话主服务器可以将主从服务器断开连接期间的写命令发送给从服务器，从服务器只要接收执行这些命令即可完成同步。</p>
-<p>​    部分重同步的实现需要：</p>
-<p>​        主服务器的复制偏移量和从服务器的复制偏移量。</p>
-<p>​        主服务器的复制积压缓冲区。</p>
-<p>​        服务器的运行ID。</p>
-</blockquote>
-<h2 id="哨兵模式"><a href="#哨兵模式" class="headerlink" title="哨兵模式"></a>哨兵模式</h2><blockquote>
-<p>主服务器中断服务时，将一个从服务器升级为主服务器。为了实现自动执行这一操作，就出现了哨兵模式。</p>
-<p>哨兵作用是监控redis系统的运行状况，功能包括：</p>
-<p>​    监控主服务器和从服务器是否正常运行。</p>
-<p>​    主服务器出现故障时自动将从服务器转换为主服务器。</p>
-<p>哨兵模式优点：</p>
-<p>​    主从可以切换，系统更加健壮，可用性更高。</p>
-<p>哨兵模式缺点：</p>
-<p>​    Redis较难在线扩容，在集群容量达到上限时在线扩容变得十分复杂。</p>
-</blockquote>
-<h2 id="缓存可能遇到的问题"><a href="#缓存可能遇到的问题" class="headerlink" title="缓存可能遇到的问题"></a>缓存可能遇到的问题</h2><h3 id="缓存穿透"><a href="#缓存穿透" class="headerlink" title="缓存穿透"></a>缓存穿透</h3><blockquote>
-<p>访问一个不存在的key，缓存不起作用，请求穿透到DB。这个key在数据库也查询不出结果，导致反复查询都会直接去查询数据库。</p>
-<p>解决方案：采用布隆过滤器，使用一个足够大的位图，存储可能访问的key，不存在的key直接过滤。或者对应key去查询数据库时即使查询不出结果也在缓存中设置一个缓存，让下次查询可以访问缓存。</p>
-</blockquote>
-<h3 id="缓存雪崩"><a href="#缓存雪崩" class="headerlink" title="缓存雪崩"></a>缓存雪崩</h3><blockquote>
-<p>大量的key设置了相同的过期时间，导致缓存在同一时刻全部失效，造成瞬时DB请求量大、压力骤增，引起雪崩。</p>
-<p>解决方案：给缓存设置过期时间的同时加上一个随机值时间，使得每个key的过期时间发布开，不会集中在同一时刻失效。</p>
-</blockquote>
-<h3 id="缓存击穿"><a href="#缓存击穿" class="headerlink" title="缓存击穿"></a>缓存击穿</h3><blockquote>
-<p>一个存在的key，在缓存过期的一刻，同时有大量的请求，这些请求会击穿到DB，造成瞬时DB请求量大。</p>
-<p>解决方案：在访问key之前，采用SETNX来设置另一个短期key来锁住当前key的访问，访问结束再删除该短期key。</p>
-</blockquote>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/uploads/photo.jpg">
-      <meta itemprop="name" content="Ye">
-      <meta itemprop="description" content="Ye的个人技术记录博客">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Yesomething">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/" class="post-title-link" itemprop="url">SpringBoot常用配置</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：17:17:46" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%A1%86%E6%9E%B6%E5%85%A5%E9%97%A8/" itemprop="url" rel="index"><span itemprop="name">框架入门</span></a>
-        </span>
-    </span>
-
-  
-      </div>
-      <div class="post-meta">
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>3.9k</span>
+      <span>4k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -1219,1115 +326,150 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="SpringBoot常用配置"><a href="#SpringBoot常用配置" class="headerlink" title="SpringBoot常用配置"></a>SpringBoot常用配置</h1><h2 id="选择不同配置"><a href="#选择不同配置" class="headerlink" title="选择不同配置"></a>选择不同配置</h2><blockquote>
-<p>也可以通过在类中使用@Profile(“xx”)来表示这个类只有在xx为active的情况下才可使用。</p>
-<p><img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE%5Cspringboot%E5%A4%9A%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%AE%BE%E7%BD%AE%E5%90%AF%E7%94%A8.png" alt="springboot多配置文件设置启用"></p>
-</blockquote>
-<h2 id="自动加载配置文件的内容"><a href="#自动加载配置文件的内容" class="headerlink" title="自动加载配置文件的内容"></a>自动加载配置文件的内容</h2><blockquote>
-<p> @Value </p>
-<p> @ConfigurationProperties(prefix = “spring.datasource.druid.write”) 使用该注解需要引入且要启用@EnableConfigurationProperties(使用前面一个注解的类.class)</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;&#x2F;groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-configuration-processor&lt;&#x2F;artifactId&gt;</span><br><span class="line">    &lt;optional&gt;true&lt;&#x2F;optional&gt;</span><br><span class="line">&lt;&#x2F;dependency&gt;</span><br></pre></td></tr></table></figure>
-
-<p> @PropertySource</p>
-</blockquote>
-<h2 id="配置文件的加载顺序-下覆盖上"><a href="#配置文件的加载顺序-下覆盖上" class="headerlink" title="配置文件的加载顺序(下覆盖上)"></a>配置文件的加载顺序(下覆盖上)</h2><blockquote>
-<ol>
-<li>Application properties packaged inside your jar (application.properties and YAML variants).</li>
-<li>Profile-specific application properties packaged inside your jar (application-{profile}.properties and YAML variants).</li>
-<li>Application properties outside of your packaged jar (application.properties and YAML variants)</li>
-<li>Profile-specific application properties outside of your packaged jar (application-{profile}.properties and YAML variants).</li>
-</ol>
-</blockquote>
-<h2 id="自动加载的-application-properties-的加载顺序-下覆盖上"><a href="#自动加载的-application-properties-的加载顺序-下覆盖上" class="headerlink" title="自动加载的 application.properties 的加载顺序(下覆盖上)"></a>自动加载的 application.properties 的加载顺序(下覆盖上)</h2><blockquote>
-<ol>
-<li><p>The classpath root </p>
-</li>
-<li><p>The classpath /config package</p>
-</li>
-<li><p>The current directory</p>
-</li>
-<li><p>The /config subdirectory in the current directory</p>
-</li>
-<li><p>Immediate child directories of the /config subdirectory</p>
-</li>
-</ol>
-<p>4、5的差别就是如果config目录的根目录里有application.properties，则会将config子目录的application.properties覆盖。</p>
-<p>而classpath中springboot不会自动扫描config子目录中的目录。</p>
-<p>可以通过修改spring.config.name来修改默认配置文件名。</p>
-<p>修改spring.config.location 可以修改springboot获取配置文件的位置。</p>
-<p>修改spring.config.additional-location可以在springboot默认获取配置文件的位置的基础上补充一些获取配置文件的位置。optional: 前缀</p>
-</blockquote>
-<h2 id="可以使用-来获取外部目录，classpath中不能使用"><a href="#可以使用-来获取外部目录，classpath中不能使用" class="headerlink" title="可以使用*来获取外部目录，classpath中不能使用*"></a>可以使用*来获取外部目录，classpath中不能使用*</h2><h2 id="可以使用-—在-pro配置文件中划分逻辑页"><a href="#可以使用-—在-pro配置文件中划分逻辑页" class="headerlink" title="可以使用#—在.pro配置文件中划分逻辑页"></a>可以使用#—在.pro配置文件中划分逻辑页</h2><h2 id="使用—在-yml配置文件划分逻辑页"><a href="#使用—在-yml配置文件划分逻辑页" class="headerlink" title="使用—在.yml配置文件划分逻辑页"></a>使用—在.yml配置文件划分逻辑页</h2><h2 id="在多个配置文件中均存在同一个list的值，则只会去最高优先级的list值"><a href="#在多个配置文件中均存在同一个list的值，则只会去最高优先级的list值" class="headerlink" title="在多个配置文件中均存在同一个list的值，则只会去最高优先级的list值"></a>在多个配置文件中均存在同一个list的值，则只会去最高优先级的list值</h2><h2 id="在多个配置文件中均存在同一个Map的值，则使用互补配置的方式构造Map"><a href="#在多个配置文件中均存在同一个Map的值，则使用互补配置的方式构造Map" class="headerlink" title="在多个配置文件中均存在同一个Map的值，则使用互补配置的方式构造Map"></a>在多个配置文件中均存在同一个Map的值，则使用互补配置的方式构造Map</h2><h2 id="spring自动注入的注解"><a href="#spring自动注入的注解" class="headerlink" title="spring自动注入的注解"></a>spring自动注入的注解</h2><blockquote>
-<p>@Component(“name”)将一个类生成一个Bean实例并用spring管理。@Controller、@Repository、@Service都是类似的功能。这些注解要放在类上。</p>
-<p>@Bean(“name”)将一个方法返回的对象实例用spring管理。该注解放在方法上。</p>
-<p>@Autowired 自动注入。该注解可以放在构造器方法、方法、参数、属性、注解上。</p>
-<p>@Primary 写在类上或方法上。为了消除自动装配的歧义性，如spring管理了两个都实现了同一父类的类，则存在@Primary 的类会被最先调用。</p>
-<p>@Qualifier(“name”)写在变量、方法、参数、类上、注解上，可以根据传入的name按名字查找spring管理的类。</p>
-</blockquote>
-<h2 id="Spring监听器"><a href="#Spring监听器" class="headerlink" title="Spring监听器"></a>Spring监听器</h2><blockquote>
-<p>使用过程:</p>
-<p>​    自定义事件，继承org.springframework.context.ApplicationEvent类。</p>
-<p>​    自定义事件监听器，实现org.springframework.context.ApplicationListener接口。</p>
-<p>​    在spring容器中发布事件。</p>
-<p>实现监听的方式：</p>
-<p>​    自定义类实现ApplicationListener，在主函数中装载监听。</p>
-<p>​    自定义类实现ApplicationListener，在接口上加上@Component注解</p>
-<p>​    自定义类不实现接口，在对应方法上标明@EventListener注解。</p>
-<p>​    自定义类实现ApplicationListener，在application.properties中配置context.listener.classes</p>
-</blockquote>
-<h2 id="Spring内置容器的配置"><a href="#Spring内置容器的配置" class="headerlink" title="Spring内置容器的配置"></a>Spring内置容器的配置</h2><blockquote>
-<p>修改配置：</p>
-<ol>
-<li><p>可以在application.properties中按server.xxx:的方式修改</p>
-</li>
-<li><p>创建一个配置类通过编写public WebServerFactoryCustomizer<ConfigurableWebServerFactory> customizer()方法来设置。</ConfigurableWebServerFactory></p>
-<p><img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE%5C%E5%86%85%E5%B5%8C%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%85%8D%E7%BD%AE%E4%BF%AE%E6%94%B9.png" alt="内嵌服务器配置修改"></p>
-</li>
-</ol>
-<p>更换容器：</p>
-<p>​    通过先将start内的容器依赖去除然后导入新依赖即可。</p>
-<p><img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE%5C%E4%BF%AE%E6%94%B9%E5%86%85%E5%B5%8C%E5%AE%B9%E5%99%A8.png" alt="修改内嵌容器"></p>
-</blockquote>
-<h2 id="过滤器和拦截器"><a href="#过滤器和拦截器" class="headerlink" title="过滤器和拦截器"></a>过滤器和拦截器</h2><blockquote>
-<p> 过滤器：在进入servlet前过滤。</p>
-<p> 实现方式：</p>
-<p> ​    创建类实现接口javax.servlet.Filter，加上@Component，然后使用一个如下的配置类注入spring容器。</p>
-<p> <img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE%5CfilterConfig.png" alt="filterConfig"></p>
-<p> ​    创建类实现接口javax.servlet.Filter，加上@WebFilter，然后在主启动类中加上@ServletComponentScan注解。</p>
-<p> 拦截器：拦截方法。</p>
-<p> ​    创建类实现HandlerInterceptor接口，然后创建配置类实现WebMvcConfigurer接口，配置类如下。</p>
-<p> <img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE%5CinterceptorConfig.png" alt="interceptorConfig"></p>
-</blockquote>
-<h2 id="错误及异常处理"><a href="#错误及异常处理" class="headerlink" title="错误及异常处理"></a>错误及异常处理</h2><h3 id="数值校验"><a href="#数值校验" class="headerlink" title="数值校验"></a>数值校验</h3><blockquote>
-<p>在参数前加入@Valid/@Validated注解，然后跟上BindingResult对象即可获取错误时的错误信息。如图</p>
-<p>利用配置文件ValidationMessages.properties中设置发生错误的提示信息。在bean的注解属性中通过{key}获取属性。</p>
-</blockquote>
-<h3 id="错误页指定"><a href="#错误页指定" class="headerlink" title="错误页指定"></a>错误页指定</h3><blockquote>
-<p>用到了再查</p>
-</blockquote>
-<h3 id="全局异常处理"><a href="#全局异常处理" class="headerlink" title="全局异常处理"></a>全局异常处理</h3><blockquote>
-<p>实现一个异常处理类并加上@ControllerAdvice注解。如图</p>
-<p><img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE%5C%E5%85%A8%E5%B1%80%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86.png" alt="全局异常处理">  </p>
-</blockquote>
-<h2 id="日志"><a href="#日志" class="headerlink" title="日志"></a>日志</h2><h3 id="日志文件输出"><a href="#日志文件输出" class="headerlink" title="日志文件输出"></a>日志文件输出</h3><blockquote>
-<p>在application中添加logging.file.path = xxx 默认日志名为spring.log</p>
-<p>或添加logging.file.name = xxxx 默认输出路径为项目当前路径。</p>
-<p>二者不能同时使用。</p>
-</blockquote>
-<h3 id="日志级别控制"><a href="#日志级别控制" class="headerlink" title="日志级别控制"></a>日志级别控制</h3><blockquote>
-<p>日志级别有TRACE、DEBUG、INFO、WARN、ERROR、FATAL、OFF。</p>
-<p>logging.level.包名 = xxx级别 </p>
-<p>logging.level.root = 设置全局日志级别</p>
-</blockquote>
-<h2 id="文档生成"><a href="#文档生成" class="headerlink" title="文档生成"></a>文档生成</h2><h3 id="swaggle"><a href="#swaggle" class="headerlink" title="swaggle"></a>swaggle</h3><blockquote>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;io.springfox&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;springfox-swagger2&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.9.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line">		</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;io.springfox&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;springfox-swagger-ui&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.9.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableSwagger2</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SwaggerConfig</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Docket <span class="title">api</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Docket(DocumentationType.SWAGGER_2).select()</span><br><span class="line">                .apis(RequestHandlerSelectors.any())</span><br><span class="line">                .paths(PathSelectors.any())</span><br><span class="line">                .build();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>访问<a target="_blank" rel="noopener" href="http://localhost:8080/v2/api-docs%E6%8B%BF%E5%88%B0api%E7%9A%84json">http://localhost:8080/v2/api-docs拿到api的json</a></p>
-<p>访问<a target="_blank" rel="noopener" href="http://localhost:8080/swagger-ui.html%E8%8E%B7%E5%8F%96%E9%A1%B5%E9%9D%A2">http://localhost:8080/swagger-ui.html获取页面</a></p>
-</blockquote>
-<h2 id="监控"><a href="#监控" class="headerlink" title="监控"></a>监控</h2><blockquote>
-<p>本质上是通过log收集信息，然后利用信息分析。</p>
-</blockquote>
-<h2 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h2><blockquote>
-<p>@Cacheable(value = “xx”, key = “zz”, condition = “yyy”) </p>
-<p>​    value 表示缓存名</p>
-<p>​    key为缓存键，需要用SPEL写</p>
-<p>​    condition为缓存触发的条件，需要用SPEL写</p>
-<p>​    缓存值为对应方法的返回值</p>
-<p>@CacheEvict(beforeInvocation = true表示在方法触发前就移除了缓存) 移除缓存 </p>
-<p>@CachePut 添加缓存</p>
-</blockquote>
-<h2 id="微服务"><a href="#微服务" class="headerlink" title="微服务"></a>微服务</h2><blockquote>
-<p>注册中心</p>
-<p>服务提供者</p>
-<p>服务追踪</p>
-<p>服务治理</p>
-</blockquote>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/codeAnalyse/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E6%B1%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/uploads/photo.jpg">
-      <meta itemprop="name" content="Ye">
-      <meta itemprop="description" content="Ye的个人技术记录博客">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Yesomething">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/codeAnalyse/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E6%B1%A0/" class="post-title-link" itemprop="url">数据库连接池</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:16:58" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
-        </span>
-          ，
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
-        </span>
-    </span>
-
-  
-      </div>
-      <div class="post-meta">
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>515</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="数据库连接池"><a href="#数据库连接池" class="headerlink" title="数据库连接池"></a>数据库连接池</h1><h2 id="常用数据库连接池"><a href="#常用数据库连接池" class="headerlink" title="常用数据库连接池"></a>常用数据库连接池</h2><h3 id="DBCP"><a href="#DBCP" class="headerlink" title="DBCP"></a>DBCP</h3><h4 id="常用参数"><a href="#常用参数" class="headerlink" title="常用参数"></a>常用参数</h4><blockquote>
-<p>initialSize 初始连接数</p>
-<p>maxActive  最多可容纳活跃连接数</p>
-<p>maxIdle 最大空闲连接数(已创建但未被使用的连接，会被定期回收，回收直到maxIdle数量)</p>
-<p>minIdle 最小空闲连接数</p>
-<p>maxWait 获取连接的最大等待时间</p>
-</blockquote>
-<h3 id="C3P0"><a href="#C3P0" class="headerlink" title="C3P0"></a>C3P0</h3><h4 id="常用参数-1"><a href="#常用参数-1" class="headerlink" title="常用参数"></a>常用参数</h4><blockquote>
-<p>initialPoolSize 初始连接数</p>
-<p>maxPoolSize  最大连接数</p>
-<p>minPoolSize  最小连接数</p>
-<p>acquireIncrement 当没有空闲连接时，一次性创建新连接的数量</p>
-<p>maxIdleTime 连接的最大空闲时间，即若一直未使用则自动断掉连接。</p>
-</blockquote>
-<h3 id="Druid"><a href="#Druid" class="headerlink" title="Druid"></a>Druid</h3><h4 id="常用参数-2"><a href="#常用参数-2" class="headerlink" title="常用参数"></a>常用参数</h4><blockquote>
-<p>initialSize 初始连接数</p>
-<p>maxActive  最多可容纳活跃连接数</p>
-<p>maxIdle 最大空闲连接数(已创建但未被使用的连接，会被定期回收，回收直到maxIdle数量)</p>
-<p>minIdle 最小空闲连接数</p>
-<p>maxWait 获取连接的最大等待时间</p>
-<p>timeBetweenEvictionRunsMillis 间隔多长时间检测是否关闭空闲连接。</p>
-<p>minEvictableIdleTime 控制一个连接在资源池中最小的生存时间</p>
-<p>maxEvictableIdleTime 控制一个连接在资源池中最大的生存时间</p>
-</blockquote>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/computerNetwork/%E7%AC%AC1%E7%AB%A0-%E6%A6%82%E8%AE%BA/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/uploads/photo.jpg">
-      <meta itemprop="name" content="Ye">
-      <meta itemprop="description" content="Ye的个人技术记录博客">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Yesomething">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/computerNetwork/%E7%AC%AC1%E7%AB%A0-%E6%A6%82%E8%AE%BA/" class="post-title-link" itemprop="url">概论</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:05:46" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
-        </span>
-          ，
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
-        </span>
-    </span>
-
-  
-      </div>
-      <div class="post-meta">
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>1.8k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="概论"><a href="#概论" class="headerlink" title="概论"></a>概论</h1><h2 id="网络大小划分"><a href="#网络大小划分" class="headerlink" title="网络大小划分"></a>网络大小划分</h2><blockquote>
-<p>个域网</p>
-<p>局域网：用于企业时被称为企业网络</p>
-<p>城域网</p>
-<p>广域网</p>
-<p>互联网</p>
-</blockquote>
-<h2 id="报文的不同称呼"><a href="#报文的不同称呼" class="headerlink" title="报文的不同称呼"></a>报文的不同称呼</h2><blockquote>
-<p>网络层中叫数据包/包</p>
-</blockquote>
-<h1 id="因特网边缘部分的通信方式"><a href="#因特网边缘部分的通信方式" class="headerlink" title="因特网边缘部分的通信方式"></a>因特网边缘部分的通信方式</h1><blockquote>
-<h4 id="客户服务器方式-C-S"><a href="#客户服务器方式-C-S" class="headerlink" title="客户服务器方式 C/S"></a>客户服务器方式 C/S</h4><h4 id="对等方式-P2P-peer-to-peer"><a href="#对等方式-P2P-peer-to-peer" class="headerlink" title="对等方式 P2P(peer to peer)"></a>对等方式 P2P(peer to peer)</h4><p>既是服务器又是客户机</p>
-</blockquote>
-<h1 id="数据交换方式"><a href="#数据交换方式" class="headerlink" title="数据交换方式"></a>数据交换方式</h1><blockquote>
-<h4 id="电路交换—面向连接"><a href="#电路交换—面向连接" class="headerlink" title="电路交换—面向连接"></a>电路交换—面向连接</h4><p>交换机位于中心，需要连接时会通过电路连接两个主机。</p>
-<p>建立连接:申请占用通信资源。</p>
-<p>通话:一直占用通信资源。</p>
-<p>释放连接:释放通信资源</p>
-<p>适用于数据量很大的实时传输，核心路由器之间可以用电路交换</p>
-<h4 id="报文交换"><a href="#报文交换" class="headerlink" title="报文交换"></a>报文交换</h4><p>报文一般比分组长的多</p>
-<p>报文发送时间长</p>
-<h4 id="分组交换-计算机使用的方式"><a href="#分组交换-计算机使用的方式" class="headerlink" title="分组交换:计算机使用的方式"></a>分组交换:计算机使用的方式</h4><p>发送端对报文进行拆分成不同小组，添加首部组合成一个数据然后发送给接收端。</p>
-<p>接收端对数据进行拆除首部，然后根据首部的信息将收到的数据组合成报文</p>
-</blockquote>
-<h1 id="局域网和广域网不单单从覆盖范围划分，还要从使用的技术是什么"><a href="#局域网和广域网不单单从覆盖范围划分，还要从使用的技术是什么" class="headerlink" title="局域网和广域网不单单从覆盖范围划分，还要从使用的技术是什么"></a>局域网和广域网不单单从覆盖范围划分，还要从使用的技术是什么</h1><blockquote>
-<p>局域网 自己购买设备、自己维护、带宽固定 距离100米内</p>
-<p>广域网 花钱买服务、花钱买带宽</p>
-</blockquote>
-<h1 id="网络的拓扑结构"><a href="#网络的拓扑结构" class="headerlink" title="网络的拓扑结构"></a>网络的拓扑结构</h1><blockquote>
-<p>总线型、环形、星型、树型、网状结构</p>
-</blockquote>
-<h1 id="网络工作方式"><a href="#网络工作方式" class="headerlink" title="网络工作方式"></a>网络工作方式</h1><blockquote>
-<p>资源子网、通信子网、接入网</p>
-</blockquote>
-<h1 id="计算机网络的性能"><a href="#计算机网络的性能" class="headerlink" title="计算机网络的性能"></a>计算机网络的性能</h1><blockquote>
-<p>速率:主机在数字信道传送数据位数的速率，也成为data rate 或bit rate。</p>
-<p>带宽:数据信道所能传送的最高数据率。</p>
-<p>吞吐量:单位时间内通过某个网络的数据量。</p>
-<p>时延:</p>
+          <h1 id="垃圾收集">垃圾收集</h1>
 <blockquote>
-<p>发送时延 数据块长度/信道带宽</p>
-<p>传播时延:信道长度/信号在信道上的传播速率</p>
-<p>处理时延:在</p>
-<p>排队时延:在接收方主机处等待的时间</p>
+<p>垃圾收集的步骤：判断对象是否存活(可回收) -&gt;</p>
 </blockquote>
-<p>时延带宽积 :传播时延 * 带宽</p>
-<p>往返时间RTT:从发送方发送数据开始到发送方收到接收方确认。</p>
-<p>利用率:</p>
+<h2 id="判断对象存活">判断对象存活</h2>
+<h3 id="引用计数">引用计数</h3>
 <blockquote>
-<p>信道利用率 = 有数据通过时间 / (有 + 无数据通过的时间)</p>
-<p>网络利用率：信道利用率加权平均值</p>
+<p>在对象中添加一个引用计数器，当一个地方有引用它时计数器值加一；引用失效时，计数器值就减一。计数器为0的对象是不可能再被引用的。</p>
+<p>存在循环引用的问题</p>
+<p>Java中没有使用。</p>
 </blockquote>
-<p>非性能指标:费用、质量、标准化、可靠性、可扩展性、可升级性、管理与维护</p>
-</blockquote>
-<h1 id="计算机网络的体系结构"><a href="#计算机网络的体系结构" class="headerlink" title="计算机网络的体系结构"></a>计算机网络的体系结构</h1><blockquote>
-<p>OSI(开放式系统互联)七层模型:分层有利于标准化，且分层后各层之间的变化不会影响到其他层，尽量降低了相互之间的依赖。</p>
-<p>物理层:规定电压、接口标准</p>
-<p>数据链路层:输入如何封装，添加物理层地址，MAC</p>
-<p>网络层:选择最佳路径，IP地址编址</p>
-<p>传输层:可靠传输(建立会话)、不可靠传输(不建立会话)、流量控制。</p>
-<p>会话层:服务和客户端建立的会话。 netstat -nb</p>
-<p>表示层:加密、压缩、编码，开发人员考虑。</p>
-<p>应用层: 能够产生网络流量，能够和用户交互的应用程序。</p>
-</blockquote>
-<h1 id="网络排错"><a href="#网络排错" class="headerlink" title="网络排错"></a>网络排错</h1><blockquote>
-<p>需要从底层到高层逐一排查</p>
-</blockquote>
-<h1 id="网络安全和OSI参考模型的关系"><a href="#网络安全和OSI参考模型的关系" class="headerlink" title="网络安全和OSI参考模型的关系"></a>网络安全和OSI参考模型的关系</h1><blockquote>
-<p>物理层安全</p>
-<p>数据链路层安全:ADSL、无线AP</p>
-<p>网络层安全</p>
-<p>应用层安全: SQL注入漏洞、上传漏洞</p>
-</blockquote>
-<h1 id="一些基本概念"><a href="#一些基本概念" class="headerlink" title="一些基本概念"></a>一些基本概念</h1><blockquote>
-<p>实体:交换信息的硬件或软件进程。</p>
-<p>协议:控制两个对等实体通信的规则。</p>
-<p>服务:下层向上层提供服务，上层需要使用下层提供的服务来实现本层的功能。</p>
-<p>服务访问点:相邻两层实体间交换信息的地方。</p>
-<p>AP接入点和无线路由器和基站作用相差不大，主要负责中继无线计算机之间的数据包，还负责中继无线计算机和Internet之间的数据包。</p>
-<p>IEEE802.11俗称WIFI。以太网IEEE802.3。</p>
-<p>将两个或多个网络连接起来并提供必要转换的机器，其硬件和软件方面的总称是网关。路由器就是一个网关，在网络层交换数据包。</p>
-<p>不可靠的无连接服务通常称为数据报服务。</p>
-</blockquote>
-<h1 id="TPC-IP"><a href="#TPC-IP" class="headerlink" title="TPC/IP"></a>TPC/IP</h1><blockquote>
-<p>五层模型:</p>
-<p>应用层:</p>
+<h3 id="可达性分析算法">可达性分析算法</h3>
 <blockquote>
-<p>数据单元:传输数据单元PDU</p>
+<p>基本思路：通过一系列称为GC Roots的根对象作为起始点集，当某个对象到起始点集间没有任何引用链相连时，这个对象就是不可能再被使用的。</p>
+<p>Java中固定可作为GC Roots的对象：</p>
+<p>​ 在虚拟机栈中引用的对象，如各个线程被调用的方法堆栈中使用到的参数、局部变量、临时变量等。</p>
+<p>​ 在方法区类静态属性引用的对象，如Java类引用类型静态变量。</p>
+<p>​ 在本地方法栈中JNI(Native方法)引用的对象。</p>
+<p>​ Java虚拟机内部的引用，如基本数据类型对应的Class对象，一些常驻的异常对象(NullPointExcepiton、OutOfMemoryError）还有系统类加载器。</p>
+<p>​ 所有被同步锁持有的对象。</p>
+<p>​ 反应Java虚拟机内部情况的JM XBean、JVMTI中注册的回调、本地代码缓存等。</p>
+<p>除了固定GC Roots集合外，根据用户选用的垃圾收集器及当前回收的内存区域不同，还可以有其他对象加入。</p>
+<p>被判定为不可达的对象还不会被立即回收。真正回收需要经历至少两个标记过程：</p>
+<p>​ 若对象在进行可达性分析后分析没有和GC Roots相连接的引用链，会被第一次标记。随后进行一次筛选，若这个对象没有覆盖finalize方法或该方法已经被虚拟机调用，则没有必要执行finalize方法。</p>
+<p>​ 若需要执行finalize方法，则会将对象放入F-Queue队列中，然后自动启用线程执行队列中对象的finalize方法。执行后收集器会对队列中对象进行第二次小规模标记，若对象在finalize方法中重新和引用链上的任何一个对象建立关联，第二次标记时它会被移除即将回收的集合。否则，它通常要被回收。</p>
 </blockquote>
-<p>运输层:</p>
+<h2 id="回收方法区">回收方法区</h2>
 <blockquote>
-<p>数据单元:报文</p>
+<p>主要回收废弃的常量和不再使用的类型。</p>
+<p>回收常量要求：当前常量进入了常量池，且当前系统没有任何一个对象的值是该常量。</p>
+<p>回收类型的条件：</p>
+<p>​ 该类所有的实例已经被回收。</p>
+<p>​ 加载该类的类加载器被回收。</p>
+<p>​ 该类对应的java.lang.Class对象没有在任何地方被引用，无法在任何地方通过反射访问该类的方法。</p>
 </blockquote>
-<p>网络层:</p>
+<h2 id="引用的概念">引用的概念</h2>
 <blockquote>
-<p>数据单元:(IP数据报/IP分组/包)</p>
+<p>Java的引用在JDK1.2后分为强引用、软引用、弱引用、虚引用。</p>
+<p>强引用：最传统的引用的概念，只有强引用关系存在，垃圾收集器就永远不回收被引用的对象。</p>
+<p>软引用：描述一些还有用但非必须的对象。只被软引用关联的对象，在系统将要发生内存溢出异常时，会将这些对象列入回收访问进行第二次回收，若回收还没有足够内存，抛出内存溢出异常。</p>
+<p>弱引用：描述非必须的对象，被弱引用关联的对象只能生存到下一次垃圾收集发送为止。</p>
+<p>虚引用：最弱的引用关系。无法通过虚引用来取得一个对象实例，为对象设置虚引用关联的唯一目的只是为了能在这个对象被收集器回收时收到一个系统通知。</p>
 </blockquote>
-<p>数据链路层: </p>
+<h2 id="垃圾收集算法">垃圾收集算法</h2>
 <blockquote>
-<p>数据单元:数据帧</p>
+<p>可以分为引用计数式垃圾收集和追踪式垃圾收集。</p>
+<p>Java主流虚拟机中只有追踪式垃圾收集。</p>
 </blockquote>
-<p>物理层: </p>
+<h3 id="分代收集理论">分代收集理论</h3>
 <blockquote>
-<p>数据单元:比特010101</p>
+<p>弱分代假说：绝大多数对象都是朝生夕灭的。</p>
+<p>强分代假说：熬过越多次垃圾收集过程的对象越难消灭。</p>
+<p>跨代引用假说：跨代引用相对于同代引用来说仅占极少数。</p>
+<p>新生代收集（Minor GC/Young GC）：指目标只是新生代的垃圾收集。</p>
+<p>老年代收集（Major GC/Old GC）：指目标只是老年代的垃圾收集。目前只有CMS收集器会有单独收集老年代的行为。</p>
+<p>混合收集（Mixed GC）：指目标是收集整个新生代以及部分老年代的垃圾收集。目前只有G1收 集器会有这种行为。</p>
+<p>整堆收集（Full GC）：收集整个Java堆和方法区的垃圾收集</p>
 </blockquote>
-</blockquote>
-<h1 id="OSI参考模型"><a href="#OSI参考模型" class="headerlink" title="OSI参考模型"></a>OSI参考模型</h1><blockquote>
-<p>应用层:</p>
-<p>​    所有可以和用户交互产生网络流量的程序。</p>
-<p>​    文件传输FTP、电子邮件SMTP、万维网HTTP</p>
-<p>表示层</p>
-<p>​    用于处理两个通信系统中交换信息的表示方式。</p>
-<p>​    数据格式变换、数据加密解密、数据压缩和恢复</p>
-<p>​    JPEG、ASCII</p>
-<p>会话层</p>
-<p>​    向表示层实体/用户进程提供建立连接并在连接上有序地传输数据。</p>
-<p>​    建立、管理、终止会话。</p>
-<p>​    使用检验点可以使会话在通信失效时从检验点/同步点进行恢复通信，实现数据同步。</p>
-<p>​    ADSP、ASP</p>
-<p>传输层</p>
-<p>​    负责主机中两个进程的通信，即端到端的通信。传输单位是报文/用户数据报</p>
-<p>​    可靠传输、不可靠传输</p>
-<p>​    差错控制</p>
-<p>​    复用分用</p>
-<p>网络层</p>
-<p>​    路由选择</p>
-<p>​    流量控制</p>
-<p>​    差错控制</p>
-<p>​    拥塞控制</p>
-<p>数据链路层 加上报头和报尾。</p>
-<p>​    把网络层传下来的数据报组装成帧</p>
-<p>​    差错控制</p>
-<p>​    流量控制</p>
-<p>​    接入控制</p>
-<p>​    SDLC、HDLC、PPP、STP</p>
-<p>物理层</p>
-<p>​    在物理媒体上实现比特流的透明传输</p>
-<p>​    定义接口特性</p>
-<p>​    定义传输模式</p>
-<p>​    定义传输速率</p>
-<p>​    比特同步</p>
-<p>​    比特编码</p>
-<p>​    RJ45、802.3</p>
-</blockquote>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/computerNetwork/%E7%AC%AC2%E7%AB%A0-%E7%89%A9%E7%90%86%E5%B1%82/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/uploads/photo.jpg">
-      <meta itemprop="name" content="Ye">
-      <meta itemprop="description" content="Ye的个人技术记录博客">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Yesomething">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/computerNetwork/%E7%AC%AC2%E7%AB%A0-%E7%89%A9%E7%90%86%E5%B1%82/" class="post-title-link" itemprop="url">物理层</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:06:16" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
-        </span>
-          ，
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
-        </span>
-    </span>
-
-  
-      </div>
-      <div class="post-meta">
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>817</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="物理层"><a href="#物理层" class="headerlink" title="物理层"></a>物理层</h1><h2 id="物理层的基本概念"><a href="#物理层的基本概念" class="headerlink" title="物理层的基本概念"></a>物理层的基本概念</h2><blockquote>
-<p>尼奎斯特定理 $C = 2Blog_2V$ 。C为最大数据速率，B为带宽频率，V为离散等级。</p>
-<p>香农定理$C = B log_2(1+S/N)$ 。S/N是信噪比，$10log_{10}S/N$为分贝，B为带宽频率，C为最大数据速率。</p>
-</blockquote>
-<h3 id="物理层的主要任务"><a href="#物理层的主要任务" class="headerlink" title="物理层的主要任务"></a>物理层的主要任务</h3><p>物理层解决如何在连接各种计算机的传输媒体上传输数据比特流。</p>
-<p>确定与传输媒体的接口的一些特性:</p>
+<h3 id="标记-清除算法">标记-清除算法</h3>
 <blockquote>
-<p>机械特性:如接口形状、大小、引线数目</p>
-<p>电气特性:如规定电压范围</p>
-<p>功能特性:如规定-5V表示0</p>
-<p>过程特性/规程特性:规定建立连接时各个相关部件的工作步骤</p>
+<p>先标记所有需要回收的对象，标记完成后统一回收掉所有被标记的对象。</p>
+<p>存在的问题：</p>
+<p>​ 若Java堆中包含大量对象，且大部分都是需要被回收的，需要进行大量的标记清除动作。</p>
+<p>​ 内存空间碎片化，标记、清除后会产生大量不连续的内存碎片。</p>
 </blockquote>
-<h2 id="数据通信的基础知识"><a href="#数据通信的基础知识" class="headerlink" title="数据通信的基础知识"></a>数据通信的基础知识</h2><blockquote>
-<p>单向通信/单工通信 ———只能有一个方向的通信而没有反方向的交互，如电台</p>
-<p>半双工通信———通信双方都可以发送消息，但不能双方同时发送。如对讲机</p>
-<p>全双工通信——–通信的双方-可以同时发送和接收消息。如电话</p>
-<p>数据比特流传输距离较短,用解调器变为模拟信号后传输距离会加长。</p>
-<p>数据——–传送消息的实体</p>
-<p>信号——–数据的电气/电磁表现</p>
-<p>​    模拟信号——–连续</p>
-<p>​    数字信号———离散</p>
-<p>码元———-在使用时间域的波形表示数字信号时，代表不同离散数值的基本波形</p>
-<p>信号调制方法:调幅、调频、调相</p>
+<h3 id="标记-复制">标记-复制</h3>
+<blockquote>
+<p>为了解决标记-清除算法面对大量可回收对象时执行效率低的问题。</p>
+<p>半区复制：将可用内存按容量划分为大小相等的两块，每次只使用其中一块，当一块内存用完了，将还存活着的对象复制到另一块上，然后将已使用过的内存空间一次清理掉。</p>
+<p>Appel式回收：分为1块Eden，两块Survivor，分配时使用1块Eden，1块Survivor。回收时将存活的对象放入另一块Survivor中，清理之前使用的Eden和Survivor。内存只浪费了1块Survivor。</p>
+<p>优点：当多数对象是可回收的情况时，算法复制的对象少，且分配内存时不用考虑有空间碎片的复杂情况，实现简单。</p>
+<p>缺点：浪费了内存空间。</p>
 </blockquote>
-<h2 id="物理层下的传输媒体"><a href="#物理层下的传输媒体" class="headerlink" title="物理层下的传输媒体"></a>物理层下的传输媒体</h2><h3 id="导向传输媒体"><a href="#导向传输媒体" class="headerlink" title="导向传输媒体"></a>导向传输媒体</h3><blockquote>
-<p>$$<br>常用传输频率10^4——– 10^{16}<br>$$</p>
-<p>双绞线:</p>
-<p>​    屏蔽双绞线STP</p>
-<p>​    无屏蔽双绞线UTP</p>
-<p>同轴电缆:</p>
-<p>​     50Ω同轴电缆用于数字传输，基带同轴电缆</p>
-<p>​    75Ω同轴电缆用于模拟传输，宽带同轴电缆</p>
+<h3 id="标记-整理算法">标记-整理算法</h3>
+<blockquote>
+<p>一般是针对老年代对象。标记完成后不是直接对可回收对象进行清理，而是让所有存活的对象都想内存空间一端移动，然后直接清理掉边界外的内存。</p>
+<p>缺点：移动过程耗时较长。</p>
+<p>优点：不用考虑内存碎片化问题，降低了内存分配器及内存访问器的复杂度。</p>
 </blockquote>
-<h2 id="信道复用技术"><a href="#信道复用技术" class="headerlink" title="信道复用技术"></a>信道复用技术</h2><blockquote>
-<p>频分复用:每个用户使用不同的频率传递。</p>
-<p>时分复用:将单位时间划分为若干个时间片，每个用户使用对应的时间片传递。 统计时分复用在发送数据时在数据中添加标记，接收方根据标记判定谁接收并将标记去除。</p>
-<p>波分复用:每个用户使用不同的波长传递。</p>
-<p>码分复用:自己的码片乘积为1，同他人码片乘积为0，传输的信号为原数据同对应码片的乘积，总的传输信号为各个设备传输的信号之和，接收者只要将总信号同自己的码片相乘即可得到需要接收的值。</p>
-<p>码分复用的缺点:设备数变多后码片需要越多</p>
+<h2 id="hotpot算法细节">Hotpot算法细节</h2>
+<blockquote>
+<p>根节点枚举(使用一个OopMap记录)</p>
+<p>安全点(到达安全点时将引用关系收集到OopMap，主动式中断和抢占式中断)</p>
+<p>安全区域(类似于安全点的扩展)</p>
+<p>记忆集和卡表：</p>
+<p>​ 记忆集：为了解决对象跨代引用问题，建立的从非收集区域指向收集区域的指针集合的抽象数据结构。</p>
+<p>​ 卡表：以卡精度实现的记忆集。每个记录精确到一块内存区域，该区域内有对象含有跨代指针。</p>
+<p>写屏障：为了在机器码的层面将维护卡表的动作放到每个赋值操作之中。赋值操作会在写屏障的覆盖范围中，赋值前部分为写前屏障，赋值后部分为写后屏障，一般来说，都是在写后屏障执行卡表的更新。</p>
+<p>卡表带来的高并发问题：伪共享，由于CPU的缓存系统是缓存行为单位存储的，当多线程修改互相独立的变量时，若这些变量刚好共享同一个缓存行，就会互相影响。为了避免这个问题，简单的解决方案是先检查卡表标记，当卡表元素未被标记时才将其标记变脏。</p>
+<p>并发的可达性分析：扫描过程时垃圾收集器和用户线程存在并发问题，，可用的解决方法有增量更新(插入引用时记录，扫描完成后以记录的再扫描)、原始快照(删除引用时记录，扫描完成时按记录的再扫描)。</p>
 </blockquote>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/computerNetwork/%E7%AC%AC3%E7%AB%A0-%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/uploads/photo.jpg">
-      <meta itemprop="name" content="Ye">
-      <meta itemprop="description" content="Ye的个人技术记录博客">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Yesomething">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/computerNetwork/%E7%AC%AC3%E7%AB%A0-%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82/" class="post-title-link" itemprop="url">数据链路层</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:06:32" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
-        </span>
-          ，
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
-        </span>
-    </span>
-
-  
-      </div>
-      <div class="post-meta">
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>3.4k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>3 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="数据链路层"><a href="#数据链路层" class="headerlink" title="数据链路层"></a>数据链路层</h1><h2 id="数据链路层基本概念"><a href="#数据链路层基本概念" class="headerlink" title="数据链路层基本概念"></a>数据链路层基本概念</h2><blockquote>
-<p>数据链路层的需要解决的问题:</p>
-<p>​    向网络层提供一个定义良好的服务接口。</p>
-<p>​    处理传输错误。</p>
-<p>​    调节数据流，保证慢速的接收方不会被快速的发送方淹没。</p>
-<p>使用的信道类型:点对点信道、广播信道</p>
-<p>链路:一条点到点的物理线路段，中间没有任何其他的点。</p>
-<p>数据链路:除物理线路外，还要有通信协议来控制数据的传输，而实现这些协议的硬件和软件加入到链路上就构成了数据链路。</p>
-<p>最常用的方法就是使用适配器(即网卡)来实现这些协议的硬件和软件，一般的适配器都包括了数据链路层和物理层这两层的功能。</p>
+<h2 id="经典垃圾收集器">经典垃圾收集器</h2>
+<h3 id="serial收集器">Serial收集器</h3>
+<blockquote>
+<p>单线程、简单高效、是所有收集器里额外内存消耗最小的，但是进行垃圾收集时必须暂停其他所有工作线程。</p>
+<p>新生代采用复制算法暂停所有用户线程，老年代采用标记-整理算法暂停所有用户线程。</p>
 </blockquote>
-<h2 id="帧"><a href="#帧" class="headerlink" title="帧"></a>帧</h2><blockquote>
-<p>数据链路层传送的是帧</p>
+<h3 id="parnew收集器">ParNew收集器</h3>
+<blockquote>
+<p>是Serial收集器的多线程并行版本。可以和CMS收集器配合使用。</p>
+<p>新生代采用多线程复制算法暂停所有用户线程，老年代采用标记-整理算法暂停所有用户线程。</p>
 </blockquote>
-<h2 id="数据链路层的三个基本问题"><a href="#数据链路层的三个基本问题" class="headerlink" title="数据链路层的三个基本问题"></a>数据链路层的三个基本问题</h2><h3 id="封装成帧"><a href="#封装成帧" class="headerlink" title="封装成帧"></a>封装成帧</h3><blockquote>
-<p>就是在一段数据的前后分别添加首部(SOH)和尾部(EOT)。即形成帧首部+帧的数据部分+帧尾部的结构，帧首部和尾部的重要作用就是帧定界。其中帧的数据部分一般不能超过1500(最大传输单元MTU)。为什么最大一般为1500？这是网络带宽和传输效率的统一决定的，MTU太大导致传输时间过长，MTU过小会导致传输效率不高(因为帧的头尾需要占14 + 4个字节)。</p>
-<p>接收方会判断收到的帧是否含有头尾部分，若无此部分则会丢弃该数据帧。</p>
+<h3 id="parallel-scavenge收集器">Parallel Scavenge收集器</h3>
+<blockquote>
+<p>基于标记-复制算法实现的新生代收集器，也是能够并行收集的多线程收集器。</p>
+<p>而Parallel Scavenge收集器的目标则是达到一个可控制的吞吐量(Throughput)，吞吐量就是处理器用于运行用户代码的时间与处理器总消耗时间的比值。</p>
+<p>-XX：MaxGCPauseMillis：允许的值是一个大于0的毫秒数，收集器将尽力保证内存回收花费的时间不超过用户设定值，会降低吞吐量。</p>
+<p>-XX：GCTimeRatio：值应当是一个大于0小于100的整数，也就是垃圾收集时间占总时间的比率，相当于吞吐量的倒数。</p>
+<p>-XX：+UseAdaptiveSizePolicy：一个开关参数，开启后可以自动调节参数。</p>
 </blockquote>
-<h3 id="透明传输-只知道数据但不知道数据是如何传输的"><a href="#透明传输-只知道数据但不知道数据是如何传输的" class="headerlink" title="透明传输(只知道数据但不知道数据是如何传输的)"></a>透明传输(只知道数据但不知道数据是如何传输的)</h3><blockquote>
-<p>帧的头尾是使用ASCII码的可打印字符集之外的字符组成，若传输的数据不是仅由ASCII码的可打印字符组成时会导致帧的数据部分中可能出现帧尾，会导致接收方提前判断帧结束，且丢弃部分数据。</p>
-<p>解决方法:发送端的数据链路层会在数据出现SOH与EOT的前面插入一个字符“ESC”用于转义，若转义字符中也出现在数据中则应该在转义字符前插入一个转义字符，接收端在将数据传送给网络层时会删除其中用于转义的字符。</p>
+<h3 id="serial-old收集器">Serial Old收集器</h3>
+<blockquote>
+<p>是Serial收集器的老年代版本，是一个单线程收集器，使用标记-整理算法。</p>
 </blockquote>
-<h2 id="差错控制"><a href="#差错控制" class="headerlink" title="差错控制"></a>差错控制</h2><blockquote>
-<p>比特差错:1可能变为0,0可能变为1。</p>
-<p>误码率:传输错误的比特占所传输比特总数的比率称为误码率。</p>
-<p>循环冗余检验(CRC)可以做到无差错接收。检验到有差错的帧就丢弃。CRC是一种无比特差错，而不是无传输差错的检测机制。</p>
-<p>可靠传输还需要确认和重传机制</p>
+<h3 id="parrallel-old收集器">Parrallel Old收集器</h3>
+<blockquote>
+<p>是Parallel Scavenge收集器的老年代版本，支持多线程并发收集，基于标记-整理算法。</p>
 </blockquote>
-<h2 id="点到点的数据通信"><a href="#点到点的数据通信" class="headerlink" title="点到点的数据通信"></a>点到点的数据通信</h2><blockquote>
-<p>PPP协议是全世界使用最多的数据链路层协议</p>
-<p>PPP协议的组成部分(由顶到底)</p>
-<p>​    NCP网络控制协议</p>
-<p>​    LCP链路控制协议</p>
-<p>​    类似于HDLC高级数据链路控制协议，但PPP面向字节而不是面向比特</p>
-<p>PPP协议应该满足的要求:</p>
-<p>​    简单、封装成帧、支持多种网络层协议、多种类型链路、差错检测、检测连接状态、最大传送单元、网络层地址协商、数据压缩协商</p>
-<p>PPP协议不需要满足的要求:</p>
-<p>​    纠错、流量控制、序号、多点线路、半双工或单工链路</p>
-<p>PPP协议的帧格式:</p>
-<table>
-<thead>
-<tr>
-<th align="center">F(7E)</th>
-<th align="center">A(FF)</th>
-<th align="center">C(03)</th>
-<th align="center">协议</th>
-<th align="center">消息部分(IP数据报)</th>
-<th align="center">FCS</th>
-<th align="center">F(7E)</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">一个字节</td>
-<td align="center">一个字节且为固定值</td>
-<td align="center">一个字节且为固定值</td>
-<td align="center">用于表示消息字段中是什么类型的消息</td>
-<td align="center">不超过1500</td>
-<td align="center">两个字节</td>
-<td align="center">一个字节</td>
-</tr>
-</tbody></table>
-<p>实现透明传输的方式:</p>
-<p>​    如果是字节传递数据时可以通过插入转义字符并在转义字符0x7D后的一个字符用0x20异或来实现透明传输。</p>
-<p>​    如果采用同步通信，比特流传递数据时，通过零比特填充法，连续5个1在其中插入0。</p>
-<p>不使用序号和确认机制的原因</p>
-<p>​    在数据链路层出现的差错的概率不大时使用比较简单的PPP协议较为合理。</p>
-<p>​    在因特网环境下，PPP的信息字段放入的数据是IP数据报。数据链路层的可靠传输并不能够保证网络层的传输也是可靠的。</p>
-<p>​    帧检验序列FCS字段可保证无差错接受。</p>
+<h3 id="cms收集器">CMS收集器</h3>
+<blockquote>
+<p>是一种以获取最短回收停顿时间为目标的收集器。它是基于标记-清除算法实现的。其运作过程分为4步：</p>
+<p>​ 初始标记(需要stop the world)</p>
+<p>​ 并发标记</p>
+<p>​ 重新标记(需要stop the world)</p>
+<p>​ 并发清除</p>
+<p>缺点：</p>
+<p>​ CMS收集器对处理器资源非常敏感。会因为占据了一部分线程导致应用程序变慢。CMS默认启动回收线程为(处理器核心数量 + 3 )/4。导致处理器核心&lt;4时占用的性能过多。</p>
+<p>​ CMS处理器无法处理浮动垃圾，可能出现“Concurrent Mode Failure”，从而引发Full GC。因为标记结束后，很可能产生新垃圾，CMS无法在当次收集时处理，只能留到下次。所以CMS需要预留一部分空间给并发收集时程序运行使用，可以通过-XX：CMSInitiatingOccupancyFraction来调节。</p>
+<p>​ 由于CMS是基于标记-清除算法实现的，会产生大量空间碎片。当碎片过多，大对象很难分配，触发Full GC。-XX：+UseCMS-CompactAtFullCollection:开关参数，让CMS触发Full GC时进行碎片整理。</p>
 </blockquote>
-<h2 id="使用广播信道的数据链路层"><a href="#使用广播信道的数据链路层" class="headerlink" title="使用广播信道的数据链路层"></a>使用广播信道的数据链路层</h2><h3 id="局域网的拓扑"><a href="#局域网的拓扑" class="headerlink" title="局域网的拓扑"></a>局域网的拓扑</h3><blockquote>
-<p>星型网、总线网、环形网、树型网</p>
+<h3 id="garbage-first收集器">Garbage First收集器</h3>
+<blockquote>
+<p>简称G1，它开创了收集器面向局部收集的设计思路和基于Region的内存布局形式。它是一款主要面向服务端应用的垃圾收集器。</p>
+<p>在G1之前的垃圾收集器垃圾收集的范围要么是整个新生代，要么是整个老年代，要么就是Full GC，G1则是面向堆内存任何部分来组成回收集，衡量标准是哪块内存中存放的垃圾数量最多。</p>
+<p>它开创了基于Region的堆内存布局。相当于将堆内存划分为大小相同的连续独立区域，每个区域按需要划分出空间。Region中还要特殊的Humongous区域，专门用于存储大对象。G1将大小超过一个Region容量一半的对象就判定为大对象。超过整个Region容量的对象会被存放到n个连续的Region中。</p>
+<p>流程：</p>
+<p>​ 初始标记</p>
+<p>​ 并发标记</p>
+<p>​ 最终标记</p>
+<p>​ 筛选回收</p>
 </blockquote>
-<h3 id="局域网的特点与优点"><a href="#局域网的特点与优点" class="headerlink" title="局域网的特点与优点"></a>局域网的特点与优点</h3><blockquote>
-<p>主要特点:网络为一个单位所拥有且地理位置和站点数目均有限。</p>
-<p>主要优点:具有广播功能，从一个站点可以很方便地访问全网。局域网的主机可以共享连接在局域网上的各种硬件和软件资源。</p>
-<p>便于系统的拓展和逐渐演变，各设备的位置可以灵活调整和改变。</p>
-<p>提高了系统的可靠性、可用性和生存性。</p>
-</blockquote>
-<h3 id="以太网通信使用的协议—–CSMA-CD协议"><a href="#以太网通信使用的协议—–CSMA-CD协议" class="headerlink" title="以太网通信使用的协议—–CSMA/CD协议"></a>以太网通信使用的协议—–CSMA/CD协议</h3><blockquote>
-<p>CSMA/CD协议特点:</p>
-<p>多点接入:表示许多计算机以多点接入的方式连接在一根总线上。</p>
-<p>载波监听:是指每个站在发送数据之前先要检测总线上是否有其他计算机在发送数据，如果有则暂时不发送数据，避免发生碰撞。</p>
-<p>​    通过总线上的电压摆动来判断当前总线上是否存在多个计算机同时发送数据的情况</p>
-<p>争用期:最先发送数据帧的站，在发送数据帧后至多经过2t(两倍的端到端时延)即可知道发送的数据帧是否遭受了碰撞。</p>
-<p>最短有效帧长:争用期(2t)内可发送的总字节数——64字节。</p>
-<p>发生碰撞怎么解决:</p>
-<p>​    推迟一个随机时间再发送，其中基本退避时间为2t，参数k = min(当前重传次数，10)，倍数为r = 1到2^k - 1，重传时延即为r倍的基本退避时间，若重传次数超过16次，则丢弃该帧并向高层报告。</p>
-</blockquote>
-<h2 id="以太网的其他信息"><a href="#以太网的其他信息" class="headerlink" title="以太网的其他信息"></a>以太网的其他信息</h2><blockquote>
-<p>两个标准:DIX Ethernet V2、802.3标准</p>
-<p>以太网和数据链路层的两个子层:</p>
-<p>​    逻辑链路控制子层LLC</p>
-<p>​    媒体接入控制子层MAC</p>
-<p>以太网提供的访问是不可靠的交付，接收到有差错的数据帧就丢弃，其他什么也不做</p>
-<p>使用集线器的以太网在逻辑上仍是一个总线网，各个工作站使用的还是CSMA/CD协议，集线器工作在物理层。</p>
-</blockquote>
-<h2 id="信道利用率计算"><a href="#信道利用率计算" class="headerlink" title="信道利用率计算"></a>信道利用率计算</h2><blockquote>
-<p>争用期长度为2t，帧长为L(bit)，数据发送速率为C(b/s)，帧的发送时间为L/C=T0 (s)</p>
-<p>信道利用率的参数a = t/T0，故帧长不能太短(为了增大T0)，以太网连线不能太长(为了减小t)。无碰撞的理想情况下，极限信道利用率为</p>
-<p>$$S_{max} = T_0 / (T_0 + t) = 1 /(1+a)$$ </p>
-</blockquote>
-<h2 id="MAC地址"><a href="#MAC地址" class="headerlink" title="MAC地址"></a>MAC地址</h2><blockquote>
-<p>硬件地址又称为物理地址，或MAC地址</p>
-<p>MAC帧格式(MAC层)</p>
-<table>
-<thead>
-<tr>
-<th align="center">目的地址</th>
-<th align="center">源地址</th>
-<th align="center">类型</th>
-<th align="center">数据</th>
-<th align="center">FCS</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">6个字节</td>
-<td align="center">6个字节</td>
-<td align="center">2个字节</td>
-<td align="center">46~1500</td>
-<td align="center">4个字节</td>
-</tr>
-</tbody></table>
-<p>​    帧检验序列FCS字段可保证无差错接受。</p>
-<p>传到物理层会在前端插入8个字节表示帧开始。</p>
-<p>无效的MAC帧:</p>
-<p>​    帧长度不为整数个字节。</p>
-<p>​    用收到的帧检验序列FCS查出有差错。</p>
-<p>​    数据字段的长度不在46~1500字节之间。</p>
-<p>​    有效的MAC帧长度不在64~1518字节之间。</p>
-<p>​    无效的MAC会直接丢弃，以太网不负责重传。</p>
-<p>帧间最小间隔为9.6us，相当于96bit的发送时间，目的是为了使刚刚收到数据帧的站接受缓存来得及清理，做好接收下一帧的准备。</p>
-</blockquote>
-<h2 id="使用网桥拓展以太网"><a href="#使用网桥拓展以太网" class="headerlink" title="使用网桥拓展以太网"></a>使用网桥拓展以太网</h2><blockquote>
-<p>优点:过滤通信量、扩大物理范围、提高了可靠性、可互连不同的物理层、不同MAC子层和不同速率的局域网。</p>
-<p>缺点:存储转发增加了时延、MAC子层并没有流量控制功能、具有不同MAC子层的网段桥接在一起时时延更大、网桥只适合于用户数不太多和通信量不太大的局域网，否则有时会因传播过多的广播信息产生网络拥塞。</p>
-<p>记录的原理:A发出的帧送到网桥，网桥可以记录下哪个接口对应于A，将A的地址放入转发表中，对于不在转发表中的地址采用广播手段进行信息传输，对于在转发表中的地址，则根据记录的地址发送。</p>
-</blockquote>
-<h2 id="以太网的不同类型"><a href="#以太网的不同类型" class="headerlink" title="以太网的不同类型"></a>以太网的不同类型</h2><blockquote>
-<p>速率达到/超过100Mb/s的以太网叫高速以太网</p>
-<p>100BASE-T以太网(快速以太网)</p>
-<p>​    在双绞线上传送100Mb/s基带信号的星型拓扑以太网，仍使用IEEE 802.3的CSMA/CD协议(半双工时)。</p>
-<p>​    可以在全双工的方式下工作且无冲突发生，不使用CSMA/CD协议，MAC帧格式仍是802.3标准规定的。最短帧长不变，但最大电缆长度减小到100m，帧间时间间隔变为0.96us。</p>
-<p>吉比特以太网</p>
-<p>​    允许在1Gb/s下全双工和半双工两种方式工作。使用802.3协议规定的帧格式，在半双工方式下使用CSMA/CD,兼容10BASE-T和100BASE-T</p>
-</blockquote>
-<h2 id="滑动窗口协议"><a href="#滑动窗口协议" class="headerlink" title="滑动窗口协议"></a>滑动窗口协议</h2><blockquote>
-<p>一位滑动窗口协议 停—-等式</p>
-<p>回退N协议</p>
-<p>选择重传协议</p>
-</blockquote>
-<h2 id="MAC层各协议"><a href="#MAC层各协议" class="headerlink" title="MAC层各协议"></a>MAC层各协议</h2><blockquote>
-<p>ALOHA：想发就发，冲突后随机时间发。</p>
-<p>分槽ALOHA：时间槽开始时发，冲突后随机时间发。</p>
-<p>1坚持CSMA：监听到空闲一定发，信道忙则一直监听到空闲为止。冲突后随机时间重复此过程。</p>
-<p>非坚持CSMA：监听到空闲一定发，信道忙则随机时间再监听。冲突后随机时间重复此过程。</p>
-<p>p坚持CSMA：监听到空闲p概率发，信道忙则下一个时间槽再监听，1-p概率下一个时间槽再发送。</p>
-<p>CSMA/CD：空闲则直接发送，若忙则等待到通道空闲。检测到冲突终止传输，随机等待一段时间后重新开始监听。则带冲突检测。802.3中使用1坚持-二进制后退的CSMA/CD。</p>
-<p>CSMA/CA：空闲时等待一定时间发送，先发送帧，然后接收方会给发送方发送一个确认帧。若发送方没有收到确认帧或遇到冲突则二进制回退再发送。</p>
-</blockquote>
-<h2 id="无线局域网协议"><a href="#无线局域网协议" class="headerlink" title="无线局域网协议"></a>无线局域网协议</h2><blockquote>
-<p>存在问题：隐藏终端和暴露终端。</p>
-<p>发送方先发送RTS(Request to send)，接收方收到RTS回应CTS(Clear to send)。</p>
-</blockquote>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/uploads/photo.jpg">
-      <meta itemprop="name" content="Ye">
-      <meta itemprop="description" content="Ye的个人技术记录博客">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Yesomething">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/" class="post-title-link" itemprop="url">网络层</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：17:14:02" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
-        </span>
-          ，
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
-        </span>
-    </span>
-
-  
-      </div>
-      <div class="post-meta">
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>2.5k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="网络层"><a href="#网络层" class="headerlink" title="网络层"></a>网络层</h1><h2 id="网络层传输单元为数据报"><a href="#网络层传输单元为数据报" class="headerlink" title="网络层传输单元为数据报"></a>网络层传输单元为数据报</h2><h2 id="网络层提供的两种服务"><a href="#网络层提供的两种服务" class="headerlink" title="网络层提供的两种服务"></a>网络层提供的两种服务</h2><blockquote>
-<p>网络层关注的是如何将分组从源端沿着网络路劲送达目的端。</p>
-<p>它向运输层通过了虚电路服务和数据报服务。</p>
-<p>计算机通信的过程中可靠交付由端系统负责，而不是网络负责。</p>
-<p>虚电路服务</p>
-<p>​    通过指定数据的逻辑连接，向端系统保证了数据的按序到达，免去了端系统在顺序控制上的开销。</p>
-<p>​    逻辑上的连接而非真正建立了一条物理连接。</p>
-<p>数据报服务</p>
-<p>​    网络层向上提供简单灵活的、<strong>无连接的</strong>、尽最大努力交付的数据报服务。</p>
-<p>​    优点:传输网络不提供端到端的可靠传输服务，使得网络造价降低，运行方式灵活，适用多种应用。</p>
-<table>
-<thead>
-<tr>
-<th align="center">两个服务对比</th>
-<th align="center">虚电路服务</th>
-<th align="center">数据报服务</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">思路</td>
-<td align="center">可靠通信由网络保证</td>
-<td align="center">可靠通信由用户主机保证</td>
-</tr>
-<tr>
-<td align="center">连接的建立</td>
-<td align="center">必须有</td>
-<td align="center">不需要</td>
-</tr>
-<tr>
-<td align="center">终点地址</td>
-<td align="center">仅在连接建立阶段使用，每个分组使用短的虚电路号</td>
-<td align="center">每个分组都要有终点的完整地址</td>
-</tr>
-<tr>
-<td align="center">分组的转发</td>
-<td align="center">属于同一条虚电路的分组均按照同一路由进行转发</td>
-<td align="center">每个分组独立选择路由进行转发</td>
-</tr>
-<tr>
-<td align="center">当结点出故障时</td>
-<td align="center">所有通过出故障结点的虚电路均不能工作</td>
-<td align="center">出故障的结点可能丢失分组，一些路由可能发生变化</td>
-</tr>
-<tr>
-<td align="center">分组的顺序</td>
-<td align="center">总数按发送顺序到达终点</td>
-<td align="center">到达终点时不一定按发送顺序</td>
-</tr>
-<tr>
-<td align="center">端到端的差错处理和流量控制</td>
-<td align="center">可以由网络负责,也可以由用户主机负责</td>
-<td align="center">由用户主机负责</td>
-</tr>
-</tbody></table>
-</blockquote>
-<h2 id="网际协议IP"><a href="#网际协议IP" class="headerlink" title="网际协议IP"></a>网际协议IP</h2><h3 id="虚拟互联网"><a href="#虚拟互联网" class="headerlink" title="虚拟互联网"></a>虚拟互联网</h3><blockquote>
-<p>网络互连的设备:</p>
-<p>​    概念:中间设备又称为中间系统或中继系统</p>
-<p>​    物理层中继系统:转发器。</p>
-<p>​    数据链路层中继系统:网桥或桥接器。</p>
-<p>​    网络层中继系统:路由器。</p>
-<p>​    网络层以上的中继系统:网关。</p>
-<p>网络层协议:IP协议最主要。与IP协议配套的协议:</p>
-<p>​    ARP地址解析协议。(位于底层)解析MAC地址</p>
-<p>​    RARP逆地址解析协议。(位于底层)</p>
-<p>​    ICMP网际控制报文协议。(位于顶层)报告网络故障</p>
-<p>​    IGMP网际组管理协议。(位于顶层)</p>
-</blockquote>
-<h2 id="IPv4地址组成"><a href="#IPv4地址组成" class="headerlink" title="IPv4地址组成"></a>IPv4地址组成</h2><blockquote>
-<p>IPv4地址由32位IP组成，其中分为网络ID和主机ID。主机ID不能全为0(全0表示网段)也不能全为1(全1表示广播)</p>
-<p>A类地址:前8位为网络ID，后24位为主机ID。    0xxxxxxx | x….x      1~126 (127的地址用于做循环测试，本机地址)</p>
-<p>B类地址:前16位为网络ID，后8位为主机ID。    10x…..x | x….x        128~191</p>
-<p>C类地址:前24位为网络ID，后8位为主机ID。    110x….x | x…x        192~223</p>
-<p>D类组播使用。    1110| x…..x(多播地址)                224~239</p>
-<p>E类研究使用。    1111| x…..x(保留为今后使用)    240~255</p>
-<p>特殊的几个地址:</p>
-<p>​    127.0.0.1 本地环回地址</p>
-<p>​    169.254.0.0 微软在无法自动获取IP时自动分给计算机的IP地址。</p>
-<p>​    保留的私网地址。    </p>
-<ul>
-<li>10.0.0.0 —— 10.255.255.255</li>
-<li>172.16.0.0 —— 127.31.255.255</li>
-<li>192.168.0.0 ——- 192.168.255.255</li>
-</ul>
-</blockquote>
-<h2 id="子网掩码的作用"><a href="#子网掩码的作用" class="headerlink" title="子网掩码的作用"></a>子网掩码的作用</h2><blockquote>
-<p>同IP地址作与运算，得到的结果用于判断两个IP是否位于同一网段，从而判断这两个IP的信息交换是否要通过路由器。</p>
-<p>可以用于屏蔽IP地址的主机ID部分，来凸显IP地址的网络ID部分，借此判断两个IP能否直接信息交换。</p>
-<p>还可以将大的IP网络划分为若干小的网络。(划分子网、等分划分/边长划分)</p>
-<p>超网:通过子网掩码把若干个小网络合并为一个大网络。</p>
-</blockquote>
-<h2 id="IP地址与MAC地址"><a href="#IP地址与MAC地址" class="headerlink" title="IP地址与MAC地址"></a>IP地址与MAC地址</h2><blockquote>
-<p>网络层以上使用IP地址，链路层及以下使用MAC地址</p>
-<p><img src="/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82%5CIP%E5%9C%B0%E5%9D%80%E5%92%8CMAC%E5%9C%B0%E5%9D%80.png" alt="IP地址和MAC地址"></p>
-<p>相比于IP数据报，MAC帧增加了</p>
-<p>交换机基于数据帧的MAC地址转发数据帧，路由器基于数据包的IP地址转发数据包。</p>
-<p>数据包在传输过程不变，过网络设备数据帧要用新的物理层地址重新封装。</p>
-<p>MAC地址决定了数据帧下一跳哪个设备接收，而IP地址决定了数据包的起点和终点</p>
-</blockquote>
-<h2 id="协议"><a href="#协议" class="headerlink" title="协议"></a>协议</h2><blockquote>
-<p>ARP协议:将IP地址转化为物理地址。会使用到广播。</p>
-<p>RARP协议:将物理地址转化为IP地址。</p>
-<p>ARP欺骗。</p>
-</blockquote>
-<h2 id="IP数据报"><a href="#IP数据报" class="headerlink" title="IP数据报"></a>IP数据报</h2><blockquote>
-<p>IP数据报的首部和数据两部分组成。首部的前一部分是固定，共20字节，是所有IP数据报必须具有的。</p>
-<p><img src="/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82%5CIP%E5%9C%B0%E5%9D%80.png" alt="IP地址"></p>
-<p>在首部的固定部分的后面是一些可选字段，其长度是可变的。</p>
-<p>各字段</p>
-<p>0-4位版本(表示为IPv4/IPv6)    4-8位首部长度(最小值为固定长度部分共20个字节。可表示最大15个单位，一个单位4个字节，故首部最大60个字节)    8-16区分服务(数据包所需的服务，定义优先级)    16-32总长度(数据包总大小，一般为1500)</p>
-<p>标识(每产生一个数据包就增加1)    标志(判断数据包是否分片)    片偏移(偏移量单位为8个字节)</p>
-<p>TTL生存时间值，指定IP包被路由器丢弃之前允许通过的最大网段数量。</p>
-<p>协议用于指明上层协议是什么，如ICMP、TCP、UDP等。</p>
-<p>首部校验和用于校验数据报是否可用。计算过程:发送端把数据报首部的信息拆成许多单字，然后初始校验和为0，将校验和同这些单字进行反码运算求和，结果取反码即为校验和。接收方重复此过程，若结果为0则保留，不为0则直接丢弃。</p>
-<p>源地址、目的地址即为IP地址。</p>
-<p>可选字段用于支持排错、测量及安全等措施</p>
-</blockquote>
-<h2 id="数据路由"><a href="#数据路由" class="headerlink" title="数据路由"></a>数据路由</h2><blockquote>
-<p>数据路由在不同网段转发数据报。能去能回——–网络畅通。</p>
-<p>负载均衡</p>
-</blockquote>
-<h2 id="ICMP协议"><a href="#ICMP协议" class="headerlink" title="ICMP协议"></a>ICMP协议</h2><blockquote>
-<p>报文类型:ICMP差错报告报文、ICMP询问报文</p>
-<p>报文前四个字节格式统一共3个字段:类型、代码、检验和，接着的四个字节内容与ICMP的类型有关。</p>
-<p>差错报告报文共五种:终点不可达、源点抑制(发数据报的速度过快)、时间超过、参数问题、改变路由/重定向。</p>
-<p>询问报文有两种:回送请求和回答报文、时间戳请求和回答报文。</p>
-</blockquote>
-<h2 id="动态路由协议"><a href="#动态路由协议" class="headerlink" title="动态路由协议"></a>动态路由协议</h2><blockquote>
-<p>RIP最早的动态路由协议，周期性广播，30s广播一次。跳数16次。</p>
-</blockquote>
-<h2 id="OSPF协议-开放式最短路径优先-—动态路由协议"><a href="#OSPF协议-开放式最短路径优先-—动态路由协议" class="headerlink" title="OSPF协议(开放式最短路径优先)—动态路由协议"></a>OSPF协议(开放式最短路径优先)—动态路由协议</h2><h2 id="BGP-—-外部网关协议"><a href="#BGP-—-外部网关协议" class="headerlink" title="BGP —- 外部网关协议"></a>BGP —- 外部网关协议</h2><blockquote>
-<p>不同自治系统的路由器之间交换路由信息的协议</p>
-<p>报文类型：</p>
-<p>OPEN</p>
-<p>UDDATE</p>
-<p>KEEPALIVE</p>
-<p>NOTIFICATION</p>
-<p>ROUTE-REFRESH</p>
-<p>重要属性：</p>
-<p>AS-PATH: 包含前缀通告所经过的AS序列</p>
-<p>NEXT-HOP(下一跳): 开始一个AS-PATH的路由器接口，指向下一跳AS.</p>
-</blockquote>
-<h2 id="NAT和PAT"><a href="#NAT和PAT" class="headerlink" title="NAT和PAT"></a>NAT和PAT</h2><blockquote>
-</blockquote>
-<h2 id="IGMP-组播-多播"><a href="#IGMP-组播-多播" class="headerlink" title="IGMP 组播/多播"></a>IGMP 组播/多播</h2><h2 id="DHCP"><a href="#DHCP" class="headerlink" title="DHCP"></a>DHCP</h2><blockquote>
-</blockquote>
-<h2 id="ARP"><a href="#ARP" class="headerlink" title="ARP"></a>ARP</h2><blockquote>
-<p>默认网关为网络上的最低地址，如192.32.65.0/24的默认网关为192.32.65.1</p>
+<h3 id="低延迟垃圾收集器">低延迟垃圾收集器</h3>
+<blockquote>
+<p>Shenandoah收集器</p>
 </blockquote>
 
       
@@ -2348,7 +490,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/25/">25</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -2442,6 +584,39 @@
   <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 
+
+
+  <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'none'
+      },
+      options: {
+        renderActions: {
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
 
 
 

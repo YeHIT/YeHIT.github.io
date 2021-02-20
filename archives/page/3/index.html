@@ -281,8 +281,8 @@
       </div>
 
       <div class="post-title">
-          <a class="post-title-link" href="/2021/02/20/computerNetwork/%E7%AC%AC5%E7%AB%A0-%E4%BC%A0%E8%BE%93%E5%B1%82/" itemprop="url">
-            <span itemprop="name">传输层</span>
+          <a class="post-title-link" href="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/" itemprop="url">
+            <span itemprop="name">SpringBoot常用配置</span>
           </a>
       </div>
 
@@ -301,8 +301,8 @@
       </div>
 
       <div class="post-title">
-          <a class="post-title-link" href="/2021/02/20/computerNetwork/%E7%AC%AC6%E7%AB%A0-%E5%BA%94%E7%94%A8%E5%B1%82/" itemprop="url">
-            <span itemprop="name">应用层</span>
+          <a class="post-title-link" href="/2021/02/20/codeAnalyse/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E6%B1%A0/" itemprop="url">
+            <span itemprop="name">数据库连接池</span>
           </a>
       </div>
 
@@ -471,6 +471,39 @@
   <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 
+
+
+  <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'none'
+      },
+      options: {
+        renderActions: {
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
 
 
 

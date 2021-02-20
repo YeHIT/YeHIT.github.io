@@ -22,12 +22,12 @@
     var NexT = window.NexT || {};
     var CONFIG = {"hostname":"49.234.221.130","root":"/","images":"/images","scheme":"Pisces","version":"8.2.1","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
   </script>
-<meta name="description" content="DubboRMI 和 RPC RMI：远程方法调用，是java自带的API可以实现的，依赖JVM。客户端将要调用的方法和参数打包成辅助对象，通过网络socket，发送给服务端辅助对象，服务端接收后进行解包，找到真正被调用的方法，执行这个方法将执行结果，依次返回。服务端辅助对象进行打包，然后客户端辅助对象进行解包，结果返回给真正的调用者。 IPC：进程间通信。进程是计算机系统资源分配的最小单位，每个">
+<meta name="description" content="Dubbo RMI 和 RPC  RMI：远程方法调用，是java自带的API可以实现的，依赖JVM。客户端将要调用的方法和参数打包成辅助对象，通过网络socket，发送给服务端辅助对象，服务端接收后进行解包，找到真正被调用的方法，执行这个方法将执行结果，依次返回。服务端辅助对象进行打包，然后客户端辅助对象进行解包，结果返回给真正的调用者。 IPC：进程间通信。进程是计算机系统资源分配的最">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Dubbo简单介绍">
 <meta property="og:url" content="http://49.234.221.130/2021/02/20/codeAnalyse/Dubbo/index.html">
 <meta property="og:site_name" content="Yesomething">
-<meta property="og:description" content="DubboRMI 和 RPC RMI：远程方法调用，是java自带的API可以实现的，依赖JVM。客户端将要调用的方法和参数打包成辅助对象，通过网络socket，发送给服务端辅助对象，服务端接收后进行解包，找到真正被调用的方法，执行这个方法将执行结果，依次返回。服务端辅助对象进行打包，然后客户端辅助对象进行解包，结果返回给真正的调用者。 IPC：进程间通信。进程是计算机系统资源分配的最小单位，每个">
+<meta property="og:description" content="Dubbo RMI 和 RPC  RMI：远程方法调用，是java自带的API可以实现的，依赖JVM。客户端将要调用的方法和参数打包成辅助对象，通过网络socket，发送给服务端辅助对象，服务端接收后进行解包，找到真正被调用的方法，执行这个方法将执行结果，依次返回。服务端辅助对象进行打包，然后客户端辅助对象进行解包，结果返回给真正的调用者。 IPC：进程间通信。进程是计算机系统资源分配的最">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-02-20T04:26:00.000Z">
 <meta property="article:modified_time" content="2021-02-20T08:12:46.338Z">
@@ -188,7 +188,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Dubbo"><span class="nav-number">1.</span> <span class="nav-text">Dubbo</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#RMI-%E5%92%8C-RPC"><span class="nav-number">1.1.</span> <span class="nav-text">RMI 和 RPC</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8RPC%E6%A1%86%E6%9E%B6"><span class="nav-number">1.2.</span> <span class="nav-text">常用RPC框架</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Dubbo-1"><span class="nav-number">1.2.1.</span> <span class="nav-text">Dubbo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BRPC"><span class="nav-number">1.2.2.</span> <span class="nav-text">BRPC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GRPC"><span class="nav-number">1.2.3.</span> <span class="nav-text">GRPC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Thrift"><span class="nav-number">1.2.4.</span> <span class="nav-text">Thrift</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83-Zookeeper"><span class="nav-number">1.3.</span> <span class="nav-text">注册中心 - Zookeeper</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#dubbo"><span class="nav-number">1.</span> <span class="nav-text">Dubbo</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#rmi-%E5%92%8C-rpc"><span class="nav-number">1.1.</span> <span class="nav-text">RMI 和 RPC</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8rpc%E6%A1%86%E6%9E%B6"><span class="nav-number">1.2.</span> <span class="nav-text">常用RPC框架</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#dubbo-1"><span class="nav-number">1.2.1.</span> <span class="nav-text">Dubbo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#brpc"><span class="nav-number">1.2.2.</span> <span class="nav-text">BRPC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#grpc"><span class="nav-number">1.2.3.</span> <span class="nav-text">GRPC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#thrift"><span class="nav-number">1.2.4.</span> <span class="nav-text">Thrift</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83---zookeeper"><span class="nav-number">1.3.</span> <span class="nav-text">注册中心 - Zookeeper</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -340,25 +340,33 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h1 id="Dubbo"><a href="#Dubbo" class="headerlink" title="Dubbo"></a>Dubbo</h1><h2 id="RMI-和-RPC"><a href="#RMI-和-RPC" class="headerlink" title="RMI 和 RPC"></a>RMI 和 RPC</h2><blockquote>
+        <h1 id="dubbo">Dubbo</h1>
+<h2 id="rmi-和-rpc">RMI 和 RPC</h2>
+<blockquote>
 <p>RMI：远程方法调用，是java自带的API可以实现的，依赖JVM。客户端将要调用的方法和参数打包成辅助对象，通过网络socket，发送给服务端辅助对象，服务端接收后进行解包，找到真正被调用的方法，执行这个方法将执行结果，依次返回。服务端辅助对象进行打包，然后客户端辅助对象进行解包，结果返回给真正的调用者。</p>
 <p>IPC：进程间通信。进程是计算机系统资源分配的最小单位，每个进程都是资源隔离的。</p>
 <p>LPC：本地过程调用。</p>
 <p>RPC：远程过程调用。</p>
 </blockquote>
-<h2 id="常用RPC框架"><a href="#常用RPC框架" class="headerlink" title="常用RPC框架"></a>常用RPC框架</h2><h3 id="Dubbo-1"><a href="#Dubbo-1" class="headerlink" title="Dubbo"></a>Dubbo</h3><blockquote>
+<h2 id="常用rpc框架">常用RPC框架</h2>
+<h3 id="dubbo-1">Dubbo</h3>
+<blockquote>
 <p>阿里开发，基于Spring和Netty，是当前使用最广泛的RPC框架。</p>
 </blockquote>
-<h3 id="BRPC"><a href="#BRPC" class="headerlink" title="BRPC"></a>BRPC</h3><blockquote>
-<p>百度开发，”baidu-rpc”，支持多种协议，性能优良。</p>
+<h3 id="brpc">BRPC</h3>
+<blockquote>
+<p>百度开发，"baidu-rpc"，支持多种协议，性能优良。</p>
 </blockquote>
-<h3 id="GRPC"><a href="#GRPC" class="headerlink" title="GRPC"></a>GRPC</h3><blockquote>
+<h3 id="grpc">GRPC</h3>
+<blockquote>
 <p>谷歌开发，基于Netty，服务于TensorFlow的底层通信。</p>
 </blockquote>
-<h3 id="Thrift"><a href="#Thrift" class="headerlink" title="Thrift"></a>Thrift</h3><blockquote>
+<h3 id="thrift">Thrift</h3>
+<blockquote>
 <p>Facebook开发。</p>
 </blockquote>
-<h2 id="注册中心-Zookeeper"><a href="#注册中心-Zookeeper" class="headerlink" title="注册中心 - Zookeeper"></a>注册中心 - Zookeeper</h2>
+<h2 id="注册中心---zookeeper">注册中心 - Zookeeper</h2>
+
     </div>
 
     
@@ -411,13 +419,13 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2021/02/20/codeAnalyse/SpringBoot%E5%8E%9F%E7%90%86/" rel="prev" title="SpringBoot原理分析">
-                  <i class="fa fa-chevron-left"></i> SpringBoot原理分析
+                <a href="/2021/02/20/codeAnalyse/http%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86%E5%8F%8A%E6%94%B9%E8%BF%9B/" rel="prev" title="http基本知识及改进">
+                  <i class="fa fa-chevron-left"></i> http基本知识及改进
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2021/02/20/Linux/Linux%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%9F%BA%E6%9C%AC%E6%8C%87%E4%BB%A4/" rel="next" title="Linux介绍及基本指令">
-                  Linux介绍及基本指令 <i class="fa fa-chevron-right"></i>
+                <a href="/2021/02/20/computerNetwork/%E7%AC%AC5%E7%AB%A0-%E4%BC%A0%E8%BE%93%E5%B1%82/" rel="next" title="传输层">
+                  传输层 <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
           </div>
@@ -521,6 +529,39 @@
   <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 
+
+
+  <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'none'
+      },
+      options: {
+        renderActions: {
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
 
 
 

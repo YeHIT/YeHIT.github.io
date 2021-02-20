@@ -22,12 +22,12 @@
     var NexT = window.NexT || {};
     var CONFIG = {"hostname":"49.234.221.130","root":"/","images":"/images","scheme":"Pisces","version":"8.2.1","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
   </script>
-<meta name="description" content="Object类 Object类是Java中未指定父类的类的默认继承类，也可以说是所有类的祖先。本文档编写目的为通过查看Java源码来加强自己对Object类的理解。不涉及native实现的方法。  registerNatives() native实现，目的是在底层创建对应的java本机函数使JVM找到native方法  getClass() 返回当前对象运行时对应的类对象，且这个类是静态类型擦除后">
+<meta name="description" content="Object类  Object类是Java中未指定父类的类的默认继承类，也可以说是所有类的祖先。本文档编写目的为通过查看Java源码来加强自己对Object类的理解。不涉及native实现的方法。  registerNatives()  native实现，目的是在底层创建对应的java本机函数使JVM找到native方法  getClass()  返回当前对象运行时对应的类对象">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Object类分析">
 <meta property="og:url" content="http://49.234.221.130/2021/02/20/JavaBasicKnowledge/Object/index.html">
 <meta property="og:site_name" content="Yesomething">
-<meta property="og:description" content="Object类 Object类是Java中未指定父类的类的默认继承类，也可以说是所有类的祖先。本文档编写目的为通过查看Java源码来加强自己对Object类的理解。不涉及native实现的方法。  registerNatives() native实现，目的是在底层创建对应的java本机函数使JVM找到native方法  getClass() 返回当前对象运行时对应的类对象，且这个类是静态类型擦除后">
+<meta property="og:description" content="Object类  Object类是Java中未指定父类的类的默认继承类，也可以说是所有类的祖先。本文档编写目的为通过查看Java源码来加强自己对Object类的理解。不涉及native实现的方法。  registerNatives()  native实现，目的是在底层创建对应的java本机函数使JVM找到native方法  getClass()  返回当前对象运行时对应的类对象">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-02-20T04:26:00.000Z">
 <meta property="article:modified_time" content="2021-02-20T08:01:33.887Z">
@@ -187,7 +187,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Object%E7%B1%BB"><span class="nav-number">1.</span> <span class="nav-text">Object类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#registerNatives"><span class="nav-number">1.0.0.1.</span> <span class="nav-text">registerNatives()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#getClass"><span class="nav-number">1.0.0.2.</span> <span class="nav-text">getClass()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#hashCode"><span class="nav-number">1.0.0.3.</span> <span class="nav-text">hashCode()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#equals"><span class="nav-number">1.0.0.4.</span> <span class="nav-text">equals()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#clone"><span class="nav-number">1.0.0.5.</span> <span class="nav-text">clone()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#toString-NaN"><span class="nav-number">1.0.0.6.</span> <span class="nav-text">toString()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#notify"><span class="nav-number">1.0.0.7.</span> <span class="nav-text">notify()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#notifyAll"><span class="nav-number">1.0.0.8.</span> <span class="nav-text">notifyAll()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#wait-long-timeout"><span class="nav-number">1.0.0.9.</span> <span class="nav-text">wait(long timeout)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#wait-long-timeout-int-nanos"><span class="nav-number">1.0.0.10.</span> <span class="nav-text">wait(long timeout, int nanos)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#wait"><span class="nav-number">1.0.0.11.</span> <span class="nav-text">wait()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#finalize"><span class="nav-number">1.0.0.12.</span> <span class="nav-text">finalize()</span></a></li></ol></li></ol></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#object%E7%B1%BB"><span class="nav-number">1.</span> <span class="nav-text">Object类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#registernatives"><span class="nav-number">1.0.0.1.</span> <span class="nav-text">registerNatives()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#getclass"><span class="nav-number">1.0.0.2.</span> <span class="nav-text">getClass()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#hashcode"><span class="nav-number">1.0.0.3.</span> <span class="nav-text">hashCode()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#equals"><span class="nav-number">1.0.0.4.</span> <span class="nav-text">equals()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#clone"><span class="nav-number">1.0.0.5.</span> <span class="nav-text">clone()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#tostring"><span class="nav-number">1.0.0.6.</span> <span class="nav-text">toString()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#notify"><span class="nav-number">1.0.0.7.</span> <span class="nav-text">notify()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#notifyall"><span class="nav-number">1.0.0.8.</span> <span class="nav-text">notifyAll()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#waitlong-timeout"><span class="nav-number">1.0.0.9.</span> <span class="nav-text">wait(long timeout)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#waitlong-timeout-int-nanos"><span class="nav-number">1.0.0.10.</span> <span class="nav-text">wait(long timeout, int nanos)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#wait"><span class="nav-number">1.0.0.11.</span> <span class="nav-text">wait()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#finalize"><span class="nav-number">1.0.0.12.</span> <span class="nav-text">finalize()</span></a></li></ol></li></ol></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -325,7 +325,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>2.6k</span>
+      <span>2.5k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -343,83 +343,97 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h1 id="Object类"><a href="#Object类" class="headerlink" title="Object类"></a>Object类</h1><blockquote>
+        <h1 id="object类">Object类</h1>
+<blockquote>
 <p>Object类是Java中未指定父类的类的默认继承类，也可以说是所有类的祖先。本文档编写目的为通过查看Java源码来加强自己对Object类的理解。不涉及native实现的方法。</p>
 </blockquote>
-<h4 id="registerNatives"><a href="#registerNatives" class="headerlink" title="registerNatives()"></a>registerNatives()</h4><blockquote>
+<h4 id="registernatives">registerNatives()</h4>
+<blockquote>
 <p>native实现，目的是在底层创建对应的java本机函数使JVM找到native方法</p>
 </blockquote>
-<h4 id="getClass"><a href="#getClass" class="headerlink" title="getClass()"></a>getClass()</h4><blockquote>
+<h4 id="getclass">getClass()</h4>
+<blockquote>
 <p>返回当前对象运行时对应的类对象，且这个类是静态类型擦除后的结果。如T-&gt;Object;List<String>-&gt;List</String></p>
 </blockquote>
-<h4 id="hashCode"><a href="#hashCode" class="headerlink" title="hashCode()"></a>hashCode()</h4><blockquote>
+<h4 id="hashcode">hashCode()</h4>
+<blockquote>
 <p>返回当前对象的hash值，在同一个程序执行中，约定当对象相同时即执行equals方法比较的信息不被更改时，不管调用几次hashcode方法，均要返回相同的值。但不要求不同程序产生相同的hashcode</p>
 <p>如果两个对象可通过equals方法判定相同，则调用hashcode方法会产生两个相同的值。</p>
 <p>如果两个对象通过equals方法判定不同，也不要求hashcode方法产生两个不同的值，但如果产生不同的值会提升哈希表的性能。</p>
 <p>如果可以的话，不同对象应该有不同的hash值，这个通常可以根据将对象在内存中的地址转化为整数来实现，但不强制要求。</p>
 </blockquote>
-<h4 id="equals"><a href="#equals" class="headerlink" title="equals()"></a>equals()</h4><blockquote>
+<h4 id="equals">equals()</h4>
+<blockquote>
 <p>判断某些对象是否equals to调用该方法的对象。</p>
 <p>实现了非空对象引用上的等价关系判断。</p>
 <p>四个特性:自反、对称、传递、一致。</p>
 <p>自反: x.equals(x) == true</p>
 <p>对称: x.equals(y) == y.equals(x)</p>
-<p>传递: x.equals(y), y.equals(z)  ——&gt; x.equals(z)</p>
+<p>传递: x.equals(y), y.equals(z) ------&gt; x.equals(z)</p>
 <p>一致: 只要用于equals比较的信息不被改变，则不管调用几次equals方法其值总是不变的。</p>
 <p>非空对象引用同null比较值总是为false。</p>
 <p>对象之间equals比较只有两个对象是完全相同即地址一致时才会返回true。</p>
 <p>为了维持hashcode的原则，在重写equals方法的时候，往往需要重写hashcode方法。</p>
 </blockquote>
-<h4 id="clone"><a href="#clone" class="headerlink" title="clone()"></a>clone()</h4><blockquote>
+<h4 id="clone">clone()</h4>
+<blockquote>
 <p>根据对象的类复制一个对象的副本。</p>
-<p>往往有 </p>
-<p>​    x.clone()  != x;</p>
-<p>​    x.clone().getClass() == x.getClass()</p>
-<p>​    x.clone.equals(x) == true</p>
-<p>​    通常返回的clone对象都是调用super.clone得到的。</p>
-<p>​    clone的对象需要和被clone的对象相互独立。这便要求对被clone对象中所有可变属性进行复制，并用副本的引用替换对这些对象的引用。</p>
+<p>往往有</p>
+<p>​ x.clone() != x;</p>
+<p>​ x.clone().getClass() == x.getClass()</p>
+<p>​ x.clone.equals(x) == true</p>
+<p>​ 通常返回的clone对象都是调用super.clone得到的。</p>
+<p>​ clone的对象需要和被clone的对象相互独立。这便要求对被clone对象中所有可变属性进行复制，并用副本的引用替换对这些对象的引用。</p>
 <p>Object类的clone方法</p>
-<p>​    首先需要继承Cloneable接口。数组类型默认实现了Cloneable接口，且T类型的数组clone的结果的类型为T，需要注意的时，数组clone是直接复制原数组的值即对象引用只是将引用拷贝了，故为浅拷贝。</p>
+<p>​ 首先需要继承Cloneable接口。数组类型默认实现了Cloneable接口，且T类型的数组clone的结果的类型为T，需要注意的时，数组clone是直接复制原数组的值即对象引用只是将引用拷贝了，故为浅拷贝。</p>
 <p>Object对象没有实现Cloneable接口，故对Object对象使用clone会产生异常。CloneNotSupportedException</p>
 </blockquote>
-<h4 id="toString-NaN"><a href="#toString-NaN" class="headerlink" title="toString()"></a>toString()</h4><blockquote>
+<h4 id="tostring">toString()</h4>
+<blockquote>
 <p>返回对象的字符串表示形式。往往需要重写这个方法。</p>
 <p>这个方法的默认表现为“类名+@+hashcode的十六进制表示”</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">getClass().getName() + <span class="string">&#x27;@&#x27;</span> + Integer.toHexString(hashCode())</span><br></pre></td></tr></table></figure>
 </blockquote>
-<h4 id="notify"><a href="#notify" class="headerlink" title="notify()"></a>notify()</h4><blockquote>
+<h4 id="notify">notify()</h4>
+<blockquote>
 <p>唤醒正在wait()该线程所拥有的对象的一个线程。如果有多个线程都在wait该对象，则随机唤醒一个线程，由具体实现决定。</p>
 <p>被唤醒的线程只有在对象没有被锁定的情况下才能执行。且被唤醒的线程仍然需要以通常的方式同其他线程竞争对象的使用权，没有其他特权。</p>
 <p>该方法只能由当前具有对象使用权的线程调用，获取对象使用权的方式</p>
-<p>​    1.执行对象的synchronize修饰的方法</p>
-<p>​    2.执行synchronize修饰的代码段。</p>
-<p>​    3.执行synchronize修饰的静态方法。</p>
+<p>​ 1.执行对象的synchronize修饰的方法</p>
+<p>​ 2.执行synchronize修饰的代码段。</p>
+<p>​ 3.执行synchronize修饰的静态方法。</p>
 <p>未拥有对象monitor的线程调用会抛出IllegalMonitorStateException异常。</p>
 </blockquote>
-<h4 id="notifyAll"><a href="#notifyAll" class="headerlink" title="notifyAll()"></a>notifyAll()</h4><blockquote>
+<h4 id="notifyall">notifyAll()</h4>
+<blockquote>
 <p>唤醒正在wait()该线程所拥有的对象的所有线程。</p>
 </blockquote>
-<h4 id="wait-long-timeout"><a href="#wait-long-timeout" class="headerlink" title="wait(long timeout)"></a>wait(long timeout)</h4><blockquote>
+<h4 id="waitlong-timeout">wait(long timeout)</h4>
+<blockquote>
 <p>让当前线程等待一段时间，直到被notify/notifyAll/一段时间过后唤醒。</p>
 <p>调用该方法的线程必须有对象的monitor。</p>
 <p>该方法会让线程进入该对象的等待集中，然后放弃对该对象的所有同步声明。 出于线程调度目的，该线程被禁用，并且在发生以下四种情况之一之前一直处于休眠状态：</p>
-<pre><code> 1. 某些线程调用了notify方法并恰好唤醒该线程。
- 2. 某些线程调用了notifyAll方法。
- 3. 某些线程调用了interrupt方法。
- 4. 一段特定时间过去。若为设置特定时间线程会等到被notify为止。
-</code></pre>
+<ol type="1">
+<li>某些线程调用了notify方法并恰好唤醒该线程。</li>
+<li>某些线程调用了notifyAll方法。</li>
+<li>某些线程调用了interrupt方法。</li>
+<li>一段特定时间过去。若为设置特定时间线程会等到被notify为止。</li>
+</ol>
 <p>从wait方法返回的对象和线程的同步状态会和调用该方法时的状态完全相同。</p>
 <p>存在虚假唤醒(spurious wakeup)的问题需要在while中调用wait来避免。</p>
 <p>如果该线程在等待之前，或等待期间被另一个线程调用该线程的interrupt()方法，那么当被interrupt线程获得锁之后，会立刻抛出InterruptedException异常，我们可以对这个异常进行捕获，然后处理，以实现线程的唤醒和通信。</p>
 <p>wait方法将当前线程放入该对象的等待集中，只会解锁该对象，若当前线程还锁定了其他对象，那么这些对象不会被解锁。(死锁)</p>
 </blockquote>
-<h4 id="wait-long-timeout-int-nanos"><a href="#wait-long-timeout-int-nanos" class="headerlink" title="wait(long timeout, int nanos)"></a>wait(long timeout, int nanos)</h4><blockquote>
+<h4 id="waitlong-timeout-int-nanos">wait(long timeout, int nanos)</h4>
+<blockquote>
 <p>同一个参数的wait基本一致，但可以输入纳秒级的精度。实际上只是nanos大于0直接让timeout++而已。</p>
 </blockquote>
-<h4 id="wait"><a href="#wait" class="headerlink" title="wait()"></a>wait()</h4><blockquote>
+<h4 id="wait">wait()</h4>
+<blockquote>
 <p>不支持超时自动唤醒。相当于wait(0)</p>
 </blockquote>
-<h4 id="finalize"><a href="#finalize" class="headerlink" title="finalize()"></a>finalize()</h4><blockquote>
+<h4 id="finalize">finalize()</h4>
+<blockquote>
 <p>当资源不可达时GC会自动调用对象的finalize方法</p>
 <p>这个方法内部可以执行任何操作，包括让这个对象重新可达。但往往只是执行清除操作，如中断I/O连接。</p>
 <p>Java编程语言对于所有的对象都不能够保证哪个线程会调用它的finalize方法。然而可以保证一点，调用终结方法的线程必然不会被任何用户可见的同步锁锁住。如果一个没有被捕获的异常在执行终结方法时被抛出，异常会被忽略并且哪个对象的终结过程会被终止。</p>
@@ -478,13 +492,13 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2021/02/20/JavaBasicKnowledge/%E5%B9%B6%E5%8F%91%E7%9B%B8%E5%85%B3/" rel="prev" title="并发相关内容">
-                  <i class="fa fa-chevron-left"></i> 并发相关内容
+                <a href="/2021/02/20/JavaBasicKnowledge/HashMap/" rel="prev" title="HashMap分析">
+                  <i class="fa fa-chevron-left"></i> HashMap分析
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2021/02/20/JavaBasicKnowledge/HashMap/" rel="next" title="HashMap分析">
-                  HashMap分析 <i class="fa fa-chevron-right"></i>
+                <a href="/2021/02/20/JavaBasicKnowledge/ConcurrentHashMap/" rel="next" title="ConcurrentHashMap分析">
+                  ConcurrentHashMap分析 <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
           </div>
@@ -588,6 +602,39 @@
   <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 
+
+
+  <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'none'
+      },
+      options: {
+        renderActions: {
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
 
 
 

@@ -22,12 +22,12 @@
     var NexT = window.NexT || {};
     var CONFIG = {"hostname":"49.234.221.130","root":"/","images":"/images","scheme":"Pisces","version":"8.2.1","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
   </script>
-<meta name="description" content="Linux介绍及基本指令Linux区别 Ubantu：分为用户版和服务器版。 ​    用户版，有着良好的用户界面，有强大的软件支持。 ​    服务器版比较少用。 Debian：系统十分稳定，内核非常小。 RedHat：是一个商用的操作系统，性能非常好，软件支持也非常好。 Centos：基本上相当于RedHat的复刻版本。免费。  根目录下各目录对应的功能在linux中获取帮助 man 命令名：">
+<meta name="description" content="Linux介绍及基本指令 Linux区别  Ubantu：分为用户版和服务器版。 ​ 用户版，有着良好的用户界面，有强大的软件支持。 ​ 服务器版比较少用。 Debian：系统十分稳定，内核非常小。 RedHat：是一个商用的操作系统，性能非常好，软件支持也非常好。 Centos：基本上相当于RedHat的复刻版本。免费。  根目录下各目录对应的功能 在linux中获取帮助">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Linux介绍及基本指令">
 <meta property="og:url" content="http://49.234.221.130/2021/02/20/Linux/Linux%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%9F%BA%E6%9C%AC%E6%8C%87%E4%BB%A4/index.html">
 <meta property="og:site_name" content="Yesomething">
-<meta property="og:description" content="Linux介绍及基本指令Linux区别 Ubantu：分为用户版和服务器版。 ​    用户版，有着良好的用户界面，有强大的软件支持。 ​    服务器版比较少用。 Debian：系统十分稳定，内核非常小。 RedHat：是一个商用的操作系统，性能非常好，软件支持也非常好。 Centos：基本上相当于RedHat的复刻版本。免费。  根目录下各目录对应的功能在linux中获取帮助 man 命令名：">
+<meta property="og:description" content="Linux介绍及基本指令 Linux区别  Ubantu：分为用户版和服务器版。 ​ 用户版，有着良好的用户界面，有强大的软件支持。 ​ 服务器版比较少用。 Debian：系统十分稳定，内核非常小。 RedHat：是一个商用的操作系统，性能非常好，软件支持也非常好。 Centos：基本上相当于RedHat的复刻版本。免费。  根目录下各目录对应的功能 在linux中获取帮助">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-02-20T04:26:00.000Z">
 <meta property="article:modified_time" content="2021-02-20T08:19:26.026Z">
@@ -186,7 +186,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Linux%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%9F%BA%E6%9C%AC%E6%8C%87%E4%BB%A4"><span class="nav-number">1.</span> <span class="nav-text">Linux介绍及基本指令</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Linux%E5%8C%BA%E5%88%AB"><span class="nav-number">1.1.</span> <span class="nav-text">Linux区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B9%E7%9B%AE%E5%BD%95%E4%B8%8B%E5%90%84%E7%9B%AE%E5%BD%95%E5%AF%B9%E5%BA%94%E7%9A%84%E5%8A%9F%E8%83%BD"><span class="nav-number">1.2.</span> <span class="nav-text">根目录下各目录对应的功能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%A8linux%E4%B8%AD%E8%8E%B7%E5%8F%96%E5%B8%AE%E5%8A%A9"><span class="nav-number">1.3.</span> <span class="nav-text">在linux中获取帮助</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Linux%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4"><span class="nav-number">1.4.</span> <span class="nav-text">Linux基本命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4"><span class="nav-number">1.5.</span> <span class="nav-text">文件基本命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E8%A7%A3%E5%8E%8B%E7%BC%A9"><span class="nav-number">1.6.</span> <span class="nav-text">文件解压缩</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93"><span class="nav-number">1.7.</span> <span class="nav-text">文件传输</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86%E5%91%BD%E4%BB%A4"><span class="nav-number">1.8.</span> <span class="nav-text">进程管理命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9D%83%E9%99%90%E7%AE%A1%E7%90%86%E5%91%BD%E4%BB%A4"><span class="nav-number">1.9.</span> <span class="nav-text">权限管理命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85%E5%91%BD%E4%BB%A4"><span class="nav-number">1.10.</span> <span class="nav-text">软件安装命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E7%9B%B8%E5%85%B3%E5%91%BD%E4%BB%A4"><span class="nav-number">1.11.</span> <span class="nav-text">安全相关命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E6%9C%BA%E5%91%BD%E4%BB%A4"><span class="nav-number">1.12.</span> <span class="nav-text">关机命令</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#linux%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%9F%BA%E6%9C%AC%E6%8C%87%E4%BB%A4"><span class="nav-number">1.</span> <span class="nav-text">Linux介绍及基本指令</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#linux%E5%8C%BA%E5%88%AB"><span class="nav-number">1.1.</span> <span class="nav-text">Linux区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B9%E7%9B%AE%E5%BD%95%E4%B8%8B%E5%90%84%E7%9B%AE%E5%BD%95%E5%AF%B9%E5%BA%94%E7%9A%84%E5%8A%9F%E8%83%BD"><span class="nav-number">1.2.</span> <span class="nav-text">根目录下各目录对应的功能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%A8linux%E4%B8%AD%E8%8E%B7%E5%8F%96%E5%B8%AE%E5%8A%A9"><span class="nav-number">1.3.</span> <span class="nav-text">在linux中获取帮助</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#linux%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4"><span class="nav-number">1.4.</span> <span class="nav-text">Linux基本命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4"><span class="nav-number">1.5.</span> <span class="nav-text">文件基本命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E8%A7%A3%E5%8E%8B%E7%BC%A9"><span class="nav-number">1.6.</span> <span class="nav-text">文件解压缩</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93"><span class="nav-number">1.7.</span> <span class="nav-text">文件传输</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86%E5%91%BD%E4%BB%A4"><span class="nav-number">1.8.</span> <span class="nav-text">进程管理命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9D%83%E9%99%90%E7%AE%A1%E7%90%86%E5%91%BD%E4%BB%A4"><span class="nav-number">1.9.</span> <span class="nav-text">权限管理命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85%E5%91%BD%E4%BB%A4"><span class="nav-number">1.10.</span> <span class="nav-text">软件安装命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E7%9B%B8%E5%85%B3%E5%91%BD%E4%BB%A4"><span class="nav-number">1.11.</span> <span class="nav-text">安全相关命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E6%9C%BA%E5%91%BD%E4%BB%A4"><span class="nav-number">1.12.</span> <span class="nav-text">关机命令</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -324,7 +324,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>2.1k</span>
+      <span>2k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -342,23 +342,28 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h1 id="Linux介绍及基本指令"><a href="#Linux介绍及基本指令" class="headerlink" title="Linux介绍及基本指令"></a>Linux介绍及基本指令</h1><h2 id="Linux区别"><a href="#Linux区别" class="headerlink" title="Linux区别"></a>Linux区别</h2><blockquote>
+        <h1 id="linux介绍及基本指令">Linux介绍及基本指令</h1>
+<h2 id="linux区别">Linux区别</h2>
+<blockquote>
 <p>Ubantu：分为用户版和服务器版。</p>
-<p>​    用户版，有着良好的用户界面，有强大的软件支持。</p>
-<p>​    服务器版比较少用。</p>
+<p>​ 用户版，有着良好的用户界面，有强大的软件支持。</p>
+<p>​ 服务器版比较少用。</p>
 <p>Debian：系统十分稳定，内核非常小。</p>
 <p>RedHat：是一个商用的操作系统，性能非常好，软件支持也非常好。</p>
 <p>Centos：基本上相当于RedHat的复刻版本。免费。</p>
 </blockquote>
-<h2 id="根目录下各目录对应的功能"><a href="#根目录下各目录对应的功能" class="headerlink" title="根目录下各目录对应的功能"></a>根目录下各目录对应的功能</h2><h2 id="在linux中获取帮助"><a href="#在linux中获取帮助" class="headerlink" title="在linux中获取帮助"></a>在linux中获取帮助</h2><blockquote>
+<h2 id="根目录下各目录对应的功能">根目录下各目录对应的功能</h2>
+<h2 id="在linux中获取帮助">在linux中获取帮助</h2>
+<blockquote>
 <p>man 命令名：查看命令的操作说明</p>
-<p>命令行 –help：查看命令的语法</p>
+<p>命令行 --help：查看命令的语法</p>
 </blockquote>
-<h2 id="Linux基本命令"><a href="#Linux基本命令" class="headerlink" title="Linux基本命令"></a>Linux基本命令</h2><blockquote>
+<h2 id="linux基本命令">Linux基本命令</h2>
+<blockquote>
 <p>ls：查看当前目录中所有文件及目录</p>
 <p>ll：查看当前目录内所有文件及目录详细信息。详细信息具体查看方式。以drwxr-xr-x为例(第一个字符拆出，然后每三个字符表示一个内容)：</p>
 <p>d：文件类型，目录。rwx：拥有者权限，可读，可写，可执行。r-x：用户组权限，可读，不可写，可执行。r-x：其他组权限，可读，不可写，可执行。</p>
-<p>具体文件类型有：d：路径。*-*：文件。 l ：连接(快捷方式)。b：表示可按块随机读写的设备。c：设备文件里的串行端口设备，如键盘、设备。</p>
+<p>具体文件类型有：d：路径。<em>-</em>：文件。 l ：连接(快捷方式)。b：表示可按块随机读写的设备。c：设备文件里的串行端口设备，如键盘、设备。</p>
 <p>表示权限的三个字符可以用0~7的数字表示。如rwx为7，r-x为5。</p>
 <p>ls -al：查看所有文件及目录包括隐藏目录。</p>
 <p>pwd：查看当前所在层级</p>
@@ -366,18 +371,19 @@
 <p>date：查看日期</p>
 <p>cal：查看日历</p>
 <p>grep xxx：用于查看包含xxx的对象。</p>
-<p>curl 网址：向对应网址发出http请求。curl -i <a target="_blank" rel="noopener" href="http://www.baidu.com/">www.baidu.com</a> ：向百度首页发出请求，会返回响应头。</p>
+<p>curl 网址：向对应网址发出http请求。curl -i www.baidu.com ：向百度首页发出请求，会返回响应头。</p>
 <p>history：查看先前输入过的命令。</p>
 <p>df：查看磁盘使用情况。</p>
 </blockquote>
-<h2 id="文件基本命令"><a href="#文件基本命令" class="headerlink" title="文件基本命令"></a>文件基本命令</h2><blockquote>
+<h2 id="文件基本命令">文件基本命令</h2>
+<blockquote>
 <p>vi xxx：打开临时记事本，基本可以认为是创建文件。</p>
 <p>mkdir xxx：创建文件夹</p>
 <p>rm -rf xxx：删除目录。</p>
 <p>cp a b ：把a文件复制到b处</p>
 <p>mv a b ：把a文件移动到b处（也可以当做重命名使用）</p>
 <p>tail -number xx：查看文件最后number行内容(可以用于监控日志使用tail -F/-f xxx)-F，-f分别为追踪文件名和追踪文件索引。</p>
-<p>cat xxx：查看文件内容，往往伴随着grep使用如 cat a.txt | grep “a:xxx”。</p>
+<p>cat xxx：查看文件内容，往往伴随着grep使用如 cat a.txt | grep "a:xxx"。</p>
 <p>less xxx：查看文件一页的内容。</p>
 <p>find xxx：查找文件(可以查找所有文件)。</p>
 <p>whereis xx：查找命令所在目录(只能查找二进制类的文件)。</p>
@@ -385,7 +391,8 @@
 <p>sh xxx.sh：执行shell命令。这种执行sh文件不需要本身具有权限。</p>
 <p>path/xxx.sh：执行shell命令。sh文件本身需要有权限。(如./xxx.sh其中.表示当前目录)</p>
 </blockquote>
-<h2 id="文件解压缩"><a href="#文件解压缩" class="headerlink" title="文件解压缩"></a>文件解压缩</h2><blockquote>
+<h2 id="文件解压缩">文件解压缩</h2>
+<blockquote>
 <p>zip -r 压缩后路径加名字 需要压缩的文件：压缩，如zip -r a.zip a.txt。这个命令需要yum install zip</p>
 <p>unzip -d 解压缩到的路径 解压缩的包：解压缩，如unzip -d . a.zip。这个命令需要yum install unzip。</p>
 <p>tar -cvf 压缩后路径加名字 需要压缩的文件：压缩，如tar -cvf a.txt。</p>
@@ -395,30 +402,36 @@
 <p>tar的参数：c：表示create，即压缩，z：约等于zip，即打包后空间会更小，v：压缩后展示压缩包中文件名字。f：表示结束。x：extract，即解压缩。</p>
 <p>b：表示查看压缩包内容。其中c、x、b同时只能存在一个。</p>
 </blockquote>
-<h2 id="文件传输"><a href="#文件传输" class="headerlink" title="文件传输"></a>文件传输</h2><blockquote>
-<p>scp 目录加文件名 用户名@IP地址:目录加文件名：将文件传输利用网络传输到另一个服务器。如scp ./a.txt <a href="mailto:&#x72;&#111;&#x6f;&#116;&#x40;&#49;&#48;&#46;&#x30;&#46;&#50;&#x2e;&#x36;">&#x72;&#111;&#x6f;&#116;&#x40;&#49;&#48;&#46;&#x30;&#46;&#50;&#x2e;&#x36;</a>:~/b.txt</p>
+<h2 id="文件传输">文件传输</h2>
+<blockquote>
+<p>scp 目录加文件名 用户名@IP地址:目录加文件名：将文件传输利用网络传输到另一个服务器。如scp ./a.txt root@10.0.2.6:~/b.txt</p>
 </blockquote>
-<h2 id="进程管理命令"><a href="#进程管理命令" class="headerlink" title="进程管理命令"></a>进程管理命令</h2><blockquote>
+<h2 id="进程管理命令">进程管理命令</h2>
+<blockquote>
 <p>top ：查看当前系统使用情况。</p>
 <p>ps：查看进程情况。</p>
-<p>ps aux：查看所有正在执行的进程。经常和grep配合使用。如ps aux | grep “top”</p>
+<p>ps aux：查看所有正在执行的进程。经常和grep配合使用。如ps aux | grep "top"</p>
 <p>lsof -i:port ：根据端口号查看进程。需要yum install lsof</p>
 <p>kill 进程号：杀死进程。</p>
 <p>kill -9 进程号：强制杀死进程。</p>
 <p>service xxx start：启动服务。</p>
 <p>service xxxx stop：关闭服务。</p>
 </blockquote>
-<h2 id="权限管理命令"><a href="#权限管理命令" class="headerlink" title="权限管理命令"></a>权限管理命令</h2><blockquote>
+<h2 id="权限管理命令">权限管理命令</h2>
+<blockquote>
 <p>chmod xxx aaa：设置aaa的权限为xxx。第一个x为拥有者权限，第二个x为用户组权限，第三个x为其他组权限。如chmod 777 a.txt：表示将a.txt的权限均设为可读、可写、可执行。</p>
 </blockquote>
-<h2 id="软件安装命令"><a href="#软件安装命令" class="headerlink" title="软件安装命令"></a>软件安装命令</h2><blockquote>
+<h2 id="软件安装命令">软件安装命令</h2>
+<blockquote>
 <p>yum install xxxx：安装xxxx</p>
 <p>yum install ifconfig -y：安装时自动同意。</p>
 </blockquote>
-<h2 id="安全相关命令"><a href="#安全相关命令" class="headerlink" title="安全相关命令"></a>安全相关命令</h2><blockquote>
+<h2 id="安全相关命令">安全相关命令</h2>
+<blockquote>
 <p>systemctl disable firewalld ：关闭防火墙。</p>
 </blockquote>
-<h2 id="关机命令"><a href="#关机命令" class="headerlink" title="关机命令"></a>关机命令</h2><blockquote>
+<h2 id="关机命令">关机命令</h2>
+<blockquote>
 <p>shutdown：关机</p>
 <p>reboot：重启</p>
 <p>poweroff：关机</p>
@@ -476,13 +489,13 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2021/02/20/codeAnalyse/Dubbo/" rel="prev" title="Dubbo简单介绍">
-                  <i class="fa fa-chevron-left"></i> Dubbo简单介绍
+                <a href="/2021/02/20/computerNetwork/%E7%AC%AC1%E7%AB%A0-%E6%A6%82%E8%AE%BA/" rel="prev" title="概论">
+                  <i class="fa fa-chevron-left"></i> 概论
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="next" title="多线程相关">
-                  多线程相关 <i class="fa fa-chevron-right"></i>
+                <a href="/2021/02/20/JavaBasicKnowledge/%E5%B9%B6%E5%8F%91%E7%9B%B8%E5%85%B3/" rel="next" title="并发相关内容">
+                  并发相关内容 <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
           </div>
@@ -586,6 +599,39 @@
   <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 
+
+
+  <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'none'
+      },
+      options: {
+        renderActions: {
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
 
 
 

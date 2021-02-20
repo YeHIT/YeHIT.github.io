@@ -22,21 +22,21 @@
     var NexT = window.NexT || {};
     var CONFIG = {"hostname":"49.234.221.130","root":"/","images":"/images","scheme":"Pisces","version":"8.2.1","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
   </script>
-<meta name="description" content="JAVA内存管理Java内存区域总览 堆+栈+程序计数器 堆: 方法区  + 堆 栈: 虚拟机栈 + 本地方法栈   各部分的作用程序计数器 是当前线程所执行的字节码的行号指示器。各线程均有一个程序计数器。如果执行的是Java方法，则程序计数器记录的值为正在执行的虚拟机字节码的地址。若执行的是本地方法，则此时程序计数器的值为undefined。该区域没有规定任何OutOfMemoryError情况">
+<meta name="description" content="JAVA内存管理 Java内存区域 总览  堆+栈+程序计数器 堆: 方法区 + 堆 栈: 虚拟机栈 + 本地方法栈   Java内存区域  各部分的作用 程序计数器  是当前线程所执行的字节码的行号指示器。各线程均有一个程序计数器。如果执行的是Java方法，则程序计数器记录的值为正在执行的虚拟机字节码的地址。若执行的是本地方法，则此时程序计数器的值为undefined">
 <meta property="og:type" content="article">
 <meta property="og:title" content="1.JAVA内存管理">
 <meta property="og:url" content="http://49.234.221.130/2021/02/20/JVMKnowledge/1.JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/index.html">
 <meta property="og:site_name" content="Yesomething">
-<meta property="og:description" content="JAVA内存管理Java内存区域总览 堆+栈+程序计数器 堆: 方法区  + 堆 栈: 虚拟机栈 + 本地方法栈   各部分的作用程序计数器 是当前线程所执行的字节码的行号指示器。各线程均有一个程序计数器。如果执行的是Java方法，则程序计数器记录的值为正在执行的虚拟机字节码的地址。若执行的是本地方法，则此时程序计数器的值为undefined。该区域没有规定任何OutOfMemoryError情况">
+<meta property="og:description" content="JAVA内存管理 Java内存区域 总览  堆+栈+程序计数器 堆: 方法区 + 堆 栈: 虚拟机栈 + 本地方法栈   Java内存区域  各部分的作用 程序计数器  是当前线程所执行的字节码的行号指示器。各线程均有一个程序计数器。如果执行的是Java方法，则程序计数器记录的值为正在执行的虚拟机字节码的地址。若执行的是本地方法，则此时程序计数器的值为undefined">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://49.234.221.130/2021/02/20/JVMKnowledge/1.JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F.png">
+<meta property="og:image" content="http://49.234.221.130/2021/02/20/JVMKnowledge/1.JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Java内存区域.png">
 <meta property="article:published_time" content="2021-02-20T04:26:00.000Z">
 <meta property="article:modified_time" content="2021-02-20T09:11:45.481Z">
 <meta property="article:author" content="Ye">
 <meta property="article:tag" content="JVM">
 <meta property="article:tag" content="Java">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://49.234.221.130/2021/02/20/JVMKnowledge/1.JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F.png">
+<meta name="twitter:image" content="http://49.234.221.130/2021/02/20/JVMKnowledge/1.JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Java内存区域.png">
 
 
 <link rel="canonical" href="http://49.234.221.130/2021/02/20/JVMKnowledge/1.JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
@@ -189,7 +189,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">JAVA内存管理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F"><span class="nav-number">1.1.</span> <span class="nav-text">Java内存区域</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E8%A7%88"><span class="nav-number">1.1.1.</span> <span class="nav-text">总览</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%84%E9%83%A8%E5%88%86%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="nav-number">1.1.2.</span> <span class="nav-text">各部分的作用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E8%AE%A1%E6%95%B0%E5%99%A8"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">程序计数器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Java%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%A0%88"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">Java虚拟机栈</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95%E6%A0%88"><span class="nav-number">1.1.2.3.</span> <span class="nav-text">本地方法栈</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Java%E5%A0%86"><span class="nav-number">1.1.2.4.</span> <span class="nav-text">Java堆</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E5%8C%BA"><span class="nav-number">1.1.2.5.</span> <span class="nav-text">方法区</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E6%97%B6%E5%B8%B8%E9%87%8F%E6%B1%A0"><span class="nav-number">1.1.2.5.1.</span> <span class="nav-text">运行时常量池</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9B%B4%E6%8E%A5%E5%86%85%E5%AD%98"><span class="nav-number">1.1.2.6.</span> <span class="nav-text">直接内存</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HotSpot%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%AF%B9%E8%B1%A1%E7%9B%B8%E5%85%B3%E5%86%85%E5%AE%B9"><span class="nav-number">1.2.</span> <span class="nav-text">HotSpot虚拟机对象相关内容</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E5%88%9B%E5%BB%BA"><span class="nav-number">1.2.1.</span> <span class="nav-text">对象创建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80"><span class="nav-number">1.2.2.</span> <span class="nav-text">对象内存布局</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D"><span class="nav-number">1.2.3.</span> <span class="nav-text">对象访问定位</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A6%E5%8F%91%E5%BC%82%E5%B8%B8%E7%9A%84%E6%83%85%E5%86%B5"><span class="nav-number">1.3.</span> <span class="nav-text">触发异常的情况</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Java%E5%A0%86%E5%86%85%E5%AD%98%E7%9A%84OutOfMemoryError%E5%BC%82%E5%B8%B8"><span class="nav-number">1.3.1.</span> <span class="nav-text">Java堆内存的OutOfMemoryError异常</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%A0%88%E5%92%8C%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95%E6%A0%88%E6%BA%A2%E5%87%BA"><span class="nav-number">1.3.2.</span> <span class="nav-text">虚拟机栈和本地方法栈溢出</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E5%8C%BA%E5%92%8C%E8%BF%90%E8%A1%8C%E6%97%B6%E5%B8%B8%E9%87%8F%E6%B1%A0%E6%BA%A2%E5%87%BA"><span class="nav-number">1.4.</span> <span class="nav-text">方法区和运行时常量池溢出</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%AC%E6%9C%BA%E7%9B%B4%E6%8E%A5%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA"><span class="nav-number">1.4.1.</span> <span class="nav-text">本机直接内存溢出</span></a></li></ol></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#java%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">JAVA内存管理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F"><span class="nav-number">1.1.</span> <span class="nav-text">Java内存区域</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E8%A7%88"><span class="nav-number">1.1.1.</span> <span class="nav-text">总览</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%84%E9%83%A8%E5%88%86%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="nav-number">1.1.2.</span> <span class="nav-text">各部分的作用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E8%AE%A1%E6%95%B0%E5%99%A8"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">程序计数器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#java%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%A0%88"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">Java虚拟机栈</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95%E6%A0%88"><span class="nav-number">1.1.2.3.</span> <span class="nav-text">本地方法栈</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#java%E5%A0%86"><span class="nav-number">1.1.2.4.</span> <span class="nav-text">Java堆</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E5%8C%BA"><span class="nav-number">1.1.2.5.</span> <span class="nav-text">方法区</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E6%97%B6%E5%B8%B8%E9%87%8F%E6%B1%A0"><span class="nav-number">1.1.2.5.1.</span> <span class="nav-text">运行时常量池</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9B%B4%E6%8E%A5%E5%86%85%E5%AD%98"><span class="nav-number">1.1.2.6.</span> <span class="nav-text">直接内存</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hotspot%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%AF%B9%E8%B1%A1%E7%9B%B8%E5%85%B3%E5%86%85%E5%AE%B9"><span class="nav-number">1.2.</span> <span class="nav-text">HotSpot虚拟机对象相关内容</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E5%88%9B%E5%BB%BA"><span class="nav-number">1.2.1.</span> <span class="nav-text">对象创建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80"><span class="nav-number">1.2.2.</span> <span class="nav-text">对象内存布局</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D"><span class="nav-number">1.2.3.</span> <span class="nav-text">对象访问定位</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A6%E5%8F%91%E5%BC%82%E5%B8%B8%E7%9A%84%E6%83%85%E5%86%B5"><span class="nav-number">1.3.</span> <span class="nav-text">触发异常的情况</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#java%E5%A0%86%E5%86%85%E5%AD%98%E7%9A%84outofmemoryerror%E5%BC%82%E5%B8%B8"><span class="nav-number">1.3.1.</span> <span class="nav-text">Java堆内存的OutOfMemoryError异常</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%A0%88%E5%92%8C%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95%E6%A0%88%E6%BA%A2%E5%87%BA"><span class="nav-number">1.3.2.</span> <span class="nav-text">虚拟机栈和本地方法栈溢出</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E5%8C%BA%E5%92%8C%E8%BF%90%E8%A1%8C%E6%97%B6%E5%B8%B8%E9%87%8F%E6%B1%A0%E6%BA%A2%E5%87%BA"><span class="nav-number">1.4.</span> <span class="nav-text">方法区和运行时常量池溢出</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%AC%E6%9C%BA%E7%9B%B4%E6%8E%A5%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA"><span class="nav-number">1.4.1.</span> <span class="nav-text">本机直接内存溢出</span></a></li></ol></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -341,88 +341,110 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h1 id="JAVA内存管理"><a href="#JAVA内存管理" class="headerlink" title="JAVA内存管理"></a>JAVA内存管理</h1><h2 id="Java内存区域"><a href="#Java内存区域" class="headerlink" title="Java内存区域"></a>Java内存区域</h2><h3 id="总览"><a href="#总览" class="headerlink" title="总览"></a>总览</h3><blockquote>
+        <h1 id="java内存管理">JAVA内存管理</h1>
+<h2 id="java内存区域">Java内存区域</h2>
+<h3 id="总览">总览</h3>
+<blockquote>
 <p>堆+栈+程序计数器</p>
-<p>堆: 方法区  + 堆</p>
+<p>堆: 方法区 + 堆</p>
 <p>栈: 虚拟机栈 + 本地方法栈</p>
 </blockquote>
-<p><img src="/2021/02/20/JVMKnowledge/1.JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F.png" alt="Java内存区域"></p>
-<h3 id="各部分的作用"><a href="#各部分的作用" class="headerlink" title="各部分的作用"></a>各部分的作用</h3><h4 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h4><blockquote>
+<figure>
+<img src="/2021/02/20/JVMKnowledge/1.JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Java内存区域.png" alt="Java内存区域"><figcaption aria-hidden="true">Java内存区域</figcaption>
+</figure>
+<h3 id="各部分的作用">各部分的作用</h3>
+<h4 id="程序计数器">程序计数器</h4>
+<blockquote>
 <p>是当前线程所执行的字节码的行号指示器。各线程均有一个程序计数器。如果执行的是Java方法，则程序计数器记录的值为正在执行的虚拟机字节码的地址。若执行的是本地方法，则此时程序计数器的值为undefined。该区域没有规定任何OutOfMemoryError情况。</p>
 </blockquote>
-<h4 id="Java虚拟机栈"><a href="#Java虚拟机栈" class="headerlink" title="Java虚拟机栈"></a>Java虚拟机栈</h4><blockquote>
+<h4 id="java虚拟机栈">Java虚拟机栈</h4>
+<blockquote>
 <p>生命周期和线程一致，且是线程私有的。当每个方法被执行时，Java虚拟机栈就会创建一个栈帧来保存局部变量表、操作数栈、动态连接、方法出口等信息。每个方法从被调用到执行完毕的过程，对应着一个栈帧在虚拟机栈中入栈到出栈的过程。</p>
 <p>局部变量表用于存储各种Java虚拟机的<strong>基本数据类型</strong>、<strong>对象引用</strong>(reference类型，不等同与对象本身，可以是对象起始地址的引用指针，也可以是指向一个代表对象句柄或其他与此对象有关的位置)和<strong>returnAdress类型</strong>(指向了一条字节码指令的地址)。在虚拟机栈中，这些数据类型都是用变量槽来表示的。其中64位的long和double占两个变量槽，其他的均只占一个变量槽。局部变量表的大小在<strong>编译期间</strong>就已经完成，故方法所需栈帧分配的局部变量表空间是完全确定的，且不会发生改变。这里空间是指变量槽数，不是具体字节/比特数。</p>
 <p>当调用的方法是非static方法时，局部变量表中第0索引的Slot变量槽默认是this关键字指向的对象。</p>
 <p>可能出现的异常：</p>
-<p>​    StackOverflowError：线程请求栈深度超过虚拟机允许的深度。</p>
-<p>​    OutOfMemoryError：当虚拟机栈容量可以动态拓展时，不能申请到足够的内存。</p>
+<p>​ StackOverflowError：线程请求栈深度超过虚拟机允许的深度。</p>
+<p>​ OutOfMemoryError：当虚拟机栈容量可以动态拓展时，不能申请到足够的内存。</p>
 </blockquote>
-<h4 id="本地方法栈"><a href="#本地方法栈" class="headerlink" title="本地方法栈"></a>本地方法栈</h4><blockquote>
+<h4 id="本地方法栈">本地方法栈</h4>
+<blockquote>
 <p>和虚拟机栈类似，虚拟机栈为虚拟机执行Java方法服务，而本地方法栈是为虚拟机使用到的本地方法服务。</p>
 </blockquote>
-<h4 id="Java堆"><a href="#Java堆" class="headerlink" title="Java堆"></a>Java堆</h4><blockquote>
+<h4 id="java堆">Java堆</h4>
+<blockquote>
 <p>Java堆是虚拟机所管理的内存中最大的一块。它是被所有线程共享的一块内存区域，在虚拟机启动时创建。java堆的唯一目的就是存放对象实例。它也是垃圾收集器管理的内存区域。大部分垃圾收集器都是基于分代收集理论设计的。</p>
 <p>从分配内存的角度看，所有线程共享的Java堆可以划分出多个线程私有的分配缓冲区。</p>
 <p>可能出现的异常：</p>
-<p>​    OutOfMemoryError：Java堆中没有内存完成实例分配，且堆无法再拓展。</p>
+<p>​ OutOfMemoryError：Java堆中没有内存完成实例分配，且堆无法再拓展。</p>
 </blockquote>
-<h4 id="方法区"><a href="#方法区" class="headerlink" title="方法区"></a>方法区</h4><blockquote>
+<h4 id="方法区">方法区</h4>
+<blockquote>
 <p>HotSpot：JDK8后使用在本地内存中实现的元空间来代替JDK7中永久代还剩余的内容，JDK6之前使用永久代来实现方法区。</p>
 <p>方法区是各个线程共享的内存区域，用于存储已被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等数据。</p>
 <p>这个区域的回收目标主要是针对常量池的回收和对类型的卸载。</p>
 <p>可能出现的异常：</p>
-<p>​    OutOfMemoryError：方法区无法满足新的内存分配需求。 </p>
+<p>​ OutOfMemoryError：方法区无法满足新的内存分配需求。</p>
 </blockquote>
-<h5 id="运行时常量池"><a href="#运行时常量池" class="headerlink" title="运行时常量池"></a>运行时常量池</h5><blockquote>
+<h5 id="运行时常量池">运行时常量池</h5>
+<blockquote>
 <p>运行时常量池是方法区的一部分。该部分用于存放编译器生成的各种字面量与符号引用即常量池表。</p>
 </blockquote>
-<h4 id="直接内存"><a href="#直接内存" class="headerlink" title="直接内存"></a>直接内存</h4><blockquote>
+<h4 id="直接内存">直接内存</h4>
+<blockquote>
 <p>直接内存不是虚拟机运行时数据区的一部分，也不是Java虚拟机规范中定义的内存区域。</p>
 <p>如JDK1.4引入的NIO可以使用Native函数分配堆外内存，然后通过一个存储在Java堆里的DirectByteBuffer对象作为这块内存的引用进行操作。</p>
 <p>本机的直接内存的分配不会受到Java堆大小的限制，但是会受到本机总内存大小及处理器寻址空间的限制。</p>
 </blockquote>
-<h2 id="HotSpot虚拟机对象相关内容"><a href="#HotSpot虚拟机对象相关内容" class="headerlink" title="HotSpot虚拟机对象相关内容"></a>HotSpot虚拟机对象相关内容</h2><h3 id="对象创建"><a href="#对象创建" class="headerlink" title="对象创建"></a>对象创建</h3><blockquote>
+<h2 id="hotspot虚拟机对象相关内容">HotSpot虚拟机对象相关内容</h2>
+<h3 id="对象创建">对象创建</h3>
+<blockquote>
 <p>步骤分为：类加载检查 -&gt; 分配内存 -&gt; 初始化 -&gt; 对象设置 -&gt; 等待执行构造函数</p>
 <p>类加载检查：当Java虚拟机遇到一条字节码new指令时，首先检查这个指令的参数是否可以从常量池地位到一个类的符号引用，并且检查这个符号引用代表的类是否已经被加载、解析、初始化过。若没有执行相应类的类加载过程。</p>
 <p>分配内存：类加载完成后对象所需内存大小可以完全确定，分配内存的方法分为指针碰撞法和空闲列表法。</p>
-<p>​    指针碰撞法：将Java堆的内存视为绝对规整，使用过的内存在一边，未使用过的内存在另一边，分配内存时只需要将指针朝未使用过的内存那边移动即可。该方法要求垃圾收集器需要有空间压缩整理能力。</p>
-<p>​    空闲列表法：Java堆的内存中使用过的内存和未使用过的内存交错在一起，需要维护一个列表记录哪些内存块可用。</p>
+<p>​ 指针碰撞法：将Java堆的内存视为绝对规整，使用过的内存在一边，未使用过的内存在另一边，分配内存时只需要将指针朝未使用过的内存那边移动即可。该方法要求垃圾收集器需要有空间压缩整理能力。</p>
+<p>​ 空闲列表法：Java堆的内存中使用过的内存和未使用过的内存交错在一起，需要维护一个列表记录哪些内存块可用。</p>
 <p>分配内存时需要考虑并发问题：即当A利用指针分配内存但还为修改指针位置时，B也使用原来的指针分配内存。解决该问题可以使用CAS加失败重试或把内存操作按照线程划分在不同的空间之中进行，即每个线程在Java堆中预先分配一小块内存，称为TLAB(本地线程分配缓冲)，只有本地缓冲区的内存用完了，分配新缓冲区时才需要同步锁定。</p>
 <p>初始化：虚拟机将分配到的内存空间都初始化为0值。</p>
 <p>对象设置：将对象信息如对象是哪个类的实例、如何找到类的元数据信息、对象的GC分代年龄等存入对象的对象头中。</p>
 <p>等待执行构造函数：虚拟机等到执行了<init>()方法，完成对对象的全部初始化，此时对象才算被完全的构造出来。</init></p>
 </blockquote>
-<h3 id="对象内存布局"><a href="#对象内存布局" class="headerlink" title="对象内存布局"></a>对象内存布局</h3><blockquote>
+<h3 id="对象内存布局">对象内存布局</h3>
+<blockquote>
 <p>存储布局划分为三个部分：对象头、实例数据、对齐填充(padding)</p>
 <p>对象头可以分为两类：</p>
-<p>​    一类存储对象自身的运行时数据，如HashCode、GC分代年龄、锁状态标识、线程持有的锁、偏向线程ID、偏向时间戳等。被称为Mark Word。</p>
-<p>​    另一类为类型指针，即对象指向它的类型元数据的指针。Java虚拟机通过这个指针来确定该对象是哪个类的实例。若对象为Java数组，对象头中还要一块用于记录数组长度的数据。</p>
+<p>​ 一类存储对象自身的运行时数据，如HashCode、GC分代年龄、锁状态标识、线程持有的锁、偏向线程ID、偏向时间戳等。被称为Mark Word。</p>
+<p>​ 另一类为类型指针，即对象指向它的类型元数据的指针。Java虚拟机通过这个指针来确定该对象是哪个类的实例。若对象为Java数组，对象头中还要一块用于记录数组长度的数据。</p>
 <p>实例数据：即对象真正存储的有效信息，无论是从父类继承还是子类自己定义的字段。存储顺序可以通过(-XX:FieldsAllocationStyle参数)及字段在源码中定义顺序来调整。HotSpot默认分配顺序会将相同宽度的字段分配到一起存放，如longs/doubles。</p>
 <p>padding：即填充部分，无意义，只是用于将数据对齐。</p>
 </blockquote>
-<h3 id="对象访问定位"><a href="#对象访问定位" class="headerlink" title="对象访问定位"></a>对象访问定位</h3><blockquote>
+<h3 id="对象访问定位">对象访问定位</h3>
+<blockquote>
 <p>Java程序会通过栈上的reference数据来操作栈上的具体对象。</p>
 <p>主流的访问方式分为句柄和直接指针：</p>
-<p>​    句柄：Java堆中可能划分出一块内存作为句柄池，reference存储的就是对象的句柄地址，而句柄包含对象实例数据与类型数据各自具体的地址信息。</p>
-<p>​    直接指针：reference存储的就是对象地址，访问对象本身不需要多一次间接访问。</p>
-<p>​    两者的优点：句柄访问的优势在于reference存储的是稳定的句柄地址，对象被移动(垃圾回收时对象常常需要被移动)时只需要改变句柄中实例数据指针即可。直接指针的优势在于速度更快，减少了一次指针定位的开销。</p>
+<p>​ 句柄：Java堆中可能划分出一块内存作为句柄池，reference存储的就是对象的句柄地址，而句柄包含对象实例数据与类型数据各自具体的地址信息。</p>
+<p>​ 直接指针：reference存储的就是对象地址，访问对象本身不需要多一次间接访问。</p>
+<p>​ 两者的优点：句柄访问的优势在于reference存储的是稳定的句柄地址，对象被移动(垃圾回收时对象常常需要被移动)时只需要改变句柄中实例数据指针即可。直接指针的优势在于速度更快，减少了一次指针定位的开销。</p>
 </blockquote>
-<h2 id="触发异常的情况"><a href="#触发异常的情况" class="headerlink" title="触发异常的情况"></a>触发异常的情况</h2><h3 id="Java堆内存的OutOfMemoryError异常"><a href="#Java堆内存的OutOfMemoryError异常" class="headerlink" title="Java堆内存的OutOfMemoryError异常"></a>Java堆内存的OutOfMemoryError异常</h3><blockquote>
+<h2 id="触发异常的情况">触发异常的情况</h2>
+<h3 id="java堆内存的outofmemoryerror异常">Java堆内存的OutOfMemoryError异常</h3>
+<blockquote>
 <p>不断创建对象且保证GC Roots到对象之间有可达路径来避免垃圾回收机制清除这些对象。</p>
 </blockquote>
-<h3 id="虚拟机栈和本地方法栈溢出"><a href="#虚拟机栈和本地方法栈溢出" class="headerlink" title="虚拟机栈和本地方法栈溢出"></a>虚拟机栈和本地方法栈溢出</h3><blockquote>
+<h3 id="虚拟机栈和本地方法栈溢出">虚拟机栈和本地方法栈溢出</h3>
+<blockquote>
 <p>-Xss设置栈容量。</p>
-<p>1）如果线程请求的栈深度大于虚拟机所允许的最大深度，将抛出StackOverflowError异常。 </p>
-<p>2）如果虚拟机的栈内存允许动态扩展，当扩展栈容量无法申请到足够的内存时，将抛出OutOfMemoryError异常。 </p>
+<p>1）如果线程请求的栈深度大于虚拟机所允许的最大深度，将抛出StackOverflowError异常。</p>
+<p>2）如果虚拟机的栈内存允许动态扩展，当扩展栈容量无法申请到足够的内存时，将抛出OutOfMemoryError异常。</p>
 <p>创建太多线程也会导致OutOfMemoryError异常。</p>
 </blockquote>
-<h2 id="方法区和运行时常量池溢出"><a href="#方法区和运行时常量池溢出" class="headerlink" title="方法区和运行时常量池溢出"></a>方法区和运行时常量池溢出</h2><blockquote>
+<h2 id="方法区和运行时常量池溢出">方法区和运行时常量池溢出</h2>
+<blockquote>
 <p>运行时常量池，从JDK7开始后原本存放到永久代的字符串常量池被移动到Java堆中。</p>
 <p>-XX：PermSize和-XX：MaxPermSize限制永久代大小。</p>
 <p>方法区溢出会在运行时产生大量的类时出现，OutOfMemoryError。</p>
 </blockquote>
-<h3 id="本机直接内存溢出"><a href="#本机直接内存溢出" class="headerlink" title="本机直接内存溢出"></a>本机直接内存溢出</h3><blockquote>
+<h3 id="本机直接内存溢出">本机直接内存溢出</h3>
+<blockquote>
 <p>大小默认与Java堆最大值一致。可以通过-XX：MaxDirectMemorySize参数指定。</p>
 <p>直接或间接(NIO)使用了太多是Unsafe::allocateMemory()分配过多的直接内存会触发OutOfMemoryError异常。</p>
 </blockquote>
@@ -585,6 +607,39 @@
   <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 
+
+
+  <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'none'
+      },
+      options: {
+        renderActions: {
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
 
 
 

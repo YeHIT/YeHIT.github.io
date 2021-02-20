@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-leaf.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-leaf.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-leaf.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"49.234.221.130","root":"/","images":"/images","scheme":"Pisces","version":"8.2.1","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+<meta name="description" content="Ye的个人技术记录博客">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Yesomething">
+<meta property="og:url" content="http://49.234.221.130/page/8/index.html">
+<meta property="og:site_name" content="Yesomething">
+<meta property="og:description" content="Ye的个人技术记录博客">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="Ye">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://49.234.221.130/page/8/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : true,
+    isPost : false,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Yesomething</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Yesomething</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Ye's blog</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fas fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Ye"
+      src="/uploads/photo.jpg">
+  <p class="site-author-name" itemprop="name">Ye</p>
+  <div class="site-description" itemprop="description">Ye的个人技术记录博客</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">25</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/YeHIT" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;YeHIT" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1044377312@qq.com" title="E-Mail → mailto:1044377312@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+  <a href="https://github.com/YeHIT" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/Linux/Linux%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%9F%BA%E6%9C%AC%E6%8C%87%E4%BB%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/photo.jpg">
+      <meta itemprop="name" content="Ye">
+      <meta itemprop="description" content="Ye的个人技术记录博客">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Yesomething">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/02/20/Linux/Linux%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%9F%BA%E6%9C%AC%E6%8C%87%E4%BB%A4/" class="post-title-link" itemprop="url">Linux介绍及基本指令</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:19:26" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="linux介绍及基本指令">Linux介绍及基本指令</h1>
+<h2 id="linux区别">Linux区别</h2>
+<blockquote>
+<p>Ubantu：分为用户版和服务器版。</p>
+<p>​ 用户版，有着良好的用户界面，有强大的软件支持。</p>
+<p>​ 服务器版比较少用。</p>
+<p>Debian：系统十分稳定，内核非常小。</p>
+<p>RedHat：是一个商用的操作系统，性能非常好，软件支持也非常好。</p>
+<p>Centos：基本上相当于RedHat的复刻版本。免费。</p>
+</blockquote>
+<h2 id="根目录下各目录对应的功能">根目录下各目录对应的功能</h2>
+<h2 id="在linux中获取帮助">在linux中获取帮助</h2>
+<blockquote>
+<p>man 命令名：查看命令的操作说明</p>
+<p>命令行 --help：查看命令的语法</p>
+</blockquote>
+<h2 id="linux基本命令">Linux基本命令</h2>
+<blockquote>
+<p>ls：查看当前目录中所有文件及目录</p>
+<p>ll：查看当前目录内所有文件及目录详细信息。详细信息具体查看方式。以drwxr-xr-x为例(第一个字符拆出，然后每三个字符表示一个内容)：</p>
+<p>d：文件类型，目录。rwx：拥有者权限，可读，可写，可执行。r-x：用户组权限，可读，不可写，可执行。r-x：其他组权限，可读，不可写，可执行。</p>
+<p>具体文件类型有：d：路径。<em>-</em>：文件。 l ：连接(快捷方式)。b：表示可按块随机读写的设备。c：设备文件里的串行端口设备，如键盘、设备。</p>
+<p>表示权限的三个字符可以用0~7的数字表示。如rwx为7，r-x为5。</p>
+<p>ls -al：查看所有文件及目录包括隐藏目录。</p>
+<p>pwd：查看当前所在层级</p>
+<p>echo xxx：打印xxx</p>
+<p>date：查看日期</p>
+<p>cal：查看日历</p>
+<p>grep xxx：用于查看包含xxx的对象。</p>
+<p>curl 网址：向对应网址发出http请求。curl -i www.baidu.com ：向百度首页发出请求，会返回响应头。</p>
+<p>history：查看先前输入过的命令。</p>
+<p>df：查看磁盘使用情况。</p>
+</blockquote>
+<h2 id="文件基本命令">文件基本命令</h2>
+<blockquote>
+<p>vi xxx：打开临时记事本，基本可以认为是创建文件。</p>
+<p>mkdir xxx：创建文件夹</p>
+<p>rm -rf xxx：删除目录。</p>
+<p>cp a b ：把a文件复制到b处</p>
+<p>mv a b ：把a文件移动到b处（也可以当做重命名使用）</p>
+<p>tail -number xx：查看文件最后number行内容(可以用于监控日志使用tail -F/-f xxx)-F，-f分别为追踪文件名和追踪文件索引。</p>
+<p>cat xxx：查看文件内容，往往伴随着grep使用如 cat a.txt | grep "a:xxx"。</p>
+<p>less xxx：查看文件一页的内容。</p>
+<p>find xxx：查找文件(可以查找所有文件)。</p>
+<p>whereis xx：查找命令所在目录(只能查找二进制类的文件)。</p>
+<p>which xxx：在PATH变量指定的路径中搜索指定的系统命令的位置。</p>
+<p>sh xxx.sh：执行shell命令。这种执行sh文件不需要本身具有权限。</p>
+<p>path/xxx.sh：执行shell命令。sh文件本身需要有权限。(如./xxx.sh其中.表示当前目录)</p>
+</blockquote>
+<h2 id="文件解压缩">文件解压缩</h2>
+<blockquote>
+<p>zip -r 压缩后路径加名字 需要压缩的文件：压缩，如zip -r a.zip a.txt。这个命令需要yum install zip</p>
+<p>unzip -d 解压缩到的路径 解压缩的包：解压缩，如unzip -d . a.zip。这个命令需要yum install unzip。</p>
+<p>tar -cvf 压缩后路径加名字 需要压缩的文件：压缩，如tar -cvf a.txt。</p>
+<p>tar -zcvf 压缩后路径加名字 需要压缩的文件：压缩，如tar -zcvf a.txt。压缩后占的空间更少</p>
+<p>tar -xvf 解压缩到的路径 解压缩的包：解压缩，如tar -xvf a.txt。</p>
+<p>tar -zxvf 解压缩到的路径 解压缩的包：压缩，如tar -zxvf a.txt。</p>
+<p>tar的参数：c：表示create，即压缩，z：约等于zip，即打包后空间会更小，v：压缩后展示压缩包中文件名字。f：表示结束。x：extract，即解压缩。</p>
+<p>b：表示查看压缩包内容。其中c、x、b同时只能存在一个。</p>
+</blockquote>
+<h2 id="文件传输">文件传输</h2>
+<blockquote>
+<p>scp 目录加文件名 用户名@IP地址:目录加文件名：将文件传输利用网络传输到另一个服务器。如scp ./a.txt root@10.0.2.6:~/b.txt</p>
+</blockquote>
+<h2 id="进程管理命令">进程管理命令</h2>
+<blockquote>
+<p>top ：查看当前系统使用情况。</p>
+<p>ps：查看进程情况。</p>
+<p>ps aux：查看所有正在执行的进程。经常和grep配合使用。如ps aux | grep "top"</p>
+<p>lsof -i:port ：根据端口号查看进程。需要yum install lsof</p>
+<p>kill 进程号：杀死进程。</p>
+<p>kill -9 进程号：强制杀死进程。</p>
+<p>service xxx start：启动服务。</p>
+<p>service xxxx stop：关闭服务。</p>
+</blockquote>
+<h2 id="权限管理命令">权限管理命令</h2>
+<blockquote>
+<p>chmod xxx aaa：设置aaa的权限为xxx。第一个x为拥有者权限，第二个x为用户组权限，第三个x为其他组权限。如chmod 777 a.txt：表示将a.txt的权限均设为可读、可写、可执行。</p>
+</blockquote>
+<h2 id="软件安装命令">软件安装命令</h2>
+<blockquote>
+<p>yum install xxxx：安装xxxx</p>
+<p>yum install ifconfig -y：安装时自动同意。</p>
+</blockquote>
+<h2 id="安全相关命令">安全相关命令</h2>
+<blockquote>
+<p>systemctl disable firewalld ：关闭防火墙。</p>
+</blockquote>
+<h2 id="关机命令">关机命令</h2>
+<blockquote>
+<p>shutdown：关机</p>
+<p>reboot：重启</p>
+<p>poweroff：关机</p>
+<p>halt：进入系统停止的模式，屏幕可能保留一些信息，取决于电源管理模式。</p>
+<p>systemctl suspend：休眠</p>
+</blockquote>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/page/7/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/25/">25</a><a class="extend next" rel="next" href="/page/9/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+  </nav>
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ye</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">74k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:07</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'none'
+      },
+      options: {
+        renderActions: {
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+
+
+</body>
+</html>

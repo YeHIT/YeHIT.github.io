@@ -22,21 +22,21 @@
     var NexT = window.NexT || {};
     var CONFIG = {"hostname":"49.234.221.130","root":"/","images":"/images","scheme":"Pisces","version":"8.2.1","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
   </script>
-<meta name="description" content="网络层网络层传输单元为数据报网络层提供的两种服务 网络层关注的是如何将分组从源端沿着网络路劲送达目的端。 它向运输层通过了虚电路服务和数据报服务。 计算机通信的过程中可靠交付由端系统负责，而不是网络负责。 虚电路服务 ​    通过指定数据的逻辑连接，向端系统保证了数据的按序到达，免去了端系统在顺序控制上的开销。 ​    逻辑上的连接而非真正建立了一条物理连接。 数据报服务 ​    网络层向上">
+<meta name="description" content="网络层 网络层传输单元为数据报 网络层提供的两种服务  网络层关注的是如何将分组从源端沿着网络路劲送达目的端。 它向运输层通过了虚电路服务和数据报服务。 计算机通信的过程中可靠交付由端系统负责，而不是网络负责。 虚电路服务 ​ 通过指定数据的逻辑连接，向端系统保证了数据的按序到达，免去了端系统在顺序控制上的开销。 ​ 逻辑上的连接而非真正建立了一条物理连接。 数据报服务 ​">
 <meta property="og:type" content="article">
 <meta property="og:title" content="网络层">
 <meta property="og:url" content="http://49.234.221.130/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/index.html">
 <meta property="og:site_name" content="Yesomething">
-<meta property="og:description" content="网络层网络层传输单元为数据报网络层提供的两种服务 网络层关注的是如何将分组从源端沿着网络路劲送达目的端。 它向运输层通过了虚电路服务和数据报服务。 计算机通信的过程中可靠交付由端系统负责，而不是网络负责。 虚电路服务 ​    通过指定数据的逻辑连接，向端系统保证了数据的按序到达，免去了端系统在顺序控制上的开销。 ​    逻辑上的连接而非真正建立了一条物理连接。 数据报服务 ​    网络层向上">
+<meta property="og:description" content="网络层 网络层传输单元为数据报 网络层提供的两种服务  网络层关注的是如何将分组从源端沿着网络路劲送达目的端。 它向运输层通过了虚电路服务和数据报服务。 计算机通信的过程中可靠交付由端系统负责，而不是网络负责。 虚电路服务 ​ 通过指定数据的逻辑连接，向端系统保证了数据的按序到达，免去了端系统在顺序控制上的开销。 ​ 逻辑上的连接而非真正建立了一条物理连接。 数据报服务 ​">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://49.234.221.130/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82%5CIP%E5%9C%B0%E5%9D%80%E5%92%8CMAC%E5%9C%B0%E5%9D%80.png">
-<meta property="og:image" content="http://49.234.221.130/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82%5CIP%E5%9C%B0%E5%9D%80.png">
+<meta property="og:image" content="http://49.234.221.130/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/IP地址和MAC地址.png">
+<meta property="og:image" content="http://49.234.221.130/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/IP地址.png">
 <meta property="article:published_time" content="2021-02-20T04:26:00.000Z">
 <meta property="article:modified_time" content="2021-02-20T09:14:02.144Z">
 <meta property="article:author" content="Ye">
 <meta property="article:tag" content="网络">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://49.234.221.130/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82%5CIP%E5%9C%B0%E5%9D%80%E5%92%8CMAC%E5%9C%B0%E5%9D%80.png">
+<meta name="twitter:image" content="http://49.234.221.130/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/IP地址和MAC地址.png">
 
 
 <link rel="canonical" href="http://49.234.221.130/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/">
@@ -189,7 +189,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E5%B1%82"><span class="nav-number">1.</span> <span class="nav-text">网络层</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E5%B1%82%E4%BC%A0%E8%BE%93%E5%8D%95%E5%85%83%E4%B8%BA%E6%95%B0%E6%8D%AE%E6%8A%A5"><span class="nav-number">1.1.</span> <span class="nav-text">网络层传输单元为数据报</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E5%B1%82%E6%8F%90%E4%BE%9B%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%9C%8D%E5%8A%A1"><span class="nav-number">1.2.</span> <span class="nav-text">网络层提供的两种服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BD%91%E9%99%85%E5%8D%8F%E8%AE%AEIP"><span class="nav-number">1.3.</span> <span class="nav-text">网际协议IP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%99%9A%E6%8B%9F%E4%BA%92%E8%81%94%E7%BD%91"><span class="nav-number">1.3.1.</span> <span class="nav-text">虚拟互联网</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IPv4%E5%9C%B0%E5%9D%80%E7%BB%84%E6%88%90"><span class="nav-number">1.4.</span> <span class="nav-text">IPv4地址组成</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="nav-number">1.5.</span> <span class="nav-text">子网掩码的作用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IP%E5%9C%B0%E5%9D%80%E4%B8%8EMAC%E5%9C%B0%E5%9D%80"><span class="nav-number">1.6.</span> <span class="nav-text">IP地址与MAC地址</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%8F%E8%AE%AE"><span class="nav-number">1.7.</span> <span class="nav-text">协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IP%E6%95%B0%E6%8D%AE%E6%8A%A5"><span class="nav-number">1.8.</span> <span class="nav-text">IP数据报</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E8%B7%AF%E7%94%B1"><span class="nav-number">1.9.</span> <span class="nav-text">数据路由</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ICMP%E5%8D%8F%E8%AE%AE"><span class="nav-number">1.10.</span> <span class="nav-text">ICMP协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E8%B7%AF%E7%94%B1%E5%8D%8F%E8%AE%AE"><span class="nav-number">1.11.</span> <span class="nav-text">动态路由协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OSPF%E5%8D%8F%E8%AE%AE-%E5%BC%80%E6%94%BE%E5%BC%8F%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84%E4%BC%98%E5%85%88-%E2%80%94%E5%8A%A8%E6%80%81%E8%B7%AF%E7%94%B1%E5%8D%8F%E8%AE%AE"><span class="nav-number">1.12.</span> <span class="nav-text">OSPF协议(开放式最短路径优先)—动态路由协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BGP-%E2%80%94-%E5%A4%96%E9%83%A8%E7%BD%91%E5%85%B3%E5%8D%8F%E8%AE%AE"><span class="nav-number">1.13.</span> <span class="nav-text">BGP —- 外部网关协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NAT%E5%92%8CPAT"><span class="nav-number">1.14.</span> <span class="nav-text">NAT和PAT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IGMP-%E7%BB%84%E6%92%AD-%E5%A4%9A%E6%92%AD"><span class="nav-number">1.15.</span> <span class="nav-text">IGMP 组播&#x2F;多播</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DHCP"><span class="nav-number">1.16.</span> <span class="nav-text">DHCP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ARP"><span class="nav-number">1.17.</span> <span class="nav-text">ARP</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E5%B1%82"><span class="nav-number">1.</span> <span class="nav-text">网络层</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E5%B1%82%E4%BC%A0%E8%BE%93%E5%8D%95%E5%85%83%E4%B8%BA%E6%95%B0%E6%8D%AE%E6%8A%A5"><span class="nav-number">1.1.</span> <span class="nav-text">网络层传输单元为数据报</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E5%B1%82%E6%8F%90%E4%BE%9B%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%9C%8D%E5%8A%A1"><span class="nav-number">1.2.</span> <span class="nav-text">网络层提供的两种服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BD%91%E9%99%85%E5%8D%8F%E8%AE%AEip"><span class="nav-number">1.3.</span> <span class="nav-text">网际协议IP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%99%9A%E6%8B%9F%E4%BA%92%E8%81%94%E7%BD%91"><span class="nav-number">1.3.1.</span> <span class="nav-text">虚拟互联网</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ipv4%E5%9C%B0%E5%9D%80%E7%BB%84%E6%88%90"><span class="nav-number">1.4.</span> <span class="nav-text">IPv4地址组成</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="nav-number">1.5.</span> <span class="nav-text">子网掩码的作用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ip%E5%9C%B0%E5%9D%80%E4%B8%8Emac%E5%9C%B0%E5%9D%80"><span class="nav-number">1.6.</span> <span class="nav-text">IP地址与MAC地址</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%8F%E8%AE%AE"><span class="nav-number">1.7.</span> <span class="nav-text">协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ip%E6%95%B0%E6%8D%AE%E6%8A%A5"><span class="nav-number">1.8.</span> <span class="nav-text">IP数据报</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E8%B7%AF%E7%94%B1"><span class="nav-number">1.9.</span> <span class="nav-text">数据路由</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#icmp%E5%8D%8F%E8%AE%AE"><span class="nav-number">1.10.</span> <span class="nav-text">ICMP协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E8%B7%AF%E7%94%B1%E5%8D%8F%E8%AE%AE"><span class="nav-number">1.11.</span> <span class="nav-text">动态路由协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ospf%E5%8D%8F%E8%AE%AE%E5%BC%80%E6%94%BE%E5%BC%8F%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84%E4%BC%98%E5%85%88---%E5%8A%A8%E6%80%81%E8%B7%AF%E7%94%B1%E5%8D%8F%E8%AE%AE"><span class="nav-number">1.12.</span> <span class="nav-text">OSPF协议(开放式最短路径优先)---动态路由协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#bgp------%E5%A4%96%E9%83%A8%E7%BD%91%E5%85%B3%E5%8D%8F%E8%AE%AE"><span class="nav-number">1.13.</span> <span class="nav-text">BGP ---- 外部网关协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nat%E5%92%8Cpat"><span class="nav-number">1.14.</span> <span class="nav-text">NAT和PAT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#igmp-%E7%BB%84%E6%92%AD%E5%A4%9A%E6%92%AD"><span class="nav-number">1.15.</span> <span class="nav-text">IGMP 组播&#x2F;多播</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dhcp"><span class="nav-number">1.16.</span> <span class="nav-text">DHCP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#arp"><span class="nav-number">1.17.</span> <span class="nav-text">ARP</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -345,137 +345,158 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h1 id="网络层"><a href="#网络层" class="headerlink" title="网络层"></a>网络层</h1><h2 id="网络层传输单元为数据报"><a href="#网络层传输单元为数据报" class="headerlink" title="网络层传输单元为数据报"></a>网络层传输单元为数据报</h2><h2 id="网络层提供的两种服务"><a href="#网络层提供的两种服务" class="headerlink" title="网络层提供的两种服务"></a>网络层提供的两种服务</h2><blockquote>
+        <h1 id="网络层">网络层</h1>
+<h2 id="网络层传输单元为数据报">网络层传输单元为数据报</h2>
+<h2 id="网络层提供的两种服务">网络层提供的两种服务</h2>
+<blockquote>
 <p>网络层关注的是如何将分组从源端沿着网络路劲送达目的端。</p>
 <p>它向运输层通过了虚电路服务和数据报服务。</p>
 <p>计算机通信的过程中可靠交付由端系统负责，而不是网络负责。</p>
 <p>虚电路服务</p>
-<p>​    通过指定数据的逻辑连接，向端系统保证了数据的按序到达，免去了端系统在顺序控制上的开销。</p>
-<p>​    逻辑上的连接而非真正建立了一条物理连接。</p>
+<p>​ 通过指定数据的逻辑连接，向端系统保证了数据的按序到达，免去了端系统在顺序控制上的开销。</p>
+<p>​ 逻辑上的连接而非真正建立了一条物理连接。</p>
 <p>数据报服务</p>
-<p>​    网络层向上提供简单灵活的、<strong>无连接的</strong>、尽最大努力交付的数据报服务。</p>
-<p>​    优点:传输网络不提供端到端的可靠传输服务，使得网络造价降低，运行方式灵活，适用多种应用。</p>
+<p>​ 网络层向上提供简单灵活的、<strong>无连接的</strong>、尽最大努力交付的数据报服务。</p>
+<p>​ 优点:传输网络不提供端到端的可靠传输服务，使得网络造价降低，运行方式灵活，适用多种应用。</p>
 <table>
 <thead>
-<tr>
-<th align="center">两个服务对比</th>
-<th align="center">虚电路服务</th>
-<th align="center">数据报服务</th>
+<tr class="header">
+<th style="text-align: center;">两个服务对比</th>
+<th style="text-align: center;">虚电路服务</th>
+<th style="text-align: center;">数据报服务</th>
 </tr>
 </thead>
-<tbody><tr>
-<td align="center">思路</td>
-<td align="center">可靠通信由网络保证</td>
-<td align="center">可靠通信由用户主机保证</td>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">思路</td>
+<td style="text-align: center;">可靠通信由网络保证</td>
+<td style="text-align: center;">可靠通信由用户主机保证</td>
 </tr>
-<tr>
-<td align="center">连接的建立</td>
-<td align="center">必须有</td>
-<td align="center">不需要</td>
+<tr class="even">
+<td style="text-align: center;">连接的建立</td>
+<td style="text-align: center;">必须有</td>
+<td style="text-align: center;">不需要</td>
 </tr>
-<tr>
-<td align="center">终点地址</td>
-<td align="center">仅在连接建立阶段使用，每个分组使用短的虚电路号</td>
-<td align="center">每个分组都要有终点的完整地址</td>
+<tr class="odd">
+<td style="text-align: center;">终点地址</td>
+<td style="text-align: center;">仅在连接建立阶段使用，每个分组使用短的虚电路号</td>
+<td style="text-align: center;">每个分组都要有终点的完整地址</td>
 </tr>
-<tr>
-<td align="center">分组的转发</td>
-<td align="center">属于同一条虚电路的分组均按照同一路由进行转发</td>
-<td align="center">每个分组独立选择路由进行转发</td>
+<tr class="even">
+<td style="text-align: center;">分组的转发</td>
+<td style="text-align: center;">属于同一条虚电路的分组均按照同一路由进行转发</td>
+<td style="text-align: center;">每个分组独立选择路由进行转发</td>
 </tr>
-<tr>
-<td align="center">当结点出故障时</td>
-<td align="center">所有通过出故障结点的虚电路均不能工作</td>
-<td align="center">出故障的结点可能丢失分组，一些路由可能发生变化</td>
+<tr class="odd">
+<td style="text-align: center;">当结点出故障时</td>
+<td style="text-align: center;">所有通过出故障结点的虚电路均不能工作</td>
+<td style="text-align: center;">出故障的结点可能丢失分组，一些路由可能发生变化</td>
 </tr>
-<tr>
-<td align="center">分组的顺序</td>
-<td align="center">总数按发送顺序到达终点</td>
-<td align="center">到达终点时不一定按发送顺序</td>
+<tr class="even">
+<td style="text-align: center;">分组的顺序</td>
+<td style="text-align: center;">总数按发送顺序到达终点</td>
+<td style="text-align: center;">到达终点时不一定按发送顺序</td>
 </tr>
-<tr>
-<td align="center">端到端的差错处理和流量控制</td>
-<td align="center">可以由网络负责,也可以由用户主机负责</td>
-<td align="center">由用户主机负责</td>
+<tr class="odd">
+<td style="text-align: center;">端到端的差错处理和流量控制</td>
+<td style="text-align: center;">可以由网络负责,也可以由用户主机负责</td>
+<td style="text-align: center;">由用户主机负责</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 </blockquote>
-<h2 id="网际协议IP"><a href="#网际协议IP" class="headerlink" title="网际协议IP"></a>网际协议IP</h2><h3 id="虚拟互联网"><a href="#虚拟互联网" class="headerlink" title="虚拟互联网"></a>虚拟互联网</h3><blockquote>
+<h2 id="网际协议ip">网际协议IP</h2>
+<h3 id="虚拟互联网">虚拟互联网</h3>
+<blockquote>
 <p>网络互连的设备:</p>
-<p>​    概念:中间设备又称为中间系统或中继系统</p>
-<p>​    物理层中继系统:转发器。</p>
-<p>​    数据链路层中继系统:网桥或桥接器。</p>
-<p>​    网络层中继系统:路由器。</p>
-<p>​    网络层以上的中继系统:网关。</p>
+<p>​ 概念:中间设备又称为中间系统或中继系统</p>
+<p>​ 物理层中继系统:转发器。</p>
+<p>​ 数据链路层中继系统:网桥或桥接器。</p>
+<p>​ 网络层中继系统:路由器。</p>
+<p>​ 网络层以上的中继系统:网关。</p>
 <p>网络层协议:IP协议最主要。与IP协议配套的协议:</p>
-<p>​    ARP地址解析协议。(位于底层)解析MAC地址</p>
-<p>​    RARP逆地址解析协议。(位于底层)</p>
-<p>​    ICMP网际控制报文协议。(位于顶层)报告网络故障</p>
-<p>​    IGMP网际组管理协议。(位于顶层)</p>
+<p>​ ARP地址解析协议。(位于底层)解析MAC地址</p>
+<p>​ RARP逆地址解析协议。(位于底层)</p>
+<p>​ ICMP网际控制报文协议。(位于顶层)报告网络故障</p>
+<p>​ IGMP网际组管理协议。(位于顶层)</p>
 </blockquote>
-<h2 id="IPv4地址组成"><a href="#IPv4地址组成" class="headerlink" title="IPv4地址组成"></a>IPv4地址组成</h2><blockquote>
+<h2 id="ipv4地址组成">IPv4地址组成</h2>
+<blockquote>
 <p>IPv4地址由32位IP组成，其中分为网络ID和主机ID。主机ID不能全为0(全0表示网段)也不能全为1(全1表示广播)</p>
-<p>A类地址:前8位为网络ID，后24位为主机ID。    0xxxxxxx | x….x      1~126 (127的地址用于做循环测试，本机地址)</p>
-<p>B类地址:前16位为网络ID，后8位为主机ID。    10x…..x | x….x        128~191</p>
-<p>C类地址:前24位为网络ID，后8位为主机ID。    110x….x | x…x        192~223</p>
-<p>D类组播使用。    1110| x…..x(多播地址)                224~239</p>
-<p>E类研究使用。    1111| x…..x(保留为今后使用)    240~255</p>
+<p>A类地址:前8位为网络ID，后24位为主机ID。 0xxxxxxx | x....x 1~126 (127的地址用于做循环测试，本机地址)</p>
+<p>B类地址:前16位为网络ID，后8位为主机ID。 10x.....x | x....x 128~191</p>
+<p>C类地址:前24位为网络ID，后8位为主机ID。 110x....x | x...x 192~223</p>
+<p>D类组播使用。 1110| x.....x(多播地址) 224~239</p>
+<p>E类研究使用。 1111| x.....x(保留为今后使用) 240~255</p>
 <p>特殊的几个地址:</p>
-<p>​    127.0.0.1 本地环回地址</p>
-<p>​    169.254.0.0 微软在无法自动获取IP时自动分给计算机的IP地址。</p>
-<p>​    保留的私网地址。    </p>
+<p>​ 127.0.0.1 本地环回地址</p>
+<p>​ 169.254.0.0 微软在无法自动获取IP时自动分给计算机的IP地址。</p>
+<p>​ 保留的私网地址。</p>
 <ul>
-<li>10.0.0.0 —— 10.255.255.255</li>
-<li>172.16.0.0 —— 127.31.255.255</li>
-<li>192.168.0.0 ——- 192.168.255.255</li>
+<li>10.0.0.0 ------ 10.255.255.255</li>
+<li>172.16.0.0 ------ 127.31.255.255</li>
+<li>192.168.0.0 ------- 192.168.255.255</li>
 </ul>
 </blockquote>
-<h2 id="子网掩码的作用"><a href="#子网掩码的作用" class="headerlink" title="子网掩码的作用"></a>子网掩码的作用</h2><blockquote>
+<h2 id="子网掩码的作用">子网掩码的作用</h2>
+<blockquote>
 <p>同IP地址作与运算，得到的结果用于判断两个IP是否位于同一网段，从而判断这两个IP的信息交换是否要通过路由器。</p>
 <p>可以用于屏蔽IP地址的主机ID部分，来凸显IP地址的网络ID部分，借此判断两个IP能否直接信息交换。</p>
 <p>还可以将大的IP网络划分为若干小的网络。(划分子网、等分划分/边长划分)</p>
 <p>超网:通过子网掩码把若干个小网络合并为一个大网络。</p>
 </blockquote>
-<h2 id="IP地址与MAC地址"><a href="#IP地址与MAC地址" class="headerlink" title="IP地址与MAC地址"></a>IP地址与MAC地址</h2><blockquote>
+<h2 id="ip地址与mac地址">IP地址与MAC地址</h2>
+<blockquote>
 <p>网络层以上使用IP地址，链路层及以下使用MAC地址</p>
-<p><img src="/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82%5CIP%E5%9C%B0%E5%9D%80%E5%92%8CMAC%E5%9C%B0%E5%9D%80.png" alt="IP地址和MAC地址"></p>
+<figure>
+<img src="/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/IP地址和MAC地址.png" alt="IP地址和MAC地址"><figcaption aria-hidden="true">IP地址和MAC地址</figcaption>
+</figure>
 <p>相比于IP数据报，MAC帧增加了</p>
 <p>交换机基于数据帧的MAC地址转发数据帧，路由器基于数据包的IP地址转发数据包。</p>
 <p>数据包在传输过程不变，过网络设备数据帧要用新的物理层地址重新封装。</p>
 <p>MAC地址决定了数据帧下一跳哪个设备接收，而IP地址决定了数据包的起点和终点</p>
 </blockquote>
-<h2 id="协议"><a href="#协议" class="headerlink" title="协议"></a>协议</h2><blockquote>
+<h2 id="协议">协议</h2>
+<blockquote>
 <p>ARP协议:将IP地址转化为物理地址。会使用到广播。</p>
 <p>RARP协议:将物理地址转化为IP地址。</p>
 <p>ARP欺骗。</p>
 </blockquote>
-<h2 id="IP数据报"><a href="#IP数据报" class="headerlink" title="IP数据报"></a>IP数据报</h2><blockquote>
+<h2 id="ip数据报">IP数据报</h2>
+<blockquote>
 <p>IP数据报的首部和数据两部分组成。首部的前一部分是固定，共20字节，是所有IP数据报必须具有的。</p>
-<p><img src="/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82%5CIP%E5%9C%B0%E5%9D%80.png" alt="IP地址"></p>
+<figure>
+<img src="/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/IP地址.png" alt="IP地址"><figcaption aria-hidden="true">IP地址</figcaption>
+</figure>
 <p>在首部的固定部分的后面是一些可选字段，其长度是可变的。</p>
 <p>各字段</p>
-<p>0-4位版本(表示为IPv4/IPv6)    4-8位首部长度(最小值为固定长度部分共20个字节。可表示最大15个单位，一个单位4个字节，故首部最大60个字节)    8-16区分服务(数据包所需的服务，定义优先级)    16-32总长度(数据包总大小，一般为1500)</p>
-<p>标识(每产生一个数据包就增加1)    标志(判断数据包是否分片)    片偏移(偏移量单位为8个字节)</p>
+<p>0-4位版本(表示为IPv4/IPv6) 4-8位首部长度(最小值为固定长度部分共20个字节。可表示最大15个单位，一个单位4个字节，故首部最大60个字节) 8-16区分服务(数据包所需的服务，定义优先级) 16-32总长度(数据包总大小，一般为1500)</p>
+<p>标识(每产生一个数据包就增加1) 标志(判断数据包是否分片) 片偏移(偏移量单位为8个字节)</p>
 <p>TTL生存时间值，指定IP包被路由器丢弃之前允许通过的最大网段数量。</p>
 <p>协议用于指明上层协议是什么，如ICMP、TCP、UDP等。</p>
 <p>首部校验和用于校验数据报是否可用。计算过程:发送端把数据报首部的信息拆成许多单字，然后初始校验和为0，将校验和同这些单字进行反码运算求和，结果取反码即为校验和。接收方重复此过程，若结果为0则保留，不为0则直接丢弃。</p>
 <p>源地址、目的地址即为IP地址。</p>
 <p>可选字段用于支持排错、测量及安全等措施</p>
 </blockquote>
-<h2 id="数据路由"><a href="#数据路由" class="headerlink" title="数据路由"></a>数据路由</h2><blockquote>
-<p>数据路由在不同网段转发数据报。能去能回——–网络畅通。</p>
+<h2 id="数据路由">数据路由</h2>
+<blockquote>
+<p>数据路由在不同网段转发数据报。能去能回--------网络畅通。</p>
 <p>负载均衡</p>
 </blockquote>
-<h2 id="ICMP协议"><a href="#ICMP协议" class="headerlink" title="ICMP协议"></a>ICMP协议</h2><blockquote>
+<h2 id="icmp协议">ICMP协议</h2>
+<blockquote>
 <p>报文类型:ICMP差错报告报文、ICMP询问报文</p>
 <p>报文前四个字节格式统一共3个字段:类型、代码、检验和，接着的四个字节内容与ICMP的类型有关。</p>
 <p>差错报告报文共五种:终点不可达、源点抑制(发数据报的速度过快)、时间超过、参数问题、改变路由/重定向。</p>
 <p>询问报文有两种:回送请求和回答报文、时间戳请求和回答报文。</p>
 </blockquote>
-<h2 id="动态路由协议"><a href="#动态路由协议" class="headerlink" title="动态路由协议"></a>动态路由协议</h2><blockquote>
+<h2 id="动态路由协议">动态路由协议</h2>
+<blockquote>
 <p>RIP最早的动态路由协议，周期性广播，30s广播一次。跳数16次。</p>
 </blockquote>
-<h2 id="OSPF协议-开放式最短路径优先-—动态路由协议"><a href="#OSPF协议-开放式最短路径优先-—动态路由协议" class="headerlink" title="OSPF协议(开放式最短路径优先)—动态路由协议"></a>OSPF协议(开放式最短路径优先)—动态路由协议</h2><h2 id="BGP-—-外部网关协议"><a href="#BGP-—-外部网关协议" class="headerlink" title="BGP —- 外部网关协议"></a>BGP —- 外部网关协议</h2><blockquote>
+<h2 id="ospf协议开放式最短路径优先---动态路由协议">OSPF协议(开放式最短路径优先)---动态路由协议</h2>
+<h2 id="bgp------外部网关协议">BGP ---- 外部网关协议</h2>
+<blockquote>
 <p>不同自治系统的路由器之间交换路由信息的协议</p>
 <p>报文类型：</p>
 <p>OPEN</p>
@@ -487,11 +508,17 @@
 <p>AS-PATH: 包含前缀通告所经过的AS序列</p>
 <p>NEXT-HOP(下一跳): 开始一个AS-PATH的路由器接口，指向下一跳AS.</p>
 </blockquote>
-<h2 id="NAT和PAT"><a href="#NAT和PAT" class="headerlink" title="NAT和PAT"></a>NAT和PAT</h2><blockquote>
+<h2 id="nat和pat">NAT和PAT</h2>
+<blockquote>
+
 </blockquote>
-<h2 id="IGMP-组播-多播"><a href="#IGMP-组播-多播" class="headerlink" title="IGMP 组播/多播"></a>IGMP 组播/多播</h2><h2 id="DHCP"><a href="#DHCP" class="headerlink" title="DHCP"></a>DHCP</h2><blockquote>
+<h2 id="igmp-组播多播">IGMP 组播/多播</h2>
+<h2 id="dhcp">DHCP</h2>
+<blockquote>
+
 </blockquote>
-<h2 id="ARP"><a href="#ARP" class="headerlink" title="ARP"></a>ARP</h2><blockquote>
+<h2 id="arp">ARP</h2>
+<blockquote>
 <p>默认网关为网络上的最低地址，如192.32.65.0/24的默认网关为192.32.65.1</p>
 </blockquote>
 
@@ -545,8 +572,8 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2021/02/20/computerNetwork/%E7%AC%AC5%E7%AB%A0-%E4%BC%A0%E8%BE%93%E5%B1%82/" rel="prev" title="传输层">
-                  <i class="fa fa-chevron-left"></i> 传输层
+                <a href="/2021/02/20/computerNetwork/%E7%AC%AC6%E7%AB%A0-%E5%BA%94%E7%94%A8%E5%B1%82/" rel="prev" title="应用层">
+                  <i class="fa fa-chevron-left"></i> 应用层
                 </a>
             </div>
             <div class="post-nav-item">
@@ -655,6 +682,39 @@
   <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 
+
+
+  <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'none'
+      },
+      options: {
+        renderActions: {
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
 
 
 

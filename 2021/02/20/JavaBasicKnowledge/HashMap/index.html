@@ -22,12 +22,12 @@
     var NexT = window.NexT || {};
     var CONFIG = {"hostname":"49.234.221.130","root":"/","images":"/images","scheme":"Pisces","version":"8.2.1","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
   </script>
-<meta name="description" content="HashMapHashMap初始化 初始化时可以设置初始大小和负载因子。默认负载因子0.75，默认容量为16。 HashMap的threshold为负载因子 * 容量。  HashMap的get方法 就是根据传入的key求出对应的hash值，然后根据hash值和数组长度-1进行&amp;运算获得对应下标位置，获取位置后判断当前结点是树结点还是链表结点，从而采取不同的处理方式。  HashMap的r">
+<meta name="description" content="HashMap HashMap初始化  初始化时可以设置初始大小和负载因子。默认负载因子0.75，默认容量为16。 HashMap的threshold为负载因子 * 容量。  HashMap的get方法  就是根据传入的key求出对应的hash值，然后根据hash值和数组长度-1进行&amp;运算获得对应下标位置，获取位置后判断当前结点是树结点还是链表结点，从而采取不同的处理方式。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="HashMap分析">
 <meta property="og:url" content="http://49.234.221.130/2021/02/20/JavaBasicKnowledge/HashMap/index.html">
 <meta property="og:site_name" content="Yesomething">
-<meta property="og:description" content="HashMapHashMap初始化 初始化时可以设置初始大小和负载因子。默认负载因子0.75，默认容量为16。 HashMap的threshold为负载因子 * 容量。  HashMap的get方法 就是根据传入的key求出对应的hash值，然后根据hash值和数组长度-1进行&amp;运算获得对应下标位置，获取位置后判断当前结点是树结点还是链表结点，从而采取不同的处理方式。  HashMap的r">
+<meta property="og:description" content="HashMap HashMap初始化  初始化时可以设置初始大小和负载因子。默认负载因子0.75，默认容量为16。 HashMap的threshold为负载因子 * 容量。  HashMap的get方法  就是根据传入的key求出对应的hash值，然后根据hash值和数组长度-1进行&amp;运算获得对应下标位置，获取位置后判断当前结点是树结点还是链表结点，从而采取不同的处理方式。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-02-20T04:26:00.000Z">
 <meta property="article:modified_time" content="2021-02-20T08:00:44.696Z">
@@ -187,7 +187,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#HashMap"><span class="nav-number">1.</span> <span class="nav-text">HashMap</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#HashMap%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">1.1.</span> <span class="nav-text">HashMap初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HashMap%E7%9A%84get%E6%96%B9%E6%B3%95"><span class="nav-number">1.2.</span> <span class="nav-text">HashMap的get方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HashMap%E7%9A%84remove%E6%96%B9%E6%B3%95"><span class="nav-number">1.3.</span> <span class="nav-text">HashMap的remove方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HashMap%E7%9A%84resize%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.</span> <span class="nav-text">HashMap的resize方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HashMap%E7%9A%84put%E6%96%B9%E6%B3%95"><span class="nav-number">1.5.</span> <span class="nav-text">HashMap的put方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tips"><span class="nav-number">1.6.</span> <span class="nav-text">tips</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%A2%E8%AF%95%E9%A2%98"><span class="nav-number">1.7.</span> <span class="nav-text">面试题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#key%E4%B8%BAnull%E6%97%B6%EF%BC%8C%E6%89%A7%E8%A1%8Cput%E6%93%8D%E4%BD%9C%EF%BC%8C%E6%95%B0%E6%8D%AE%E6%94%BE%E5%9C%A8%E5%93%AA%E4%B8%AA%E6%A1%B6%E4%BD%8D%EF%BC%9F"><span class="nav-number">1.7.1.</span> <span class="nav-text">key为null时，执行put操作，数据放在哪个桶位？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HashMap%E7%9A%84hash%E5%87%BD%E6%95%B0%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E5%B0%86hash%E5%80%BC%E7%A7%BB%E4%BD%8D%E5%B9%B6%E5%BC%82%E6%88%96%EF%BC%9F"><span class="nav-number">1.7.2.</span> <span class="nav-text">HashMap的hash函数为什么需要将hash值移位并异或？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88HashMap%E5%86%85%E9%83%A8%E7%9A%84%E6%95%A3%E5%88%97%E8%A1%A8%E6%95%B0%E7%BB%84%E9%95%BF%E5%BA%A6%E4%B8%80%E5%AE%9A%E6%98%AF2%E7%9A%84%E6%AC%A1%E6%96%B9%E6%95%B0%EF%BC%9F"><span class="nav-number">1.7.3.</span> <span class="nav-text">为什么HashMap内部的散列表数组长度一定是2的次方数？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HashMap%E5%86%85%E9%83%A8%E7%9A%84%E6%95%A3%E5%88%97%E8%A1%A8%E7%BB%93%E6%9E%84%EF%BC%8C%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E5%88%9D%E5%A7%8B%E5%8C%96%EF%BC%9F%E5%88%9D%E5%A7%8B%E5%8C%96%E5%A4%A7%E5%B0%8F%E6%9C%89%E5%87%A0%E7%A7%8D%E6%83%85%E5%86%B5%EF%BC%9F"><span class="nav-number">1.7.4.</span> <span class="nav-text">HashMap内部的散列表结构，什么时候初始化？初始化大小有几种情况？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HashMap%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E6%89%A9%E5%AE%B9%EF%BC%8C%E6%89%A9%E5%AE%B9%E5%8F%88%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84%EF%BC%9F"><span class="nav-number">1.7.5.</span> <span class="nav-text">HashMap为什么需要扩容，扩容又是如何实现的？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JDK8%E4%B8%BA%E4%BB%80%E4%B9%88HashMap%E5%BC%95%E5%85%A5%E7%BA%A2%E9%BB%91%E6%A0%91%EF%BC%9F"><span class="nav-number">1.7.6.</span> <span class="nav-text">JDK8为什么HashMap引入红黑树？</span></a></li></ol></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#hashmap"><span class="nav-number">1.</span> <span class="nav-text">HashMap</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#hashmap%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">1.1.</span> <span class="nav-text">HashMap初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hashmap%E7%9A%84get%E6%96%B9%E6%B3%95"><span class="nav-number">1.2.</span> <span class="nav-text">HashMap的get方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hashmap%E7%9A%84remove%E6%96%B9%E6%B3%95"><span class="nav-number">1.3.</span> <span class="nav-text">HashMap的remove方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hashmap%E7%9A%84resize%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.</span> <span class="nav-text">HashMap的resize方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hashmap%E7%9A%84put%E6%96%B9%E6%B3%95"><span class="nav-number">1.5.</span> <span class="nav-text">HashMap的put方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tips"><span class="nav-number">1.6.</span> <span class="nav-text">tips</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%A2%E8%AF%95%E9%A2%98"><span class="nav-number">1.7.</span> <span class="nav-text">面试题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#key%E4%B8%BAnull%E6%97%B6%E6%89%A7%E8%A1%8Cput%E6%93%8D%E4%BD%9C%E6%95%B0%E6%8D%AE%E6%94%BE%E5%9C%A8%E5%93%AA%E4%B8%AA%E6%A1%B6%E4%BD%8D"><span class="nav-number">1.7.1.</span> <span class="nav-text">key为null时，执行put操作，数据放在哪个桶位？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hashmap%E7%9A%84hash%E5%87%BD%E6%95%B0%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E5%B0%86hash%E5%80%BC%E7%A7%BB%E4%BD%8D%E5%B9%B6%E5%BC%82%E6%88%96"><span class="nav-number">1.7.2.</span> <span class="nav-text">HashMap的hash函数为什么需要将hash值移位并异或？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88hashmap%E5%86%85%E9%83%A8%E7%9A%84%E6%95%A3%E5%88%97%E8%A1%A8%E6%95%B0%E7%BB%84%E9%95%BF%E5%BA%A6%E4%B8%80%E5%AE%9A%E6%98%AF2%E7%9A%84%E6%AC%A1%E6%96%B9%E6%95%B0"><span class="nav-number">1.7.3.</span> <span class="nav-text">为什么HashMap内部的散列表数组长度一定是2的次方数？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hashmap%E5%86%85%E9%83%A8%E7%9A%84%E6%95%A3%E5%88%97%E8%A1%A8%E7%BB%93%E6%9E%84%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E5%88%9D%E5%A7%8B%E5%8C%96%E5%88%9D%E5%A7%8B%E5%8C%96%E5%A4%A7%E5%B0%8F%E6%9C%89%E5%87%A0%E7%A7%8D%E6%83%85%E5%86%B5"><span class="nav-number">1.7.4.</span> <span class="nav-text">HashMap内部的散列表结构，什么时候初始化？初始化大小有几种情况？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hashmap%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E6%89%A9%E5%AE%B9%E6%89%A9%E5%AE%B9%E5%8F%88%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84"><span class="nav-number">1.7.5.</span> <span class="nav-text">HashMap为什么需要扩容，扩容又是如何实现的？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#jdk8%E4%B8%BA%E4%BB%80%E4%B9%88hashmap%E5%BC%95%E5%85%A5%E7%BA%A2%E9%BB%91%E6%A0%91"><span class="nav-number">1.7.6.</span> <span class="nav-text">JDK8为什么HashMap引入红黑树？</span></a></li></ol></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -343,29 +343,36 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h1 id="HashMap"><a href="#HashMap" class="headerlink" title="HashMap"></a>HashMap</h1><h2 id="HashMap初始化"><a href="#HashMap初始化" class="headerlink" title="HashMap初始化"></a>HashMap初始化</h2><blockquote>
+        <h1 id="hashmap">HashMap</h1>
+<h2 id="hashmap初始化">HashMap初始化</h2>
+<blockquote>
 <p>初始化时可以设置初始大小和负载因子。默认负载因子0.75，默认容量为16。</p>
 <p>HashMap的threshold为负载因子 * 容量。</p>
 </blockquote>
-<h2 id="HashMap的get方法"><a href="#HashMap的get方法" class="headerlink" title="HashMap的get方法"></a>HashMap的get方法</h2><blockquote>
+<h2 id="hashmap的get方法">HashMap的get方法</h2>
+<blockquote>
 <p>就是根据传入的key求出对应的hash值，然后根据hash值和数组长度-1进行&amp;运算获得对应下标位置，获取位置后判断当前结点是树结点还是链表结点，从而采取不同的处理方式。</p>
 </blockquote>
-<h2 id="HashMap的remove方法"><a href="#HashMap的remove方法" class="headerlink" title="HashMap的remove方法"></a>HashMap的remove方法</h2><blockquote>
+<h2 id="hashmap的remove方法">HashMap的remove方法</h2>
+<blockquote>
 <p>根据传入的key求出对应hash值，找到对应桶位，然后根据对应结点的类型为树结点还是链表结点，根据不同结点的类型执行不同的删除操作。链表需要改变指向，树则需要再次平衡。</p>
 </blockquote>
-<h2 id="HashMap的resize方法"><a href="#HashMap的resize方法" class="headerlink" title="HashMap的resize方法"></a>HashMap的resize方法</h2><blockquote>
+<h2 id="hashmap的resize方法">HashMap的resize方法</h2>
+<blockquote>
 <p>先判断当前是否有table，如果没有table且未设置初始大小，则初始化容量为默认值，阈值为默认值 * 负载因子的数组。若设置了初始大小则初始化容量为设置的大小的二次幂值的数组。</p>
 <p>若存在table，先判断旧容量是否大于最大值，若大于则设置阈值为Integer.MAX_VALUE，返回table，否则判断旧容量左移1位后是否不超过最大容量且判断当前容量是否超过默认容量16，若不超过最大容量且当前容量超过默认容量则将旧阈值左移一位。否则将计算newCap * loadFactor，判断新容量是否大于最大容量，若不大于则使用newCap * loadFactor作为新阈值，使用newCap作为数组的新容量。</p>
 <p>创建完新数组后，需要将旧table的数据复制到新table之中。</p>
 <p>复制的过程：</p>
-<p>​    遍历桶位，若某个桶位只有一个元素则直接根据hash值&amp;新数组容量-1判断需要插入到新数组的什么位置。</p>
-<p>​    若该元素是树结点则使用spilt方法，插入到新数组。</p>
-<p>​    若桶位存在多个链表结点，则大致流程为使用4个指针来记录新旧两个数组的头尾链表位置。即先记录头位置，然后将头位置赋值给尾位置，利用尾位置不断连接结点，最后将头结点赋值给桶位元素。</p>
+<p>​ 遍历桶位，若某个桶位只有一个元素则直接根据hash值&amp;新数组容量-1判断需要插入到新数组的什么位置。</p>
+<p>​ 若该元素是树结点则使用spilt方法，插入到新数组。</p>
+<p>​ 若桶位存在多个链表结点，则大致流程为使用4个指针来记录新旧两个数组的头尾链表位置。即先记录头位置，然后将头位置赋值给尾位置，利用尾位置不断连接结点，最后将头结点赋值给桶位元素。</p>
 </blockquote>
-<h2 id="HashMap的put方法"><a href="#HashMap的put方法" class="headerlink" title="HashMap的put方法"></a>HashMap的put方法</h2><blockquote>
+<h2 id="hashmap的put方法">HashMap的put方法</h2>
+<blockquote>
 <p>获取已存在的table，若当前table不存在则resize一个table，若存在则找到对应桶位，根据结点类型采取不同的插入操作，对于链表，插入完成后还会判断当前桶位元素个数是否大于树化阈值，若大于则将桶树化。对于树结点，插入时需要进行平衡。最后插入完成后，判断当前HashMap元素个数是否大于总阈值，若大于则resize扩容。</p>
 </blockquote>
-<h2 id="tips"><a href="#tips" class="headerlink" title="tips"></a>tips</h2><blockquote>
+<h2 id="tips">tips</h2>
+<blockquote>
 <p>jdk8后，HashMap红黑树和链表转化是根据泊松分布的，链表转化为树阈值为8，树退化为链表阈值为6。</p>
 <p>且红黑树的排序是根据节点的hashcode大小，对于实现了Comparable接口的则使用compare方法来比较。</p>
 <p>hashmap默认负载因子0.75，默认容量为16，最大容量为2^30次方，且容量必须为2的次幂大小，因为使用位运算来执行取模操作。</p>
@@ -373,24 +380,31 @@
 <p>HashMap线程非安全，HashTable线程安全，ConcurrentHashMap线程安全。</p>
 <p>HashTable本质是上是将各方法都加上了synchronized。</p>
 </blockquote>
-<h2 id="面试题"><a href="#面试题" class="headerlink" title="面试题"></a>面试题</h2><h3 id="key为null时，执行put操作，数据放在哪个桶位？"><a href="#key为null时，执行put操作，数据放在哪个桶位？" class="headerlink" title="key为null时，执行put操作，数据放在哪个桶位？"></a>key为null时，执行put操作，数据放在哪个桶位？</h3><blockquote>
+<h2 id="面试题">面试题</h2>
+<h3 id="key为null时执行put操作数据放在哪个桶位">key为null时，执行put操作，数据放在哪个桶位？</h3>
+<blockquote>
 <p>key为null时HashMap求出的hash值为0，故放在第0个桶位。</p>
 </blockquote>
-<h3 id="HashMap的hash函数为什么需要将hash值移位并异或？"><a href="#HashMap的hash函数为什么需要将hash值移位并异或？" class="headerlink" title="HashMap的hash函数为什么需要将hash值移位并异或？"></a>HashMap的hash函数为什么需要将hash值移位并异或？</h3><blockquote>
+<h3 id="hashmap的hash函数为什么需要将hash值移位并异或">HashMap的hash函数为什么需要将hash值移位并异或？</h3>
+<blockquote>
 <p>注释里有说，为了让高位的hash值对数据产生影响。</p>
 </blockquote>
-<h3 id="为什么HashMap内部的散列表数组长度一定是2的次方数？"><a href="#为什么HashMap内部的散列表数组长度一定是2的次方数？" class="headerlink" title="为什么HashMap内部的散列表数组长度一定是2的次方数？"></a>为什么HashMap内部的散列表数组长度一定是2的次方数？</h3><blockquote>
+<h3 id="为什么hashmap内部的散列表数组长度一定是2的次方数">为什么HashMap内部的散列表数组长度一定是2的次方数？</h3>
+<blockquote>
 <p>让查找位置时使用数组长度-1的值会对应2进制的000011111111，后位均为1，提高HashMap的散列性。</p>
 </blockquote>
-<h3 id="HashMap内部的散列表结构，什么时候初始化？初始化大小有几种情况？"><a href="#HashMap内部的散列表结构，什么时候初始化？初始化大小有几种情况？" class="headerlink" title="HashMap内部的散列表结构，什么时候初始化？初始化大小有几种情况？"></a>HashMap内部的散列表结构，什么时候初始化？初始化大小有几种情况？</h3><blockquote>
+<h3 id="hashmap内部的散列表结构什么时候初始化初始化大小有几种情况">HashMap内部的散列表结构，什么时候初始化？初始化大小有几种情况？</h3>
+<blockquote>
 <p>构造方法共四种：无参构造、传入初始容量、传入初始容量及负载因子、传入Map</p>
 <p>传入Map时会调用resize会初始化。</p>
 <p>resize时会初始化。</p>
 </blockquote>
-<h3 id="HashMap为什么需要扩容，扩容又是如何实现的？"><a href="#HashMap为什么需要扩容，扩容又是如何实现的？" class="headerlink" title="HashMap为什么需要扩容，扩容又是如何实现的？"></a>HashMap为什么需要扩容，扩容又是如何实现的？</h3><blockquote>
+<h3 id="hashmap为什么需要扩容扩容又是如何实现的">HashMap为什么需要扩容，扩容又是如何实现的？</h3>
+<blockquote>
 <p>因为数组过小，会导致插入时会插入到同一个桶位导致查询效率下降，故用空间换时间的方式优化。</p>
 </blockquote>
-<h3 id="JDK8为什么HashMap引入红黑树？"><a href="#JDK8为什么HashMap引入红黑树？" class="headerlink" title="JDK8为什么HashMap引入红黑树？"></a>JDK8为什么HashMap引入红黑树？</h3><blockquote>
+<h3 id="jdk8为什么hashmap引入红黑树">JDK8为什么HashMap引入红黑树？</h3>
+<blockquote>
 <p>因为数据增大时链表的查询速度低。</p>
 </blockquote>
 
@@ -445,13 +459,13 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2021/02/20/JavaBasicKnowledge/Object/" rel="prev" title="Object类分析">
-                  <i class="fa fa-chevron-left"></i> Object类分析
+                <a href="/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="prev" title="多线程相关">
+                  <i class="fa fa-chevron-left"></i> 多线程相关
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2021/02/20/JavaBasicKnowledge/ConcurrentHashMap/" rel="next" title="ConcurrentHashMap分析">
-                  ConcurrentHashMap分析 <i class="fa fa-chevron-right"></i>
+                <a href="/2021/02/20/JavaBasicKnowledge/Object/" rel="next" title="Object类分析">
+                  Object类分析 <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
           </div>
@@ -555,6 +569,39 @@
   <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 
+
+
+  <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'none'
+      },
+      options: {
+        renderActions: {
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
 
 
 

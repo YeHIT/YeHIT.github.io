@@ -22,12 +22,12 @@
     var NexT = window.NexT || {};
     var CONFIG = {"hostname":"49.234.221.130","root":"/","images":"/images","scheme":"Pisces","version":"8.2.1","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
   </script>
-<meta name="description" content="http基本知识及改进HTTP介绍0.9版本 GET &#x2F;index.html 服务端只能返回html格式，传输过程只能处理文字  1.0版本 支持任何格式的内容，包括图像、视频、二进制等。 引入了POST命令、HEAD命令。 增加了请求头、状态码，以及权限缓存等。 123456789101112# 请求包GET &#x2F; HTTP&#x2F;1.0User-Agent:Mozilla&#x2F;1.0Accept: *&#x2F;*">
+<meta name="description" content="http基本知识及改进 HTTP介绍 0.9版本  GET &#x2F;index.html 服务端只能返回html格式，传输过程只能处理文字  1.0版本  支持任何格式的内容，包括图像、视频、二进制等。 引入了POST命令、HEAD命令。 增加了请求头、状态码，以及权限缓存等。 123456789101112# 请求包GET &#x2F; HTTP&#x2F;1.0User-Agent:Mozill">
 <meta property="og:type" content="article">
 <meta property="og:title" content="http基本知识及改进">
 <meta property="og:url" content="http://49.234.221.130/2021/02/20/codeAnalyse/http%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86%E5%8F%8A%E6%94%B9%E8%BF%9B/index.html">
 <meta property="og:site_name" content="Yesomething">
-<meta property="og:description" content="http基本知识及改进HTTP介绍0.9版本 GET &#x2F;index.html 服务端只能返回html格式，传输过程只能处理文字  1.0版本 支持任何格式的内容，包括图像、视频、二进制等。 引入了POST命令、HEAD命令。 增加了请求头、状态码，以及权限缓存等。 123456789101112# 请求包GET &#x2F; HTTP&#x2F;1.0User-Agent:Mozilla&#x2F;1.0Accept: *&#x2F;*">
+<meta property="og:description" content="http基本知识及改进 HTTP介绍 0.9版本  GET &#x2F;index.html 服务端只能返回html格式，传输过程只能处理文字  1.0版本  支持任何格式的内容，包括图像、视频、二进制等。 引入了POST命令、HEAD命令。 增加了请求头、状态码，以及权限缓存等。 123456789101112# 请求包GET &#x2F; HTTP&#x2F;1.0User-Agent:Mozill">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-02-20T04:26:00.000Z">
 <meta property="article:modified_time" content="2021-02-20T08:09:30.310Z">
@@ -186,7 +186,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#http%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86%E5%8F%8A%E6%94%B9%E8%BF%9B"><span class="nav-number">1.</span> <span class="nav-text">http基本知识及改进</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.1.</span> <span class="nav-text">HTTP介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#0-9%E7%89%88%E6%9C%AC"><span class="nav-number">1.1.1.</span> <span class="nav-text">0.9版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-0%E7%89%88%E6%9C%AC"><span class="nav-number">1.1.2.</span> <span class="nav-text">1.0版本</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BC%BA%E7%82%B9%E5%92%8C%E9%97%AE%E9%A2%98%EF%BC%9A"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">缺点和问题：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1%E7%89%88%E6%9C%AC"><span class="nav-number">1.2.</span> <span class="nav-text">1.1版本</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BC%BA%E7%82%B9%E5%92%8C%E9%97%AE%E9%A2%98"><span class="nav-number">1.2.0.1.</span> <span class="nav-text">缺点和问题</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-0%E7%89%88%E6%9C%AC"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.0版本</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP%E7%9A%84%E7%BC%BA%E9%99%B7"><span class="nav-number">1.3.</span> <span class="nav-text">HTTP的缺陷</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WebSocket"><span class="nav-number">1.4.</span> <span class="nav-text">WebSocket</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#http%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86%E5%8F%8A%E6%94%B9%E8%BF%9B"><span class="nav-number">1.</span> <span class="nav-text">http基本知识及改进</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#http%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.1.</span> <span class="nav-text">HTTP介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%88%E6%9C%AC"><span class="nav-number">1.1.1.</span> <span class="nav-text">0.9版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%88%E6%9C%AC-1"><span class="nav-number">1.1.2.</span> <span class="nav-text">1.0版本</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BC%BA%E7%82%B9%E5%92%8C%E9%97%AE%E9%A2%98"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">缺点和问题：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%88%E6%9C%AC-2"><span class="nav-number">1.2.</span> <span class="nav-text">1.1版本</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BC%BA%E7%82%B9%E5%92%8C%E9%97%AE%E9%A2%98-1"><span class="nav-number">1.2.0.1.</span> <span class="nav-text">缺点和问题</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%88%E6%9C%AC-3"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.0版本</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#http%E7%9A%84%E7%BC%BA%E9%99%B7"><span class="nav-number">1.3.</span> <span class="nav-text">HTTP的缺陷</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#websocket"><span class="nav-number">1.4.</span> <span class="nav-text">WebSocket</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -342,44 +342,53 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h1 id="http基本知识及改进"><a href="#http基本知识及改进" class="headerlink" title="http基本知识及改进"></a>http基本知识及改进</h1><h2 id="HTTP介绍"><a href="#HTTP介绍" class="headerlink" title="HTTP介绍"></a>HTTP介绍</h2><h3 id="0-9版本"><a href="#0-9版本" class="headerlink" title="0.9版本"></a>0.9版本</h3><blockquote>
+        <h1 id="http基本知识及改进">http基本知识及改进</h1>
+<h2 id="http介绍">HTTP介绍</h2>
+<h3 id="版本">0.9版本</h3>
+<blockquote>
 <p>GET /index.html</p>
 <p>服务端只能返回html格式，传输过程只能处理文字</p>
 </blockquote>
-<h3 id="1-0版本"><a href="#1-0版本" class="headerlink" title="1.0版本"></a>1.0版本</h3><blockquote>
+<h3 id="版本-1">1.0版本</h3>
+<blockquote>
 <p>支持任何格式的内容，包括图像、视频、二进制等。</p>
 <p>引入了POST命令、HEAD命令。</p>
 <p>增加了请求头、状态码，以及权限缓存等。</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># 请求包</span><br><span class="line">GET / HTTP/1.0</span><br><span class="line">User-Agent:Mozilla/1.0</span><br><span class="line">Accept: */*</span><br><span class="line"></span><br><span class="line"># 应答包</span><br><span class="line">HTTP/1.0 200 OK</span><br><span class="line">Content-Type: text/plain</span><br><span class="line">Content-Length: 12345</span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"> ....</span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
 <p>Content-Type表示当前数据格式：text/html、image/png、application/pdf、video/mp4。</p>
 <p>前面是一级格式，后面是二级类型，用斜杆分隔，还可以增加其他参数，如编码格式</p>
 <p>Content-Type：text/plain；charset=utf-8</p>
 <p>Content-Encoding表示数据压缩的方式：gzip、compress、deflate。</p>
 <p>对应客户端的字段为Accept-Encoding，代表接收哪些压缩方式。</p>
-<h4 id="缺点和问题："><a href="#缺点和问题：" class="headerlink" title="缺点和问题："></a>缺点和问题：</h4><p>每个TCP连接只能发送一个请求，发送完毕连接关闭，使用成本很高，性能较差。</p>
+<h4 id="缺点和问题">缺点和问题：</h4>
+<p>每个TCP连接只能发送一个请求，发送完毕连接关闭，使用成本很高，性能较差。</p>
 <p>Connection：keep-alive (非标准字段)</p>
 </blockquote>
-<h2 id="1-1版本"><a href="#1-1版本" class="headerlink" title="1.1版本"></a>1.1版本</h2><blockquote>
+<h2 id="版本-2">1.1版本</h2>
+<blockquote>
 <p>持久连接：默认不关闭TCP连接，可以被多个请求复用。</p>
 <p>管道机制：支持客户端发送多个请求，管理请求的顺序。服务器还是按照接受请求的顺序，返回对应的响应结果。</p>
 <p>Content-Length：用于区分数据包的字段。</p>
 <p>支持了DELETE、PUT、PATCH等命令。</p>
-<h4 id="缺点和问题"><a href="#缺点和问题" class="headerlink" title="缺点和问题"></a>缺点和问题</h4><p>当部分请求耗时较长时，仍会阻塞后续请求的处理速度，这种现象叫做“队头阻塞/线头阻塞”。</p>
+<h4 id="缺点和问题-1">缺点和问题</h4>
+<p>当部分请求耗时较长时，仍会阻塞后续请求的处理速度，这种现象叫做“队头阻塞/线头阻塞”。</p>
 </blockquote>
-<h3 id="2-0版本"><a href="#2-0版本" class="headerlink" title="2.0版本"></a>2.0版本</h3><blockquote>
+<h3 id="版本-3">2.0版本</h3>
+<blockquote>
 <p>解决了队头阻塞的问题。多路复用。</p>
 </blockquote>
-<h2 id="HTTP的缺陷"><a href="#HTTP的缺陷" class="headerlink" title="HTTP的缺陷"></a>HTTP的缺陷</h2><blockquote>
+<h2 id="http的缺陷">HTTP的缺陷</h2>
+<blockquote>
 <p>通信只能由客户端发起，需要一种服务端能够主动推送的能力-websocket。</p>
-<p>这种双向通信的能力，也叫”全双工”，协议标识符：<a target="_blank" rel="noopener" href="http://127.0.0.1/">http://127.0.0.1/</a> 变为 ws://127.0.0.1/ 通信的最小单位是帧frame。</p>
+<p>这种双向通信的能力，也叫"全双工"，协议标识符：http://127.0.0.1/ 变为 ws://127.0.0.1/ 通信的最小单位是帧frame。</p>
 </blockquote>
-<h2 id="WebSocket"><a href="#WebSocket" class="headerlink" title="WebSocket"></a>WebSocket</h2><blockquote>
+<h2 id="websocket">WebSocket</h2>
+<blockquote>
 <p>websocket是由浏览器发起的。</p>
 <p>响应码101代表本次协议需要更改为websocket。</p>
 <p>建立连接后，支持文本信息和二进制信息。</p>
 <p>Websocket实现的原理：</p>
-<p>​    通过http协议进行连接的建立，建立连接后不再使用http，而tcp自身是支持双向通信的，所以可以达到全双工的效果。</p>
+<p>​ 通过http协议进行连接的建立，建立连接后不再使用http，而tcp自身是支持双向通信的，所以可以达到全双工的效果。</p>
 <p>通信使用的单位叫帧frame</p>
 <p>客户端：发送时，将消息切割成多个帧。</p>
 <p>服务端：接收时，将关联的帧重新组装。</p>
@@ -435,13 +444,13 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2021/02/20/codeAnalyse/mybatis%E6%B5%81%E7%A8%8B/" rel="prev" title="Mybatis流程源码分析">
-                  <i class="fa fa-chevron-left"></i> Mybatis流程源码分析
+                <a href="/2021/02/20/codeAnalyse/SpringBoot%E5%8E%9F%E7%90%86/" rel="prev" title="SpringBoot原理分析">
+                  <i class="fa fa-chevron-left"></i> SpringBoot原理分析
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2021/02/20/codeAnalyse/SpringBoot%E5%8E%9F%E7%90%86/" rel="next" title="SpringBoot原理分析">
-                  SpringBoot原理分析 <i class="fa fa-chevron-right"></i>
+                <a href="/2021/02/20/codeAnalyse/Dubbo/" rel="next" title="Dubbo简单介绍">
+                  Dubbo简单介绍 <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
           </div>
@@ -545,6 +554,39 @@
   <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 
+
+
+  <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'none'
+      },
+      options: {
+        renderActions: {
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
 
 
 
