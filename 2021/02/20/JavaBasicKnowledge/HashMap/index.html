@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-leaf.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-leaf.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-leaf.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"49.234.221.130","root":"/","images":"/images","scheme":"Pisces","version":"8.2.1","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+<meta name="description" content="HashMapHashMap初始化 初始化时可以设置初始大小和负载因子。默认负载因子0.75，默认容量为16。 HashMap的threshold为负载因子 * 容量。  HashMap的get方法 就是根据传入的key求出对应的hash值，然后根据hash值和数组长度-1进行&amp;运算获得对应下标位置，获取位置后判断当前结点是树结点还是链表结点，从而采取不同的处理方式。  HashMap的r">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HashMap分析">
+<meta property="og:url" content="http://49.234.221.130/2021/02/20/JavaBasicKnowledge/HashMap/index.html">
+<meta property="og:site_name" content="Yesomething">
+<meta property="og:description" content="HashMapHashMap初始化 初始化时可以设置初始大小和负载因子。默认负载因子0.75，默认容量为16。 HashMap的threshold为负载因子 * 容量。  HashMap的get方法 就是根据传入的key求出对应的hash值，然后根据hash值和数组长度-1进行&amp;运算获得对应下标位置，获取位置后判断当前结点是树结点还是链表结点，从而采取不同的处理方式。  HashMap的r">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-02-20T04:26:00.000Z">
+<meta property="article:modified_time" content="2021-02-20T08:00:44.696Z">
+<meta property="article:author" content="Ye">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="容器">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://49.234.221.130/2021/02/20/JavaBasicKnowledge/HashMap/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>HashMap分析 | Yesomething</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Yesomething</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Ye's blog</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fas fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#HashMap"><span class="nav-number">1.</span> <span class="nav-text">HashMap</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#HashMap%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">1.1.</span> <span class="nav-text">HashMap初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HashMap%E7%9A%84get%E6%96%B9%E6%B3%95"><span class="nav-number">1.2.</span> <span class="nav-text">HashMap的get方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HashMap%E7%9A%84remove%E6%96%B9%E6%B3%95"><span class="nav-number">1.3.</span> <span class="nav-text">HashMap的remove方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HashMap%E7%9A%84resize%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.</span> <span class="nav-text">HashMap的resize方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HashMap%E7%9A%84put%E6%96%B9%E6%B3%95"><span class="nav-number">1.5.</span> <span class="nav-text">HashMap的put方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tips"><span class="nav-number">1.6.</span> <span class="nav-text">tips</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%A2%E8%AF%95%E9%A2%98"><span class="nav-number">1.7.</span> <span class="nav-text">面试题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#key%E4%B8%BAnull%E6%97%B6%EF%BC%8C%E6%89%A7%E8%A1%8Cput%E6%93%8D%E4%BD%9C%EF%BC%8C%E6%95%B0%E6%8D%AE%E6%94%BE%E5%9C%A8%E5%93%AA%E4%B8%AA%E6%A1%B6%E4%BD%8D%EF%BC%9F"><span class="nav-number">1.7.1.</span> <span class="nav-text">key为null时，执行put操作，数据放在哪个桶位？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HashMap%E7%9A%84hash%E5%87%BD%E6%95%B0%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E5%B0%86hash%E5%80%BC%E7%A7%BB%E4%BD%8D%E5%B9%B6%E5%BC%82%E6%88%96%EF%BC%9F"><span class="nav-number">1.7.2.</span> <span class="nav-text">HashMap的hash函数为什么需要将hash值移位并异或？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88HashMap%E5%86%85%E9%83%A8%E7%9A%84%E6%95%A3%E5%88%97%E8%A1%A8%E6%95%B0%E7%BB%84%E9%95%BF%E5%BA%A6%E4%B8%80%E5%AE%9A%E6%98%AF2%E7%9A%84%E6%AC%A1%E6%96%B9%E6%95%B0%EF%BC%9F"><span class="nav-number">1.7.3.</span> <span class="nav-text">为什么HashMap内部的散列表数组长度一定是2的次方数？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HashMap%E5%86%85%E9%83%A8%E7%9A%84%E6%95%A3%E5%88%97%E8%A1%A8%E7%BB%93%E6%9E%84%EF%BC%8C%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E5%88%9D%E5%A7%8B%E5%8C%96%EF%BC%9F%E5%88%9D%E5%A7%8B%E5%8C%96%E5%A4%A7%E5%B0%8F%E6%9C%89%E5%87%A0%E7%A7%8D%E6%83%85%E5%86%B5%EF%BC%9F"><span class="nav-number">1.7.4.</span> <span class="nav-text">HashMap内部的散列表结构，什么时候初始化？初始化大小有几种情况？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HashMap%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E6%89%A9%E5%AE%B9%EF%BC%8C%E6%89%A9%E5%AE%B9%E5%8F%88%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84%EF%BC%9F"><span class="nav-number">1.7.5.</span> <span class="nav-text">HashMap为什么需要扩容，扩容又是如何实现的？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JDK8%E4%B8%BA%E4%BB%80%E4%B9%88HashMap%E5%BC%95%E5%85%A5%E7%BA%A2%E9%BB%91%E6%A0%91%EF%BC%9F"><span class="nav-number">1.7.6.</span> <span class="nav-text">JDK8为什么HashMap引入红黑树？</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Ye"
+      src="/uploads/photo.jpg">
+  <p class="site-author-name" itemprop="name">Ye</p>
+  <div class="site-description" itemprop="description">Ye的个人技术记录博客</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">25</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/YeHIT" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;YeHIT" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1044377312@qq.com" title="E-Mail → mailto:1044377312@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+  <a href="https://github.com/YeHIT" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/JavaBasicKnowledge/HashMap/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/photo.jpg">
+      <meta itemprop="name" content="Ye">
+      <meta itemprop="description" content="Ye的个人技术记录博客">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Yesomething">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          HashMap分析
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:00:44" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.7k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="HashMap"><a href="#HashMap" class="headerlink" title="HashMap"></a>HashMap</h1><h2 id="HashMap初始化"><a href="#HashMap初始化" class="headerlink" title="HashMap初始化"></a>HashMap初始化</h2><blockquote>
+<p>初始化时可以设置初始大小和负载因子。默认负载因子0.75，默认容量为16。</p>
+<p>HashMap的threshold为负载因子 * 容量。</p>
+</blockquote>
+<h2 id="HashMap的get方法"><a href="#HashMap的get方法" class="headerlink" title="HashMap的get方法"></a>HashMap的get方法</h2><blockquote>
+<p>就是根据传入的key求出对应的hash值，然后根据hash值和数组长度-1进行&amp;运算获得对应下标位置，获取位置后判断当前结点是树结点还是链表结点，从而采取不同的处理方式。</p>
+</blockquote>
+<h2 id="HashMap的remove方法"><a href="#HashMap的remove方法" class="headerlink" title="HashMap的remove方法"></a>HashMap的remove方法</h2><blockquote>
+<p>根据传入的key求出对应hash值，找到对应桶位，然后根据对应结点的类型为树结点还是链表结点，根据不同结点的类型执行不同的删除操作。链表需要改变指向，树则需要再次平衡。</p>
+</blockquote>
+<h2 id="HashMap的resize方法"><a href="#HashMap的resize方法" class="headerlink" title="HashMap的resize方法"></a>HashMap的resize方法</h2><blockquote>
+<p>先判断当前是否有table，如果没有table且未设置初始大小，则初始化容量为默认值，阈值为默认值 * 负载因子的数组。若设置了初始大小则初始化容量为设置的大小的二次幂值的数组。</p>
+<p>若存在table，先判断旧容量是否大于最大值，若大于则设置阈值为Integer.MAX_VALUE，返回table，否则判断旧容量左移1位后是否不超过最大容量且判断当前容量是否超过默认容量16，若不超过最大容量且当前容量超过默认容量则将旧阈值左移一位。否则将计算newCap * loadFactor，判断新容量是否大于最大容量，若不大于则使用newCap * loadFactor作为新阈值，使用newCap作为数组的新容量。</p>
+<p>创建完新数组后，需要将旧table的数据复制到新table之中。</p>
+<p>复制的过程：</p>
+<p>​    遍历桶位，若某个桶位只有一个元素则直接根据hash值&amp;新数组容量-1判断需要插入到新数组的什么位置。</p>
+<p>​    若该元素是树结点则使用spilt方法，插入到新数组。</p>
+<p>​    若桶位存在多个链表结点，则大致流程为使用4个指针来记录新旧两个数组的头尾链表位置。即先记录头位置，然后将头位置赋值给尾位置，利用尾位置不断连接结点，最后将头结点赋值给桶位元素。</p>
+</blockquote>
+<h2 id="HashMap的put方法"><a href="#HashMap的put方法" class="headerlink" title="HashMap的put方法"></a>HashMap的put方法</h2><blockquote>
+<p>获取已存在的table，若当前table不存在则resize一个table，若存在则找到对应桶位，根据结点类型采取不同的插入操作，对于链表，插入完成后还会判断当前桶位元素个数是否大于树化阈值，若大于则将桶树化。对于树结点，插入时需要进行平衡。最后插入完成后，判断当前HashMap元素个数是否大于总阈值，若大于则resize扩容。</p>
+</blockquote>
+<h2 id="tips"><a href="#tips" class="headerlink" title="tips"></a>tips</h2><blockquote>
+<p>jdk8后，HashMap红黑树和链表转化是根据泊松分布的，链表转化为树阈值为8，树退化为链表阈值为6。</p>
+<p>且红黑树的排序是根据节点的hashcode大小，对于实现了Comparable接口的则使用compare方法来比较。</p>
+<p>hashmap默认负载因子0.75，默认容量为16，最大容量为2^30次方，且容量必须为2的次幂大小，因为使用位运算来执行取模操作。</p>
+<p>hashmap在操作时会自增modcount，若在遍历时对hashmap执行了操作，则会由于modcount改变而抛出异常。</p>
+<p>HashMap线程非安全，HashTable线程安全，ConcurrentHashMap线程安全。</p>
+<p>HashTable本质是上是将各方法都加上了synchronized。</p>
+</blockquote>
+<h2 id="面试题"><a href="#面试题" class="headerlink" title="面试题"></a>面试题</h2><h3 id="key为null时，执行put操作，数据放在哪个桶位？"><a href="#key为null时，执行put操作，数据放在哪个桶位？" class="headerlink" title="key为null时，执行put操作，数据放在哪个桶位？"></a>key为null时，执行put操作，数据放在哪个桶位？</h3><blockquote>
+<p>key为null时HashMap求出的hash值为0，故放在第0个桶位。</p>
+</blockquote>
+<h3 id="HashMap的hash函数为什么需要将hash值移位并异或？"><a href="#HashMap的hash函数为什么需要将hash值移位并异或？" class="headerlink" title="HashMap的hash函数为什么需要将hash值移位并异或？"></a>HashMap的hash函数为什么需要将hash值移位并异或？</h3><blockquote>
+<p>注释里有说，为了让高位的hash值对数据产生影响。</p>
+</blockquote>
+<h3 id="为什么HashMap内部的散列表数组长度一定是2的次方数？"><a href="#为什么HashMap内部的散列表数组长度一定是2的次方数？" class="headerlink" title="为什么HashMap内部的散列表数组长度一定是2的次方数？"></a>为什么HashMap内部的散列表数组长度一定是2的次方数？</h3><blockquote>
+<p>让查找位置时使用数组长度-1的值会对应2进制的000011111111，后位均为1，提高HashMap的散列性。</p>
+</blockquote>
+<h3 id="HashMap内部的散列表结构，什么时候初始化？初始化大小有几种情况？"><a href="#HashMap内部的散列表结构，什么时候初始化？初始化大小有几种情况？" class="headerlink" title="HashMap内部的散列表结构，什么时候初始化？初始化大小有几种情况？"></a>HashMap内部的散列表结构，什么时候初始化？初始化大小有几种情况？</h3><blockquote>
+<p>构造方法共四种：无参构造、传入初始容量、传入初始容量及负载因子、传入Map</p>
+<p>传入Map时会调用resize会初始化。</p>
+<p>resize时会初始化。</p>
+</blockquote>
+<h3 id="HashMap为什么需要扩容，扩容又是如何实现的？"><a href="#HashMap为什么需要扩容，扩容又是如何实现的？" class="headerlink" title="HashMap为什么需要扩容，扩容又是如何实现的？"></a>HashMap为什么需要扩容，扩容又是如何实现的？</h3><blockquote>
+<p>因为数组过小，会导致插入时会插入到同一个桶位导致查询效率下降，故用空间换时间的方式优化。</p>
+</blockquote>
+<h3 id="JDK8为什么HashMap引入红黑树？"><a href="#JDK8为什么HashMap引入红黑树？" class="headerlink" title="JDK8为什么HashMap引入红黑树？"></a>JDK8为什么HashMap引入红黑树？</h3><blockquote>
+<p>因为数据增大时链表的查询速度低。</p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>这次一定!</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    投币
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Ye 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Ye 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Ye
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="http://49.234.221.130/2021/02/20/JavaBasicKnowledge/HashMap/" title="HashMap分析">http://49.234.221.130/2021/02/20/JavaBasicKnowledge/HashMap/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/%E5%AE%B9%E5%99%A8/" rel="tag"># 容器</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/02/20/JavaBasicKnowledge/Object/" rel="prev" title="Object类分析">
+                  <i class="fa fa-chevron-left"></i> Object类分析
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/02/20/JVMKnowledge/2.%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86/" rel="next" title="2.垃圾收集">
+                  2.垃圾收集 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ye</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">74k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:07</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+</body>
+</html>

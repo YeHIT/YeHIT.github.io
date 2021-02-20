@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-leaf.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-leaf.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-leaf.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"49.234.221.130","root":"/","images":"/images","scheme":"Pisces","version":"8.2.1","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+<meta name="description" content="垃圾收集 垃圾收集的步骤：判断对象是否存活(可回收) -&gt;  判断对象存活引用计数 在对象中添加一个引用计数器，当一个地方有引用它时计数器值加一；引用失效时，计数器值就减一。计数器为0的对象是不可能再被引用的。 存在循环引用的问题 Java中没有使用。  可达性分析算法 基本思路：通过一系列称为GC Roots的根对象作为起始点集，当某个对象到起始点集间没有任何引用链相连时，这个对象就是不可">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2.垃圾收集">
+<meta property="og:url" content="http://49.234.221.130/2021/02/20/JVMKnowledge/2.%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86/index.html">
+<meta property="og:site_name" content="Yesomething">
+<meta property="og:description" content="垃圾收集 垃圾收集的步骤：判断对象是否存活(可回收) -&gt;  判断对象存活引用计数 在对象中添加一个引用计数器，当一个地方有引用它时计数器值加一；引用失效时，计数器值就减一。计数器为0的对象是不可能再被引用的。 存在循环引用的问题 Java中没有使用。  可达性分析算法 基本思路：通过一系列称为GC Roots的根对象作为起始点集，当某个对象到起始点集间没有任何引用链相连时，这个对象就是不可">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-02-20T04:26:00.000Z">
+<meta property="article:modified_time" content="2021-02-20T07:58:55.199Z">
+<meta property="article:author" content="Ye">
+<meta property="article:tag" content="JVM">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://49.234.221.130/2021/02/20/JVMKnowledge/2.%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>2.垃圾收集 | Yesomething</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Yesomething</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Ye's blog</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fas fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86"><span class="nav-number">1.</span> <span class="nav-text">垃圾收集</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A4%E6%96%AD%E5%AF%B9%E8%B1%A1%E5%AD%98%E6%B4%BB"><span class="nav-number">1.1.</span> <span class="nav-text">判断对象存活</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0"><span class="nav-number">1.1.1.</span> <span class="nav-text">引用计数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%AF%E8%BE%BE%E6%80%A7%E5%88%86%E6%9E%90%E7%AE%97%E6%B3%95"><span class="nav-number">1.1.2.</span> <span class="nav-text">可达性分析算法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9E%E6%94%B6%E6%96%B9%E6%B3%95%E5%8C%BA"><span class="nav-number">1.2.</span> <span class="nav-text">回收方法区</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E7%94%A8%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-number">1.3.</span> <span class="nav-text">引用的概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E7%AE%97%E6%B3%95"><span class="nav-number">1.4.</span> <span class="nav-text">垃圾收集算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E4%BB%A3%E6%94%B6%E9%9B%86%E7%90%86%E8%AE%BA"><span class="nav-number">1.4.1.</span> <span class="nav-text">分代收集理论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%87%E8%AE%B0-%E6%B8%85%E9%99%A4%E7%AE%97%E6%B3%95"><span class="nav-number">1.4.2.</span> <span class="nav-text">标记-清除算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%87%E8%AE%B0-%E5%A4%8D%E5%88%B6"><span class="nav-number">1.4.3.</span> <span class="nav-text">标记-复制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%87%E8%AE%B0-%E6%95%B4%E7%90%86%E7%AE%97%E6%B3%95"><span class="nav-number">1.4.4.</span> <span class="nav-text">标记-整理算法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hotpot%E7%AE%97%E6%B3%95%E7%BB%86%E8%8A%82"><span class="nav-number">1.5.</span> <span class="nav-text">Hotpot算法细节</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%8F%E5%85%B8%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8"><span class="nav-number">1.6.</span> <span class="nav-text">经典垃圾收集器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Serial%E6%94%B6%E9%9B%86%E5%99%A8"><span class="nav-number">1.6.1.</span> <span class="nav-text">Serial收集器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ParNew%E6%94%B6%E9%9B%86%E5%99%A8"><span class="nav-number">1.6.2.</span> <span class="nav-text">ParNew收集器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Parallel-Scavenge%E6%94%B6%E9%9B%86%E5%99%A8"><span class="nav-number">1.6.3.</span> <span class="nav-text">Parallel Scavenge收集器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Serial-Old%E6%94%B6%E9%9B%86%E5%99%A8"><span class="nav-number">1.6.4.</span> <span class="nav-text">Serial Old收集器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Parrallel-Old%E6%94%B6%E9%9B%86%E5%99%A8"><span class="nav-number">1.6.5.</span> <span class="nav-text">Parrallel Old收集器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CMS%E6%94%B6%E9%9B%86%E5%99%A8"><span class="nav-number">1.6.6.</span> <span class="nav-text">CMS收集器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Garbage-First%E6%94%B6%E9%9B%86%E5%99%A8"><span class="nav-number">1.6.7.</span> <span class="nav-text">Garbage First收集器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%8E%E5%BB%B6%E8%BF%9F%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8"><span class="nav-number">1.6.8.</span> <span class="nav-text">低延迟垃圾收集器</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Ye"
+      src="/uploads/photo.jpg">
+  <p class="site-author-name" itemprop="name">Ye</p>
+  <div class="site-description" itemprop="description">Ye的个人技术记录博客</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">25</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/YeHIT" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;YeHIT" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1044377312@qq.com" title="E-Mail → mailto:1044377312@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+  <a href="https://github.com/YeHIT" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/JVMKnowledge/2.%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/photo.jpg">
+      <meta itemprop="name" content="Ye">
+      <meta itemprop="description" content="Ye的个人技术记录博客">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Yesomething">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          2.垃圾收集
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：15:58:55" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/JVM/" itemprop="url" rel="index"><span itemprop="name">JVM</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>4k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="垃圾收集"><a href="#垃圾收集" class="headerlink" title="垃圾收集"></a>垃圾收集</h1><blockquote>
+<p>垃圾收集的步骤：判断对象是否存活(可回收) -&gt;</p>
+</blockquote>
+<h2 id="判断对象存活"><a href="#判断对象存活" class="headerlink" title="判断对象存活"></a>判断对象存活</h2><h3 id="引用计数"><a href="#引用计数" class="headerlink" title="引用计数"></a>引用计数</h3><blockquote>
+<p>在对象中添加一个引用计数器，当一个地方有引用它时计数器值加一；引用失效时，计数器值就减一。计数器为0的对象是不可能再被引用的。</p>
+<p>存在循环引用的问题</p>
+<p>Java中没有使用。</p>
+</blockquote>
+<h3 id="可达性分析算法"><a href="#可达性分析算法" class="headerlink" title="可达性分析算法"></a>可达性分析算法</h3><blockquote>
+<p>基本思路：通过一系列称为GC Roots的根对象作为起始点集，当某个对象到起始点集间没有任何引用链相连时，这个对象就是不可能再被使用的。</p>
+<p>Java中固定可作为GC Roots的对象：</p>
+<p>​    在虚拟机栈中引用的对象，如各个线程被调用的方法堆栈中使用到的参数、局部变量、临时变量等。</p>
+<p>​    在方法区类静态属性引用的对象，如Java类引用类型静态变量。</p>
+<p>​    在本地方法栈中JNI(Native方法)引用的对象。</p>
+<p>​    Java虚拟机内部的引用，如基本数据类型对应的Class对象，一些常驻的异常对象(NullPointExcepiton、OutOfMemoryError）还有系统类加载器。</p>
+<p>​    所有被同步锁持有的对象。</p>
+<p>​    反应Java虚拟机内部情况的JM XBean、JVMTI中注册的回调、本地代码缓存等。</p>
+<p>除了固定GC Roots集合外，根据用户选用的垃圾收集器及当前回收的内存区域不同，还可以有其他对象加入。</p>
+<p>被判定为不可达的对象还不会被立即回收。真正回收需要经历至少两个标记过程：</p>
+<p>​    若对象在进行可达性分析后分析没有和GC Roots相连接的引用链，会被第一次标记。随后进行一次筛选，若这个对象没有覆盖finalize方法或该方法已经被虚拟机调用，则没有必要执行finalize方法。</p>
+<p>​    若需要执行finalize方法，则会将对象放入F-Queue队列中，然后自动启用线程执行队列中对象的finalize方法。执行后收集器会对队列中对象进行第二次小规模标记，若对象在finalize方法中重新和引用链上的任何一个对象建立关联，第二次标记时它会被移除即将回收的集合。否则，它通常要被回收。</p>
+</blockquote>
+<h2 id="回收方法区"><a href="#回收方法区" class="headerlink" title="回收方法区"></a>回收方法区</h2><blockquote>
+<p>主要回收废弃的常量和不再使用的类型。</p>
+<p>回收常量要求：当前常量进入了常量池，且当前系统没有任何一个对象的值是该常量。</p>
+<p>回收类型的条件：</p>
+<p>​    该类所有的实例已经被回收。</p>
+<p>​    加载该类的类加载器被回收。</p>
+<p>​    该类对应的java.lang.Class对象没有在任何地方被引用，无法在任何地方通过反射访问该类的方法。</p>
+</blockquote>
+<h2 id="引用的概念"><a href="#引用的概念" class="headerlink" title="引用的概念"></a>引用的概念</h2><blockquote>
+<p>Java的引用在JDK1.2后分为强引用、软引用、弱引用、虚引用。</p>
+<p>强引用：最传统的引用的概念，只有强引用关系存在，垃圾收集器就永远不回收被引用的对象。</p>
+<p>软引用：描述一些还有用但非必须的对象。只被软引用关联的对象，在系统将要发生内存溢出异常时，会将这些对象列入回收访问进行第二次回收，若回收还没有足够内存，抛出内存溢出异常。</p>
+<p>弱引用：描述非必须的对象，被弱引用关联的对象只能生存到下一次垃圾收集发送为止。</p>
+<p>虚引用：最弱的引用关系。无法通过虚引用来取得一个对象实例，为对象设置虚引用关联的唯一目的只是为了能在这个对象被收集器回收时收到一个系统通知。</p>
+</blockquote>
+<h2 id="垃圾收集算法"><a href="#垃圾收集算法" class="headerlink" title="垃圾收集算法"></a>垃圾收集算法</h2><blockquote>
+<p>可以分为引用计数式垃圾收集和追踪式垃圾收集。</p>
+<p>Java主流虚拟机中只有追踪式垃圾收集。</p>
+</blockquote>
+<h3 id="分代收集理论"><a href="#分代收集理论" class="headerlink" title="分代收集理论"></a>分代收集理论</h3><blockquote>
+<p>弱分代假说：绝大多数对象都是朝生夕灭的。</p>
+<p>强分代假说：熬过越多次垃圾收集过程的对象越难消灭。</p>
+<p>跨代引用假说：跨代引用相对于同代引用来说仅占极少数。</p>
+<p>新生代收集（Minor GC/Young GC）：指目标只是新生代的垃圾收集。 </p>
+<p>老年代收集（Major GC/Old GC）：指目标只是老年代的垃圾收集。目前只有CMS收集器会有单独收集老年代的行为。</p>
+<p>混合收集（Mixed GC）：指目标是收集整个新生代以及部分老年代的垃圾收集。目前只有G1收 集器会有这种行为。 </p>
+<p>整堆收集（Full GC）：收集整个Java堆和方法区的垃圾收集</p>
+</blockquote>
+<h3 id="标记-清除算法"><a href="#标记-清除算法" class="headerlink" title="标记-清除算法"></a>标记-清除算法</h3><blockquote>
+<p>先标记所有需要回收的对象，标记完成后统一回收掉所有被标记的对象。</p>
+<p>存在的问题：</p>
+<p>​    若Java堆中包含大量对象，且大部分都是需要被回收的，需要进行大量的标记清除动作。</p>
+<p>​    内存空间碎片化，标记、清除后会产生大量不连续的内存碎片。</p>
+</blockquote>
+<h3 id="标记-复制"><a href="#标记-复制" class="headerlink" title="标记-复制"></a>标记-复制</h3><blockquote>
+<p>为了解决标记-清除算法面对大量可回收对象时执行效率低的问题。</p>
+<p>半区复制：将可用内存按容量划分为大小相等的两块，每次只使用其中一块，当一块内存用完了，将还存活着的对象复制到另一块上，然后将已使用过的内存空间一次清理掉。</p>
+<p>Appel式回收：分为1块Eden，两块Survivor，分配时使用1块Eden，1块Survivor。回收时将存活的对象放入另一块Survivor中，清理之前使用的Eden和Survivor。内存只浪费了1块Survivor。</p>
+<p>优点：当多数对象是可回收的情况时，算法复制的对象少，且分配内存时不用考虑有空间碎片的复杂情况，实现简单。</p>
+<p>缺点：浪费了内存空间。</p>
+</blockquote>
+<h3 id="标记-整理算法"><a href="#标记-整理算法" class="headerlink" title="标记-整理算法"></a>标记-整理算法</h3><blockquote>
+<p>一般是针对老年代对象。标记完成后不是直接对可回收对象进行清理，而是让所有存活的对象都想内存空间一端移动，然后直接清理掉边界外的内存。</p>
+<p>缺点：移动过程耗时较长。</p>
+<p>优点：不用考虑内存碎片化问题，降低了内存分配器及内存访问器的复杂度。</p>
+</blockquote>
+<h2 id="Hotpot算法细节"><a href="#Hotpot算法细节" class="headerlink" title="Hotpot算法细节"></a>Hotpot算法细节</h2><blockquote>
+<p>根节点枚举(使用一个OopMap记录) </p>
+<p>安全点(到达安全点时将引用关系收集到OopMap，主动式中断和抢占式中断) </p>
+<p>安全区域(类似于安全点的扩展)</p>
+<p>记忆集和卡表：</p>
+<p>​    记忆集：为了解决对象跨代引用问题，建立的从非收集区域指向收集区域的指针集合的抽象数据结构。</p>
+<p>​    卡表：以卡精度实现的记忆集。每个记录精确到一块内存区域，该区域内有对象含有跨代指针。 </p>
+<p>写屏障：为了在机器码的层面将维护卡表的动作放到每个赋值操作之中。赋值操作会在写屏障的覆盖范围中，赋值前部分为写前屏障，赋值后部分为写后屏障，一般来说，都是在写后屏障执行卡表的更新。</p>
+<p>卡表带来的高并发问题：伪共享，由于CPU的缓存系统是缓存行为单位存储的，当多线程修改互相独立的变量时，若这些变量刚好共享同一个缓存行，就会互相影响。为了避免这个问题，简单的解决方案是先检查卡表标记，当卡表元素未被标记时才将其标记变脏。</p>
+<p>并发的可达性分析：扫描过程时垃圾收集器和用户线程存在并发问题，，可用的解决方法有增量更新(插入引用时记录，扫描完成后以记录的再扫描)、原始快照(删除引用时记录，扫描完成时按记录的再扫描)。</p>
+</blockquote>
+<h2 id="经典垃圾收集器"><a href="#经典垃圾收集器" class="headerlink" title="经典垃圾收集器"></a>经典垃圾收集器</h2><h3 id="Serial收集器"><a href="#Serial收集器" class="headerlink" title="Serial收集器"></a>Serial收集器</h3><blockquote>
+<p>单线程、简单高效、是所有收集器里额外内存消耗最小的，但是进行垃圾收集时必须暂停其他所有工作线程。</p>
+<p>新生代采用复制算法暂停所有用户线程，老年代采用标记-整理算法暂停所有用户线程。</p>
+</blockquote>
+<h3 id="ParNew收集器"><a href="#ParNew收集器" class="headerlink" title="ParNew收集器"></a>ParNew收集器</h3><blockquote>
+<p>是Serial收集器的多线程并行版本。可以和CMS收集器配合使用。</p>
+<p>新生代采用多线程复制算法暂停所有用户线程，老年代采用标记-整理算法暂停所有用户线程。</p>
+</blockquote>
+<h3 id="Parallel-Scavenge收集器"><a href="#Parallel-Scavenge收集器" class="headerlink" title="Parallel Scavenge收集器"></a>Parallel Scavenge收集器</h3><blockquote>
+<p>基于标记-复制算法实现的新生代收集器，也是能够并行收集的多线程收集器。</p>
+<p>而Parallel Scavenge收集器的目标则是达到一个可控制的吞吐量(Throughput)，吞吐量就是处理器用于运行用户代码的时间与处理器总消耗时间的比值。</p>
+<p>-XX：MaxGCPauseMillis：允许的值是一个大于0的毫秒数，收集器将尽力保证内存回收花费的时间不超过用户设定值，会降低吞吐量。</p>
+<p>-XX：GCTimeRatio：值应当是一个大于0小于100的整数，也就是垃圾收集时间占总时间的比率，相当于吞吐量的倒数。</p>
+<p>-XX：+UseAdaptiveSizePolicy：一个开关参数，开启后可以自动调节参数。</p>
+</blockquote>
+<h3 id="Serial-Old收集器"><a href="#Serial-Old收集器" class="headerlink" title="Serial Old收集器"></a>Serial Old收集器</h3><blockquote>
+<p>是Serial收集器的老年代版本，是一个单线程收集器，使用标记-整理算法。</p>
+</blockquote>
+<h3 id="Parrallel-Old收集器"><a href="#Parrallel-Old收集器" class="headerlink" title="Parrallel Old收集器"></a>Parrallel Old收集器</h3><blockquote>
+<p>是Parallel Scavenge收集器的老年代版本，支持多线程并发收集，基于标记-整理算法。</p>
+</blockquote>
+<h3 id="CMS收集器"><a href="#CMS收集器" class="headerlink" title="CMS收集器"></a>CMS收集器</h3><blockquote>
+<p>是一种以获取最短回收停顿时间为目标的收集器。它是基于标记-清除算法实现的。其运作过程分为4步：</p>
+<p>​    初始标记(需要stop the world)</p>
+<p>​    并发标记</p>
+<p>​    重新标记(需要stop the world)</p>
+<p>​    并发清除</p>
+<p>缺点：</p>
+<p>​    CMS收集器对处理器资源非常敏感。会因为占据了一部分线程导致应用程序变慢。CMS默认启动回收线程为(处理器核心数量 + 3 )/4。导致处理器核心&lt;4时占用的性能过多。</p>
+<p>​    CMS处理器无法处理浮动垃圾，可能出现“Concurrent Mode Failure”，从而引发Full GC。因为标记结束后，很可能产生新垃圾，CMS无法在当次收集时处理，只能留到下次。所以CMS需要预留一部分空间给并发收集时程序运行使用，可以通过-XX：CMSInitiatingOccupancyFraction来调节。</p>
+<p>​    由于CMS是基于标记-清除算法实现的，会产生大量空间碎片。当碎片过多，大对象很难分配，触发Full GC。-XX：+UseCMS-CompactAtFullCollection:开关参数，让CMS触发Full GC时进行碎片整理。</p>
+</blockquote>
+<h3 id="Garbage-First收集器"><a href="#Garbage-First收集器" class="headerlink" title="Garbage First收集器"></a>Garbage First收集器</h3><blockquote>
+<p>简称G1，它开创了收集器面向局部收集的设计思路和基于Region的内存布局形式。它是一款主要面向服务端应用的垃圾收集器。</p>
+<p>在G1之前的垃圾收集器垃圾收集的范围要么是整个新生代，要么是整个老年代，要么就是Full GC，G1则是面向堆内存任何部分来组成回收集，衡量标准是哪块内存中存放的垃圾数量最多。</p>
+<p>它开创了基于Region的堆内存布局。相当于将堆内存划分为大小相同的连续独立区域，每个区域按需要划分出空间。Region中还要特殊的Humongous区域，专门用于存储大对象。G1将大小超过一个Region容量一半的对象就判定为大对象。超过整个Region容量的对象会被存放到n个连续的Region中。</p>
+<p>流程：</p>
+<p>​    初始标记</p>
+<p>​    并发标记</p>
+<p>​    最终标记</p>
+<p>​    筛选回收</p>
+</blockquote>
+<h3 id="低延迟垃圾收集器"><a href="#低延迟垃圾收集器" class="headerlink" title="低延迟垃圾收集器"></a>低延迟垃圾收集器</h3><blockquote>
+<p>Shenandoah收集器</p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>这次一定!</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    投币
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Ye 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Ye 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Ye
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="http://49.234.221.130/2021/02/20/JVMKnowledge/2.%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86/" title="2.垃圾收集">http://49.234.221.130/2021/02/20/JVMKnowledge/2.垃圾收集/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/JVM/" rel="tag"># JVM</a>
+              <a href="/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/02/20/JavaBasicKnowledge/HashMap/" rel="prev" title="HashMap分析">
+                  <i class="fa fa-chevron-left"></i> HashMap分析
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/02/20/JavaBasicKnowledge/ConcurrentHashMap/" rel="next" title="ConcurrentHashMap分析">
+                  ConcurrentHashMap分析 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ye</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">74k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:07</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+</body>
+</html>
