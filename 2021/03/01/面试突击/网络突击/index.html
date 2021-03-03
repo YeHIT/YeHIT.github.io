@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-leaf.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-leaf.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-leaf.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"49.234.221.130","root":"/","images":"/images","scheme":"Pisces","version":"8.2.1","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+<meta name="description" content="网络突击 Http相关 概述  HTTP基于TCP&#x2F;IP通信协议传递数据。 HTTP就是一个用文本格式描述报文头并用双换行分隔报文头和内容，在TCP基础上实现的请求-响应模式的双向通信协议。 HTTP是无连接的：每次连接只处理一个请求。服务器处理完客户的请求，并收到客户的应答后，即断开连接。引出Keep-alive HTTP是媒体独立的：只要客户端和服务器知道如何处理数据内容，任何数">
+<meta property="og:type" content="article">
+<meta property="og:title" content="网络突击">
+<meta property="og:url" content="http://49.234.221.130/2021/03/01/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E7%BD%91%E7%BB%9C%E7%AA%81%E5%87%BB/index.html">
+<meta property="og:site_name" content="Yesomething">
+<meta property="og:description" content="网络突击 Http相关 概述  HTTP基于TCP&#x2F;IP通信协议传递数据。 HTTP就是一个用文本格式描述报文头并用双换行分隔报文头和内容，在TCP基础上实现的请求-响应模式的双向通信协议。 HTTP是无连接的：每次连接只处理一个请求。服务器处理完客户的请求，并收到客户的应答后，即断开连接。引出Keep-alive HTTP是媒体独立的：只要客户端和服务器知道如何处理数据内容，任何数">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-02-28T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-03-03T05:33:24.528Z">
+<meta property="article:author" content="Ye">
+<meta property="article:tag" content="网络">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://49.234.221.130/2021/03/01/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E7%BD%91%E7%BB%9C%E7%AA%81%E5%87%BB/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>网络突击 | Yesomething</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Yesomething</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Ye's blog</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fas fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E7%AA%81%E5%87%BB"><span class="nav-number">1.</span> <span class="nav-text">网络突击</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#http%E7%9B%B8%E5%85%B3"><span class="nav-number">1.1.</span> <span class="nav-text">Http相关</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.1.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#http%E4%BA%8B%E5%8A%A1-http%E8%AF%B7%E6%B1%82%E5%91%BD%E4%BB%A4-%E5%93%8D%E5%BA%94%E7%A0%81"><span class="nav-number">1.1.2.</span> <span class="nav-text">Http事务 &#x3D; http请求命令 + 响应码</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%B7%E6%B1%82%E6%8A%A5%E6%96%87"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">请求报文</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%93%8D%E5%BA%94%E6%8A%A5%E6%96%87"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">响应报文</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#get%E5%92%8Cpost%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.1.3.</span> <span class="nav-text">GET和POST的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cookiesessiontoken"><span class="nav-number">1.1.4.</span> <span class="nav-text">Cookie、Session、Token</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#http%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="nav-number">1.1.5.</span> <span class="nav-text">HTTP工作流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#http%E5%8F%91%E5%B1%95%E6%B5%81%E7%A8%8B"><span class="nav-number">1.1.6.</span> <span class="nav-text">HTTP发展流程</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Ye"
+      src="/uploads/photo.jpg">
+  <p class="site-author-name" itemprop="name">Ye</p>
+  <div class="site-description" itemprop="description">Ye的个人技术记录博客</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/YeHIT" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;YeHIT" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1044377312@qq.com" title="E-Mail → mailto:1044377312@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+  <a href="https://github.com/YeHIT" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/01/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E7%BD%91%E7%BB%9C%E7%AA%81%E5%87%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/photo.jpg">
+      <meta itemprop="name" content="Ye">
+      <meta itemprop="description" content="Ye的个人技术记录博客">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Yesomething">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          网络突击
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-03-01 00:00:00" itemprop="dateCreated datePublished" datetime="2021-03-01T00:00:00+08:00">2021-03-01</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-03 13:33:24" itemprop="dateModified" datetime="2021-03-03T13:33:24+08:00">2021-03-03</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/" itemprop="url" rel="index"><span itemprop="name">面试突击</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.7k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="网络突击">网络突击</h1>
+<h2 id="http相关">Http相关</h2>
+<h3 id="概述">概述</h3>
+<blockquote>
+<p>HTTP基于TCP/IP通信协议传递数据。</p>
+<p>HTTP就是一个用文本格式描述报文头并用双换行分隔报文头和内容，在TCP基础上实现的请求-响应模式的双向通信协议。</p>
+<p>HTTP是无连接的：每次连接只处理一个请求。服务器处理完客户的请求，并收到客户的应答后，即断开连接。引出Keep-alive</p>
+<p>HTTP是媒体独立的：只要客户端和服务器知道如何处理数据内容，任何数据都可以从HTTP发送。通过content-type指定类型。</p>
+<p>HTTP是无状态的：指协议对于事务的处理没有记忆能力。意味着后续处理如果需要前面的信息必须重传。从而引出的Session。</p>
+</blockquote>
+<h3 id="http事务-http请求命令-响应码">Http事务 = http请求命令 + 响应码</h3>
+<blockquote>
+<p>http事务是http请求的最小处理单元。</p>
+<p>请求报文和响应报文。</p>
+</blockquote>
+<h4 id="请求报文">请求报文</h4>
+<blockquote>
+<p>请求行+请求头+请求体</p>
+<p>请求行内容为：</p>
+<p>​ 请求方法 + 请求的URL地址 + Http协议版本</p>
+<p>​ 请求方法有：</p>
+<p>​ HTTP1.0：GET(请求指定页面信息并返回主体)、POST(向指定资源提交数据)、HEAD(请求指定页面头)</p>
+<p>​ HTTP1.1：OPTIONS(允许客户端查看服务端性能)、PUT(客户端提交数据代替服务端)、DELETE(请求服务端删除指定页面)、TRACE(回显服务端收到的请求) 、CONNECT (HTTP1.1中预留给能够将连接改为管道方式的代理服务)</p>
+<p>请求头内容为属性，用于让服务端获知客户端信息，以下为常见属性：</p>
+<p>​ accept：告知服务端可以接受的文件格式。如application/json</p>
+<p>​ accept-language：浏览器支持的语言</p>
+<p>​ accept-encoding：指定浏览器可以支持的web服务器返回的内容压缩编码类型。</p>
+<p>​ User-Agent：用户代理，用于查看用户是使用什么访问的。</p>
+<p>​ Cookie：HTTP请求发送时会把请求域名下所有的cookie值都发给服务端。</p>
+<p>​ Cache-Control：设置缓存相关。no-cache代表不接受缓存，max-age表示客户端希望接受存在时间不大于该值的资源。</p>
+<p>​ connection：表示是否需要持久连接，keep-alive表示使用持久连接。http1.1默认使用。</p>
+<p>​ host：指定请求的服务器的域名和端口号</p>
+<p>请求体一般是用来传递参数。</p>
+</blockquote>
+<h4 id="响应报文">响应报文</h4>
+<blockquote>
+<p>响应行 + 响应头 + 响应体</p>
+<p>响应行内容为：</p>
+<p>​ HTTP协议版本 + 状态码及描述</p>
+<p>常见状态码：</p>
+<p>​ 1xx：表示服务器收到请求但需要请求者继续操作。</p>
+<p>​ 2xx：成功，操作被成功接收并处理。</p>
+<p>​ 3xx：重定向。</p>
+<p>​ 4xx：客户端错误，请求包含语法错误或无法完成请求。</p>
+<p>​ 5xx：服务器错误。</p>
+<p>​ 具体：</p>
+<p>​ 200 OK：处理成功</p>
+<p>​ 303 See Other：重定向到另外页面</p>
+<p>​ 304 Not Modified：未修改，服务端不会返回数据。让客户端访问缓存。</p>
+<p>​ 400 Bad Request：客户端请求语法错误。</p>
+<p>​ 403 Forbidden：禁止访问</p>
+<p>​ 404 Not Found：找不到页面</p>
+<p>​ 500 Internal Server Error：服务端出现内部错误。</p>
+<p>​ 502 Bad Gateway：网关错误。</p>
+<p>响应头：</p>
+<p>​ Cache-Control：告知客户端怎么控制缓存。类似请求头。值可以为no-cache，max-age</p>
+<p>​ content-encoding：压缩编码格式。</p>
+<p>​ Content-Type：文件类型</p>
+<p>​ Location：重定向</p>
+<p>​ date：时间</p>
+<p>​ set-cookie：xx=yyy；Max-Age=3600；Version=1；当中Max-Age是用于设置cookie的保存时间。</p>
+<p>响应体就是服务端返回给客户端的信息，如html页面，json之类。</p>
+</blockquote>
+<h3 id="get和post的区别">GET和POST的区别</h3>
+<blockquote>
+<p>本质上除了语义不同之外没有区别，但浏览器实现时区别如下：</p>
+<p>​ get可以被缓存、get请求可以被收藏为书签，post不行。</p>
+<p>​ get的数据url可见，post不会。</p>
+<p>​ get长度有限制、post没有</p>
+<p>​ get请求刷新回退都没有影响、post数据会被重新提交</p>
+</blockquote>
+<h3 id="cookiesessiontoken">Cookie、Session、Token</h3>
+<blockquote>
+
+</blockquote>
+<h3 id="http工作流程">HTTP工作流程</h3>
+<blockquote>
+<p>DNS域名解析-&gt;TCP三次握手-&gt;发起HTTP请求-&gt;服务器响应HTTP请求-&gt;浏览器解析HTML并请求资源-&gt;浏览器渲染页面</p>
+<p>DNS既用TCP又用UDP。</p>
+<p>在域名解析时使用UDP。因为解析的数据少，UDP较快。</p>
+<p>而在域名服务器之间执行数据同步时会使用TCP。因为此时数据量大，TCP是可靠连接，保证数据准确性。</p>
+<p>DNS域名解析流程：</p>
+<p>​ 搜索浏览器自身DNS缓存-&gt;搜索操作系统自身DNS缓存-&gt;读取host文件-&gt;向本地DNS服务器发起域名解析请求。</p>
+<p>​ 本地DNS先向根域名服务器-&gt;顶级域名服务器-&gt; 权限域名服务器得到结果返回。</p>
+</blockquote>
+<h3 id="http发展流程">HTTP发展流程</h3>
+<blockquote>
+<p>http0.9：只支持get，服务端只能返回html格式，参数过程只支持文字。</p>
+<p>http1.0：增加了post和head，支持发送任何格式的内容，增加了请求头、状态码，权限缓存相关内容。</p>
+<p>缺点：每个TCP只能发送一个请求，发送完毕连接关闭，使用成本高。队头堵塞，即请求大量资源时耗时较长的资源会影响之后的资源处理。</p>
+<p>http1.1引入了Connection： keep-alive让连接持久，还加入了如put、delete、connect之类的请求方式。另外引入了管道机制，支持客户端发送多个请求，管理请求的顺序，一定程度上解决了队头堵塞。</p>
+<p>缺点：keep-alive虽然可以复用部分连接，但是域名分片的情况下还是要建立多个connection。管道机制要求返回结果是按序的，即使后面的处理成功了，但返回时还是需要等待前面结果完成。协议开销大，协议头里内容过多且基本不变，增加了传输负担。</p>
+<p>http2.0基于SPDY。目的是通过支持请求和响应的多路复用来减低延迟。http1.x是文本协议，而http2.0使用二进制化分帧的方式，将传输的信息分割为更小的帧，并采用二进制编码的方式，首部信息放入Header frame，Request body放入Data frame，这样会对信息进行顺序标识，使得服务器可以并行传输数据。从而实现了多路复用。</p>
+<p>此外http2.0还使用了首部压缩技术，对于一条连接使用首部表来维护key-value，若增加新的key-value则加入表尾，避免每次请求都需要携带首部。此外还对首部使用了HPACK算法压缩。</p>
+<p>不仅如此http2.0还支持服务器主动推送，即先请求服务器，服务器不用解析就可以直接将预先设置好的内容推送给客户端。</p>
+<p>http3.0：基于QUIC协议，底层使用UDP通信。</p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>这次一定!</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    投币
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Ye 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Ye 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Ye
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="http://49.234.221.130/2021/03/01/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E7%BD%91%E7%BB%9C%E7%AA%81%E5%87%BB/" title="网络突击">http://49.234.221.130/2021/03/01/面试突击/网络突击/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag"># 网络</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/" rel="prev" title="I/O模型及I/O线程模型">
+                  <i class="fa fa-chevron-left"></i> I/O模型及I/O线程模型
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/03/01/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/mybatis/" rel="next" title="mybatis突击">
+                  mybatis突击 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ye</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">82k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:14</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'none'
+      },
+      options: {
+        renderActions: {
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+
+
+</body>
+</html>

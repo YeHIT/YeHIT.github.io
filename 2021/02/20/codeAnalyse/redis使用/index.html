@@ -30,10 +30,10 @@
 <meta property="og:description" content="Redis使用 传统数据库的发展  单库 -&gt; 单库加缓存 -&gt; 主从分离+缓存(主写从读) -&gt; 分库分表(水平拆分(将一个库拆成多个库)、垂直拆分(按模块拆分))  传统数据库特点ACID  A(Atomicity)：原子性 C(Consistency)：一致性 I(Isolation)：隔离性 D(Durability)：持久性  Mysql的数据类">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-02-20T04:26:00.000Z">
-<meta property="article:modified_time" content="2021-02-20T08:15:08.232Z">
+<meta property="article:modified_time" content="2021-03-01T15:49:09.047Z">
 <meta property="article:author" content="Ye">
-<meta property="article:tag" content="数据库">
 <meta property="article:tag" content="分布式">
+<meta property="article:tag" content="数据库">
 <meta property="article:tag" content="缓存">
 <meta name="twitter:card" content="summary">
 
@@ -188,7 +188,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#redis%E4%BD%BF%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">Redis使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%A0%E7%BB%9F%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%8F%91%E5%B1%95"><span class="nav-number">1.1.</span> <span class="nav-text">传统数据库的发展</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%A0%E7%BB%9F%E6%95%B0%E6%8D%AE%E5%BA%93%E7%89%B9%E7%82%B9acid"><span class="nav-number">1.1.1.</span> <span class="nav-text">传统数据库特点ACID</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mysql%E7%9A%84%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.1.2.</span> <span class="nav-text">Mysql的数据类型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nosql"><span class="nav-number">1.2.</span> <span class="nav-text">NoSQL</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#nosql%E5%88%86%E7%B1%BB"><span class="nav-number">1.2.1.</span> <span class="nav-text">NoSQL分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#nosql-cap%E5%AE%9A%E7%90%86"><span class="nav-number">1.2.2.</span> <span class="nav-text">NoSQL CAP定理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#nosql-base%E7%89%B9%E7%82%B9"><span class="nav-number">1.2.3.</span> <span class="nav-text">NoSQL BASE特点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#redis"><span class="nav-number">1.3.</span> <span class="nav-text">Redis</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#redis%E5%91%BD%E4%BB%A4"><span class="nav-number">1.3.1.</span> <span class="nav-text">Redis命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#redis%E9%85%8D%E7%BD%AE"><span class="nav-number">1.3.2.</span> <span class="nav-text">Redis配置：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">1.3.3.</span> <span class="nav-text">Redis数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">1.3.3.1.</span> <span class="nav-text">基本数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#string"><span class="nav-number">1.3.3.1.1.</span> <span class="nav-text">String</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#list"><span class="nav-number">1.3.3.1.2.</span> <span class="nav-text">List</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#hash"><span class="nav-number">1.3.3.1.3.</span> <span class="nav-text">Hash</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#set"><span class="nav-number">1.3.3.1.4.</span> <span class="nav-text">Set</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#zset%E6%9C%89%E5%BA%8F%E9%9B%86%E5%90%88"><span class="nav-number">1.3.3.1.5.</span> <span class="nav-text">Zset(有序集合)</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8B%93%E5%B1%95%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">1.3.3.2.</span> <span class="nav-text">拓展数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#geo"><span class="nav-number">1.3.3.2.1.</span> <span class="nav-text">GEO</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#bitmap"><span class="nav-number">1.3.3.2.2.</span> <span class="nav-text">Bitmap</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#hyperloglog%E5%9F%BA%E6%95%B0%E7%BB%9F%E8%AE%A1"><span class="nav-number">1.3.3.2.3.</span> <span class="nav-text">HyperLogLog(基数统计)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#stream"><span class="nav-number">1.3.3.2.4.</span> <span class="nav-text">Stream</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%91%E5%B8%83%E5%92%8C%E8%AE%A2%E9%98%85"><span class="nav-number">1.3.4.</span> <span class="nav-text">发布和订阅</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#redis%E9%85%8D%E7%BD%AE-1"><span class="nav-number">1.3.5.</span> <span class="nav-text">Redis配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#redis%E6%B7%98%E6%B1%B0%E7%AD%96%E7%95%A5"><span class="nav-number">1.3.6.</span> <span class="nav-text">Redis淘汰策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#redis%E6%8C%81%E4%B9%85%E5%8C%96"><span class="nav-number">1.3.7.</span> <span class="nav-text">Redis持久化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#rdb"><span class="nav-number">1.3.7.1.</span> <span class="nav-text">RDB</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#aof"><span class="nav-number">1.3.7.2.</span> <span class="nav-text">AOF</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="nav-number">1.3.8.</span> <span class="nav-text">Redis分布式锁</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B9%90%E8%A7%82%E9%94%81"><span class="nav-number">1.3.8.1.</span> <span class="nav-text">乐观锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%82%B2%E8%A7%82%E9%94%81"><span class="nav-number">1.3.8.2.</span> <span class="nav-text">悲观锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="nav-number">1.3.8.3.</span> <span class="nav-text">分布式锁</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E4%BB%8E%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.4.</span> <span class="nav-text">主从模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.5.</span> <span class="nav-text">哨兵模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E5%8F%AF%E8%83%BD%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">1.6.</span> <span class="nav-text">缓存可能遇到的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F"><span class="nav-number">1.6.1.</span> <span class="nav-text">缓存穿透</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9"><span class="nav-number">1.6.2.</span> <span class="nav-text">缓存雪崩</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF"><span class="nav-number">1.6.3.</span> <span class="nav-text">缓存击穿</span></a></li></ol></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#redis%E4%BD%BF%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">Redis使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%A0%E7%BB%9F%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%8F%91%E5%B1%95"><span class="nav-number">1.1.</span> <span class="nav-text">传统数据库的发展</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%A0%E7%BB%9F%E6%95%B0%E6%8D%AE%E5%BA%93%E7%89%B9%E7%82%B9acid"><span class="nav-number">1.1.1.</span> <span class="nav-text">传统数据库特点ACID</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mysql%E7%9A%84%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.1.2.</span> <span class="nav-text">Mysql的数据类型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nosql"><span class="nav-number">1.2.</span> <span class="nav-text">NoSQL</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#nosql%E5%88%86%E7%B1%BB"><span class="nav-number">1.2.1.</span> <span class="nav-text">NoSQL分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#nosql-cap%E5%AE%9A%E7%90%86"><span class="nav-number">1.2.2.</span> <span class="nav-text">NoSQL CAP定理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#nosql-base%E7%89%B9%E7%82%B9"><span class="nav-number">1.2.3.</span> <span class="nav-text">NoSQL BASE特点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#redis"><span class="nav-number">1.3.</span> <span class="nav-text">Redis</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#redis%E5%91%BD%E4%BB%A4"><span class="nav-number">1.3.1.</span> <span class="nav-text">Redis命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#redis%E9%85%8D%E7%BD%AE"><span class="nav-number">1.3.2.</span> <span class="nav-text">Redis配置：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">1.3.3.</span> <span class="nav-text">Redis数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">1.3.3.1.</span> <span class="nav-text">基本数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#string"><span class="nav-number">1.3.3.1.1.</span> <span class="nav-text">String</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#list"><span class="nav-number">1.3.3.1.2.</span> <span class="nav-text">List</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#hash"><span class="nav-number">1.3.3.1.3.</span> <span class="nav-text">Hash</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#set"><span class="nav-number">1.3.3.1.4.</span> <span class="nav-text">Set</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#zset%E6%9C%89%E5%BA%8F%E9%9B%86%E5%90%88"><span class="nav-number">1.3.3.1.5.</span> <span class="nav-text">Zset(有序集合)</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8B%93%E5%B1%95%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">1.3.3.2.</span> <span class="nav-text">拓展数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#geo"><span class="nav-number">1.3.3.2.1.</span> <span class="nav-text">GEO</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#bitmap"><span class="nav-number">1.3.3.2.2.</span> <span class="nav-text">Bitmap</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#hyperloglog%E5%9F%BA%E6%95%B0%E7%BB%9F%E8%AE%A1"><span class="nav-number">1.3.3.2.3.</span> <span class="nav-text">HyperLogLog(基数统计)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#stream"><span class="nav-number">1.3.3.2.4.</span> <span class="nav-text">Stream</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%91%E5%B8%83%E5%92%8C%E8%AE%A2%E9%98%85"><span class="nav-number">1.3.4.</span> <span class="nav-text">发布和订阅</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#redis%E9%85%8D%E7%BD%AE-1"><span class="nav-number">1.3.5.</span> <span class="nav-text">Redis配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#redis%E6%B7%98%E6%B1%B0%E7%AD%96%E7%95%A5"><span class="nav-number">1.3.6.</span> <span class="nav-text">Redis淘汰策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#redis%E6%8C%81%E4%B9%85%E5%8C%96"><span class="nav-number">1.3.7.</span> <span class="nav-text">Redis持久化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#rdb"><span class="nav-number">1.3.7.1.</span> <span class="nav-text">RDB</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#aof"><span class="nav-number">1.3.7.2.</span> <span class="nav-text">AOF</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="nav-number">1.3.8.</span> <span class="nav-text">Redis分布式锁</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B9%90%E8%A7%82%E9%94%81"><span class="nav-number">1.3.8.1.</span> <span class="nav-text">乐观锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%82%B2%E8%A7%82%E9%94%81"><span class="nav-number">1.3.8.2.</span> <span class="nav-text">悲观锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="nav-number">1.3.8.3.</span> <span class="nav-text">分布式锁</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E4%BB%8E%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.4.</span> <span class="nav-text">主从模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.5.</span> <span class="nav-text">哨兵模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cluster%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.6.</span> <span class="nav-text">Cluster模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E5%8F%AF%E8%83%BD%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">1.7.</span> <span class="nav-text">缓存可能遇到的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F"><span class="nav-number">1.7.1.</span> <span class="nav-text">缓存穿透</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9"><span class="nav-number">1.7.2.</span> <span class="nav-text">缓存雪崩</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF"><span class="nav-number">1.7.3.</span> <span class="nav-text">缓存击穿</span></a></li></ol></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -204,20 +204,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-count">32</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-count">12</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-count">23</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -293,10 +293,16 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:15:08" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+      <time title="创建时间：2021-02-20 12:26:00" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
     </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-01 23:49:09" itemprop="dateModified" datetime="2021-03-01T23:49:09+08:00">2021-03-01</time>
+      </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
@@ -641,6 +647,10 @@
 <p>哨兵模式缺点：</p>
 <p>​ Redis较难在线扩容，在集群容量达到上限时在线扩容变得十分复杂。</p>
 </blockquote>
+<h2 id="cluster模式">Cluster模式</h2>
+<blockquote>
+<p>集群：使用多个主从模式的redis搭建，每个主从模式的redis又充当彼此的哨兵。</p>
+</blockquote>
 <h2 id="缓存可能遇到的问题">缓存可能遇到的问题</h2>
 <h3 id="缓存穿透">缓存穿透</h3>
 <blockquote>
@@ -701,8 +711,8 @@
 </div>
 
           <div class="post-tags">
-              <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag"># 数据库</a>
               <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag"># 分布式</a>
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag"># 数据库</a>
               <a href="/tags/%E7%BC%93%E5%AD%98/" rel="tag"># 缓存</a>
           </div>
 
@@ -710,13 +720,13 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2021/02/20/codeAnalyse/nginx%E4%BA%86%E8%A7%A3/" rel="prev" title="Nginx了解">
-                  <i class="fa fa-chevron-left"></i> Nginx了解
+                <a href="/2021/02/20/codeAnalyse/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E6%B1%A0/" rel="prev" title="数据库连接池">
+                  <i class="fa fa-chevron-left"></i> 数据库连接池
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2021/02/20/codeAnalyse/Dubbo/" rel="next" title="Dubbo简单介绍">
-                  Dubbo简单介绍 <i class="fa fa-chevron-right"></i>
+                <a href="/2021/02/20/codeAnalyse/nginx%E4%BA%86%E8%A7%A3/" rel="next" title="Nginx了解">
+                  Nginx了解 <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
           </div>
@@ -771,13 +781,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">77k</span>
+    <span title="站点总字数">82k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:10</span>
+    <span title="站点阅读时长">1:14</span>
   </span>
 </div>
 <div class="busuanzi-count">
