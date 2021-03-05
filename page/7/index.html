@@ -198,20 +198,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-count">36</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-count">13</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-count">25</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/28/netty%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91/C10K%E9%97%AE%E9%A2%98%E7%9A%84%E8%A7%A3%E5%86%B3%E5%8F%8AIO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/01/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%9F%BA%E7%A1%80%E7%AA%81%E5%87%BB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/28/netty%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91/C10K%E9%97%AE%E9%A2%98%E7%9A%84%E8%A7%A3%E5%86%B3%E5%8F%8AIO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/" class="post-title-link" itemprop="url">C10K问题的解决及I/O多路复用</a>
+          <a href="/2021/03/01/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%9F%BA%E7%A1%80%E7%AA%81%E5%87%BB/" class="post-title-link" itemprop="url">java基础突击</a>
         </h2>
 
         <div class="post-meta-container">
@@ -287,14 +287,14 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2021-02-28 23:30:00" itemprop="dateCreated datePublished" datetime="2021-02-28T23:30:00+08:00">2021-02-28</time>
+      <time title="创建时间：2021-03-01 00:00:00" itemprop="dateCreated datePublished" datetime="2021-03-01T00:00:00+08:00">2021-03-01</time>
     </span>
       <span class="post-meta-item">
         <span class="post-meta-item-icon">
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-01 15:51:14" itemprop="dateModified" datetime="2021-03-01T15:51:14+08:00">2021-03-01</time>
+        <time title="修改时间：2021-03-04 22:10:52" itemprop="dateModified" datetime="2021-03-04T22:10:52+08:00">2021-03-04</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -302,11 +302,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
-        </span>
-          ，
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
+          <a href="/categories/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/" itemprop="url" rel="index"><span itemprop="name">面试突击</span></a>
         </span>
     </span>
 
@@ -318,7 +314,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>1.5k</span>
+      <span>430</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -336,56 +332,18 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="c10k问题的解决及io多路复用">C10K问题的解决及I/O多路复用</h1>
-<h2 id="c10k问题">C10K问题</h2>
+          <h1 id="java基础突击">java基础突击</h1>
+<h2 id="java容器">java容器</h2>
+<h3 id="arrays.sort怎么排序的">Arrays.sort()怎么排序的？</h3>
 <blockquote>
-<p>即网络通信时单机服务器保持的TCP连接数超过10K即1万，导致服务器压力过大无法承载。</p>
-</blockquote>
-<h2 id="发生c10k问题的原因">发生C10K问题的原因</h2>
-<blockquote>
-<p>本质上是操作系统的问题，操作系统使用的都是传统阻塞I/O模型，处理方式都是requests per thread，导致并发10K和并发100的关键在于CPU。</p>
-</blockquote>
-<h2 id="解决方法">解决方法</h2>
-<blockquote>
-<p>原始的TCP连接需要一个线程/进程处理一个连接。</p>
-<p>改进为同一个线程/进程处理多个连接。即使用I/O多路复用技术</p>
-</blockquote>
-<h2 id="io多路复用技术的发展">I/O多路复用技术的发展</h2>
-<h3 id="原始情况">原始情况</h3>
-<blockquote>
-<p>最简单的思路为利用循环挨个处理每个连接，每个连接对应一个socket，当所有socket都有数据时这个方法可行，但若某个socket没有数据会导致线程/进程被阻塞。</p>
-</blockquote>
-<h3 id="select">Select</h3>
-<blockquote>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 该函数准许进程指示内核等待多个事件中的任何一个发送，并只在有一个或多个事件发生或经历一段指定的时间后才唤醒。</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">select</span><span class="params">(<span class="keyword">int</span> maxfdp1,fd_set *readset,fd_set *writeset,fd_set *exceptset,<span class="keyword">const</span> struct timeval *timeout)</span></span></span><br></pre></td></tr></table></figure>
-<p>该函数会传递readset、writeset、exceptset，即读事件、写事件、异常事件，使用fd_set来告知内核同时监控多个文件句柄，最后是timeout是时间参数，可以分为三种情况：一直等待某个描述字直到事件就绪回调、等待到某个时间若某个描述字事件不就绪则不等待、根本不等待某个描述字。</p>
-<p>回调后可以通过FD_ISSET 来逐个查看fd_set中的句柄状态，当连接数大时效率较低，因此select存在句柄管理上限。</p>
-<p>且fd_set只有一个字段关注事件和发生事件，使用前往往要初始化。</p>
-<p>此外fd_set在调用select时需要反复在用户态和内核态传递。</p>
-</blockquote>
-<h3 id="poll">Poll</h3>
-<blockquote>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">poll</span> <span class="params">( struct pollfd * fds, <span class="keyword">unsigned</span> <span class="keyword">int</span> nfds, <span class="keyword">int</span> timeout)</span></span>;</span><br></pre></td></tr></table></figure>
-<p>本质上和select没有区别，都需要轮询，但是poll没有最大文件描述符的限制</p>
-<p>pollfd存在事件字段和发生事件字段，使用前不用重复初始化。</p>
-<p>此外pollfd在调用poll时需要反复在用户态和内核态传递。</p>
-</blockquote>
-<h3 id="epoll">Epoll</h3>
-<blockquote>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建一个epoll的句柄，用于管理size个监听数目，返回一个fd值。</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_create</span><span class="params">(<span class="keyword">int</span> size)</span></span>;</span><br><span class="line"><span class="comment">// epoll的事件注册函数，会先注册需要监听的事件类型，epfd为epoll_create的返回值。</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_ctl</span><span class="params">(<span class="keyword">int</span> epfd, <span class="keyword">int</span> op, <span class="keyword">int</span> fd, struct epoll_event *event)</span></span>;</span><br><span class="line"><span class="comment">// 等待事件的发生，只会返回需要处理的事件文件描述符</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_wait</span><span class="params">(<span class="keyword">int</span> epfd, struct epoll_event * events, <span class="keyword">int</span> maxevents, <span class="keyword">int</span> timeout)</span></span>;</span><br></pre></td></tr></table></figure>
-<p>epoll_event在用户态和内核态的传递只需要在epoll_ctl进行一次。</p>
-<p>且事件触发时只会返回触发事件的文件描述符，避免遍历全部的文件描述符。</p>
-<p>有ET模式和LT模式</p>
-<p>​ ET模式：边缘触发，当状态发生时才通知，每个事件仅通知一次。</p>
-<p>​ LT模式：水平触发，只要有没有处理的事件就会一直通知。</p>
-</blockquote>
-<h2 id="c10m">C10M</h2>
-<blockquote>
-<p>即并发量上升到10M，此时瓶颈变为了操作系统。</p>
-<p>可能的解决方案：</p>
-<p>​ 让数据报直接传递到业务逻辑，不经过linux协议栈。</p>
-<p>​ 自己管理内存，如将内存预留一部分，并使用更大的内存分页进行管理。</p>
-<p>​ 多线程核间绑定，将线程同处理器核心进行绑定，最大化核心Cache利用，实现无锁设计，避免线程切换开销。</p>
+<p>根据排序对象分为两种：</p>
+<p>​ 对于基本类型，使用DualPivotQuicksort.sort()</p>
+<p>​ 对于数量小于QUICKSORT_THRESHOLD = 286的数组，再进行分类，若小于INSERTION_SORT_THRESHOLD = 47，使用leftmost再选择排序模式，模式分为插入排序和改进的插入排序。</p>
+<p>​ 若大于INSERTION_SORT_THRESHOLD = 47，则使用DualPivotQuicksort双轴快排。</p>
+<p>​ 而对于数量较大的，先判断数组是否为高度结构化，若不是高度结构化则使用DualPivotQuicksort，否则使用归并排序。</p>
+<p>​ 对于实现了Comparable接口的类型，使用ComparableTimSort.sort()。</p>
+<p>​ 对于数量小于MIN_MERGE = 32的数组，使用二分插入排序。</p>
+<p>​ 对于数量大于MIN_MERGE的数组，使用timSort排序(大量优化的归并排序)。</p>
 </blockquote>
 
       
@@ -406,7 +364,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/6/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/32/">32</a><a class="extend next" rel="next" href="/page/8/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/6/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/36/">36</a><a class="extend next" rel="next" href="/page/8/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -451,13 +409,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">82k</span>
+    <span title="站点总字数">88k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:14</span>
+    <span title="站点阅读时长">1:20</span>
   </span>
 </div>
 <div class="busuanzi-count">

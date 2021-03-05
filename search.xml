@@ -1,6 +1,179 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>java并发突击</title>
+    <url>/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/</url>
+    <content><![CDATA[<h1 id="java并发突击">Java并发突击</h1>
+<h2 id="线程创建的方式">线程创建的方式</h2>
+<blockquote>
+<p>继承thread类，重写run方法</p>
+<p>实现runnable接口，重写run方法。</p>
+<p>实现callable接口，实现call方法</p>
+</blockquote>
+<h2 id="线程池">线程池</h2>
+<blockquote>
+<p>为什么使用线程池？</p>
+<p>​ 为了避免线程的创建、销毁导致的线程开销，采用线程池管理一定数量的线程达到可复用线程的效果。</p>
+<p>Executors自带的线程池</p>
+<p>​ <strong>newSingleThreadExecutor</strong>：单线程线程池，这个线程池只有一个线程在工作。</p>
+<p>​ <strong>newFixedThreadPool</strong>：固定大小的线程池。每次提交一个任务就创建一个线程，直到线程达到线程池最大大小。超出的线程会在队列中等待。</p>
+<p>​ <strong>newCachedThreadPool</strong>：创建一个可缓存的线程池，当线程池大小超过了处理任务所需要的线程，会回收部分空闲线程，当任务增加时此线程池可以智能添加线程来处理任务。该线程池不会对大小进行限制。</p>
+<p>​ <strong>newScheduledThreadPool</strong>：创建一个大小无限的线程池，支持定时及周期性任务。</p>
+<p>​ <strong>newSingleThreadScheduled</strong>：创建一个只有一个线程的线程池，支持定时及周期性任务。</p>
+<p>​ <strong>newWorkStealingPool</strong>：创建一个拥有多个任务队列的线程池。</p>
+<p>自带线程池的缺点，newSingleThreadExecutor和newFixedThreadPool创建了一个长度Integer.MAX_VALUE的阻塞队列，导致任务过多堆积时耗费大量内存，产生OOM错误。newCachedThreadPool和newScheduledThreadPool创建的线程池最大线程数量为Integer.MAX_VALUE，导致可能创建了大量的线程，消耗资源，甚至造成OOM。</p>
+</blockquote>
+<h2 id="自定义线程池">自定义线程池</h2>
+<blockquote>
+<p>自己创建线程池new ThreadPoolExecutor()可以传递参数：</p>
+<p>​ corePoolSize：核心线程数量，即线程池会保持的线程数</p>
+<p>​ maximumPoolSize：最大线程数量，即线程池</p>
+<p>​ keepAliveTime：空闲线程最大存活时间</p>
+<p>​ TimeUnit：时间单位</p>
+<p>​ BlockingQueue：阻塞队列</p>
+<p>​ ThreadFactory：线程工厂</p>
+<p>​ RejectedExecutionHandler：拒绝策略</p>
+</blockquote>
+<h3 id="线程池执行execute的流程">线程池执行execute的流程</h3>
+<blockquote>
+<p>当当前线程数少于核心线程数时会新增worker线程。</p>
+<p>若任务可以成功入队，则将任务入队，同时检测当前线程池状态，若为不是RUNNING状态则将任务移出队列且执行拒绝策略。</p>
+<p>若入队失败，则尝试创建新的worker，若创建失败执行拒绝策略。</p>
+</blockquote>
+<h3 id="线程池拒绝策略">线程池拒绝策略</h3>
+<blockquote>
+<p>AbortPolicy：丢弃任务并抛出异常。</p>
+<p>CallerRunsPolicy：判断当前线程池是否关闭，若未关闭则直接调用线程的run方法。</p>
+<p>DiscardOldestPolicy：丢弃队列最前的任务，然后重新使用线程池执行被拒绝的任务。</p>
+<p>DiscardPolicy：丢弃任务，什么也不做。</p>
+<p>NewThreadRunsPolicy：创建一个线程去执行被丢弃的任务。</p>
+</blockquote>
+<h2 id="synchronized">Synchronized</h2>
+<h2 id="juc">JUC</h2>
+<h3 id="reentrantlock">ReentrantLock</h3>
+<blockquote>
+<p>可重入锁本质上是针对一个线程的，当一个线程抢占成功锁之后，若线程内部还有进行锁操作，那么会将锁的state值增加，释放时则将该值减少，直到减少到0时又可以被重新抢占。</p>
+<p>释放锁过程也是先判断逐步释放。判断当前释放锁之后锁状态是否为0，若为0则通过unpark方法唤醒队列中的后继线程。</p>
+<p>java实现的锁的方式分为公平锁和非公平锁。</p>
+<p>公平锁和非公平锁的队列都是基于锁内部维护的一个双向链表。</p>
+<p>公平锁的公平性体现在每次重新抢占时会先判断队列中是否存在等待线程，若存在则让队列的线程先抢夺。</p>
+<p>非公平锁非公平体现在每次抢占时不会判断队列中是否存在等待线程，直接进行抢占。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>面试突击</category>
+      </categories>
+      <tags>
+        <tag>并发</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>redis突击</title>
+    <url>/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/redis%E7%AA%81%E5%87%BB/</url>
+    <content><![CDATA[<h1 id="redis突击">redis突击</h1>
+<h2 id="redis为什么快">redis为什么快？</h2>
+<blockquote>
+<p>单线程：因为一开始的redis认为redis速度的瓶颈不在于cpu运算速度，而往往在于网络带宽和机器内存大小。使用单线程编程简单且没有线程切换的开销。</p>
+<p>数据存放在内存中。</p>
+<p>使用了I/O多路复用技术。</p>
+</blockquote>
+<h2 id="redis数据结构">redis数据结构</h2>
+<blockquote>
+<p>String、Hash、List、Set、SortedSet、HyperLogLog(可以用于统计网页每天的用户访问量数据)、Geo、Bitmap(可以用来记录用户的在线状态)、Stream(主要用于消息队列)</p>
+</blockquote>
+<h2 id="redis数据淘汰机制">redis数据淘汰机制</h2>
+<blockquote>
+<p>随机淘汰、ttl淘汰即淘汰即将过期的数据、LRU淘汰最近最少使用的数据。</p>
+</blockquote>
+<h2 id="缓存击穿缓存雪崩缓存穿透">缓存击穿、缓存雪崩、缓存穿透</h2>
+<blockquote>
+
+</blockquote>
+]]></content>
+      <categories>
+        <category>面试突击</category>
+      </categories>
+      <tags>
+        <tag>redis</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>操作系统突击</title>
+    <url>/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%AA%81%E5%87%BB/</url>
+    <content><![CDATA[<h1 id="操作系统突击">操作系统突击</h1>
+<h2 id="进程线程和协程">进程、线程和协程</h2>
+<blockquote>
+<p>进程是操作系统资源分配和调度的基本单位。每个进程有着自己的独立内存空间，不同进程之间使用进程间通信来通信。操作系统是以进程为单位分配系统资源(如CPU时间片、内存等资源)，进程是资源分配的最小单位。</p>
+<p>进程间通信的方法：</p>
+<p>​ 管道：一种半双工的通信方式，数据只能单向流动，且只能在具有亲缘关系的进程间调用。</p>
+<p>​ 消息队列：即将消息使用链表的形式存放在内核中并由消息队列标识符标识。</p>
+<p>​ 信号量：本质上是一种计数器，可以用于控制多个进程对共享资源的访问。</p>
+<p>​ 共享内存：映射一段能被其他进程所访问的内存，这个共享内存由一个进程创建，但由多个进程共享。它是最快的IPC方式，针对其他进程间通信效率低而设计的。</p>
+<p>​ 信号：一种事件通知机制，进程可以通过发送信号给另一个进程，另一个进程则会根据收到的信号执行对应的处理方。</p>
+<p>​ socket：</p>
+<p>线程是依附于进程，是<strong>操作系统调度的最小单位</strong>。</p>
+<p>线程间通信的方法：</p>
+<p>​ 锁机制。</p>
+<p>​ 信号量机制。</p>
+<p>​ 信号机制。</p>
+<p>​ voliate变量。</p>
+<p>协程：不被操作系统内核所管理，完全是有程序所控制。</p>
+</blockquote>
+<h2 id="调度算法">调度算法</h2>
+<blockquote>
+<p><strong>先来先服务调度算法FCFS</strong>、<strong>短作业（进程）优先调度算法SJF（非抢占）</strong>、<strong>基于时间片的轮转调度算法RR</strong>、<strong>多级反馈队列算法FB</strong></p>
+</blockquote>
+<h2 id="死锁的四个条件">死锁的四个条件</h2>
+<blockquote>
+<p><strong>互斥</strong>：某种资源一次只能运行一个进程访问。</p>
+<p><strong>请求保持</strong>：一个进程占有资源，但还有资源没有满足。</p>
+<p><strong>不可抢占</strong>：不可以去抢夺别人已拥有的资源。</p>
+<p><strong>循环等待</strong>：存在一个进程链，每个进程都占有下一个进程所需的至少一种资源。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>面试突击</category>
+      </categories>
+      <tags>
+        <tag>操作系统</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>腾讯面经</title>
+    <url>/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E9%9D%A2%E7%BB%8F/</url>
+    <content><![CDATA[<h1 id="腾讯面经">腾讯面经</h1>
+<h2 id="腾讯云一面">腾讯云一面</h2>
+<blockquote>
+<p>1、自我介绍和项目介绍</p>
+<p>2、我看你之前面过一次，为什么挂了，你相对上次来说有什么提高？</p>
+<p>3、java内存结构及各功能</p>
+<p>4、堆栈的线程安全问题</p>
+<p>5、HashMap和CurrenthashMap(说了一会面试官没啥兴趣就换了个问题)</p>
+<p>6、四次挥手</p>
+<p>7、Java线程池</p>
+<p>8、乐观锁和悲观锁</p>
+<p>9、分布式锁</p>
+<p>10、项目亮点</p>
+<p>11、项目有没有进行压测？</p>
+<p>12、说说熟悉的算法</p>
+<p>13、数据库了解的情况</p>
+<p>14、redis为什么快</p>
+<p>15、多路复用</p>
+<p>16、Netty 线程模型-reactor模型</p>
+<p>17、你对微服务有什么理解？</p>
+<p>18、你觉得怎么实现RPC？</p>
+<p>19、自己的优缺点</p>
+<p>20、反问</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>面试总结</category>
+      </categories>
+      <tags>
+        <tag>面经</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>消息队列突击</title>
     <url>/2021/03/03/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%AA%81%E5%87%BB/</url>
     <content><![CDATA[<h1 id="消息队列突击">消息队列突击</h1>
@@ -44,6 +217,46 @@
       </tags>
   </entry>
   <entry>
+    <title>自己的项目总结</title>
+    <url>/2021/03/03/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E8%87%AA%E5%B7%B1%E7%9A%84%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<h1 id="自己的项目总结">自己的项目总结</h1>
+<h2 id="为什么使用protobuf">为什么使用protobuf？</h2>
+<blockquote>
+<p>因为protobuf兼容性好、序列化性能高、且序列化出的数据体积小，会降低网络通信的传输负担。</p>
+<p>当然json的优点在于易读，且许多项目都是使用json传输的。</p>
+<p>protobuf兼容性好的原因：</p>
+<p>​ protobuf在编码消息时会把消息分为tag域和value域，tag域用于标注出这个value对应的类型，且protobuf解析时也是按照序号对应解析的，假如说服务端消息序号为1、2、3、4，而客户端使用的是旧消息1、2、4，此时在客户端接收到消息时客户端会发现缺失了一个3号位，此时读取tag就会获知这个是什么类型的数据，跳过对应位数解析即可。</p>
+<p>protobuf序列化性能高的原因：</p>
+<p>​ 主要是因为编码方式导致protobuf序列化过程中只需要进行数字的简单运算，同时protobuf还在框架层面上同编译器共同完成序列化，所以序列化速度非常快。</p>
+<p>protobuf序列化出的数据体积小的原因：</p>
+<p>​ protobuf采用T-L-V，即tag-length-value的编码方法来针对字符串。</p>
+<p>​ protobuf采用T-V的结果来针对整数，其中tag的值会利用位运算先将序号左移3位然后或上对应的type值，减少空间占用。</p>
+<p>​ 因为protobuf对于数字采用了特定的Varint编码。对于值越小的数字使用越少的字节表示。如对应int32的数字，如果数字较小，只使用了其中的8位，那么发送时也只会发送最后8位。</p>
+</blockquote>
+<h2 id="netty通讯时选择的是什么协议为什么选择这个协议">Netty通讯时选择的是什么协议？为什么选择这个协议？</h2>
+<blockquote>
+<p>选用TCP来实现的，因为认为TCP传输更加可靠。</p>
+</blockquote>
+<h3 id="使用tcp通讯时有没有遇到粘包问题怎么处理的">使用TCP通讯时有没有遇到粘包问题？怎么处理的？</h3>
+<blockquote>
+<p>粘包问题本质上是由于TCP自身是以流传输的发送传递数据的，而TCP默认又会开启Nagle算法，所谓Nagle算法就是TCP协议要求让一个连接中最多只能有一个未被确认的小分组，而对于后续的小分组采用累积最后合并发送的形式发送。这样就导致客户端分次发送的数据被服务端接收时变为连续的数据。</p>
+<p>粘包问题有许多解决方案：</p>
+<p>​ 规定每次发送消息只能发送固定长度的，未到固定长度的使用空白填补。</p>
+<p>​ 消息利用特殊分隔符分隔，接收时利用分隔符进行拆分。</p>
+<p>​ 在发送消息前在消息内容前添加消息长度字段，接收时利用长度字段进行接收。</p>
+<p>我使用的是最后一种。</p>
+</blockquote>
+<h2 id="redis的使用">redis的使用</h2>
+<h2 id="zookeeper相关">zookeeper相关</h2>
+]]></content>
+      <categories>
+        <category>面试突击</category>
+      </categories>
+      <tags>
+        <tag>项目总结</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>java基础突击</title>
     <url>/2021/03/01/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%9F%BA%E7%A1%80%E7%AA%81%E5%87%BB/</url>
     <content><![CDATA[<h1 id="java基础突击">java基础突击</h1>
@@ -65,19 +278,6 @@
       </categories>
       <tags>
         <tag>java基础</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>redis突击</title>
-    <url>/2021/03/01/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/redis%E7%AA%81%E5%87%BB/</url>
-    <content><![CDATA[<h1 id="redis突击">redis突击</h1>
-<h2 id="section"></h2>
-]]></content>
-      <categories>
-        <category>面试突击</category>
-      </categories>
-      <tags>
-        <tag>redis</tag>
       </tags>
   </entry>
   <entry>
@@ -191,12 +391,15 @@
 </blockquote>
 <h3 id="cookiesessiontoken">Cookie、Session、Token</h3>
 <blockquote>
-
+<p>本质上都是用于存储用户信息的。</p>
+<p>cookie是浏览器层面储存的一种k-v结构数据，当发送请求给服务端时可以把cookie发送给服务端。但是由于cookie是存储在浏览器上的，所以cookie往往不能用来存储用户的私密数据。</p>
+<p>session则是在服务端层面存储用户信息，服务端在使用session时往往会产生一个特殊的sessionId，然后将这个id交给客户端，客户端每次访问服务端时带上这个id即可。但是由于session存储在服务端，所以如果有大量用户时服务端往往会消耗大量资源来存储session，并且如果是多服务端的结构，还需要采用一定操作来保证session的存储。</p>
+<p>token=header密文+payload密文+签名：本质上是将用户第一次发送的用户名+密码的信息进行签名加密然后再发还给用户，而用户浏览器则保存这个信息，在之后的访问过程每次带上这个token供服务端验证。可以防止CSRF(跨站请求伪造)攻击，即在页面中放入一些恶意链接，这些链接会指向如转账之类的功能，由于浏览器发送请求时会默认带上cookie，所以导致请求通过校验被执行。而使用token浏览器就不会默认发送，从而防止csrf攻击。验证时服务端将两个密文解密再签名同自带的签名进行比对判断是否通过认证。此外还可以对payload密文解密来判断token是否过期。</p>
 </blockquote>
 <h3 id="http工作流程">HTTP工作流程</h3>
 <blockquote>
 <p>DNS域名解析-&gt;TCP三次握手-&gt;发起HTTP请求-&gt;服务器响应HTTP请求-&gt;浏览器解析HTML并请求资源-&gt;浏览器渲染页面</p>
-<p>DNS既用TCP又用UDP。</p>
+<p>DNS既用TCP又用UDP，使用53号端口。</p>
 <p>在域名解析时使用UDP。因为解析的数据少，UDP较快。</p>
 <p>而在域名服务器之间执行数据同步时会使用TCP。因为此时数据量大，TCP是可靠连接，保证数据准确性。</p>
 <p>DNS域名解析流程：</p>
@@ -214,6 +417,112 @@
 <p>此外http2.0还使用了首部压缩技术，对于一条连接使用首部表来维护key-value，若增加新的key-value则加入表尾，避免每次请求都需要携带首部。此外还对首部使用了HPACK算法压缩。</p>
 <p>不仅如此http2.0还支持服务器主动推送，即先请求服务器，服务器不用解析就可以直接将预先设置好的内容推送给客户端。</p>
 <p>http3.0：基于QUIC协议，底层使用UDP通信。</p>
+</blockquote>
+<h3 id="http和https">HTTP和HTTPS</h3>
+<blockquote>
+<p>HTTP是超文本文件传输协议通信使用明文传输，HTTPS则是基于HTTP协议通过SSL(处于TCP/IP协议与各种应用层协议之间)或TLS(前身是SSL)提供加密处理数据、验证对方身份及数据完整性保护。</p>
+<p>HTTPS的特点：</p>
+<p>​ 内容加密：采用混合加密技术，中间者无法直接查看明文内容。</p>
+<p>​ 验证身份：通过证书认证客户端访问的是自己的服务器。</p>
+<p>​ 保护数据完整性：防止传输的内容被中间人冒充或篡改。</p>
+</blockquote>
+<h2 id="tcp和udp">TCP和UDP</h2>
+<h3 id="tcp和udp的区别">TCP和UDP的区别</h3>
+<blockquote>
+<p>TCP是面向连接的，UDP是无连接的。</p>
+<p>TCP消耗资源较大，UDP消耗资源较少。</p>
+<p>TCP是字节流传输，UDP是数据报传输。</p>
+<p>TCP可靠性高，UDP不保证消息可靠性。</p>
+<p>TCP可以进行流量控制，UDP不具有流量控制的能力。</p>
+<p>TCP适用于对于消息准确性和顺序要求较高的场景，UDP应用于对于通信效率、准确性要求相对较低的场景。</p>
+</blockquote>
+<h3 id="tcp是怎么保证可靠性的">TCP是怎么保证可靠性的？</h3>
+<blockquote>
+<p>1、使用报文里的校验和字段。</p>
+<p>2、使用了序列号机制，即每次发送报文都会附上相应的序列号，而接收到请求的那方会发送ACK对报文进行确认，同时ACK也会附带对应应答的序列号，此时发送方就可以对接收到ACK附带的序列号进行检测。若序列号正确再发送其他的报文，若错误则重发。</p>
+<p>3、超时重传：即报文在发出一定时间内未收到接收方的，发送方就会重传。</p>
+<p>4、三次握手和四次挥手机制。</p>
+<p>5、流量控制：由于接收端处理数据的速度是有限的，为了不让过多的数据让接收端无法处理，tcp报文中有个窗口大小字段，可以让接收端在接收报文，发出ACK信号时附上该值，让发送方及时调整。</p>
+<p>6、拥塞控制：流量控制是发送方接收方之间，而拥塞控制是相对整个网络通信环境的。TCP采用慢启动、拥塞避免和快启动、快重传的方式来降低网络拥塞的可能。</p>
+<p>​ 快重传即收到连续三个冗余ACK，则重新发送报文段。因为TCP使用累积确认的机制，即接收端受到比期望序号大的报文，会重复发送最近一次确认的报文段的确认信号。</p>
+</blockquote>
+<h3 id="tcp握手与挥手">TCP握手与挥手</h3>
+<h4 id="tcp三次握手">TCP三次握手</h4>
+<blockquote>
+<p>三次握手的流程：</p>
+<table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">A</th>
+<th style="text-align: center;">B</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">A发送SYN信号及A的初始序号x，此时A进入SYN_SEND状态</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"></td>
+<td style="text-align: center;">B接收到了A发送的SYN信号与A初始序号x，需要对SYN信号发送ACK应答且应答序号为x+1，同时也向A发出SYN信号和自己的序号y，然后进入SYN_RECV状态</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">A接收到服务端发送的SYN和ACK信号，会发送ACK信号并将序号设为y+1，然后发送给客户端，发送完毕后A进入ESTABLISHED状态，完成三次握手。</td>
+<td style="text-align: center;">B收到ACK也进入ESTABLISHED状态</td>
+</tr>
+</tbody>
+</table>
+<p><strong>为什么不是四次握手，如将B的SYN信号和ACK信号拆开发送</strong>。原因：避免资源浪费。</p>
+<p><strong>为什么B需要等待A的ACK信号？即为什么不是两次握手？</strong>原因：本质上为了避免旧重复连接造成资源浪费的问题，若B发出SYN和ACK信号后直接进入ESTABLISHED状态，假定A、B先前存在连接，然后断开了连接，而此时B在之后的一段时间中收到了A早期发送的SYN信号，若B直接进入ESTABLISHED状态，此时显然A是没有连接需求的，也不会向B发送数据，而B也不知道这一点，这样就会浪费掉连接资源。而使用三次握手，A、B之间存在序列号，若发生之前的情况，B会对A发出信号和自己的ACK序号，此时A收到ACK时就会发现自己当前的序列号不能和B的ACK对应，就会给B发送RESET信号，从而避免资源浪费。</p>
+<p><strong>SYN攻击</strong>：即随机IP访问服务器发送大量SYN请求。</p>
+</blockquote>
+<h4 id="tcp四次挥手">TCP四次挥手</h4>
+<blockquote>
+<p>四次挥手的流程：</p>
+<table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">A</th>
+<th style="text-align: center;">B</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">A发送FIN信号及自己的序列号给B，然后进入FIN_WAIT1状态</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"></td>
+<td style="text-align: center;">B接收到了A发送的FIN信号会向A发送ACK，然后进入CLOSE_WAIT状态</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">客户端收到ACK信号进入FIN_WAIT2状态</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"></td>
+<td style="text-align: center;">一段时间后，服务端发送完数据，就会给客户端发送FIN报文，此时服务端进入LAST_ACK状态</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">当客户端接收到FIN信号时发送ACK信号给服务端，此时客户端会进入TIME_WAIT状态。若超过2MSL没有收到回复则客户端关闭连接进入CLOSED状态。</td>
+<td style="text-align: center;">当服务端接收到ACK信号时会关闭连接进入CLOSED状态</td>
+</tr>
+</tbody>
+</table>
+<p><strong>为什么断开连接需要四次挥手？</strong></p>
+<p>​ 因为TCP连接是全双工的，所以必须保证每个方向都单独进行关闭。当客户端想关闭自己这方的连接时，服务端可能还需要发送消息，故客户端只能先发送FIN，然后等待服务端完成了自己操作后发出FIN才完成一个连接两个方向的关闭。</p>
+<p><strong>为什么客户端发送ACK信号后还需要等待2MSL长度的时间？</strong></p>
+<p>​ 主要有两个原因：</p>
+<p>​ 1、如果ACK信号在传输过程中丢失了，客户端可以等待服务端重新发送FIN报文，此时再发送ACK报文来保证连接被正常关闭。</p>
+<p>​ 2、2MSL时间是网络TCP生存时间的两倍，设置这个时间是为了给服务器足够的超时重传时间，也让客户端可以等待网络中在之前连接中发出的包全部消失。</p>
 </blockquote>
 ]]></content>
       <categories>
@@ -378,125 +687,6 @@
       </tags>
   </entry>
   <entry>
-    <title>1.JAVA内存管理</title>
-    <url>/2021/02/20/JVMKnowledge/1.JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/</url>
-    <content><![CDATA[<h1 id="java内存管理">JAVA内存管理</h1>
-<h2 id="java内存区域">Java内存区域</h2>
-<h3 id="总览">总览</h3>
-<blockquote>
-<p>堆+栈+程序计数器</p>
-<p>堆: 方法区 + 堆</p>
-<p>栈: 虚拟机栈 + 本地方法栈</p>
-</blockquote>
-<figure>
-<img src="/2021/02/20/JVMKnowledge/1.JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Java内存区域.png" alt="Java内存区域"><figcaption aria-hidden="true">Java内存区域</figcaption>
-</figure>
-<h3 id="各部分的作用">各部分的作用</h3>
-<h4 id="程序计数器">程序计数器</h4>
-<blockquote>
-<p>是当前线程所执行的字节码的行号指示器。各线程均有一个程序计数器。如果执行的是Java方法，则程序计数器记录的值为正在执行的虚拟机字节码的地址。若执行的是本地方法，则此时程序计数器的值为undefined。该区域没有规定任何OutOfMemoryError情况。</p>
-</blockquote>
-<h4 id="java虚拟机栈">Java虚拟机栈</h4>
-<blockquote>
-<p>生命周期和线程一致，且是线程私有的。当每个方法被执行时，Java虚拟机栈就会创建一个栈帧来保存局部变量表、操作数栈、动态连接、方法出口等信息。每个方法从被调用到执行完毕的过程，对应着一个栈帧在虚拟机栈中入栈到出栈的过程。</p>
-<p>局部变量表用于存储各种Java虚拟机的<strong>基本数据类型</strong>、<strong>对象引用</strong>(reference类型，不等同与对象本身，可以是对象起始地址的引用指针，也可以是指向一个代表对象句柄或其他与此对象有关的位置)和<strong>returnAdress类型</strong>(指向了一条字节码指令的地址)。在虚拟机栈中，这些数据类型都是用变量槽来表示的。其中64位的long和double占两个变量槽，其他的均只占一个变量槽。局部变量表的大小在<strong>编译期间</strong>就已经完成，故方法所需栈帧分配的局部变量表空间是完全确定的，且不会发生改变。这里空间是指变量槽数，不是具体字节/比特数。</p>
-<p>当调用的方法是非static方法时，局部变量表中第0索引的Slot变量槽默认是this关键字指向的对象。</p>
-<p>可能出现的异常：</p>
-<p>​ StackOverflowError：线程请求栈深度超过虚拟机允许的深度。</p>
-<p>​ OutOfMemoryError：当虚拟机栈容量可以动态拓展时，不能申请到足够的内存。</p>
-</blockquote>
-<h4 id="本地方法栈">本地方法栈</h4>
-<blockquote>
-<p>和虚拟机栈类似，虚拟机栈为虚拟机执行Java方法服务，而本地方法栈是为虚拟机使用到的本地方法服务。</p>
-</blockquote>
-<h4 id="java堆">Java堆</h4>
-<blockquote>
-<p>Java堆是虚拟机所管理的内存中最大的一块。它是被所有线程共享的一块内存区域，在虚拟机启动时创建。java堆的唯一目的就是存放对象实例。它也是垃圾收集器管理的内存区域。大部分垃圾收集器都是基于分代收集理论设计的。</p>
-<p>从分配内存的角度看，所有线程共享的Java堆可以划分出多个线程私有的分配缓冲区。</p>
-<p>可能出现的异常：</p>
-<p>​ OutOfMemoryError：Java堆中没有内存完成实例分配，且堆无法再拓展。</p>
-</blockquote>
-<h4 id="方法区">方法区</h4>
-<blockquote>
-<p>HotSpot：JDK8后使用在本地内存中实现的元空间来代替JDK7中永久代还剩余的内容，JDK6之前使用永久代来实现方法区。</p>
-<p>方法区是各个线程共享的内存区域，用于存储已被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等数据。</p>
-<p>这个区域的回收目标主要是针对常量池的回收和对类型的卸载。</p>
-<p>可能出现的异常：</p>
-<p>​ OutOfMemoryError：方法区无法满足新的内存分配需求。</p>
-</blockquote>
-<h5 id="运行时常量池">运行时常量池</h5>
-<blockquote>
-<p>运行时常量池是方法区的一部分。该部分用于存放编译器生成的各种字面量与符号引用即常量池表。</p>
-</blockquote>
-<h4 id="直接内存">直接内存</h4>
-<blockquote>
-<p>直接内存不是虚拟机运行时数据区的一部分，也不是Java虚拟机规范中定义的内存区域。</p>
-<p>如JDK1.4引入的NIO可以使用Native函数分配堆外内存，然后通过一个存储在Java堆里的DirectByteBuffer对象作为这块内存的引用进行操作。</p>
-<p>本机的直接内存的分配不会受到Java堆大小的限制，但是会受到本机总内存大小及处理器寻址空间的限制。</p>
-</blockquote>
-<h2 id="hotspot虚拟机对象相关内容">HotSpot虚拟机对象相关内容</h2>
-<h3 id="对象创建">对象创建</h3>
-<blockquote>
-<p>步骤分为：类加载检查 -&gt; 分配内存 -&gt; 初始化 -&gt; 对象设置 -&gt; 等待执行构造函数</p>
-<p>类加载检查：当Java虚拟机遇到一条字节码new指令时，首先检查这个指令的参数是否可以从常量池地位到一个类的符号引用，并且检查这个符号引用代表的类是否已经被加载、解析、初始化过。若没有执行相应类的类加载过程。</p>
-<p>分配内存：类加载完成后对象所需内存大小可以完全确定，分配内存的方法分为指针碰撞法和空闲列表法。</p>
-<p>​ 指针碰撞法：将Java堆的内存视为绝对规整，使用过的内存在一边，未使用过的内存在另一边，分配内存时只需要将指针朝未使用过的内存那边移动即可。该方法要求垃圾收集器需要有空间压缩整理能力。</p>
-<p>​ 空闲列表法：Java堆的内存中使用过的内存和未使用过的内存交错在一起，需要维护一个列表记录哪些内存块可用。</p>
-<p>分配内存时需要考虑并发问题：即当A利用指针分配内存但还为修改指针位置时，B也使用原来的指针分配内存。解决该问题可以使用CAS加失败重试或把内存操作按照线程划分在不同的空间之中进行，即每个线程在Java堆中预先分配一小块内存，称为TLAB(本地线程分配缓冲)，只有本地缓冲区的内存用完了，分配新缓冲区时才需要同步锁定。</p>
-<p>初始化：虚拟机将分配到的内存空间都初始化为0值。</p>
-<p>对象设置：将对象信息如对象是哪个类的实例、如何找到类的元数据信息、对象的GC分代年龄等存入对象的对象头中。</p>
-<p>等待执行构造函数：虚拟机等到执行了<init>()方法，完成对对象的全部初始化，此时对象才算被完全的构造出来。</init></p>
-</blockquote>
-<h3 id="对象内存布局">对象内存布局</h3>
-<blockquote>
-<p>存储布局划分为三个部分：对象头、实例数据、对齐填充(padding)</p>
-<p>对象头可以分为两类：</p>
-<p>​ 一类存储对象自身的运行时数据，如HashCode、GC分代年龄、锁状态标识、线程持有的锁、偏向线程ID、偏向时间戳等。被称为Mark Word。</p>
-<p>​ 另一类为类型指针，即对象指向它的类型元数据的指针。Java虚拟机通过这个指针来确定该对象是哪个类的实例。若对象为Java数组，对象头中还要一块用于记录数组长度的数据。</p>
-<p>实例数据：即对象真正存储的有效信息，无论是从父类继承还是子类自己定义的字段。存储顺序可以通过(-XX:FieldsAllocationStyle参数)及字段在源码中定义顺序来调整。HotSpot默认分配顺序会将相同宽度的字段分配到一起存放，如longs/doubles。</p>
-<p>padding：即填充部分，无意义，只是用于将数据对齐。</p>
-</blockquote>
-<h3 id="对象访问定位">对象访问定位</h3>
-<blockquote>
-<p>Java程序会通过栈上的reference数据来操作栈上的具体对象。</p>
-<p>主流的访问方式分为句柄和直接指针：</p>
-<p>​ 句柄：Java堆中可能划分出一块内存作为句柄池，reference存储的就是对象的句柄地址，而句柄包含对象实例数据与类型数据各自具体的地址信息。</p>
-<p>​ 直接指针：reference存储的就是对象地址，访问对象本身不需要多一次间接访问。</p>
-<p>​ 两者的优点：句柄访问的优势在于reference存储的是稳定的句柄地址，对象被移动(垃圾回收时对象常常需要被移动)时只需要改变句柄中实例数据指针即可。直接指针的优势在于速度更快，减少了一次指针定位的开销。</p>
-</blockquote>
-<h2 id="触发异常的情况">触发异常的情况</h2>
-<h3 id="java堆内存的outofmemoryerror异常">Java堆内存的OutOfMemoryError异常</h3>
-<blockquote>
-<p>不断创建对象且保证GC Roots到对象之间有可达路径来避免垃圾回收机制清除这些对象。</p>
-</blockquote>
-<h3 id="虚拟机栈和本地方法栈溢出">虚拟机栈和本地方法栈溢出</h3>
-<blockquote>
-<p>-Xss设置栈容量。</p>
-<p>1）如果线程请求的栈深度大于虚拟机所允许的最大深度，将抛出StackOverflowError异常。</p>
-<p>2）如果虚拟机的栈内存允许动态扩展，当扩展栈容量无法申请到足够的内存时，将抛出OutOfMemoryError异常。</p>
-<p>创建太多线程也会导致OutOfMemoryError异常。</p>
-</blockquote>
-<h2 id="方法区和运行时常量池溢出">方法区和运行时常量池溢出</h2>
-<blockquote>
-<p>运行时常量池，从JDK7开始后原本存放到永久代的字符串常量池被移动到Java堆中。</p>
-<p>-XX：PermSize和-XX：MaxPermSize限制永久代大小。</p>
-<p>方法区溢出会在运行时产生大量的类时出现，OutOfMemoryError。</p>
-</blockquote>
-<h3 id="本机直接内存溢出">本机直接内存溢出</h3>
-<blockquote>
-<p>大小默认与Java堆最大值一致。可以通过-XX：MaxDirectMemorySize参数指定。</p>
-<p>直接或间接(NIO)使用了太多是Unsafe::allocateMemory()分配过多的直接内存会触发OutOfMemoryError异常。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>JVM</category>
-      </categories>
-      <tags>
-        <tag>JVM</tag>
-        <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>2.垃圾收集</title>
     <url>/2021/02/20/JVMKnowledge/2.%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86/</url>
     <content><![CDATA[<h1 id="垃圾收集">垃圾收集</h1>
@@ -654,6 +844,125 @@
       </tags>
   </entry>
   <entry>
+    <title>1.JAVA内存管理</title>
+    <url>/2021/02/20/JVMKnowledge/1.JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/</url>
+    <content><![CDATA[<h1 id="java内存管理">JAVA内存管理</h1>
+<h2 id="java内存区域">Java内存区域</h2>
+<h3 id="总览">总览</h3>
+<blockquote>
+<p>堆+栈+程序计数器</p>
+<p>堆: 方法区 + 堆</p>
+<p>栈: 虚拟机栈 + 本地方法栈</p>
+</blockquote>
+<figure>
+<img src="/2021/02/20/JVMKnowledge/1.JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Java内存区域.png" alt="Java内存区域"><figcaption aria-hidden="true">Java内存区域</figcaption>
+</figure>
+<h3 id="各部分的作用">各部分的作用</h3>
+<h4 id="程序计数器">程序计数器</h4>
+<blockquote>
+<p>是当前线程所执行的字节码的行号指示器。各线程均有一个程序计数器。如果执行的是Java方法，则程序计数器记录的值为正在执行的虚拟机字节码的地址。若执行的是本地方法，则此时程序计数器的值为undefined。该区域没有规定任何OutOfMemoryError情况。</p>
+</blockquote>
+<h4 id="java虚拟机栈">Java虚拟机栈</h4>
+<blockquote>
+<p>生命周期和线程一致，且是线程私有的。当每个方法被执行时，Java虚拟机栈就会创建一个栈帧来保存局部变量表、操作数栈、动态连接、方法出口等信息。每个方法从被调用到执行完毕的过程，对应着一个栈帧在虚拟机栈中入栈到出栈的过程。</p>
+<p>局部变量表用于存储各种Java虚拟机的<strong>基本数据类型</strong>、<strong>对象引用</strong>(reference类型，不等同与对象本身，可以是对象起始地址的引用指针，也可以是指向一个代表对象句柄或其他与此对象有关的位置)和<strong>returnAdress类型</strong>(指向了一条字节码指令的地址)。在虚拟机栈中，这些数据类型都是用变量槽来表示的。其中64位的long和double占两个变量槽，其他的均只占一个变量槽。局部变量表的大小在<strong>编译期间</strong>就已经完成，故方法所需栈帧分配的局部变量表空间是完全确定的，且不会发生改变。这里空间是指变量槽数，不是具体字节/比特数。</p>
+<p>当调用的方法是非static方法时，局部变量表中第0索引的Slot变量槽默认是this关键字指向的对象。</p>
+<p>可能出现的异常：</p>
+<p>​ StackOverflowError：线程请求栈深度超过虚拟机允许的深度。</p>
+<p>​ OutOfMemoryError：当虚拟机栈容量可以动态拓展时，不能申请到足够的内存。</p>
+</blockquote>
+<h4 id="本地方法栈">本地方法栈</h4>
+<blockquote>
+<p>和虚拟机栈类似，虚拟机栈为虚拟机执行Java方法服务，而本地方法栈是为虚拟机使用到的本地方法服务。</p>
+</blockquote>
+<h4 id="java堆">Java堆</h4>
+<blockquote>
+<p>Java堆是虚拟机所管理的内存中最大的一块。它是被所有线程共享的一块内存区域，在虚拟机启动时创建。java堆的唯一目的就是存放对象实例。它也是垃圾收集器管理的内存区域。大部分垃圾收集器都是基于分代收集理论设计的。</p>
+<p>从分配内存的角度看，所有线程共享的Java堆可以划分出多个线程私有的分配缓冲区。</p>
+<p>可能出现的异常：</p>
+<p>​ OutOfMemoryError：Java堆中没有内存完成实例分配，且堆无法再拓展。</p>
+</blockquote>
+<h4 id="方法区">方法区</h4>
+<blockquote>
+<p>HotSpot：JDK8后使用在本地内存中实现的元空间来代替JDK7中永久代还剩余的内容，JDK6之前使用永久代来实现方法区。</p>
+<p>方法区是各个线程共享的内存区域，用于存储已被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等数据。</p>
+<p>这个区域的回收目标主要是针对常量池的回收和对类型的卸载。</p>
+<p>可能出现的异常：</p>
+<p>​ OutOfMemoryError：方法区无法满足新的内存分配需求。</p>
+</blockquote>
+<h5 id="运行时常量池">运行时常量池</h5>
+<blockquote>
+<p>运行时常量池是方法区的一部分。该部分用于存放编译器生成的各种字面量与符号引用即常量池表。</p>
+</blockquote>
+<h4 id="直接内存">直接内存</h4>
+<blockquote>
+<p>直接内存不是虚拟机运行时数据区的一部分，也不是Java虚拟机规范中定义的内存区域。</p>
+<p>如JDK1.4引入的NIO可以使用Native函数分配堆外内存，然后通过一个存储在Java堆里的DirectByteBuffer对象作为这块内存的引用进行操作。</p>
+<p>本机的直接内存的分配不会受到Java堆大小的限制，但是会受到本机总内存大小及处理器寻址空间的限制。</p>
+</blockquote>
+<h2 id="hotspot虚拟机对象相关内容">HotSpot虚拟机对象相关内容</h2>
+<h3 id="对象创建">对象创建</h3>
+<blockquote>
+<p>步骤分为：类加载检查 -&gt; 分配内存 -&gt; 初始化 -&gt; 对象设置 -&gt; 等待执行构造函数</p>
+<p>类加载检查：当Java虚拟机遇到一条字节码new指令时，首先检查这个指令的参数是否可以从常量池地位到一个类的符号引用，并且检查这个符号引用代表的类是否已经被加载、解析、初始化过。若没有执行相应类的类加载过程。</p>
+<p>分配内存：类加载完成后对象所需内存大小可以完全确定，分配内存的方法分为指针碰撞法和空闲列表法。</p>
+<p>​ 指针碰撞法：将Java堆的内存视为绝对规整，使用过的内存在一边，未使用过的内存在另一边，分配内存时只需要将指针朝未使用过的内存那边移动即可。该方法要求垃圾收集器需要有空间压缩整理能力。</p>
+<p>​ 空闲列表法：Java堆的内存中使用过的内存和未使用过的内存交错在一起，需要维护一个列表记录哪些内存块可用。</p>
+<p>分配内存时需要考虑并发问题：即当A利用指针分配内存但还为修改指针位置时，B也使用原来的指针分配内存。解决该问题可以使用CAS加失败重试或把内存操作按照线程划分在不同的空间之中进行，即每个线程在Java堆中预先分配一小块内存，称为TLAB(本地线程分配缓冲)，只有本地缓冲区的内存用完了，分配新缓冲区时才需要同步锁定。</p>
+<p>初始化：虚拟机将分配到的内存空间都初始化为0值。</p>
+<p>对象设置：将对象信息如对象是哪个类的实例、如何找到类的元数据信息、对象的GC分代年龄等存入对象的对象头中。</p>
+<p>等待执行构造函数：虚拟机等到执行了<init>()方法，完成对对象的全部初始化，此时对象才算被完全的构造出来。</init></p>
+</blockquote>
+<h3 id="对象内存布局">对象内存布局</h3>
+<blockquote>
+<p>存储布局划分为三个部分：对象头、实例数据、对齐填充(padding)</p>
+<p>对象头可以分为两类：</p>
+<p>​ 一类存储对象自身的运行时数据，如HashCode、GC分代年龄、锁状态标识、线程持有的锁、偏向线程ID、偏向时间戳等。被称为Mark Word。</p>
+<p>​ 另一类为类型指针，即对象指向它的类型元数据的指针。Java虚拟机通过这个指针来确定该对象是哪个类的实例。若对象为Java数组，对象头中还要一块用于记录数组长度的数据。</p>
+<p>实例数据：即对象真正存储的有效信息，无论是从父类继承还是子类自己定义的字段。存储顺序可以通过(-XX:FieldsAllocationStyle参数)及字段在源码中定义顺序来调整。HotSpot默认分配顺序会将相同宽度的字段分配到一起存放，如longs/doubles。</p>
+<p>padding：即填充部分，无意义，只是用于将数据对齐。</p>
+</blockquote>
+<h3 id="对象访问定位">对象访问定位</h3>
+<blockquote>
+<p>Java程序会通过栈上的reference数据来操作栈上的具体对象。</p>
+<p>主流的访问方式分为句柄和直接指针：</p>
+<p>​ 句柄：Java堆中可能划分出一块内存作为句柄池，reference存储的就是对象的句柄地址，而句柄包含对象实例数据与类型数据各自具体的地址信息。</p>
+<p>​ 直接指针：reference存储的就是对象地址，访问对象本身不需要多一次间接访问。</p>
+<p>​ 两者的优点：句柄访问的优势在于reference存储的是稳定的句柄地址，对象被移动(垃圾回收时对象常常需要被移动)时只需要改变句柄中实例数据指针即可。直接指针的优势在于速度更快，减少了一次指针定位的开销。</p>
+</blockquote>
+<h2 id="触发异常的情况">触发异常的情况</h2>
+<h3 id="java堆内存的outofmemoryerror异常">Java堆内存的OutOfMemoryError异常</h3>
+<blockquote>
+<p>不断创建对象且保证GC Roots到对象之间有可达路径来避免垃圾回收机制清除这些对象。</p>
+</blockquote>
+<h3 id="虚拟机栈和本地方法栈溢出">虚拟机栈和本地方法栈溢出</h3>
+<blockquote>
+<p>-Xss设置栈容量。</p>
+<p>1）如果线程请求的栈深度大于虚拟机所允许的最大深度，将抛出StackOverflowError异常。</p>
+<p>2）如果虚拟机的栈内存允许动态扩展，当扩展栈容量无法申请到足够的内存时，将抛出OutOfMemoryError异常。</p>
+<p>创建太多线程也会导致OutOfMemoryError异常。</p>
+</blockquote>
+<h2 id="方法区和运行时常量池溢出">方法区和运行时常量池溢出</h2>
+<blockquote>
+<p>运行时常量池，从JDK7开始后原本存放到永久代的字符串常量池被移动到Java堆中。</p>
+<p>-XX：PermSize和-XX：MaxPermSize限制永久代大小。</p>
+<p>方法区溢出会在运行时产生大量的类时出现，OutOfMemoryError。</p>
+</blockquote>
+<h3 id="本机直接内存溢出">本机直接内存溢出</h3>
+<blockquote>
+<p>大小默认与Java堆最大值一致。可以通过-XX：MaxDirectMemorySize参数指定。</p>
+<p>直接或间接(NIO)使用了太多是Unsafe::allocateMemory()分配过多的直接内存会触发OutOfMemoryError异常。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>JVM</category>
+      </categories>
+      <tags>
+        <tag>JVM</tag>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>ConcurrentHashMap分析</title>
     <url>/2021/02/20/JavaBasicKnowledge/ConcurrentHashMap/</url>
     <content><![CDATA[<h1 id="concurrenthashmap">ConcurrentHashMap</h1>
@@ -708,6 +1017,44 @@
       <tags>
         <tag>Java</tag>
         <tag>容器</tag>
+        <tag>并发</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>多线程相关</title>
+    <url>/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/</url>
+    <content><![CDATA[<h1 id="多线程">多线程</h1>
+<h2 id="进程和线程">进程和线程</h2>
+<blockquote>
+<p>进程是执行程序的一次执行过程，是一个动态的概念。是系统资源分配的单位。</p>
+<p>通常一个进程中包含多个线程，一个进程至少含一个线程。线程是CPU调度和执行的单位。</p>
+</blockquote>
+<h3 id="java创建线程的方式">JAVA创建线程的方式</h3>
+<blockquote>
+<ol type="1">
+<li>继承Thread类，重写run方法。调用是使用start方法调用，若使用run方法调用则变为单线程。</li>
+<li>实现runnable接口，重写run方法，执行线程需丢入runnable接口实现类，调用start方法。(避免使用继承)</li>
+<li>实现callable接口，需要返回值类型，重写call方法，需要抛出异常。(可以返回结果，可以抛出异常)<img src="/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/实现callable.png" alt="实现callable"></li>
+</ol>
+</blockquote>
+<h2 id="java线程的状态">Java线程的状态</h2>
+<blockquote>
+<p>NEW、RUNNABLE、BLOCKED、WAITING、TIMED_WAITING、TERMINATED</p>
+<p>NEW：线程还没有启动。</p>
+<p>RUNNABLE：线程已经在jvm中运行了，但可能还在等待操作系统的处理器之类的资源。</p>
+<p>BLOCKED：线程等待monitor lock。</p>
+<p>WAITING：正在等待另一个线程执行的状态。</p>
+<p>TIMED_WAITING：有着指定特定等待时间等待另一个线程执行的状态。</p>
+<p>TERMINATED：线程终止，线程已经结束执行。</p>
+<p>线程分为用户线程和守护线程(Daemon)，虚拟机必须确保用户线程执行完毕，虚拟机不用等待守护线程执行完毕。可以通过调用线程的setDaemon(true)，将某个线程变为守护线程</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
         <tag>并发</tag>
       </tags>
   </entry>
@@ -786,193 +1133,6 @@
       <tags>
         <tag>Java</tag>
         <tag>容器</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Object类分析</title>
-    <url>/2021/02/20/JavaBasicKnowledge/Object/</url>
-    <content><![CDATA[<h1 id="object类">Object类</h1>
-<blockquote>
-<p>Object类是Java中未指定父类的类的默认继承类，也可以说是所有类的祖先。本文档编写目的为通过查看Java源码来加强自己对Object类的理解。不涉及native实现的方法。</p>
-</blockquote>
-<h4 id="registernatives">registerNatives()</h4>
-<blockquote>
-<p>native实现，目的是在底层创建对应的java本机函数使JVM找到native方法</p>
-</blockquote>
-<h4 id="getclass">getClass()</h4>
-<blockquote>
-<p>返回当前对象运行时对应的类对象，且这个类是静态类型擦除后的结果。如T-&gt;Object;List<String>-&gt;List</String></p>
-</blockquote>
-<h4 id="hashcode">hashCode()</h4>
-<blockquote>
-<p>返回当前对象的hash值，在同一个程序执行中，约定当对象相同时即执行equals方法比较的信息不被更改时，不管调用几次hashcode方法，均要返回相同的值。但不要求不同程序产生相同的hashcode</p>
-<p>如果两个对象可通过equals方法判定相同，则调用hashcode方法会产生两个相同的值。</p>
-<p>如果两个对象通过equals方法判定不同，也不要求hashcode方法产生两个不同的值，但如果产生不同的值会提升哈希表的性能。</p>
-<p>如果可以的话，不同对象应该有不同的hash值，这个通常可以根据将对象在内存中的地址转化为整数来实现，但不强制要求。</p>
-</blockquote>
-<h4 id="equals">equals()</h4>
-<blockquote>
-<p>判断某些对象是否equals to调用该方法的对象。</p>
-<p>实现了非空对象引用上的等价关系判断。</p>
-<p>四个特性:自反、对称、传递、一致。</p>
-<p>自反: x.equals(x) == true</p>
-<p>对称: x.equals(y) == y.equals(x)</p>
-<p>传递: x.equals(y), y.equals(z) ------&gt; x.equals(z)</p>
-<p>一致: 只要用于equals比较的信息不被改变，则不管调用几次equals方法其值总是不变的。</p>
-<p>非空对象引用同null比较值总是为false。</p>
-<p>对象之间equals比较只有两个对象是完全相同即地址一致时才会返回true。</p>
-<p>为了维持hashcode的原则，在重写equals方法的时候，往往需要重写hashcode方法。</p>
-</blockquote>
-<h4 id="clone">clone()</h4>
-<blockquote>
-<p>根据对象的类复制一个对象的副本。</p>
-<p>往往有</p>
-<p>​ x.clone() != x;</p>
-<p>​ x.clone().getClass() == x.getClass()</p>
-<p>​ x.clone.equals(x) == true</p>
-<p>​ 通常返回的clone对象都是调用super.clone得到的。</p>
-<p>​ clone的对象需要和被clone的对象相互独立。这便要求对被clone对象中所有可变属性进行复制，并用副本的引用替换对这些对象的引用。</p>
-<p>Object类的clone方法</p>
-<p>​ 首先需要继承Cloneable接口。数组类型默认实现了Cloneable接口，且T类型的数组clone的结果的类型为T，需要注意的时，数组clone是直接复制原数组的值即对象引用只是将引用拷贝了，故为浅拷贝。</p>
-<p>Object对象没有实现Cloneable接口，故对Object对象使用clone会产生异常。CloneNotSupportedException</p>
-</blockquote>
-<h4 id="tostring">toString()</h4>
-<blockquote>
-<p>返回对象的字符串表示形式。往往需要重写这个方法。</p>
-<p>这个方法的默认表现为“类名+@+hashcode的十六进制表示”</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">getClass().getName() + <span class="string">&#x27;@&#x27;</span> + Integer.toHexString(hashCode())</span><br></pre></td></tr></table></figure>
-</blockquote>
-<h4 id="notify">notify()</h4>
-<blockquote>
-<p>唤醒正在wait()该线程所拥有的对象的一个线程。如果有多个线程都在wait该对象，则随机唤醒一个线程，由具体实现决定。</p>
-<p>被唤醒的线程只有在对象没有被锁定的情况下才能执行。且被唤醒的线程仍然需要以通常的方式同其他线程竞争对象的使用权，没有其他特权。</p>
-<p>该方法只能由当前具有对象使用权的线程调用，获取对象使用权的方式</p>
-<p>​ 1.执行对象的synchronize修饰的方法</p>
-<p>​ 2.执行synchronize修饰的代码段。</p>
-<p>​ 3.执行synchronize修饰的静态方法。</p>
-<p>未拥有对象monitor的线程调用会抛出IllegalMonitorStateException异常。</p>
-</blockquote>
-<h4 id="notifyall">notifyAll()</h4>
-<blockquote>
-<p>唤醒正在wait()该线程所拥有的对象的所有线程。</p>
-</blockquote>
-<h4 id="waitlong-timeout">wait(long timeout)</h4>
-<blockquote>
-<p>让当前线程等待一段时间，直到被notify/notifyAll/一段时间过后唤醒。</p>
-<p>调用该方法的线程必须有对象的monitor。</p>
-<p>该方法会让线程进入该对象的等待集中，然后放弃对该对象的所有同步声明。 出于线程调度目的，该线程被禁用，并且在发生以下四种情况之一之前一直处于休眠状态：</p>
-<ol type="1">
-<li>某些线程调用了notify方法并恰好唤醒该线程。</li>
-<li>某些线程调用了notifyAll方法。</li>
-<li>某些线程调用了interrupt方法。</li>
-<li>一段特定时间过去。若为设置特定时间线程会等到被notify为止。</li>
-</ol>
-<p>从wait方法返回的对象和线程的同步状态会和调用该方法时的状态完全相同。</p>
-<p>存在虚假唤醒(spurious wakeup)的问题需要在while中调用wait来避免。</p>
-<p>如果该线程在等待之前，或等待期间被另一个线程调用该线程的interrupt()方法，那么当被interrupt线程获得锁之后，会立刻抛出InterruptedException异常，我们可以对这个异常进行捕获，然后处理，以实现线程的唤醒和通信。</p>
-<p>wait方法将当前线程放入该对象的等待集中，只会解锁该对象，若当前线程还锁定了其他对象，那么这些对象不会被解锁。(死锁)</p>
-</blockquote>
-<h4 id="waitlong-timeout-int-nanos">wait(long timeout, int nanos)</h4>
-<blockquote>
-<p>同一个参数的wait基本一致，但可以输入纳秒级的精度。实际上只是nanos大于0直接让timeout++而已。</p>
-</blockquote>
-<h4 id="wait">wait()</h4>
-<blockquote>
-<p>不支持超时自动唤醒。相当于wait(0)</p>
-</blockquote>
-<h4 id="finalize">finalize()</h4>
-<blockquote>
-<p>当资源不可达时GC会自动调用对象的finalize方法</p>
-<p>这个方法内部可以执行任何操作，包括让这个对象重新可达。但往往只是执行清除操作，如中断I/O连接。</p>
-<p>Java编程语言对于所有的对象都不能够保证哪个线程会调用它的finalize方法。然而可以保证一点，调用终结方法的线程必然不会被任何用户可见的同步锁锁住。如果一个没有被捕获的异常在执行终结方法时被抛出，异常会被忽略并且哪个对象的终结过程会被终止。</p>
-<p>调用该方法后，java虚拟机会再次判断对象是否可达，若仍不可达对象往往会被摧毁。</p>
-<p>finalize()方法不会调用多次。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-        <tag>Java基本类</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Dubbo简单介绍</title>
-    <url>/2021/02/20/codeAnalyse/Dubbo/</url>
-    <content><![CDATA[<h1 id="dubbo">Dubbo</h1>
-<h2 id="rmi-和-rpc">RMI 和 RPC</h2>
-<blockquote>
-<p>RMI：远程方法调用，是java自带的API可以实现的，依赖JVM。客户端将要调用的方法和参数打包成辅助对象，通过网络socket，发送给服务端辅助对象，服务端接收后进行解包，找到真正被调用的方法，执行这个方法将执行结果，依次返回。服务端辅助对象进行打包，然后客户端辅助对象进行解包，结果返回给真正的调用者。</p>
-<p>IPC：进程间通信。进程是计算机系统资源分配的最小单位，每个进程都是资源隔离的。</p>
-<p>LPC：本地过程调用。</p>
-<p>RPC：远程过程调用。</p>
-</blockquote>
-<h2 id="常用rpc框架">常用RPC框架</h2>
-<h3 id="dubbo-1">Dubbo</h3>
-<blockquote>
-<p>阿里开发，基于Spring和Netty，是当前使用最广泛的RPC框架。</p>
-</blockquote>
-<h3 id="brpc">BRPC</h3>
-<blockquote>
-<p>百度开发，"baidu-rpc"，支持多种协议，性能优良。</p>
-</blockquote>
-<h3 id="grpc">GRPC</h3>
-<blockquote>
-<p>谷歌开发，基于Netty，服务于TensorFlow的底层通信。</p>
-</blockquote>
-<h3 id="thrift">Thrift</h3>
-<blockquote>
-<p>Facebook开发。</p>
-</blockquote>
-<h2 id="注册中心---zookeeper">注册中心 - Zookeeper</h2>
-]]></content>
-      <categories>
-        <category>框架入门</category>
-      </categories>
-      <tags>
-        <tag>并发</tag>
-        <tag>Dubbo</tag>
-        <tag>分布式</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>多线程相关</title>
-    <url>/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/</url>
-    <content><![CDATA[<h1 id="多线程">多线程</h1>
-<h2 id="进程和线程">进程和线程</h2>
-<blockquote>
-<p>进程是执行程序的一次执行过程，是一个动态的概念。是系统资源分配的单位。</p>
-<p>通常一个进程中包含多个线程，一个进程至少含一个线程。线程是CPU调度和执行的单位。</p>
-</blockquote>
-<h3 id="java创建线程的方式">JAVA创建线程的方式</h3>
-<blockquote>
-<ol type="1">
-<li>继承Thread类，重写run方法。调用是使用start方法调用，若使用run方法调用则变为单线程。</li>
-<li>实现runnable接口，重写run方法，执行线程需丢入runnable接口实现类，调用start方法。(避免使用继承)</li>
-<li>实现callable接口，需要返回值类型，重写call方法，需要抛出异常。(可以返回结果，可以抛出异常)<img src="/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/实现callable.png" alt="实现callable"></li>
-</ol>
-</blockquote>
-<h2 id="java线程的状态">Java线程的状态</h2>
-<blockquote>
-<p>NEW、RUNNABLE、BLOCKED、WAITING、TIMED_WAITING、TERMINATED</p>
-<p>NEW：线程还没有启动。</p>
-<p>RUNNABLE：线程已经在jvm中运行了，但可能还在等待操作系统的处理器之类的资源。</p>
-<p>BLOCKED：线程等待monitor lock。</p>
-<p>WAITING：正在等待另一个线程执行的状态。</p>
-<p>TIMED_WAITING：有着指定特定等待时间等待另一个线程执行的状态。</p>
-<p>TERMINATED：线程终止，线程已经结束执行。</p>
-<p>线程分为用户线程和守护线程(Daemon)，虚拟机必须确保用户线程执行完毕，虚拟机不用等待守护线程执行完毕。可以通过调用线程的setDaemon(true)，将某个线程变为守护线程</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-        <tag>并发</tag>
       </tags>
   </entry>
   <entry>
@@ -1111,58 +1271,986 @@
       </tags>
   </entry>
   <entry>
-    <title>SpringBoot原理分析</title>
-    <url>/2021/02/20/codeAnalyse/SpringBoot%E5%8E%9F%E7%90%86/</url>
-    <content><![CDATA[<h1 id="springboot原理">SpringBoot原理</h1>
-<h2 id="springbootapplication"><span class="citation" data-cites="SpringBootApplication">@SpringBootApplication</span></h2>
+    <title>Object类分析</title>
+    <url>/2021/02/20/JavaBasicKnowledge/Object/</url>
+    <content><![CDATA[<h1 id="object类">Object类</h1>
 <blockquote>
-<p>本质上是</p>
-<p><span class="citation" data-cites="SpringBootConfiguration">@SpringBootConfiguration</span>：实际是@Configuration</p>
-<p><span class="citation" data-cites="EnableAutoConfiguration">@EnableAutoConfiguration</span>：由@AutoConfigurationPackage、<span class="citation" data-cites="Import">@Import</span>({AutoConfigurationImportSelector.class})组成。</p>
-<p><span class="citation" data-cites="ComponentScan">@ComponentScan</span>：启用自动扫描，默认扫描所在类的同级类和同级目录下的所有类。</p>
-<p>即这个注解实现了注册配置类、启用自动配置、启用自动扫描。</p>
+<p>Object类是Java中未指定父类的类的默认继承类，也可以说是所有类的祖先。本文档编写目的为通过查看Java源码来加强自己对Object类的理解。不涉及native实现的方法。</p>
 </blockquote>
-<h2 id="springapplication.runtestapplication.classargs的实际流程">SpringApplication.run(TestApplication.class,args)的实际流程</h2>
+<h4 id="registernatives">registerNatives()</h4>
 <blockquote>
-<p>利用传入的类创建一个SpringApplication实例执行了run方法。</p>
-<h3 id="具体创建实例的流程">具体创建实例的流程：</h3>
+<p>native实现，目的是在底层创建对应的java本机函数使JVM找到native方法</p>
 </blockquote>
+<h4 id="getclass">getClass()</h4>
 <blockquote>
-<figure>
-<img src="/2021/02/20/codeAnalyse/SpringBoot%E5%8E%9F%E7%90%86/SpringBootAplication初始化过程.png" alt="SpringBootAplication初始化过程"><figcaption aria-hidden="true">SpringBootAplication初始化过程</figcaption>
-</figure>
-<p>倒数第四行加载了web应用的配置，具体流程是使用默认的类加载器去查找当前是否使用了对应的类。结果可以得出NONE、SERVLET、REACTIVE。</p>
-<p>倒数三行之前都是加载主配置。</p>
-<p>倒数第三、二行分别是创建初始化器和监听器。创建的流程均为先获取到类加载器，然后查找当前项目中所使用到的初始化器、监听器类名，再利用类名创建类实例，最后将这些实例按优先级排序即可。</p>
-<p>创建类实例的方法即为通过反射调用类的构造方法创建。它们都使用了getSpringFactoriesInstances方法。这个方法是先通过读取META-INF/spring.factories文件内容来获取配置，并将配置放入map中。实际中会读取到项目所有jar包中的META-INF/spring.factories。然后利用传入的类名进行匹配找到所需的初始化器/监听器。</p>
-<p>按优先级排序，Spring则是通过继承OrderComparator(实现了Comparator接口的类来完成的)，这里利用了模板方法模式，通过完成了findOrder方法，通过比较注解的优先级的方式来findOrder，若未设定优先级则设为最低优先级LOWEST_PRECEDENCE这个值为Integer.MAX_VALUE。</p>
-<ul>
-<li>（1）先判断有没有实现PriorityOrdered，实现PriorityOrdered比没实现的有高优先级</li>
-<li>（2）第一步如果比较不出来，判断有没有实现Ordered，如果实现了，取实现方法的int值比较</li>
-<li>前两步都是OrderComparator的默认实现。</li>
-<li>（3）如果没有实现Ordered，判断有没有org.springframework.core.annotation.Order注解， 有注解，取注解上的order值，进行比较</li>
-<li>（4）如果没有Order注解，判断有没有javax.annotation.Priority注解，取注解上的值比较</li>
-<li>若以上都没找到则spring会返回null</li>
-<li>（5）OrderComparator接收到null，返回Integer.MAX_VALUE即LOWEST_PRECEDENCE，值越大优先级越低</li>
-</ul>
-<p>最后一行找到主程序类是通过获取当前程序运行栈，通过找到栈中执行main方法的类，得到主程序类名。</p>
+<p>返回当前对象运行时对应的类对象，且这个类是静态类型擦除后的结果。如T-&gt;Object;List<String>-&gt;List</String></p>
 </blockquote>
-<h3 id="创建实例后执行run方法的流程">创建实例后执行run方法的流程</h3>
+<h4 id="hashcode">hashCode()</h4>
 <blockquote>
-
+<p>返回当前对象的hash值，在同一个程序执行中，约定当对象相同时即执行equals方法比较的信息不被更改时，不管调用几次hashcode方法，均要返回相同的值。但不要求不同程序产生相同的hashcode</p>
+<p>如果两个对象可通过equals方法判定相同，则调用hashcode方法会产生两个相同的值。</p>
+<p>如果两个对象通过equals方法判定不同，也不要求hashcode方法产生两个不同的值，但如果产生不同的值会提升哈希表的性能。</p>
+<p>如果可以的话，不同对象应该有不同的hash值，这个通常可以根据将对象在内存中的地址转化为整数来实现，但不强制要求。</p>
 </blockquote>
-<h2 id="自动配置原理">自动配置原理</h2>
+<h4 id="equals">equals()</h4>
 <blockquote>
-<p><span class="citation" data-cites="EnableAutoConfiguration">@EnableAutoConfiguration</span> = <span class="citation" data-cites="AutoConfigurationPackage">@AutoConfigurationPackage</span> + <span class="citation" data-cites="Import">@Import</span>({AutoConfigurationImportSelector.class})</p>
-<p><span class="citation" data-cites="AutoConfigurationPackage">@AutoConfigurationPackage</span> = <span class="citation" data-cites="Import">@Import</span>({Registrar.class})</p>
-<p>故@EnableAutoConfiguration实际上相当于引入了AutoConfigurationImportSelector和Registrar。</p>
+<p>判断某些对象是否equals to调用该方法的对象。</p>
+<p>实现了非空对象引用上的等价关系判断。</p>
+<p>四个特性:自反、对称、传递、一致。</p>
+<p>自反: x.equals(x) == true</p>
+<p>对称: x.equals(y) == y.equals(x)</p>
+<p>传递: x.equals(y), y.equals(z) ------&gt; x.equals(z)</p>
+<p>一致: 只要用于equals比较的信息不被改变，则不管调用几次equals方法其值总是不变的。</p>
+<p>非空对象引用同null比较值总是为false。</p>
+<p>对象之间equals比较只有两个对象是完全相同即地址一致时才会返回true。</p>
+<p>为了维持hashcode的原则，在重写equals方法的时候，往往需要重写hashcode方法。</p>
+</blockquote>
+<h4 id="clone">clone()</h4>
+<blockquote>
+<p>根据对象的类复制一个对象的副本。</p>
+<p>往往有</p>
+<p>​ x.clone() != x;</p>
+<p>​ x.clone().getClass() == x.getClass()</p>
+<p>​ x.clone.equals(x) == true</p>
+<p>​ 通常返回的clone对象都是调用super.clone得到的。</p>
+<p>​ clone的对象需要和被clone的对象相互独立。这便要求对被clone对象中所有可变属性进行复制，并用副本的引用替换对这些对象的引用。</p>
+<p>Object类的clone方法</p>
+<p>​ 首先需要继承Cloneable接口。数组类型默认实现了Cloneable接口，且T类型的数组clone的结果的类型为T，需要注意的时，数组clone是直接复制原数组的值即对象引用只是将引用拷贝了，故为浅拷贝。</p>
+<p>Object对象没有实现Cloneable接口，故对Object对象使用clone会产生异常。CloneNotSupportedException</p>
+</blockquote>
+<h4 id="tostring">toString()</h4>
+<blockquote>
+<p>返回对象的字符串表示形式。往往需要重写这个方法。</p>
+<p>这个方法的默认表现为“类名+@+hashcode的十六进制表示”</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">getClass().getName() + <span class="string">&#x27;@&#x27;</span> + Integer.toHexString(hashCode())</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h4 id="notify">notify()</h4>
+<blockquote>
+<p>唤醒正在wait()该线程所拥有的对象的一个线程。如果有多个线程都在wait该对象，则随机唤醒一个线程，由具体实现决定。</p>
+<p>被唤醒的线程只有在对象没有被锁定的情况下才能执行。且被唤醒的线程仍然需要以通常的方式同其他线程竞争对象的使用权，没有其他特权。</p>
+<p>该方法只能由当前具有对象使用权的线程调用，获取对象使用权的方式</p>
+<p>​ 1.执行对象的synchronize修饰的方法</p>
+<p>​ 2.执行synchronize修饰的代码段。</p>
+<p>​ 3.执行synchronize修饰的静态方法。</p>
+<p>未拥有对象monitor的线程调用会抛出IllegalMonitorStateException异常。</p>
+</blockquote>
+<h4 id="notifyall">notifyAll()</h4>
+<blockquote>
+<p>唤醒正在wait()该线程所拥有的对象的所有线程。</p>
+</blockquote>
+<h4 id="waitlong-timeout">wait(long timeout)</h4>
+<blockquote>
+<p>让当前线程等待一段时间，直到被notify/notifyAll/一段时间过后唤醒。</p>
+<p>调用该方法的线程必须有对象的monitor。</p>
+<p>该方法会让线程进入该对象的等待集中，然后放弃对该对象的所有同步声明。 出于线程调度目的，该线程被禁用，并且在发生以下四种情况之一之前一直处于休眠状态：</p>
+<ol type="1">
+<li>某些线程调用了notify方法并恰好唤醒该线程。</li>
+<li>某些线程调用了notifyAll方法。</li>
+<li>某些线程调用了interrupt方法。</li>
+<li>一段特定时间过去。若为设置特定时间线程会等到被notify为止。</li>
+</ol>
+<p>从wait方法返回的对象和线程的同步状态会和调用该方法时的状态完全相同。</p>
+<p>存在虚假唤醒(spurious wakeup)的问题需要在while中调用wait来避免。</p>
+<p>如果该线程在等待之前，或等待期间被另一个线程调用该线程的interrupt()方法，那么当被interrupt线程获得锁之后，会立刻抛出InterruptedException异常，我们可以对这个异常进行捕获，然后处理，以实现线程的唤醒和通信。</p>
+<p>wait方法将当前线程放入该对象的等待集中，只会解锁该对象，若当前线程还锁定了其他对象，那么这些对象不会被解锁。(死锁)</p>
+</blockquote>
+<h4 id="waitlong-timeout-int-nanos">wait(long timeout, int nanos)</h4>
+<blockquote>
+<p>同一个参数的wait基本一致，但可以输入纳秒级的精度。实际上只是nanos大于0直接让timeout++而已。</p>
+</blockquote>
+<h4 id="wait">wait()</h4>
+<blockquote>
+<p>不支持超时自动唤醒。相当于wait(0)</p>
+</blockquote>
+<h4 id="finalize">finalize()</h4>
+<blockquote>
+<p>当资源不可达时GC会自动调用对象的finalize方法</p>
+<p>这个方法内部可以执行任何操作，包括让这个对象重新可达。但往往只是执行清除操作，如中断I/O连接。</p>
+<p>Java编程语言对于所有的对象都不能够保证哪个线程会调用它的finalize方法。然而可以保证一点，调用终结方法的线程必然不会被任何用户可见的同步锁锁住。如果一个没有被捕获的异常在执行终结方法时被抛出，异常会被忽略并且哪个对象的终结过程会被终止。</p>
+<p>调用该方法后，java虚拟机会再次判断对象是否可达，若仍不可达对象往往会被摧毁。</p>
+<p>finalize()方法不会调用多次。</p>
 </blockquote>
 ]]></content>
       <categories>
-        <category>源码分析</category>
+        <category>基础知识</category>
+        <category>Java</category>
       </categories>
       <tags>
-        <tag>Springboot</tag>
+        <tag>Java</tag>
+        <tag>Java基本类</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>数据链路层</title>
+    <url>/2021/02/20/computerNetwork/%E7%AC%AC3%E7%AB%A0-%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82/</url>
+    <content><![CDATA[<h1 id="数据链路层">数据链路层</h1>
+<h2 id="数据链路层基本概念">数据链路层基本概念</h2>
+<blockquote>
+<p>数据链路层的需要解决的问题:</p>
+<p>​ 向网络层提供一个定义良好的服务接口。</p>
+<p>​ 处理传输错误。</p>
+<p>​ 调节数据流，保证慢速的接收方不会被快速的发送方淹没。</p>
+<p>使用的信道类型:点对点信道、广播信道</p>
+<p>链路:一条点到点的物理线路段，中间没有任何其他的点。</p>
+<p>数据链路:除物理线路外，还要有通信协议来控制数据的传输，而实现这些协议的硬件和软件加入到链路上就构成了数据链路。</p>
+<p>最常用的方法就是使用适配器(即网卡)来实现这些协议的硬件和软件，一般的适配器都包括了数据链路层和物理层这两层的功能。</p>
+</blockquote>
+<h2 id="帧">帧</h2>
+<blockquote>
+<p>数据链路层传送的是帧</p>
+</blockquote>
+<h2 id="数据链路层的三个基本问题">数据链路层的三个基本问题</h2>
+<h3 id="封装成帧">封装成帧</h3>
+<blockquote>
+<p>就是在一段数据的前后分别添加首部(SOH)和尾部(EOT)。即形成帧首部+帧的数据部分+帧尾部的结构，帧首部和尾部的重要作用就是帧定界。其中帧的数据部分一般不能超过1500(最大传输单元MTU)。为什么最大一般为1500？这是网络带宽和传输效率的统一决定的，MTU太大导致传输时间过长，MTU过小会导致传输效率不高(因为帧的头尾需要占14 + 4个字节)。</p>
+<p>接收方会判断收到的帧是否含有头尾部分，若无此部分则会丢弃该数据帧。</p>
+</blockquote>
+<h3 id="透明传输只知道数据但不知道数据是如何传输的">透明传输(只知道数据但不知道数据是如何传输的)</h3>
+<blockquote>
+<p>帧的头尾是使用ASCII码的可打印字符集之外的字符组成，若传输的数据不是仅由ASCII码的可打印字符组成时会导致帧的数据部分中可能出现帧尾，会导致接收方提前判断帧结束，且丢弃部分数据。</p>
+<p>解决方法:发送端的数据链路层会在数据出现SOH与EOT的前面插入一个字符“ESC"用于转义，若转义字符中也出现在数据中则应该在转义字符前插入一个转义字符，接收端在将数据传送给网络层时会删除其中用于转义的字符。</p>
+</blockquote>
+<h2 id="差错控制">差错控制</h2>
+<blockquote>
+<p>比特差错:1可能变为0,0可能变为1。</p>
+<p>误码率:传输错误的比特占所传输比特总数的比率称为误码率。</p>
+<p>循环冗余检验(CRC)可以做到无差错接收。检验到有差错的帧就丢弃。CRC是一种无比特差错，而不是无传输差错的检测机制。</p>
+<p>可靠传输还需要确认和重传机制</p>
+</blockquote>
+<h2 id="点到点的数据通信">点到点的数据通信</h2>
+<blockquote>
+<p>PPP协议是全世界使用最多的数据链路层协议</p>
+<p>PPP协议的组成部分(由顶到底)</p>
+<p>​ NCP网络控制协议</p>
+<p>​ LCP链路控制协议</p>
+<p>​ 类似于HDLC高级数据链路控制协议，但PPP面向字节而不是面向比特</p>
+<p>PPP协议应该满足的要求:</p>
+<p>​ 简单、封装成帧、支持多种网络层协议、多种类型链路、差错检测、检测连接状态、最大传送单元、网络层地址协商、数据压缩协商</p>
+<p>PPP协议不需要满足的要求:</p>
+<p>​ 纠错、流量控制、序号、多点线路、半双工或单工链路</p>
+<p>PPP协议的帧格式:</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">F(7E)</th>
+<th style="text-align: center;">A(FF)</th>
+<th style="text-align: center;">C(03)</th>
+<th style="text-align: center;">协议</th>
+<th style="text-align: center;">消息部分(IP数据报)</th>
+<th style="text-align: center;">FCS</th>
+<th style="text-align: center;">F(7E)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">一个字节</td>
+<td style="text-align: center;">一个字节且为固定值</td>
+<td style="text-align: center;">一个字节且为固定值</td>
+<td style="text-align: center;">用于表示消息字段中是什么类型的消息</td>
+<td style="text-align: center;">不超过1500</td>
+<td style="text-align: center;">两个字节</td>
+<td style="text-align: center;">一个字节</td>
+</tr>
+</tbody>
+</table>
+<p>实现透明传输的方式:</p>
+<p>​ 如果是字节传递数据时可以通过插入转义字符并在转义字符0x7D后的一个字符用0x20异或来实现透明传输。</p>
+<p>​ 如果采用同步通信，比特流传递数据时，通过零比特填充法，连续5个1在其中插入0。</p>
+<p>不使用序号和确认机制的原因</p>
+<p>​ 在数据链路层出现的差错的概率不大时使用比较简单的PPP协议较为合理。</p>
+<p>​ 在因特网环境下，PPP的信息字段放入的数据是IP数据报。数据链路层的可靠传输并不能够保证网络层的传输也是可靠的。</p>
+<p>​ 帧检验序列FCS字段可保证无差错接受。</p>
+</blockquote>
+<h2 id="使用广播信道的数据链路层">使用广播信道的数据链路层</h2>
+<h3 id="局域网的拓扑">局域网的拓扑</h3>
+<blockquote>
+<p>星型网、总线网、环形网、树型网</p>
+</blockquote>
+<h3 id="局域网的特点与优点">局域网的特点与优点</h3>
+<blockquote>
+<p>主要特点:网络为一个单位所拥有且地理位置和站点数目均有限。</p>
+<p>主要优点:具有广播功能，从一个站点可以很方便地访问全网。局域网的主机可以共享连接在局域网上的各种硬件和软件资源。</p>
+<p>便于系统的拓展和逐渐演变，各设备的位置可以灵活调整和改变。</p>
+<p>提高了系统的可靠性、可用性和生存性。</p>
+</blockquote>
+<h3 id="以太网通信使用的协议-----csmacd协议">以太网通信使用的协议-----CSMA/CD协议</h3>
+<blockquote>
+<p>CSMA/CD协议特点:</p>
+<p>多点接入:表示许多计算机以多点接入的方式连接在一根总线上。</p>
+<p>载波监听:是指每个站在发送数据之前先要检测总线上是否有其他计算机在发送数据，如果有则暂时不发送数据，避免发生碰撞。</p>
+<p>​ 通过总线上的电压摆动来判断当前总线上是否存在多个计算机同时发送数据的情况</p>
+<p>争用期:最先发送数据帧的站，在发送数据帧后至多经过2t(两倍的端到端时延)即可知道发送的数据帧是否遭受了碰撞。</p>
+<p>最短有效帧长:争用期(2t)内可发送的总字节数------64字节。</p>
+<p>发生碰撞怎么解决:</p>
+<p>​ 推迟一个随机时间再发送，其中基本退避时间为2t，参数k = min(当前重传次数，10)，倍数为r = 1到2^k - 1，重传时延即为r倍的基本退避时间，若重传次数超过16次，则丢弃该帧并向高层报告。</p>
+</blockquote>
+<h2 id="以太网的其他信息">以太网的其他信息</h2>
+<blockquote>
+<p>两个标准:DIX Ethernet V2、802.3标准</p>
+<p>以太网和数据链路层的两个子层:</p>
+<p>​ 逻辑链路控制子层LLC</p>
+<p>​ 媒体接入控制子层MAC</p>
+<p>以太网提供的访问是不可靠的交付，接收到有差错的数据帧就丢弃，其他什么也不做</p>
+<p>使用集线器的以太网在逻辑上仍是一个总线网，各个工作站使用的还是CSMA/CD协议，集线器工作在物理层。</p>
+</blockquote>
+<h2 id="信道利用率计算">信道利用率计算</h2>
+<blockquote>
+<p>争用期长度为2t，帧长为L(bit)，数据发送速率为C(b/s)，帧的发送时间为L/C=T0 (s)</p>
+<p>信道利用率的参数a = t/T0，故帧长不能太短(为了增大T0)，以太网连线不能太长(为了减小t)。无碰撞的理想情况下，极限信道利用率为</p>
+<p><span class="math display">\[S_{max} = T_0 / (T_0 + t) = 1 /(1+a)\]</span></p>
+</blockquote>
+<h2 id="mac地址">MAC地址</h2>
+<blockquote>
+<p>硬件地址又称为物理地址，或MAC地址</p>
+<p>MAC帧格式(MAC层)</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">目的地址</th>
+<th style="text-align: center;">源地址</th>
+<th style="text-align: center;">类型</th>
+<th style="text-align: center;">数据</th>
+<th style="text-align: center;">FCS</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">6个字节</td>
+<td style="text-align: center;">6个字节</td>
+<td style="text-align: center;">2个字节</td>
+<td style="text-align: center;">46~1500</td>
+<td style="text-align: center;">4个字节</td>
+</tr>
+</tbody>
+</table>
+<p>​ 帧检验序列FCS字段可保证无差错接受。</p>
+<p>传到物理层会在前端插入8个字节表示帧开始。</p>
+<p>无效的MAC帧:</p>
+<p>​ 帧长度不为整数个字节。</p>
+<p>​ 用收到的帧检验序列FCS查出有差错。</p>
+<p>​ 数据字段的长度不在46~1500字节之间。</p>
+<p>​ 有效的MAC帧长度不在64~1518字节之间。</p>
+<p>​ 无效的MAC会直接丢弃，以太网不负责重传。</p>
+<p>帧间最小间隔为9.6us，相当于96bit的发送时间，目的是为了使刚刚收到数据帧的站接受缓存来得及清理，做好接收下一帧的准备。</p>
+</blockquote>
+<h2 id="使用网桥拓展以太网">使用网桥拓展以太网</h2>
+<blockquote>
+<p>优点:过滤通信量、扩大物理范围、提高了可靠性、可互连不同的物理层、不同MAC子层和不同速率的局域网。</p>
+<p>缺点:存储转发增加了时延、MAC子层并没有流量控制功能、具有不同MAC子层的网段桥接在一起时时延更大、网桥只适合于用户数不太多和通信量不太大的局域网，否则有时会因传播过多的广播信息产生网络拥塞。</p>
+<p>记录的原理:A发出的帧送到网桥，网桥可以记录下哪个接口对应于A，将A的地址放入转发表中，对于不在转发表中的地址采用广播手段进行信息传输，对于在转发表中的地址，则根据记录的地址发送。</p>
+</blockquote>
+<h2 id="以太网的不同类型">以太网的不同类型</h2>
+<blockquote>
+<p>速率达到/超过100Mb/s的以太网叫高速以太网</p>
+<p>100BASE-T以太网(快速以太网)</p>
+<p>​ 在双绞线上传送100Mb/s基带信号的星型拓扑以太网，仍使用IEEE 802.3的CSMA/CD协议(半双工时)。</p>
+<p>​ 可以在全双工的方式下工作且无冲突发生，不使用CSMA/CD协议，MAC帧格式仍是802.3标准规定的。最短帧长不变，但最大电缆长度减小到100m，帧间时间间隔变为0.96us。</p>
+<p>吉比特以太网</p>
+<p>​ 允许在1Gb/s下全双工和半双工两种方式工作。使用802.3协议规定的帧格式，在半双工方式下使用CSMA/CD,兼容10BASE-T和100BASE-T</p>
+</blockquote>
+<h2 id="滑动窗口协议">滑动窗口协议</h2>
+<blockquote>
+<p>一位滑动窗口协议 停----等式</p>
+<p>回退N协议</p>
+<p>选择重传协议</p>
+</blockquote>
+<h2 id="mac层各协议">MAC层各协议</h2>
+<blockquote>
+<p>ALOHA：想发就发，冲突后随机时间发。</p>
+<p>分槽ALOHA：时间槽开始时发，冲突后随机时间发。</p>
+<p>1坚持CSMA：监听到空闲一定发，信道忙则一直监听到空闲为止。冲突后随机时间重复此过程。</p>
+<p>非坚持CSMA：监听到空闲一定发，信道忙则随机时间再监听。冲突后随机时间重复此过程。</p>
+<p>p坚持CSMA：监听到空闲p概率发，信道忙则下一个时间槽再监听，1-p概率下一个时间槽再发送。</p>
+<p>CSMA/CD：空闲则直接发送，若忙则等待到通道空闲。检测到冲突终止传输，随机等待一段时间后重新开始监听。则带冲突检测。802.3中使用1坚持-二进制后退的CSMA/CD。</p>
+<p>CSMA/CA：空闲时等待一定时间发送，先发送帧，然后接收方会给发送方发送一个确认帧。若发送方没有收到确认帧或遇到冲突则二进制回退再发送。</p>
+</blockquote>
+<h2 id="无线局域网协议">无线局域网协议</h2>
+<blockquote>
+<p>存在问题：隐藏终端和暴露终端。</p>
+<p>发送方先发送RTS(Request to send)，接收方收到RTS回应CTS(Clear to send)。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>计算机网络</category>
+      </categories>
+      <tags>
+        <tag>网络</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>概论</title>
+    <url>/2021/02/20/computerNetwork/%E7%AC%AC1%E7%AB%A0-%E6%A6%82%E8%AE%BA/</url>
+    <content><![CDATA[<h1 id="概论">概论</h1>
+<h2 id="网络大小划分">网络大小划分</h2>
+<blockquote>
+<p>个域网</p>
+<p>局域网：用于企业时被称为企业网络</p>
+<p>城域网</p>
+<p>广域网</p>
+<p>互联网</p>
+</blockquote>
+<h2 id="报文的不同称呼">报文的不同称呼</h2>
+<blockquote>
+<p>网络层中叫数据包/包</p>
+</blockquote>
+<h1 id="因特网边缘部分的通信方式">因特网边缘部分的通信方式</h1>
+<blockquote>
+<h4 id="客户服务器方式-cs">客户服务器方式 C/S</h4>
+<h4 id="对等方式-p2ppeer-to-peer">对等方式 P2P(peer to peer)</h4>
+<p>既是服务器又是客户机</p>
+</blockquote>
+<h1 id="数据交换方式">数据交换方式</h1>
+<blockquote>
+<h4 id="电路交换---面向连接">电路交换---面向连接</h4>
+<p>交换机位于中心，需要连接时会通过电路连接两个主机。</p>
+<p>建立连接:申请占用通信资源。</p>
+<p>通话:一直占用通信资源。</p>
+<p>释放连接:释放通信资源</p>
+<p>适用于数据量很大的实时传输，核心路由器之间可以用电路交换</p>
+<h4 id="报文交换">报文交换</h4>
+<p>报文一般比分组长的多</p>
+<p>报文发送时间长</p>
+<h4 id="分组交换计算机使用的方式">分组交换:计算机使用的方式</h4>
+<p>发送端对报文进行拆分成不同小组，添加首部组合成一个数据然后发送给接收端。</p>
+<p>接收端对数据进行拆除首部，然后根据首部的信息将收到的数据组合成报文</p>
+</blockquote>
+<h1 id="局域网和广域网不单单从覆盖范围划分还要从使用的技术是什么">局域网和广域网不单单从覆盖范围划分，还要从使用的技术是什么</h1>
+<blockquote>
+<p>局域网 自己购买设备、自己维护、带宽固定 距离100米内</p>
+<p>广域网 花钱买服务、花钱买带宽</p>
+</blockquote>
+<h1 id="网络的拓扑结构">网络的拓扑结构</h1>
+<blockquote>
+<p>总线型、环形、星型、树型、网状结构</p>
+</blockquote>
+<h1 id="网络工作方式">网络工作方式</h1>
+<blockquote>
+<p>资源子网、通信子网、接入网</p>
+</blockquote>
+<h1 id="计算机网络的性能">计算机网络的性能</h1>
+<blockquote>
+<p>速率:主机在数字信道传送数据位数的速率，也成为data rate 或bit rate。</p>
+<p>带宽:数据信道所能传送的最高数据率。</p>
+<p>吞吐量:单位时间内通过某个网络的数据量。</p>
+<p>时延:</p>
+<blockquote>
+<p>发送时延 数据块长度/信道带宽</p>
+<p>传播时延:信道长度/信号在信道上的传播速率</p>
+<p>处理时延:在</p>
+<p>排队时延:在接收方主机处等待的时间</p>
+</blockquote>
+<p>时延带宽积 :传播时延 * 带宽</p>
+<p>往返时间RTT:从发送方发送数据开始到发送方收到接收方确认。</p>
+<p>利用率:</p>
+<blockquote>
+<p>信道利用率 = 有数据通过时间 / (有 + 无数据通过的时间)</p>
+<p>网络利用率：信道利用率加权平均值</p>
+</blockquote>
+<p>非性能指标:费用、质量、标准化、可靠性、可扩展性、可升级性、管理与维护</p>
+</blockquote>
+<h1 id="计算机网络的体系结构">计算机网络的体系结构</h1>
+<blockquote>
+<p>OSI(开放式系统互联)七层模型:分层有利于标准化，且分层后各层之间的变化不会影响到其他层，尽量降低了相互之间的依赖。</p>
+<p>物理层:规定电压、接口标准</p>
+<p>数据链路层:输入如何封装，添加物理层地址，MAC</p>
+<p>网络层:选择最佳路径，IP地址编址</p>
+<p>传输层:可靠传输(建立会话)、不可靠传输(不建立会话)、流量控制。</p>
+<p>会话层:服务和客户端建立的会话。 netstat -nb</p>
+<p>表示层:加密、压缩、编码，开发人员考虑。</p>
+<p>应用层: 能够产生网络流量，能够和用户交互的应用程序。</p>
+</blockquote>
+<h1 id="网络排错">网络排错</h1>
+<blockquote>
+<p>需要从底层到高层逐一排查</p>
+</blockquote>
+<h1 id="网络安全和osi参考模型的关系">网络安全和OSI参考模型的关系</h1>
+<blockquote>
+<p>物理层安全</p>
+<p>数据链路层安全:ADSL、无线AP</p>
+<p>网络层安全</p>
+<p>应用层安全: SQL注入漏洞、上传漏洞</p>
+</blockquote>
+<h1 id="一些基本概念">一些基本概念</h1>
+<blockquote>
+<p>实体:交换信息的硬件或软件进程。</p>
+<p>协议:控制两个对等实体通信的规则。</p>
+<p>服务:下层向上层提供服务，上层需要使用下层提供的服务来实现本层的功能。</p>
+<p>服务访问点:相邻两层实体间交换信息的地方。</p>
+<p>AP接入点和无线路由器和基站作用相差不大，主要负责中继无线计算机之间的数据包，还负责中继无线计算机和Internet之间的数据包。</p>
+<p>IEEE802.11俗称WIFI。以太网IEEE802.3。</p>
+<p>将两个或多个网络连接起来并提供必要转换的机器，其硬件和软件方面的总称是网关。路由器就是一个网关，在网络层交换数据包。</p>
+<p>不可靠的无连接服务通常称为数据报服务。</p>
+</blockquote>
+<h1 id="tpcip">TPC/IP</h1>
+<blockquote>
+<p>五层模型:</p>
+<p>应用层:</p>
+<blockquote>
+<p>数据单元:传输数据单元PDU</p>
+</blockquote>
+<p>运输层:</p>
+<blockquote>
+<p>数据单元:报文</p>
+</blockquote>
+<p>网络层:</p>
+<blockquote>
+<p>数据单元:(IP数据报/IP分组/包)</p>
+</blockquote>
+<p>数据链路层:</p>
+<blockquote>
+<p>数据单元:数据帧</p>
+</blockquote>
+<p>物理层:</p>
+<blockquote>
+<p>数据单元:比特010101</p>
+</blockquote>
+</blockquote>
+<h1 id="osi参考模型">OSI参考模型</h1>
+<blockquote>
+<p>应用层:</p>
+<p>​ 所有可以和用户交互产生网络流量的程序。</p>
+<p>​ 文件传输FTP、电子邮件SMTP、万维网HTTP</p>
+<p>表示层</p>
+<p>​ 用于处理两个通信系统中交换信息的表示方式。</p>
+<p>​ 数据格式变换、数据加密解密、数据压缩和恢复</p>
+<p>​ JPEG、ASCII</p>
+<p>会话层</p>
+<p>​ 向表示层实体/用户进程提供建立连接并在连接上有序地传输数据。</p>
+<p>​ 建立、管理、终止会话。</p>
+<p>​ 使用检验点可以使会话在通信失效时从检验点/同步点进行恢复通信，实现数据同步。</p>
+<p>​ ADSP、ASP</p>
+<p>传输层</p>
+<p>​ 负责主机中两个进程的通信，即端到端的通信。传输单位是报文/用户数据报</p>
+<p>​ 可靠传输、不可靠传输</p>
+<p>​ 差错控制</p>
+<p>​ 复用分用</p>
+<p>网络层</p>
+<p>​ 路由选择</p>
+<p>​ 流量控制</p>
+<p>​ 差错控制</p>
+<p>​ 拥塞控制</p>
+<p>数据链路层 加上报头和报尾。</p>
+<p>​ 把网络层传下来的数据报组装成帧</p>
+<p>​ 差错控制</p>
+<p>​ 流量控制</p>
+<p>​ 接入控制</p>
+<p>​ SDLC、HDLC、PPP、STP</p>
+<p>物理层</p>
+<p>​ 在物理媒体上实现比特流的透明传输</p>
+<p>​ 定义接口特性</p>
+<p>​ 定义传输模式</p>
+<p>​ 定义传输速率</p>
+<p>​ 比特同步</p>
+<p>​ 比特编码</p>
+<p>​ RJ45、802.3</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>计算机网络</category>
+      </categories>
+      <tags>
+        <tag>网络</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>物理层</title>
+    <url>/2021/02/20/computerNetwork/%E7%AC%AC2%E7%AB%A0-%E7%89%A9%E7%90%86%E5%B1%82/</url>
+    <content><![CDATA[<h1 id="物理层">物理层</h1>
+<h2 id="物理层的基本概念">物理层的基本概念</h2>
+<blockquote>
+<p>尼奎斯特定理 $ C = 2Blog_2V $ 。C为最大数据速率，B为带宽频率，V为离散等级。</p>
+<p>香农定理<span class="math inline">\(C = B log_2(1+S/N)\)</span> 。S/N是信噪比，<span class="math inline">\(10log_{10}S/N\)</span>为分贝，B为带宽频率，C为最大数据速率。</p>
+</blockquote>
+<h3 id="物理层的主要任务">物理层的主要任务</h3>
+<p>物理层解决如何在连接各种计算机的传输媒体上传输数据比特流。</p>
+<p>确定与传输媒体的接口的一些特性:</p>
+<blockquote>
+<p>机械特性:如接口形状、大小、引线数目</p>
+<p>电气特性:如规定电压范围</p>
+<p>功能特性:如规定-5V表示0</p>
+<p>过程特性/规程特性:规定建立连接时各个相关部件的工作步骤</p>
+</blockquote>
+<h2 id="数据通信的基础知识">数据通信的基础知识</h2>
+<blockquote>
+<p>单向通信/单工通信 ---------只能有一个方向的通信而没有反方向的交互，如电台</p>
+<p>半双工通信---------通信双方都可以发送消息，但不能双方同时发送。如对讲机</p>
+<p>全双工通信--------通信的双方-可以同时发送和接收消息。如电话</p>
+<p>数据比特流传输距离较短,用解调器变为模拟信号后传输距离会加长。</p>
+<p>数据--------传送消息的实体</p>
+<p>信号--------数据的电气/电磁表现</p>
+<p>​ 模拟信号--------连续</p>
+<p>​ 数字信号---------离散</p>
+<p>码元----------在使用时间域的波形表示数字信号时，代表不同离散数值的基本波形</p>
+<p>信号调制方法:调幅、调频、调相</p>
+</blockquote>
+<h2 id="物理层下的传输媒体">物理层下的传输媒体</h2>
+<h3 id="导向传输媒体">导向传输媒体</h3>
+<blockquote>
+<p><span class="math display">\[
+常用传输频率10^4-------- 10^{16}
+\]</span></p>
+<p>双绞线:</p>
+<p>​ 屏蔽双绞线STP</p>
+<p>​ 无屏蔽双绞线UTP</p>
+<p>同轴电缆:</p>
+<p>​ 50Ω同轴电缆用于数字传输，基带同轴电缆</p>
+<p>​ 75Ω同轴电缆用于模拟传输，宽带同轴电缆</p>
+</blockquote>
+<h2 id="信道复用技术">信道复用技术</h2>
+<blockquote>
+<p>频分复用:每个用户使用不同的频率传递。</p>
+<p>时分复用:将单位时间划分为若干个时间片，每个用户使用对应的时间片传递。 统计时分复用在发送数据时在数据中添加标记，接收方根据标记判定谁接收并将标记去除。</p>
+<p>波分复用:每个用户使用不同的波长传递。</p>
+<p>码分复用:自己的码片乘积为1，同他人码片乘积为0，传输的信号为原数据同对应码片的乘积，总的传输信号为各个设备传输的信号之和，接收者只要将总信号同自己的码片相乘即可得到需要接收的值。</p>
+<p>码分复用的缺点:设备数变多后码片需要越多</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>计算机网络</category>
+      </categories>
+      <tags>
+        <tag>网络</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>应用层</title>
+    <url>/2021/02/20/computerNetwork/%E7%AC%AC6%E7%AB%A0-%E5%BA%94%E7%94%A8%E5%B1%82/</url>
+    <content><![CDATA[<h2 id="使用tcp">使用TCP</h2>
+<blockquote>
+<p>HTTP、FTP、Telnet、SMTP</p>
+</blockquote>
+<h2 id="使用udp">使用UDP</h2>
+<blockquote>
+<p>流媒体、DNS、网络电话、电话会议</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>计算机网络</category>
+      </categories>
+      <tags>
+        <tag>网络</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>网络层</title>
+    <url>/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/</url>
+    <content><![CDATA[<h1 id="网络层">网络层</h1>
+<h2 id="网络层传输单元为数据报">网络层传输单元为数据报</h2>
+<h2 id="网络层提供的两种服务">网络层提供的两种服务</h2>
+<blockquote>
+<p>网络层关注的是如何将分组从源端沿着网络路劲送达目的端。</p>
+<p>它向运输层通过了虚电路服务和数据报服务。</p>
+<p>计算机通信的过程中可靠交付由端系统负责，而不是网络负责。</p>
+<p>虚电路服务</p>
+<p>​ 通过指定数据的逻辑连接，向端系统保证了数据的按序到达，免去了端系统在顺序控制上的开销。</p>
+<p>​ 逻辑上的连接而非真正建立了一条物理连接。</p>
+<p>数据报服务</p>
+<p>​ 网络层向上提供简单灵活的、<strong>无连接的</strong>、尽最大努力交付的数据报服务。</p>
+<p>​ 优点:传输网络不提供端到端的可靠传输服务，使得网络造价降低，运行方式灵活，适用多种应用。</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">两个服务对比</th>
+<th style="text-align: center;">虚电路服务</th>
+<th style="text-align: center;">数据报服务</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">思路</td>
+<td style="text-align: center;">可靠通信由网络保证</td>
+<td style="text-align: center;">可靠通信由用户主机保证</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">连接的建立</td>
+<td style="text-align: center;">必须有</td>
+<td style="text-align: center;">不需要</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">终点地址</td>
+<td style="text-align: center;">仅在连接建立阶段使用，每个分组使用短的虚电路号</td>
+<td style="text-align: center;">每个分组都要有终点的完整地址</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">分组的转发</td>
+<td style="text-align: center;">属于同一条虚电路的分组均按照同一路由进行转发</td>
+<td style="text-align: center;">每个分组独立选择路由进行转发</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">当结点出故障时</td>
+<td style="text-align: center;">所有通过出故障结点的虚电路均不能工作</td>
+<td style="text-align: center;">出故障的结点可能丢失分组，一些路由可能发生变化</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">分组的顺序</td>
+<td style="text-align: center;">总数按发送顺序到达终点</td>
+<td style="text-align: center;">到达终点时不一定按发送顺序</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">端到端的差错处理和流量控制</td>
+<td style="text-align: center;">可以由网络负责,也可以由用户主机负责</td>
+<td style="text-align: center;">由用户主机负责</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<h2 id="网际协议ip">网际协议IP</h2>
+<h3 id="虚拟互联网">虚拟互联网</h3>
+<blockquote>
+<p>网络互连的设备:</p>
+<p>​ 概念:中间设备又称为中间系统或中继系统</p>
+<p>​ 物理层中继系统:转发器。</p>
+<p>​ 数据链路层中继系统:网桥或桥接器。</p>
+<p>​ 网络层中继系统:路由器。</p>
+<p>​ 网络层以上的中继系统:网关。</p>
+<p>网络层协议:IP协议最主要。与IP协议配套的协议:</p>
+<p>​ ARP地址解析协议。(位于底层)解析MAC地址</p>
+<p>​ RARP逆地址解析协议。(位于底层)</p>
+<p>​ ICMP网际控制报文协议。(位于顶层)报告网络故障</p>
+<p>​ IGMP网际组管理协议。(位于顶层)</p>
+</blockquote>
+<h2 id="ipv4地址组成">IPv4地址组成</h2>
+<blockquote>
+<p>IPv4地址由32位IP组成，其中分为网络ID和主机ID。主机ID不能全为0(全0表示网段)也不能全为1(全1表示广播)</p>
+<p>A类地址:前8位为网络ID，后24位为主机ID。 0xxxxxxx | x....x 1~126 (127的地址用于做循环测试，本机地址)</p>
+<p>B类地址:前16位为网络ID，后8位为主机ID。 10x.....x | x....x 128~191</p>
+<p>C类地址:前24位为网络ID，后8位为主机ID。 110x....x | x...x 192~223</p>
+<p>D类组播使用。 1110| x.....x(多播地址) 224~239</p>
+<p>E类研究使用。 1111| x.....x(保留为今后使用) 240~255</p>
+<p>特殊的几个地址:</p>
+<p>​ 127.0.0.1 本地环回地址</p>
+<p>​ 169.254.0.0 微软在无法自动获取IP时自动分给计算机的IP地址。</p>
+<p>​ 保留的私网地址。</p>
+<ul>
+<li>10.0.0.0 ------ 10.255.255.255</li>
+<li>172.16.0.0 ------ 127.31.255.255</li>
+<li>192.168.0.0 ------- 192.168.255.255</li>
+</ul>
+</blockquote>
+<h2 id="子网掩码的作用">子网掩码的作用</h2>
+<blockquote>
+<p>同IP地址作与运算，得到的结果用于判断两个IP是否位于同一网段，从而判断这两个IP的信息交换是否要通过路由器。</p>
+<p>可以用于屏蔽IP地址的主机ID部分，来凸显IP地址的网络ID部分，借此判断两个IP能否直接信息交换。</p>
+<p>还可以将大的IP网络划分为若干小的网络。(划分子网、等分划分/边长划分)</p>
+<p>超网:通过子网掩码把若干个小网络合并为一个大网络。</p>
+</blockquote>
+<h2 id="ip地址与mac地址">IP地址与MAC地址</h2>
+<blockquote>
+<p>网络层以上使用IP地址，链路层及以下使用MAC地址</p>
+<figure>
+<img src="/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/IP地址和MAC地址.png" alt="IP地址和MAC地址"><figcaption aria-hidden="true">IP地址和MAC地址</figcaption>
+</figure>
+<p>相比于IP数据报，MAC帧增加了</p>
+<p>交换机基于数据帧的MAC地址转发数据帧，路由器基于数据包的IP地址转发数据包。</p>
+<p>数据包在传输过程不变，过网络设备数据帧要用新的物理层地址重新封装。</p>
+<p>MAC地址决定了数据帧下一跳哪个设备接收，而IP地址决定了数据包的起点和终点</p>
+</blockquote>
+<h2 id="协议">协议</h2>
+<blockquote>
+<p>ARP协议:将IP地址转化为物理地址。会使用到广播。</p>
+<p>RARP协议:将物理地址转化为IP地址。</p>
+<p>ARP欺骗。</p>
+</blockquote>
+<h2 id="ip数据报">IP数据报</h2>
+<blockquote>
+<p>IP数据报的首部和数据两部分组成。首部的前一部分是固定，共20字节，是所有IP数据报必须具有的。</p>
+<figure>
+<img src="/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/IP地址.png" alt="IP地址"><figcaption aria-hidden="true">IP地址</figcaption>
+</figure>
+<p>在首部的固定部分的后面是一些可选字段，其长度是可变的。</p>
+<p>各字段</p>
+<p>0-4位版本(表示为IPv4/IPv6) 4-8位首部长度(最小值为固定长度部分共20个字节。可表示最大15个单位，一个单位4个字节，故首部最大60个字节) 8-16区分服务(数据包所需的服务，定义优先级) 16-32总长度(数据包总大小，一般为1500)</p>
+<p>标识(每产生一个数据包就增加1) 标志(判断数据包是否分片) 片偏移(偏移量单位为8个字节)</p>
+<p>TTL生存时间值，指定IP包被路由器丢弃之前允许通过的最大网段数量。</p>
+<p>协议用于指明上层协议是什么，如ICMP、TCP、UDP等。</p>
+<p>首部校验和用于校验数据报是否可用。计算过程:发送端把数据报首部的信息拆成许多单字，然后初始校验和为0，将校验和同这些单字进行反码运算求和，结果取反码即为校验和。接收方重复此过程，若结果为0则保留，不为0则直接丢弃。</p>
+<p>源地址、目的地址即为IP地址。</p>
+<p>可选字段用于支持排错、测量及安全等措施</p>
+</blockquote>
+<h2 id="数据路由">数据路由</h2>
+<blockquote>
+<p>数据路由在不同网段转发数据报。能去能回--------网络畅通。</p>
+<p>负载均衡</p>
+</blockquote>
+<h2 id="icmp协议">ICMP协议</h2>
+<blockquote>
+<p>报文类型:ICMP差错报告报文、ICMP询问报文</p>
+<p>报文前四个字节格式统一共3个字段:类型、代码、检验和，接着的四个字节内容与ICMP的类型有关。</p>
+<p>差错报告报文共五种:终点不可达、源点抑制(发数据报的速度过快)、时间超过、参数问题、改变路由/重定向。</p>
+<p>询问报文有两种:回送请求和回答报文、时间戳请求和回答报文。</p>
+</blockquote>
+<h2 id="动态路由协议">动态路由协议</h2>
+<blockquote>
+<p>RIP最早的动态路由协议，周期性广播，30s广播一次。跳数16次。</p>
+</blockquote>
+<h2 id="ospf协议开放式最短路径优先---动态路由协议">OSPF协议(开放式最短路径优先)---动态路由协议</h2>
+<h2 id="bgp------外部网关协议">BGP ---- 外部网关协议</h2>
+<blockquote>
+<p>不同自治系统的路由器之间交换路由信息的协议</p>
+<p>报文类型：</p>
+<p>OPEN</p>
+<p>UDDATE</p>
+<p>KEEPALIVE</p>
+<p>NOTIFICATION</p>
+<p>ROUTE-REFRESH</p>
+<p>重要属性：</p>
+<p>AS-PATH: 包含前缀通告所经过的AS序列</p>
+<p>NEXT-HOP(下一跳): 开始一个AS-PATH的路由器接口，指向下一跳AS.</p>
+</blockquote>
+<h2 id="nat和pat">NAT和PAT</h2>
+<blockquote>
+
+</blockquote>
+<h2 id="igmp-组播多播">IGMP 组播/多播</h2>
+<h2 id="dhcp">DHCP</h2>
+<blockquote>
+
+</blockquote>
+<h2 id="arp">ARP</h2>
+<blockquote>
+<p>默认网关为网络上的最低地址，如192.32.65.0/24的默认网关为192.32.65.1</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>计算机网络</category>
+      </categories>
+      <tags>
+        <tag>网络</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>传输层</title>
+    <url>/2021/02/20/computerNetwork/%E7%AC%AC5%E7%AB%A0-%E4%BC%A0%E8%BE%93%E5%B1%82/</url>
+    <content><![CDATA[<h1 id="传输层">传输层</h1>
+<h2 id="各层协议">各层协议</h2>
+<blockquote>
+<p>应用层: http、https、ftp、DNS、SMTP、PoP3、RDP</p>
+<p>传输层: TCP、UDP</p>
+<p>网络层: IP(RIP、OSPF、BGP) 、ICMP、IGMP、ARP</p>
+</blockquote>
+<h2 id="传输层两个协议应用场景">传输层两个协议应用场景</h2>
+<h3 id="tcp">TCP</h3>
+<blockquote>
+<p>分段、编号、流量控制、可靠传输、建立会话、面向连接。</p>
+</blockquote>
+<h3 id="udp">UDP</h3>
+<blockquote>
+<p>一个数据包就能完成数据通信、不建立会话。</p>
+</blockquote>
+<h2 id="传输层和应用层之间的关系">传输层和应用层之间的关系</h2>
+<blockquote>
+<p>http = TCP + 80</p>
+<p>https = TCP + 443</p>
+<p>ftp = TCP + 21</p>
+<p>SMTP = TCP + 25</p>
+<p>POP3 = TCP + 110</p>
+<p>RDP = TCP + 3389</p>
+<p>共享文件夹 = TCP + 445</p>
+<p>SQLServer = TCP + 1433</p>
+<p>DNS = UDP + 53 OR TCP + 53</p>
+</blockquote>
+<h2 id="应用层协议和服务之间的关系">应用层协议和服务之间的关系</h2>
+<blockquote>
+<p>服务运行后在TCP或UDP的某个端口监听客户端请求。</p>
+</blockquote>
+<h2 id="udp协议">UDP协议</h2>
+<blockquote>
+<p>两个对等运输实体在通信时传送的数据单位叫作运输协议数据单元。</p>
+<p>TCP传送的协议数据单元是<strong>TCP报文段</strong>。</p>
+<p>UDP传送的协议数据单元是<strong>UDP报文</strong>或<strong>用户数据报</strong>。</p>
+<p>UDP的首部格式<img src="/2021/02/20/computerNetwork/%E7%AC%AC5%E7%AB%A0-%E4%BC%A0%E8%BE%93%E5%B1%82/UDP首部格式.png" alt="UDP首部格式"></p>
+</blockquote>
+<h2 id="tcp协议">TCP协议</h2>
+<blockquote>
+<p><strong>TCP的特点</strong></p>
+<p>​ TCP是面向连接的传输层协议，每条TCP连接只能有两个端点，故TCP连接是点对点的。</p>
+<p>​ TCP提供可靠交付的服务，TCP提供全双工通信。</p>
+<p>​ TCP面向字节流。</p>
+<p>​ 提供流量控制。</p>
+<p>​ 避免网络拥塞</p>
+</blockquote>
+<h3 id="tcp如何">TCP如何</h3>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>计算机网络</category>
+      </categories>
+      <tags>
+        <tag>网络</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux介绍及基本指令</title>
+    <url>/2021/02/20/Linux/Linux%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%9F%BA%E6%9C%AC%E6%8C%87%E4%BB%A4/</url>
+    <content><![CDATA[<h1 id="linux介绍及基本指令">Linux介绍及基本指令</h1>
+<h2 id="linux区别">Linux区别</h2>
+<blockquote>
+<p>Ubantu：分为用户版和服务器版。</p>
+<p>​ 用户版，有着良好的用户界面，有强大的软件支持。</p>
+<p>​ 服务器版比较少用。</p>
+<p>Debian：系统十分稳定，内核非常小。</p>
+<p>RedHat：是一个商用的操作系统，性能非常好，软件支持也非常好。</p>
+<p>Centos：基本上相当于RedHat的复刻版本。免费。</p>
+</blockquote>
+<h2 id="根目录下各目录对应的功能">根目录下各目录对应的功能</h2>
+<h2 id="在linux中获取帮助">在linux中获取帮助</h2>
+<blockquote>
+<p>man 命令名：查看命令的操作说明</p>
+<p>命令行 --help：查看命令的语法</p>
+</blockquote>
+<h2 id="linux基本命令">Linux基本命令</h2>
+<blockquote>
+<p>ls：查看当前目录中所有文件及目录</p>
+<p>ll：查看当前目录内所有文件及目录详细信息。详细信息具体查看方式。以drwxr-xr-x为例(第一个字符拆出，然后每三个字符表示一个内容)：</p>
+<p>d：文件类型，目录。rwx：拥有者权限，可读，可写，可执行。r-x：用户组权限，可读，不可写，可执行。r-x：其他组权限，可读，不可写，可执行。</p>
+<p>具体文件类型有：d：路径。<em>-</em>：文件。 l ：连接(快捷方式)。b：表示可按块随机读写的设备。c：设备文件里的串行端口设备，如键盘、设备。</p>
+<p>表示权限的三个字符可以用0~7的数字表示。如rwx为7，r-x为5。</p>
+<p>ls -al：查看所有文件及目录包括隐藏目录。</p>
+<p>pwd：查看当前所在层级</p>
+<p>echo xxx：打印xxx</p>
+<p>date：查看日期</p>
+<p>cal：查看日历</p>
+<p>grep xxx：用于查看包含xxx的对象。</p>
+<p>curl 网址：向对应网址发出http请求。curl -i www.baidu.com ：向百度首页发出请求，会返回响应头。</p>
+<p>history：查看先前输入过的命令。</p>
+<p>df：查看磁盘使用情况。</p>
+</blockquote>
+<h2 id="文件基本命令">文件基本命令</h2>
+<blockquote>
+<p>vi xxx：打开临时记事本，基本可以认为是创建文件。</p>
+<p>mkdir xxx：创建文件夹</p>
+<p>rm -rf xxx：删除目录。</p>
+<p>cp a b ：把a文件复制到b处</p>
+<p>mv a b ：把a文件移动到b处（也可以当做重命名使用）</p>
+<p>tail -number xx：查看文件最后number行内容(可以用于监控日志使用tail -F/-f xxx)-F，-f分别为追踪文件名和追踪文件索引。</p>
+<p>cat xxx：查看文件内容，往往伴随着grep使用如 cat a.txt | grep "a:xxx"。</p>
+<p>less xxx：查看文件一页的内容。</p>
+<p>find xxx：查找文件(可以查找所有文件)。</p>
+<p>whereis xx：查找命令所在目录(只能查找二进制类的文件)。</p>
+<p>which xxx：在PATH变量指定的路径中搜索指定的系统命令的位置。</p>
+<p>sh xxx.sh：执行shell命令。这种执行sh文件不需要本身具有权限。</p>
+<p>path/xxx.sh：执行shell命令。sh文件本身需要有权限。(如./xxx.sh其中.表示当前目录)</p>
+</blockquote>
+<h2 id="文件解压缩">文件解压缩</h2>
+<blockquote>
+<p>zip -r 压缩后路径加名字 需要压缩的文件：压缩，如zip -r a.zip a.txt。这个命令需要yum install zip</p>
+<p>unzip -d 解压缩到的路径 解压缩的包：解压缩，如unzip -d . a.zip。这个命令需要yum install unzip。</p>
+<p>tar -cvf 压缩后路径加名字 需要压缩的文件：压缩，如tar -cvf a.txt。</p>
+<p>tar -zcvf 压缩后路径加名字 需要压缩的文件：压缩，如tar -zcvf a.txt。压缩后占的空间更少</p>
+<p>tar -xvf 解压缩到的路径 解压缩的包：解压缩，如tar -xvf a.txt。</p>
+<p>tar -zxvf 解压缩到的路径 解压缩的包：压缩，如tar -zxvf a.txt。</p>
+<p>tar的参数：c：表示create，即压缩，z：约等于zip，即打包后空间会更小，v：压缩后展示压缩包中文件名字。f：表示结束。x：extract，即解压缩。</p>
+<p>b：表示查看压缩包内容。其中c、x、b同时只能存在一个。</p>
+</blockquote>
+<h2 id="文件传输">文件传输</h2>
+<blockquote>
+<p>scp 目录加文件名 用户名@IP地址:目录加文件名：将文件传输利用网络传输到另一个服务器。如scp ./a.txt root@10.0.2.6:~/b.txt</p>
+</blockquote>
+<h2 id="进程管理命令">进程管理命令</h2>
+<blockquote>
+<p>top ：查看当前系统使用情况。</p>
+<p>ps：查看进程情况。</p>
+<p>ps aux：查看所有正在执行的进程。经常和grep配合使用。如ps aux | grep "top"</p>
+<p>lsof -i:port ：根据端口号查看进程。需要yum install lsof</p>
+<p>kill 进程号：杀死进程。</p>
+<p>kill -9 进程号：强制杀死进程。</p>
+<p>service xxx start：启动服务。</p>
+<p>service xxxx stop：关闭服务。</p>
+</blockquote>
+<h2 id="权限管理命令">权限管理命令</h2>
+<blockquote>
+<p>chmod xxx aaa：设置aaa的权限为xxx。第一个x为拥有者权限，第二个x为用户组权限，第三个x为其他组权限。如chmod 777 a.txt：表示将a.txt的权限均设为可读、可写、可执行。</p>
+</blockquote>
+<h2 id="软件安装命令">软件安装命令</h2>
+<blockquote>
+<p>yum install xxxx：安装xxxx</p>
+<p>yum install ifconfig -y：安装时自动同意。</p>
+</blockquote>
+<h2 id="安全相关命令">安全相关命令</h2>
+<blockquote>
+<p>systemctl disable firewalld ：关闭防火墙。</p>
+</blockquote>
+<h2 id="关机命令">关机命令</h2>
+<blockquote>
+<p>shutdown：关机</p>
+<p>reboot：重启</p>
+<p>poweroff：关机</p>
+<p>halt：进入系统停止的模式，屏幕可能保留一些信息，取决于电源管理模式。</p>
+<p>systemctl suspend：休眠</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>操作系统</category>
+      </categories>
+      <tags>
+        <tag>Linux指令</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Restful基本使用</title>
+    <url>/2021/02/20/designPattern/Restful%E9%A3%8E%E6%A0%BC/</url>
+    <content><![CDATA[<h1 id="restful风格">Restful风格</h1>
+<blockquote>
+<p>本质上就是将接口的功能让http的语义来表示。</p>
+<p>查询-&gt;GET</p>
+<p>新增-&gt;POST</p>
+<p>更新-&gt;PUT</p>
+<p>删除-&gt;DELETE</p>
+<p>本质上要做到，看url知道要什么，看http method知道要做什么，看http status code知道哪里有问题。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>代码规范</category>
+        <category>代码风格</category>
+      </categories>
+      <tags>
+        <tag>设计模式</tag>
+        <tag>代码风格</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Dubbo简单介绍</title>
+    <url>/2021/02/20/codeAnalyse/Dubbo/</url>
+    <content><![CDATA[<h1 id="dubbo">Dubbo</h1>
+<h2 id="rmi-和-rpc">RMI 和 RPC</h2>
+<blockquote>
+<p>RMI：远程方法调用，是java自带的API可以实现的，依赖JVM。客户端将要调用的方法和参数打包成辅助对象，通过网络socket，发送给服务端辅助对象，服务端接收后进行解包，找到真正被调用的方法，执行这个方法将执行结果，依次返回。服务端辅助对象进行打包，然后客户端辅助对象进行解包，结果返回给真正的调用者。</p>
+<p>IPC：进程间通信。进程是计算机系统资源分配的最小单位，每个进程都是资源隔离的。</p>
+<p>LPC：本地过程调用。</p>
+<p>RPC：远程过程调用。</p>
+</blockquote>
+<h2 id="常用rpc框架">常用RPC框架</h2>
+<h3 id="dubbo-1">Dubbo</h3>
+<blockquote>
+<p>阿里开发，基于Spring和Netty，是当前使用最广泛的RPC框架。</p>
+</blockquote>
+<h3 id="brpc">BRPC</h3>
+<blockquote>
+<p>百度开发，"baidu-rpc"，支持多种协议，性能优良。</p>
+</blockquote>
+<h3 id="grpc">GRPC</h3>
+<blockquote>
+<p>谷歌开发，基于Netty，服务于TensorFlow的底层通信。</p>
+</blockquote>
+<h3 id="thrift">Thrift</h3>
+<blockquote>
+<p>Facebook开发。</p>
+</blockquote>
+<h2 id="注册中心---zookeeper">注册中心 - Zookeeper</h2>
+]]></content>
+      <categories>
+        <category>框架入门</category>
+      </categories>
+      <tags>
+        <tag>并发</tag>
+        <tag>Dubbo</tag>
+        <tag>分布式</tag>
       </tags>
   </entry>
   <entry>
@@ -1226,6 +2314,139 @@
       </categories>
       <tags>
         <tag>网络</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>常用设计模式介绍</title>
+    <url>/2021/02/20/designPattern/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[<h1 id="设计模式">设计模式</h1>
+<h2 id="策略模式">策略模式</h2>
+<blockquote>
+<p>将行为抽象，通过子类实现不同的行为来将某个对象的行为从父类抽取出，通过组合的方式来消除耦合。</p>
+</blockquote>
+<h2 id="命令模式">命令模式</h2>
+<blockquote>
+<p>也是将行为抽象，但是目的是将行为和行为执行者二者解耦，通过将行为和行为执行者组合的方式，加上控制器控制，来便于拓展。</p>
+</blockquote>
+<h2 id="工厂模式">工厂模式</h2>
+<blockquote>
+<p>简单工厂即在类中直接添加工厂对象，在工厂对象中直接创建实例。</p>
+<p>工厂模式：将工厂的创建实例方法抽象化，通过子类继承并重写对应方法的方式完成。</p>
+<p>抽象工厂模式：将一系列创建实例的方法抽象化，形成接口，子类实现该接口，有点类似工厂模式。</p>
+</blockquote>
+<h2 id="单例模式">单例模式</h2>
+<blockquote>
+<p>即让一个类只能有一个对象实例。</p>
+<p>double check方式实现比较好。</p>
+<figure>
+<img src="/2021/02/20/designPattern/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/单例模式.png" alt="单例模式"><figcaption aria-hidden="true">单例模式</figcaption>
+</figure>
+</blockquote>
+<h2 id="装饰者模式">装饰者模式</h2>
+<blockquote>
+<p>子类继承分类时，不是将父类的方法直接重写，而是在父类方法的基础上添加自己的功能。</p>
+</blockquote>
+<h2 id="观察者模式">观察者模式</h2>
+<blockquote>
+<p>分为主题(observable)和观察者(observer)两个模块，根主题是一种接口/类，提供添加观察者、移除观察者、通知观察者等方法，观察者则需要实现一个接口表示它为观察者，通常要实现update方法。主题的数据改变时可以通知观察者，数据可以有主题直接推送给观察者和观察者向主题拉取数据两个方式。</p>
+</blockquote>
+<h2 id="适配器模式">适配器模式</h2>
+<blockquote>
+<p>将一个类的接口转换成另一个接口，让本来不兼容的类可以合作无间。</p>
+</blockquote>
+<h2 id="外观模式">外观模式</h2>
+<blockquote>
+<p>将多个接口简化为一个接口</p>
+</blockquote>
+<h2 id="模板方法模式">模板方法模式</h2>
+<blockquote>
+<p>将算法分抽象为许多步骤，将统一的流程由父类实现，子类实现具体的不同部分。</p>
+</blockquote>
+<h2 id="迭代器模式">迭代器模式</h2>
+<blockquote>
+<p>给不同集合一种相同的遍历方法。</p>
+</blockquote>
+<h2 id="组合模式">组合模式</h2>
+<blockquote>
+<p>通过一致的方式处理个别对象及对象的组合，如对树和树的叶子节点采用统一的抽象方式。</p>
+</blockquote>
+<h2 id="状态模式">状态模式</h2>
+<blockquote>
+<p>状态机，将状态进行抽象，具体的状态类则实现自己具体的行为，状态类自己控制状态的转化。</p>
+</blockquote>
+<h2 id="代理模式">代理模式</h2>
+<blockquote>
+<p>给客户一个某种对象的代理，该代理对象控制对原对象的引用，目的是控制客户对对象的访问。</p>
+<p>动态代理、静态代理、远程代理等。</p>
+<p>静态代理</p>
+<p>动态代理：JDK代理和cglib代理。JDK代理需要被代理类实现接口，而cglib没有这个限制</p>
+</blockquote>
+<h2 id="mvc">MVC</h2>
+<blockquote>
+<p>模型、视图、控制器。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>代码规范</category>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SpringBoot原理分析</title>
+    <url>/2021/02/20/codeAnalyse/SpringBoot%E5%8E%9F%E7%90%86/</url>
+    <content><![CDATA[<h1 id="springboot原理">SpringBoot原理</h1>
+<h2 id="springbootapplication"><span class="citation" data-cites="SpringBootApplication">@SpringBootApplication</span></h2>
+<blockquote>
+<p>本质上是</p>
+<p><span class="citation" data-cites="SpringBootConfiguration">@SpringBootConfiguration</span>：实际是@Configuration</p>
+<p><span class="citation" data-cites="EnableAutoConfiguration">@EnableAutoConfiguration</span>：由@AutoConfigurationPackage、<span class="citation" data-cites="Import">@Import</span>({AutoConfigurationImportSelector.class})组成。</p>
+<p><span class="citation" data-cites="ComponentScan">@ComponentScan</span>：启用自动扫描，默认扫描所在类的同级类和同级目录下的所有类。</p>
+<p>即这个注解实现了注册配置类、启用自动配置、启用自动扫描。</p>
+</blockquote>
+<h2 id="springapplication.runtestapplication.classargs的实际流程">SpringApplication.run(TestApplication.class,args)的实际流程</h2>
+<blockquote>
+<p>利用传入的类创建一个SpringApplication实例执行了run方法。</p>
+<h3 id="具体创建实例的流程">具体创建实例的流程：</h3>
+</blockquote>
+<blockquote>
+<figure>
+<img src="/2021/02/20/codeAnalyse/SpringBoot%E5%8E%9F%E7%90%86/SpringBootAplication初始化过程.png" alt="SpringBootAplication初始化过程"><figcaption aria-hidden="true">SpringBootAplication初始化过程</figcaption>
+</figure>
+<p>倒数第四行加载了web应用的配置，具体流程是使用默认的类加载器去查找当前是否使用了对应的类。结果可以得出NONE、SERVLET、REACTIVE。</p>
+<p>倒数三行之前都是加载主配置。</p>
+<p>倒数第三、二行分别是创建初始化器和监听器。创建的流程均为先获取到类加载器，然后查找当前项目中所使用到的初始化器、监听器类名，再利用类名创建类实例，最后将这些实例按优先级排序即可。</p>
+<p>创建类实例的方法即为通过反射调用类的构造方法创建。它们都使用了getSpringFactoriesInstances方法。这个方法是先通过读取META-INF/spring.factories文件内容来获取配置，并将配置放入map中。实际中会读取到项目所有jar包中的META-INF/spring.factories。然后利用传入的类名进行匹配找到所需的初始化器/监听器。</p>
+<p>按优先级排序，Spring则是通过继承OrderComparator(实现了Comparator接口的类来完成的)，这里利用了模板方法模式，通过完成了findOrder方法，通过比较注解的优先级的方式来findOrder，若未设定优先级则设为最低优先级LOWEST_PRECEDENCE这个值为Integer.MAX_VALUE。</p>
+<ul>
+<li>（1）先判断有没有实现PriorityOrdered，实现PriorityOrdered比没实现的有高优先级</li>
+<li>（2）第一步如果比较不出来，判断有没有实现Ordered，如果实现了，取实现方法的int值比较</li>
+<li>前两步都是OrderComparator的默认实现。</li>
+<li>（3）如果没有实现Ordered，判断有没有org.springframework.core.annotation.Order注解， 有注解，取注解上的order值，进行比较</li>
+<li>（4）如果没有Order注解，判断有没有javax.annotation.Priority注解，取注解上的值比较</li>
+<li>若以上都没找到则spring会返回null</li>
+<li>（5）OrderComparator接收到null，返回Integer.MAX_VALUE即LOWEST_PRECEDENCE，值越大优先级越低</li>
+</ul>
+<p>最后一行找到主程序类是通过获取当前程序运行栈，通过找到栈中执行main方法的类，得到主程序类名。</p>
+</blockquote>
+<h3 id="创建实例后执行run方法的流程">创建实例后执行run方法的流程</h3>
+<blockquote>
+
+</blockquote>
+<h2 id="自动配置原理">自动配置原理</h2>
+<blockquote>
+<p><span class="citation" data-cites="EnableAutoConfiguration">@EnableAutoConfiguration</span> = <span class="citation" data-cites="AutoConfigurationPackage">@AutoConfigurationPackage</span> + <span class="citation" data-cites="Import">@Import</span>({AutoConfigurationImportSelector.class})</p>
+<p><span class="citation" data-cites="AutoConfigurationPackage">@AutoConfigurationPackage</span> = <span class="citation" data-cites="Import">@Import</span>({Registrar.class})</p>
+<p>故@EnableAutoConfiguration实际上相当于引入了AutoConfigurationImportSelector和Registrar。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>源码分析</category>
+      </categories>
+      <tags>
+        <tag>Springboot</tag>
       </tags>
   </entry>
   <entry>
@@ -1815,50 +3036,6 @@
       </tags>
   </entry>
   <entry>
-    <title>数据库连接池</title>
-    <url>/2021/02/20/codeAnalyse/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E6%B1%A0/</url>
-    <content><![CDATA[<h1 id="数据库连接池">数据库连接池</h1>
-<h2 id="常用数据库连接池">常用数据库连接池</h2>
-<h3 id="dbcp">DBCP</h3>
-<h4 id="常用参数">常用参数</h4>
-<blockquote>
-<p>initialSize 初始连接数</p>
-<p>maxActive 最多可容纳活跃连接数</p>
-<p>maxIdle 最大空闲连接数(已创建但未被使用的连接，会被定期回收，回收直到maxIdle数量)</p>
-<p>minIdle 最小空闲连接数</p>
-<p>maxWait 获取连接的最大等待时间</p>
-</blockquote>
-<h3 id="c3p0">C3P0</h3>
-<h4 id="常用参数-1">常用参数</h4>
-<blockquote>
-<p>initialPoolSize 初始连接数</p>
-<p>maxPoolSize 最大连接数</p>
-<p>minPoolSize 最小连接数</p>
-<p>acquireIncrement 当没有空闲连接时，一次性创建新连接的数量</p>
-<p>maxIdleTime 连接的最大空闲时间，即若一直未使用则自动断掉连接。</p>
-</blockquote>
-<h3 id="druid">Druid</h3>
-<h4 id="常用参数-2">常用参数</h4>
-<blockquote>
-<p>initialSize 初始连接数</p>
-<p>maxActive 最多可容纳活跃连接数</p>
-<p>maxIdle 最大空闲连接数(已创建但未被使用的连接，会被定期回收，回收直到maxIdle数量)</p>
-<p>minIdle 最小空闲连接数</p>
-<p>maxWait 获取连接的最大等待时间</p>
-<p>timeBetweenEvictionRunsMillis 间隔多长时间检测是否关闭空闲连接。</p>
-<p>minEvictableIdleTime 控制一个连接在资源池中最小的生存时间</p>
-<p>maxEvictableIdleTime 控制一个连接在资源池中最大的生存时间</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>数据库</category>
-      </categories>
-      <tags>
-        <tag>数据库</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>SpringBoot常用配置</title>
     <url>/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/</url>
     <content><![CDATA[<h1 id="springboot常用配置">SpringBoot常用配置</h1>
@@ -2024,915 +3201,47 @@
       </tags>
   </entry>
   <entry>
-    <title>Linux介绍及基本指令</title>
-    <url>/2021/02/20/Linux/Linux%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%9F%BA%E6%9C%AC%E6%8C%87%E4%BB%A4/</url>
-    <content><![CDATA[<h1 id="linux介绍及基本指令">Linux介绍及基本指令</h1>
-<h2 id="linux区别">Linux区别</h2>
+    <title>数据库连接池</title>
+    <url>/2021/02/20/codeAnalyse/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E6%B1%A0/</url>
+    <content><![CDATA[<h1 id="数据库连接池">数据库连接池</h1>
+<h2 id="常用数据库连接池">常用数据库连接池</h2>
+<h3 id="dbcp">DBCP</h3>
+<h4 id="常用参数">常用参数</h4>
 <blockquote>
-<p>Ubantu：分为用户版和服务器版。</p>
-<p>​ 用户版，有着良好的用户界面，有强大的软件支持。</p>
-<p>​ 服务器版比较少用。</p>
-<p>Debian：系统十分稳定，内核非常小。</p>
-<p>RedHat：是一个商用的操作系统，性能非常好，软件支持也非常好。</p>
-<p>Centos：基本上相当于RedHat的复刻版本。免费。</p>
+<p>initialSize 初始连接数</p>
+<p>maxActive 最多可容纳活跃连接数</p>
+<p>maxIdle 最大空闲连接数(已创建但未被使用的连接，会被定期回收，回收直到maxIdle数量)</p>
+<p>minIdle 最小空闲连接数</p>
+<p>maxWait 获取连接的最大等待时间</p>
 </blockquote>
-<h2 id="根目录下各目录对应的功能">根目录下各目录对应的功能</h2>
-<h2 id="在linux中获取帮助">在linux中获取帮助</h2>
+<h3 id="c3p0">C3P0</h3>
+<h4 id="常用参数-1">常用参数</h4>
 <blockquote>
-<p>man 命令名：查看命令的操作说明</p>
-<p>命令行 --help：查看命令的语法</p>
+<p>initialPoolSize 初始连接数</p>
+<p>maxPoolSize 最大连接数</p>
+<p>minPoolSize 最小连接数</p>
+<p>acquireIncrement 当没有空闲连接时，一次性创建新连接的数量</p>
+<p>maxIdleTime 连接的最大空闲时间，即若一直未使用则自动断掉连接。</p>
 </blockquote>
-<h2 id="linux基本命令">Linux基本命令</h2>
+<h3 id="druid">Druid</h3>
+<h4 id="常用参数-2">常用参数</h4>
 <blockquote>
-<p>ls：查看当前目录中所有文件及目录</p>
-<p>ll：查看当前目录内所有文件及目录详细信息。详细信息具体查看方式。以drwxr-xr-x为例(第一个字符拆出，然后每三个字符表示一个内容)：</p>
-<p>d：文件类型，目录。rwx：拥有者权限，可读，可写，可执行。r-x：用户组权限，可读，不可写，可执行。r-x：其他组权限，可读，不可写，可执行。</p>
-<p>具体文件类型有：d：路径。<em>-</em>：文件。 l ：连接(快捷方式)。b：表示可按块随机读写的设备。c：设备文件里的串行端口设备，如键盘、设备。</p>
-<p>表示权限的三个字符可以用0~7的数字表示。如rwx为7，r-x为5。</p>
-<p>ls -al：查看所有文件及目录包括隐藏目录。</p>
-<p>pwd：查看当前所在层级</p>
-<p>echo xxx：打印xxx</p>
-<p>date：查看日期</p>
-<p>cal：查看日历</p>
-<p>grep xxx：用于查看包含xxx的对象。</p>
-<p>curl 网址：向对应网址发出http请求。curl -i www.baidu.com ：向百度首页发出请求，会返回响应头。</p>
-<p>history：查看先前输入过的命令。</p>
-<p>df：查看磁盘使用情况。</p>
-</blockquote>
-<h2 id="文件基本命令">文件基本命令</h2>
-<blockquote>
-<p>vi xxx：打开临时记事本，基本可以认为是创建文件。</p>
-<p>mkdir xxx：创建文件夹</p>
-<p>rm -rf xxx：删除目录。</p>
-<p>cp a b ：把a文件复制到b处</p>
-<p>mv a b ：把a文件移动到b处（也可以当做重命名使用）</p>
-<p>tail -number xx：查看文件最后number行内容(可以用于监控日志使用tail -F/-f xxx)-F，-f分别为追踪文件名和追踪文件索引。</p>
-<p>cat xxx：查看文件内容，往往伴随着grep使用如 cat a.txt | grep "a:xxx"。</p>
-<p>less xxx：查看文件一页的内容。</p>
-<p>find xxx：查找文件(可以查找所有文件)。</p>
-<p>whereis xx：查找命令所在目录(只能查找二进制类的文件)。</p>
-<p>which xxx：在PATH变量指定的路径中搜索指定的系统命令的位置。</p>
-<p>sh xxx.sh：执行shell命令。这种执行sh文件不需要本身具有权限。</p>
-<p>path/xxx.sh：执行shell命令。sh文件本身需要有权限。(如./xxx.sh其中.表示当前目录)</p>
-</blockquote>
-<h2 id="文件解压缩">文件解压缩</h2>
-<blockquote>
-<p>zip -r 压缩后路径加名字 需要压缩的文件：压缩，如zip -r a.zip a.txt。这个命令需要yum install zip</p>
-<p>unzip -d 解压缩到的路径 解压缩的包：解压缩，如unzip -d . a.zip。这个命令需要yum install unzip。</p>
-<p>tar -cvf 压缩后路径加名字 需要压缩的文件：压缩，如tar -cvf a.txt。</p>
-<p>tar -zcvf 压缩后路径加名字 需要压缩的文件：压缩，如tar -zcvf a.txt。压缩后占的空间更少</p>
-<p>tar -xvf 解压缩到的路径 解压缩的包：解压缩，如tar -xvf a.txt。</p>
-<p>tar -zxvf 解压缩到的路径 解压缩的包：压缩，如tar -zxvf a.txt。</p>
-<p>tar的参数：c：表示create，即压缩，z：约等于zip，即打包后空间会更小，v：压缩后展示压缩包中文件名字。f：表示结束。x：extract，即解压缩。</p>
-<p>b：表示查看压缩包内容。其中c、x、b同时只能存在一个。</p>
-</blockquote>
-<h2 id="文件传输">文件传输</h2>
-<blockquote>
-<p>scp 目录加文件名 用户名@IP地址:目录加文件名：将文件传输利用网络传输到另一个服务器。如scp ./a.txt root@10.0.2.6:~/b.txt</p>
-</blockquote>
-<h2 id="进程管理命令">进程管理命令</h2>
-<blockquote>
-<p>top ：查看当前系统使用情况。</p>
-<p>ps：查看进程情况。</p>
-<p>ps aux：查看所有正在执行的进程。经常和grep配合使用。如ps aux | grep "top"</p>
-<p>lsof -i:port ：根据端口号查看进程。需要yum install lsof</p>
-<p>kill 进程号：杀死进程。</p>
-<p>kill -9 进程号：强制杀死进程。</p>
-<p>service xxx start：启动服务。</p>
-<p>service xxxx stop：关闭服务。</p>
-</blockquote>
-<h2 id="权限管理命令">权限管理命令</h2>
-<blockquote>
-<p>chmod xxx aaa：设置aaa的权限为xxx。第一个x为拥有者权限，第二个x为用户组权限，第三个x为其他组权限。如chmod 777 a.txt：表示将a.txt的权限均设为可读、可写、可执行。</p>
-</blockquote>
-<h2 id="软件安装命令">软件安装命令</h2>
-<blockquote>
-<p>yum install xxxx：安装xxxx</p>
-<p>yum install ifconfig -y：安装时自动同意。</p>
-</blockquote>
-<h2 id="安全相关命令">安全相关命令</h2>
-<blockquote>
-<p>systemctl disable firewalld ：关闭防火墙。</p>
-</blockquote>
-<h2 id="关机命令">关机命令</h2>
-<blockquote>
-<p>shutdown：关机</p>
-<p>reboot：重启</p>
-<p>poweroff：关机</p>
-<p>halt：进入系统停止的模式，屏幕可能保留一些信息，取决于电源管理模式。</p>
-<p>systemctl suspend：休眠</p>
+<p>initialSize 初始连接数</p>
+<p>maxActive 最多可容纳活跃连接数</p>
+<p>maxIdle 最大空闲连接数(已创建但未被使用的连接，会被定期回收，回收直到maxIdle数量)</p>
+<p>minIdle 最小空闲连接数</p>
+<p>maxWait 获取连接的最大等待时间</p>
+<p>timeBetweenEvictionRunsMillis 间隔多长时间检测是否关闭空闲连接。</p>
+<p>minEvictableIdleTime 控制一个连接在资源池中最小的生存时间</p>
+<p>maxEvictableIdleTime 控制一个连接在资源池中最大的生存时间</p>
 </blockquote>
 ]]></content>
       <categories>
         <category>基础知识</category>
-        <category>操作系统</category>
+        <category>数据库</category>
       </categories>
       <tags>
-        <tag>Linux指令</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>物理层</title>
-    <url>/2021/02/20/computerNetwork/%E7%AC%AC2%E7%AB%A0-%E7%89%A9%E7%90%86%E5%B1%82/</url>
-    <content><![CDATA[<h1 id="物理层">物理层</h1>
-<h2 id="物理层的基本概念">物理层的基本概念</h2>
-<blockquote>
-<p>尼奎斯特定理 $ C = 2Blog_2V $ 。C为最大数据速率，B为带宽频率，V为离散等级。</p>
-<p>香农定理<span class="math inline">\(C = B log_2(1+S/N)\)</span> 。S/N是信噪比，<span class="math inline">\(10log_{10}S/N\)</span>为分贝，B为带宽频率，C为最大数据速率。</p>
-</blockquote>
-<h3 id="物理层的主要任务">物理层的主要任务</h3>
-<p>物理层解决如何在连接各种计算机的传输媒体上传输数据比特流。</p>
-<p>确定与传输媒体的接口的一些特性:</p>
-<blockquote>
-<p>机械特性:如接口形状、大小、引线数目</p>
-<p>电气特性:如规定电压范围</p>
-<p>功能特性:如规定-5V表示0</p>
-<p>过程特性/规程特性:规定建立连接时各个相关部件的工作步骤</p>
-</blockquote>
-<h2 id="数据通信的基础知识">数据通信的基础知识</h2>
-<blockquote>
-<p>单向通信/单工通信 ---------只能有一个方向的通信而没有反方向的交互，如电台</p>
-<p>半双工通信---------通信双方都可以发送消息，但不能双方同时发送。如对讲机</p>
-<p>全双工通信--------通信的双方-可以同时发送和接收消息。如电话</p>
-<p>数据比特流传输距离较短,用解调器变为模拟信号后传输距离会加长。</p>
-<p>数据--------传送消息的实体</p>
-<p>信号--------数据的电气/电磁表现</p>
-<p>​ 模拟信号--------连续</p>
-<p>​ 数字信号---------离散</p>
-<p>码元----------在使用时间域的波形表示数字信号时，代表不同离散数值的基本波形</p>
-<p>信号调制方法:调幅、调频、调相</p>
-</blockquote>
-<h2 id="物理层下的传输媒体">物理层下的传输媒体</h2>
-<h3 id="导向传输媒体">导向传输媒体</h3>
-<blockquote>
-<p><span class="math display">\[
-常用传输频率10^4-------- 10^{16}
-\]</span></p>
-<p>双绞线:</p>
-<p>​ 屏蔽双绞线STP</p>
-<p>​ 无屏蔽双绞线UTP</p>
-<p>同轴电缆:</p>
-<p>​ 50Ω同轴电缆用于数字传输，基带同轴电缆</p>
-<p>​ 75Ω同轴电缆用于模拟传输，宽带同轴电缆</p>
-</blockquote>
-<h2 id="信道复用技术">信道复用技术</h2>
-<blockquote>
-<p>频分复用:每个用户使用不同的频率传递。</p>
-<p>时分复用:将单位时间划分为若干个时间片，每个用户使用对应的时间片传递。 统计时分复用在发送数据时在数据中添加标记，接收方根据标记判定谁接收并将标记去除。</p>
-<p>波分复用:每个用户使用不同的波长传递。</p>
-<p>码分复用:自己的码片乘积为1，同他人码片乘积为0，传输的信号为原数据同对应码片的乘积，总的传输信号为各个设备传输的信号之和，接收者只要将总信号同自己的码片相乘即可得到需要接收的值。</p>
-<p>码分复用的缺点:设备数变多后码片需要越多</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>计算机网络</category>
-      </categories>
-      <tags>
-        <tag>网络</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>数据链路层</title>
-    <url>/2021/02/20/computerNetwork/%E7%AC%AC3%E7%AB%A0-%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82/</url>
-    <content><![CDATA[<h1 id="数据链路层">数据链路层</h1>
-<h2 id="数据链路层基本概念">数据链路层基本概念</h2>
-<blockquote>
-<p>数据链路层的需要解决的问题:</p>
-<p>​ 向网络层提供一个定义良好的服务接口。</p>
-<p>​ 处理传输错误。</p>
-<p>​ 调节数据流，保证慢速的接收方不会被快速的发送方淹没。</p>
-<p>使用的信道类型:点对点信道、广播信道</p>
-<p>链路:一条点到点的物理线路段，中间没有任何其他的点。</p>
-<p>数据链路:除物理线路外，还要有通信协议来控制数据的传输，而实现这些协议的硬件和软件加入到链路上就构成了数据链路。</p>
-<p>最常用的方法就是使用适配器(即网卡)来实现这些协议的硬件和软件，一般的适配器都包括了数据链路层和物理层这两层的功能。</p>
-</blockquote>
-<h2 id="帧">帧</h2>
-<blockquote>
-<p>数据链路层传送的是帧</p>
-</blockquote>
-<h2 id="数据链路层的三个基本问题">数据链路层的三个基本问题</h2>
-<h3 id="封装成帧">封装成帧</h3>
-<blockquote>
-<p>就是在一段数据的前后分别添加首部(SOH)和尾部(EOT)。即形成帧首部+帧的数据部分+帧尾部的结构，帧首部和尾部的重要作用就是帧定界。其中帧的数据部分一般不能超过1500(最大传输单元MTU)。为什么最大一般为1500？这是网络带宽和传输效率的统一决定的，MTU太大导致传输时间过长，MTU过小会导致传输效率不高(因为帧的头尾需要占14 + 4个字节)。</p>
-<p>接收方会判断收到的帧是否含有头尾部分，若无此部分则会丢弃该数据帧。</p>
-</blockquote>
-<h3 id="透明传输只知道数据但不知道数据是如何传输的">透明传输(只知道数据但不知道数据是如何传输的)</h3>
-<blockquote>
-<p>帧的头尾是使用ASCII码的可打印字符集之外的字符组成，若传输的数据不是仅由ASCII码的可打印字符组成时会导致帧的数据部分中可能出现帧尾，会导致接收方提前判断帧结束，且丢弃部分数据。</p>
-<p>解决方法:发送端的数据链路层会在数据出现SOH与EOT的前面插入一个字符“ESC"用于转义，若转义字符中也出现在数据中则应该在转义字符前插入一个转义字符，接收端在将数据传送给网络层时会删除其中用于转义的字符。</p>
-</blockquote>
-<h2 id="差错控制">差错控制</h2>
-<blockquote>
-<p>比特差错:1可能变为0,0可能变为1。</p>
-<p>误码率:传输错误的比特占所传输比特总数的比率称为误码率。</p>
-<p>循环冗余检验(CRC)可以做到无差错接收。检验到有差错的帧就丢弃。CRC是一种无比特差错，而不是无传输差错的检测机制。</p>
-<p>可靠传输还需要确认和重传机制</p>
-</blockquote>
-<h2 id="点到点的数据通信">点到点的数据通信</h2>
-<blockquote>
-<p>PPP协议是全世界使用最多的数据链路层协议</p>
-<p>PPP协议的组成部分(由顶到底)</p>
-<p>​ NCP网络控制协议</p>
-<p>​ LCP链路控制协议</p>
-<p>​ 类似于HDLC高级数据链路控制协议，但PPP面向字节而不是面向比特</p>
-<p>PPP协议应该满足的要求:</p>
-<p>​ 简单、封装成帧、支持多种网络层协议、多种类型链路、差错检测、检测连接状态、最大传送单元、网络层地址协商、数据压缩协商</p>
-<p>PPP协议不需要满足的要求:</p>
-<p>​ 纠错、流量控制、序号、多点线路、半双工或单工链路</p>
-<p>PPP协议的帧格式:</p>
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: center;">F(7E)</th>
-<th style="text-align: center;">A(FF)</th>
-<th style="text-align: center;">C(03)</th>
-<th style="text-align: center;">协议</th>
-<th style="text-align: center;">消息部分(IP数据报)</th>
-<th style="text-align: center;">FCS</th>
-<th style="text-align: center;">F(7E)</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;">一个字节</td>
-<td style="text-align: center;">一个字节且为固定值</td>
-<td style="text-align: center;">一个字节且为固定值</td>
-<td style="text-align: center;">用于表示消息字段中是什么类型的消息</td>
-<td style="text-align: center;">不超过1500</td>
-<td style="text-align: center;">两个字节</td>
-<td style="text-align: center;">一个字节</td>
-</tr>
-</tbody>
-</table>
-<p>实现透明传输的方式:</p>
-<p>​ 如果是字节传递数据时可以通过插入转义字符并在转义字符0x7D后的一个字符用0x20异或来实现透明传输。</p>
-<p>​ 如果采用同步通信，比特流传递数据时，通过零比特填充法，连续5个1在其中插入0。</p>
-<p>不使用序号和确认机制的原因</p>
-<p>​ 在数据链路层出现的差错的概率不大时使用比较简单的PPP协议较为合理。</p>
-<p>​ 在因特网环境下，PPP的信息字段放入的数据是IP数据报。数据链路层的可靠传输并不能够保证网络层的传输也是可靠的。</p>
-<p>​ 帧检验序列FCS字段可保证无差错接受。</p>
-</blockquote>
-<h2 id="使用广播信道的数据链路层">使用广播信道的数据链路层</h2>
-<h3 id="局域网的拓扑">局域网的拓扑</h3>
-<blockquote>
-<p>星型网、总线网、环形网、树型网</p>
-</blockquote>
-<h3 id="局域网的特点与优点">局域网的特点与优点</h3>
-<blockquote>
-<p>主要特点:网络为一个单位所拥有且地理位置和站点数目均有限。</p>
-<p>主要优点:具有广播功能，从一个站点可以很方便地访问全网。局域网的主机可以共享连接在局域网上的各种硬件和软件资源。</p>
-<p>便于系统的拓展和逐渐演变，各设备的位置可以灵活调整和改变。</p>
-<p>提高了系统的可靠性、可用性和生存性。</p>
-</blockquote>
-<h3 id="以太网通信使用的协议-----csmacd协议">以太网通信使用的协议-----CSMA/CD协议</h3>
-<blockquote>
-<p>CSMA/CD协议特点:</p>
-<p>多点接入:表示许多计算机以多点接入的方式连接在一根总线上。</p>
-<p>载波监听:是指每个站在发送数据之前先要检测总线上是否有其他计算机在发送数据，如果有则暂时不发送数据，避免发生碰撞。</p>
-<p>​ 通过总线上的电压摆动来判断当前总线上是否存在多个计算机同时发送数据的情况</p>
-<p>争用期:最先发送数据帧的站，在发送数据帧后至多经过2t(两倍的端到端时延)即可知道发送的数据帧是否遭受了碰撞。</p>
-<p>最短有效帧长:争用期(2t)内可发送的总字节数------64字节。</p>
-<p>发生碰撞怎么解决:</p>
-<p>​ 推迟一个随机时间再发送，其中基本退避时间为2t，参数k = min(当前重传次数，10)，倍数为r = 1到2^k - 1，重传时延即为r倍的基本退避时间，若重传次数超过16次，则丢弃该帧并向高层报告。</p>
-</blockquote>
-<h2 id="以太网的其他信息">以太网的其他信息</h2>
-<blockquote>
-<p>两个标准:DIX Ethernet V2、802.3标准</p>
-<p>以太网和数据链路层的两个子层:</p>
-<p>​ 逻辑链路控制子层LLC</p>
-<p>​ 媒体接入控制子层MAC</p>
-<p>以太网提供的访问是不可靠的交付，接收到有差错的数据帧就丢弃，其他什么也不做</p>
-<p>使用集线器的以太网在逻辑上仍是一个总线网，各个工作站使用的还是CSMA/CD协议，集线器工作在物理层。</p>
-</blockquote>
-<h2 id="信道利用率计算">信道利用率计算</h2>
-<blockquote>
-<p>争用期长度为2t，帧长为L(bit)，数据发送速率为C(b/s)，帧的发送时间为L/C=T0 (s)</p>
-<p>信道利用率的参数a = t/T0，故帧长不能太短(为了增大T0)，以太网连线不能太长(为了减小t)。无碰撞的理想情况下，极限信道利用率为</p>
-<p><span class="math display">\[S_{max} = T_0 / (T_0 + t) = 1 /(1+a)\]</span></p>
-</blockquote>
-<h2 id="mac地址">MAC地址</h2>
-<blockquote>
-<p>硬件地址又称为物理地址，或MAC地址</p>
-<p>MAC帧格式(MAC层)</p>
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: center;">目的地址</th>
-<th style="text-align: center;">源地址</th>
-<th style="text-align: center;">类型</th>
-<th style="text-align: center;">数据</th>
-<th style="text-align: center;">FCS</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;">6个字节</td>
-<td style="text-align: center;">6个字节</td>
-<td style="text-align: center;">2个字节</td>
-<td style="text-align: center;">46~1500</td>
-<td style="text-align: center;">4个字节</td>
-</tr>
-</tbody>
-</table>
-<p>​ 帧检验序列FCS字段可保证无差错接受。</p>
-<p>传到物理层会在前端插入8个字节表示帧开始。</p>
-<p>无效的MAC帧:</p>
-<p>​ 帧长度不为整数个字节。</p>
-<p>​ 用收到的帧检验序列FCS查出有差错。</p>
-<p>​ 数据字段的长度不在46~1500字节之间。</p>
-<p>​ 有效的MAC帧长度不在64~1518字节之间。</p>
-<p>​ 无效的MAC会直接丢弃，以太网不负责重传。</p>
-<p>帧间最小间隔为9.6us，相当于96bit的发送时间，目的是为了使刚刚收到数据帧的站接受缓存来得及清理，做好接收下一帧的准备。</p>
-</blockquote>
-<h2 id="使用网桥拓展以太网">使用网桥拓展以太网</h2>
-<blockquote>
-<p>优点:过滤通信量、扩大物理范围、提高了可靠性、可互连不同的物理层、不同MAC子层和不同速率的局域网。</p>
-<p>缺点:存储转发增加了时延、MAC子层并没有流量控制功能、具有不同MAC子层的网段桥接在一起时时延更大、网桥只适合于用户数不太多和通信量不太大的局域网，否则有时会因传播过多的广播信息产生网络拥塞。</p>
-<p>记录的原理:A发出的帧送到网桥，网桥可以记录下哪个接口对应于A，将A的地址放入转发表中，对于不在转发表中的地址采用广播手段进行信息传输，对于在转发表中的地址，则根据记录的地址发送。</p>
-</blockquote>
-<h2 id="以太网的不同类型">以太网的不同类型</h2>
-<blockquote>
-<p>速率达到/超过100Mb/s的以太网叫高速以太网</p>
-<p>100BASE-T以太网(快速以太网)</p>
-<p>​ 在双绞线上传送100Mb/s基带信号的星型拓扑以太网，仍使用IEEE 802.3的CSMA/CD协议(半双工时)。</p>
-<p>​ 可以在全双工的方式下工作且无冲突发生，不使用CSMA/CD协议，MAC帧格式仍是802.3标准规定的。最短帧长不变，但最大电缆长度减小到100m，帧间时间间隔变为0.96us。</p>
-<p>吉比特以太网</p>
-<p>​ 允许在1Gb/s下全双工和半双工两种方式工作。使用802.3协议规定的帧格式，在半双工方式下使用CSMA/CD,兼容10BASE-T和100BASE-T</p>
-</blockquote>
-<h2 id="滑动窗口协议">滑动窗口协议</h2>
-<blockquote>
-<p>一位滑动窗口协议 停----等式</p>
-<p>回退N协议</p>
-<p>选择重传协议</p>
-</blockquote>
-<h2 id="mac层各协议">MAC层各协议</h2>
-<blockquote>
-<p>ALOHA：想发就发，冲突后随机时间发。</p>
-<p>分槽ALOHA：时间槽开始时发，冲突后随机时间发。</p>
-<p>1坚持CSMA：监听到空闲一定发，信道忙则一直监听到空闲为止。冲突后随机时间重复此过程。</p>
-<p>非坚持CSMA：监听到空闲一定发，信道忙则随机时间再监听。冲突后随机时间重复此过程。</p>
-<p>p坚持CSMA：监听到空闲p概率发，信道忙则下一个时间槽再监听，1-p概率下一个时间槽再发送。</p>
-<p>CSMA/CD：空闲则直接发送，若忙则等待到通道空闲。检测到冲突终止传输，随机等待一段时间后重新开始监听。则带冲突检测。802.3中使用1坚持-二进制后退的CSMA/CD。</p>
-<p>CSMA/CA：空闲时等待一定时间发送，先发送帧，然后接收方会给发送方发送一个确认帧。若发送方没有收到确认帧或遇到冲突则二进制回退再发送。</p>
-</blockquote>
-<h2 id="无线局域网协议">无线局域网协议</h2>
-<blockquote>
-<p>存在问题：隐藏终端和暴露终端。</p>
-<p>发送方先发送RTS(Request to send)，接收方收到RTS回应CTS(Clear to send)。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>计算机网络</category>
-      </categories>
-      <tags>
-        <tag>网络</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>概论</title>
-    <url>/2021/02/20/computerNetwork/%E7%AC%AC1%E7%AB%A0-%E6%A6%82%E8%AE%BA/</url>
-    <content><![CDATA[<h1 id="概论">概论</h1>
-<h2 id="网络大小划分">网络大小划分</h2>
-<blockquote>
-<p>个域网</p>
-<p>局域网：用于企业时被称为企业网络</p>
-<p>城域网</p>
-<p>广域网</p>
-<p>互联网</p>
-</blockquote>
-<h2 id="报文的不同称呼">报文的不同称呼</h2>
-<blockquote>
-<p>网络层中叫数据包/包</p>
-</blockquote>
-<h1 id="因特网边缘部分的通信方式">因特网边缘部分的通信方式</h1>
-<blockquote>
-<h4 id="客户服务器方式-cs">客户服务器方式 C/S</h4>
-<h4 id="对等方式-p2ppeer-to-peer">对等方式 P2P(peer to peer)</h4>
-<p>既是服务器又是客户机</p>
-</blockquote>
-<h1 id="数据交换方式">数据交换方式</h1>
-<blockquote>
-<h4 id="电路交换---面向连接">电路交换---面向连接</h4>
-<p>交换机位于中心，需要连接时会通过电路连接两个主机。</p>
-<p>建立连接:申请占用通信资源。</p>
-<p>通话:一直占用通信资源。</p>
-<p>释放连接:释放通信资源</p>
-<p>适用于数据量很大的实时传输，核心路由器之间可以用电路交换</p>
-<h4 id="报文交换">报文交换</h4>
-<p>报文一般比分组长的多</p>
-<p>报文发送时间长</p>
-<h4 id="分组交换计算机使用的方式">分组交换:计算机使用的方式</h4>
-<p>发送端对报文进行拆分成不同小组，添加首部组合成一个数据然后发送给接收端。</p>
-<p>接收端对数据进行拆除首部，然后根据首部的信息将收到的数据组合成报文</p>
-</blockquote>
-<h1 id="局域网和广域网不单单从覆盖范围划分还要从使用的技术是什么">局域网和广域网不单单从覆盖范围划分，还要从使用的技术是什么</h1>
-<blockquote>
-<p>局域网 自己购买设备、自己维护、带宽固定 距离100米内</p>
-<p>广域网 花钱买服务、花钱买带宽</p>
-</blockquote>
-<h1 id="网络的拓扑结构">网络的拓扑结构</h1>
-<blockquote>
-<p>总线型、环形、星型、树型、网状结构</p>
-</blockquote>
-<h1 id="网络工作方式">网络工作方式</h1>
-<blockquote>
-<p>资源子网、通信子网、接入网</p>
-</blockquote>
-<h1 id="计算机网络的性能">计算机网络的性能</h1>
-<blockquote>
-<p>速率:主机在数字信道传送数据位数的速率，也成为data rate 或bit rate。</p>
-<p>带宽:数据信道所能传送的最高数据率。</p>
-<p>吞吐量:单位时间内通过某个网络的数据量。</p>
-<p>时延:</p>
-<blockquote>
-<p>发送时延 数据块长度/信道带宽</p>
-<p>传播时延:信道长度/信号在信道上的传播速率</p>
-<p>处理时延:在</p>
-<p>排队时延:在接收方主机处等待的时间</p>
-</blockquote>
-<p>时延带宽积 :传播时延 * 带宽</p>
-<p>往返时间RTT:从发送方发送数据开始到发送方收到接收方确认。</p>
-<p>利用率:</p>
-<blockquote>
-<p>信道利用率 = 有数据通过时间 / (有 + 无数据通过的时间)</p>
-<p>网络利用率：信道利用率加权平均值</p>
-</blockquote>
-<p>非性能指标:费用、质量、标准化、可靠性、可扩展性、可升级性、管理与维护</p>
-</blockquote>
-<h1 id="计算机网络的体系结构">计算机网络的体系结构</h1>
-<blockquote>
-<p>OSI(开放式系统互联)七层模型:分层有利于标准化，且分层后各层之间的变化不会影响到其他层，尽量降低了相互之间的依赖。</p>
-<p>物理层:规定电压、接口标准</p>
-<p>数据链路层:输入如何封装，添加物理层地址，MAC</p>
-<p>网络层:选择最佳路径，IP地址编址</p>
-<p>传输层:可靠传输(建立会话)、不可靠传输(不建立会话)、流量控制。</p>
-<p>会话层:服务和客户端建立的会话。 netstat -nb</p>
-<p>表示层:加密、压缩、编码，开发人员考虑。</p>
-<p>应用层: 能够产生网络流量，能够和用户交互的应用程序。</p>
-</blockquote>
-<h1 id="网络排错">网络排错</h1>
-<blockquote>
-<p>需要从底层到高层逐一排查</p>
-</blockquote>
-<h1 id="网络安全和osi参考模型的关系">网络安全和OSI参考模型的关系</h1>
-<blockquote>
-<p>物理层安全</p>
-<p>数据链路层安全:ADSL、无线AP</p>
-<p>网络层安全</p>
-<p>应用层安全: SQL注入漏洞、上传漏洞</p>
-</blockquote>
-<h1 id="一些基本概念">一些基本概念</h1>
-<blockquote>
-<p>实体:交换信息的硬件或软件进程。</p>
-<p>协议:控制两个对等实体通信的规则。</p>
-<p>服务:下层向上层提供服务，上层需要使用下层提供的服务来实现本层的功能。</p>
-<p>服务访问点:相邻两层实体间交换信息的地方。</p>
-<p>AP接入点和无线路由器和基站作用相差不大，主要负责中继无线计算机之间的数据包，还负责中继无线计算机和Internet之间的数据包。</p>
-<p>IEEE802.11俗称WIFI。以太网IEEE802.3。</p>
-<p>将两个或多个网络连接起来并提供必要转换的机器，其硬件和软件方面的总称是网关。路由器就是一个网关，在网络层交换数据包。</p>
-<p>不可靠的无连接服务通常称为数据报服务。</p>
-</blockquote>
-<h1 id="tpcip">TPC/IP</h1>
-<blockquote>
-<p>五层模型:</p>
-<p>应用层:</p>
-<blockquote>
-<p>数据单元:传输数据单元PDU</p>
-</blockquote>
-<p>运输层:</p>
-<blockquote>
-<p>数据单元:报文</p>
-</blockquote>
-<p>网络层:</p>
-<blockquote>
-<p>数据单元:(IP数据报/IP分组/包)</p>
-</blockquote>
-<p>数据链路层:</p>
-<blockquote>
-<p>数据单元:数据帧</p>
-</blockquote>
-<p>物理层:</p>
-<blockquote>
-<p>数据单元:比特010101</p>
-</blockquote>
-</blockquote>
-<h1 id="osi参考模型">OSI参考模型</h1>
-<blockquote>
-<p>应用层:</p>
-<p>​ 所有可以和用户交互产生网络流量的程序。</p>
-<p>​ 文件传输FTP、电子邮件SMTP、万维网HTTP</p>
-<p>表示层</p>
-<p>​ 用于处理两个通信系统中交换信息的表示方式。</p>
-<p>​ 数据格式变换、数据加密解密、数据压缩和恢复</p>
-<p>​ JPEG、ASCII</p>
-<p>会话层</p>
-<p>​ 向表示层实体/用户进程提供建立连接并在连接上有序地传输数据。</p>
-<p>​ 建立、管理、终止会话。</p>
-<p>​ 使用检验点可以使会话在通信失效时从检验点/同步点进行恢复通信，实现数据同步。</p>
-<p>​ ADSP、ASP</p>
-<p>传输层</p>
-<p>​ 负责主机中两个进程的通信，即端到端的通信。传输单位是报文/用户数据报</p>
-<p>​ 可靠传输、不可靠传输</p>
-<p>​ 差错控制</p>
-<p>​ 复用分用</p>
-<p>网络层</p>
-<p>​ 路由选择</p>
-<p>​ 流量控制</p>
-<p>​ 差错控制</p>
-<p>​ 拥塞控制</p>
-<p>数据链路层 加上报头和报尾。</p>
-<p>​ 把网络层传下来的数据报组装成帧</p>
-<p>​ 差错控制</p>
-<p>​ 流量控制</p>
-<p>​ 接入控制</p>
-<p>​ SDLC、HDLC、PPP、STP</p>
-<p>物理层</p>
-<p>​ 在物理媒体上实现比特流的透明传输</p>
-<p>​ 定义接口特性</p>
-<p>​ 定义传输模式</p>
-<p>​ 定义传输速率</p>
-<p>​ 比特同步</p>
-<p>​ 比特编码</p>
-<p>​ RJ45、802.3</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>计算机网络</category>
-      </categories>
-      <tags>
-        <tag>网络</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>网络层</title>
-    <url>/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/</url>
-    <content><![CDATA[<h1 id="网络层">网络层</h1>
-<h2 id="网络层传输单元为数据报">网络层传输单元为数据报</h2>
-<h2 id="网络层提供的两种服务">网络层提供的两种服务</h2>
-<blockquote>
-<p>网络层关注的是如何将分组从源端沿着网络路劲送达目的端。</p>
-<p>它向运输层通过了虚电路服务和数据报服务。</p>
-<p>计算机通信的过程中可靠交付由端系统负责，而不是网络负责。</p>
-<p>虚电路服务</p>
-<p>​ 通过指定数据的逻辑连接，向端系统保证了数据的按序到达，免去了端系统在顺序控制上的开销。</p>
-<p>​ 逻辑上的连接而非真正建立了一条物理连接。</p>
-<p>数据报服务</p>
-<p>​ 网络层向上提供简单灵活的、<strong>无连接的</strong>、尽最大努力交付的数据报服务。</p>
-<p>​ 优点:传输网络不提供端到端的可靠传输服务，使得网络造价降低，运行方式灵活，适用多种应用。</p>
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: center;">两个服务对比</th>
-<th style="text-align: center;">虚电路服务</th>
-<th style="text-align: center;">数据报服务</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;">思路</td>
-<td style="text-align: center;">可靠通信由网络保证</td>
-<td style="text-align: center;">可靠通信由用户主机保证</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">连接的建立</td>
-<td style="text-align: center;">必须有</td>
-<td style="text-align: center;">不需要</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">终点地址</td>
-<td style="text-align: center;">仅在连接建立阶段使用，每个分组使用短的虚电路号</td>
-<td style="text-align: center;">每个分组都要有终点的完整地址</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">分组的转发</td>
-<td style="text-align: center;">属于同一条虚电路的分组均按照同一路由进行转发</td>
-<td style="text-align: center;">每个分组独立选择路由进行转发</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">当结点出故障时</td>
-<td style="text-align: center;">所有通过出故障结点的虚电路均不能工作</td>
-<td style="text-align: center;">出故障的结点可能丢失分组，一些路由可能发生变化</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">分组的顺序</td>
-<td style="text-align: center;">总数按发送顺序到达终点</td>
-<td style="text-align: center;">到达终点时不一定按发送顺序</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">端到端的差错处理和流量控制</td>
-<td style="text-align: center;">可以由网络负责,也可以由用户主机负责</td>
-<td style="text-align: center;">由用户主机负责</td>
-</tr>
-</tbody>
-</table>
-</blockquote>
-<h2 id="网际协议ip">网际协议IP</h2>
-<h3 id="虚拟互联网">虚拟互联网</h3>
-<blockquote>
-<p>网络互连的设备:</p>
-<p>​ 概念:中间设备又称为中间系统或中继系统</p>
-<p>​ 物理层中继系统:转发器。</p>
-<p>​ 数据链路层中继系统:网桥或桥接器。</p>
-<p>​ 网络层中继系统:路由器。</p>
-<p>​ 网络层以上的中继系统:网关。</p>
-<p>网络层协议:IP协议最主要。与IP协议配套的协议:</p>
-<p>​ ARP地址解析协议。(位于底层)解析MAC地址</p>
-<p>​ RARP逆地址解析协议。(位于底层)</p>
-<p>​ ICMP网际控制报文协议。(位于顶层)报告网络故障</p>
-<p>​ IGMP网际组管理协议。(位于顶层)</p>
-</blockquote>
-<h2 id="ipv4地址组成">IPv4地址组成</h2>
-<blockquote>
-<p>IPv4地址由32位IP组成，其中分为网络ID和主机ID。主机ID不能全为0(全0表示网段)也不能全为1(全1表示广播)</p>
-<p>A类地址:前8位为网络ID，后24位为主机ID。 0xxxxxxx | x....x 1~126 (127的地址用于做循环测试，本机地址)</p>
-<p>B类地址:前16位为网络ID，后8位为主机ID。 10x.....x | x....x 128~191</p>
-<p>C类地址:前24位为网络ID，后8位为主机ID。 110x....x | x...x 192~223</p>
-<p>D类组播使用。 1110| x.....x(多播地址) 224~239</p>
-<p>E类研究使用。 1111| x.....x(保留为今后使用) 240~255</p>
-<p>特殊的几个地址:</p>
-<p>​ 127.0.0.1 本地环回地址</p>
-<p>​ 169.254.0.0 微软在无法自动获取IP时自动分给计算机的IP地址。</p>
-<p>​ 保留的私网地址。</p>
-<ul>
-<li>10.0.0.0 ------ 10.255.255.255</li>
-<li>172.16.0.0 ------ 127.31.255.255</li>
-<li>192.168.0.0 ------- 192.168.255.255</li>
-</ul>
-</blockquote>
-<h2 id="子网掩码的作用">子网掩码的作用</h2>
-<blockquote>
-<p>同IP地址作与运算，得到的结果用于判断两个IP是否位于同一网段，从而判断这两个IP的信息交换是否要通过路由器。</p>
-<p>可以用于屏蔽IP地址的主机ID部分，来凸显IP地址的网络ID部分，借此判断两个IP能否直接信息交换。</p>
-<p>还可以将大的IP网络划分为若干小的网络。(划分子网、等分划分/边长划分)</p>
-<p>超网:通过子网掩码把若干个小网络合并为一个大网络。</p>
-</blockquote>
-<h2 id="ip地址与mac地址">IP地址与MAC地址</h2>
-<blockquote>
-<p>网络层以上使用IP地址，链路层及以下使用MAC地址</p>
-<figure>
-<img src="/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/IP地址和MAC地址.png" alt="IP地址和MAC地址"><figcaption aria-hidden="true">IP地址和MAC地址</figcaption>
-</figure>
-<p>相比于IP数据报，MAC帧增加了</p>
-<p>交换机基于数据帧的MAC地址转发数据帧，路由器基于数据包的IP地址转发数据包。</p>
-<p>数据包在传输过程不变，过网络设备数据帧要用新的物理层地址重新封装。</p>
-<p>MAC地址决定了数据帧下一跳哪个设备接收，而IP地址决定了数据包的起点和终点</p>
-</blockquote>
-<h2 id="协议">协议</h2>
-<blockquote>
-<p>ARP协议:将IP地址转化为物理地址。会使用到广播。</p>
-<p>RARP协议:将物理地址转化为IP地址。</p>
-<p>ARP欺骗。</p>
-</blockquote>
-<h2 id="ip数据报">IP数据报</h2>
-<blockquote>
-<p>IP数据报的首部和数据两部分组成。首部的前一部分是固定，共20字节，是所有IP数据报必须具有的。</p>
-<figure>
-<img src="/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/IP地址.png" alt="IP地址"><figcaption aria-hidden="true">IP地址</figcaption>
-</figure>
-<p>在首部的固定部分的后面是一些可选字段，其长度是可变的。</p>
-<p>各字段</p>
-<p>0-4位版本(表示为IPv4/IPv6) 4-8位首部长度(最小值为固定长度部分共20个字节。可表示最大15个单位，一个单位4个字节，故首部最大60个字节) 8-16区分服务(数据包所需的服务，定义优先级) 16-32总长度(数据包总大小，一般为1500)</p>
-<p>标识(每产生一个数据包就增加1) 标志(判断数据包是否分片) 片偏移(偏移量单位为8个字节)</p>
-<p>TTL生存时间值，指定IP包被路由器丢弃之前允许通过的最大网段数量。</p>
-<p>协议用于指明上层协议是什么，如ICMP、TCP、UDP等。</p>
-<p>首部校验和用于校验数据报是否可用。计算过程:发送端把数据报首部的信息拆成许多单字，然后初始校验和为0，将校验和同这些单字进行反码运算求和，结果取反码即为校验和。接收方重复此过程，若结果为0则保留，不为0则直接丢弃。</p>
-<p>源地址、目的地址即为IP地址。</p>
-<p>可选字段用于支持排错、测量及安全等措施</p>
-</blockquote>
-<h2 id="数据路由">数据路由</h2>
-<blockquote>
-<p>数据路由在不同网段转发数据报。能去能回--------网络畅通。</p>
-<p>负载均衡</p>
-</blockquote>
-<h2 id="icmp协议">ICMP协议</h2>
-<blockquote>
-<p>报文类型:ICMP差错报告报文、ICMP询问报文</p>
-<p>报文前四个字节格式统一共3个字段:类型、代码、检验和，接着的四个字节内容与ICMP的类型有关。</p>
-<p>差错报告报文共五种:终点不可达、源点抑制(发数据报的速度过快)、时间超过、参数问题、改变路由/重定向。</p>
-<p>询问报文有两种:回送请求和回答报文、时间戳请求和回答报文。</p>
-</blockquote>
-<h2 id="动态路由协议">动态路由协议</h2>
-<blockquote>
-<p>RIP最早的动态路由协议，周期性广播，30s广播一次。跳数16次。</p>
-</blockquote>
-<h2 id="ospf协议开放式最短路径优先---动态路由协议">OSPF协议(开放式最短路径优先)---动态路由协议</h2>
-<h2 id="bgp------外部网关协议">BGP ---- 外部网关协议</h2>
-<blockquote>
-<p>不同自治系统的路由器之间交换路由信息的协议</p>
-<p>报文类型：</p>
-<p>OPEN</p>
-<p>UDDATE</p>
-<p>KEEPALIVE</p>
-<p>NOTIFICATION</p>
-<p>ROUTE-REFRESH</p>
-<p>重要属性：</p>
-<p>AS-PATH: 包含前缀通告所经过的AS序列</p>
-<p>NEXT-HOP(下一跳): 开始一个AS-PATH的路由器接口，指向下一跳AS.</p>
-</blockquote>
-<h2 id="nat和pat">NAT和PAT</h2>
-<blockquote>
-
-</blockquote>
-<h2 id="igmp-组播多播">IGMP 组播/多播</h2>
-<h2 id="dhcp">DHCP</h2>
-<blockquote>
-
-</blockquote>
-<h2 id="arp">ARP</h2>
-<blockquote>
-<p>默认网关为网络上的最低地址，如192.32.65.0/24的默认网关为192.32.65.1</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>计算机网络</category>
-      </categories>
-      <tags>
-        <tag>网络</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Restful基本使用</title>
-    <url>/2021/02/20/designPattern/Restful%E9%A3%8E%E6%A0%BC/</url>
-    <content><![CDATA[<h1 id="restful风格">Restful风格</h1>
-<blockquote>
-<p>本质上就是将接口的功能让http的语义来表示。</p>
-<p>查询-&gt;GET</p>
-<p>新增-&gt;POST</p>
-<p>更新-&gt;PUT</p>
-<p>删除-&gt;DELETE</p>
-<p>本质上要做到，看url知道要什么，看http method知道要做什么，看http status code知道哪里有问题。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>代码规范</category>
-        <category>代码风格</category>
-      </categories>
-      <tags>
-        <tag>设计模式</tag>
-        <tag>代码风格</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>应用层</title>
-    <url>/2021/02/20/computerNetwork/%E7%AC%AC6%E7%AB%A0-%E5%BA%94%E7%94%A8%E5%B1%82/</url>
-    <content><![CDATA[<h2 id="使用tcp">使用TCP</h2>
-<blockquote>
-<p>HTTP、FTP、Telnet、SMTP</p>
-</blockquote>
-<h2 id="使用udp">使用UDP</h2>
-<blockquote>
-<p>流媒体、DNS、网络电话、电话会议</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>计算机网络</category>
-      </categories>
-      <tags>
-        <tag>网络</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>传输层</title>
-    <url>/2021/02/20/computerNetwork/%E7%AC%AC5%E7%AB%A0-%E4%BC%A0%E8%BE%93%E5%B1%82/</url>
-    <content><![CDATA[<h1 id="传输层">传输层</h1>
-<h2 id="各层协议">各层协议</h2>
-<blockquote>
-<p>应用层: http、https、ftp、DNS、SMTP、PoP3、RDP</p>
-<p>传输层: TCP、UDP</p>
-<p>网络层: IP(RIP、OSPF、BGP) 、ICMP、IGMP、ARP</p>
-</blockquote>
-<h2 id="传输层两个协议应用场景">传输层两个协议应用场景</h2>
-<h3 id="tcp">TCP</h3>
-<blockquote>
-<p>分段、编号、流量控制、可靠传输、建立会话、面向连接。</p>
-</blockquote>
-<h3 id="udp">UDP</h3>
-<blockquote>
-<p>一个数据包就能完成数据通信、不建立会话。</p>
-</blockquote>
-<h2 id="传输层和应用层之间的关系">传输层和应用层之间的关系</h2>
-<blockquote>
-<p>http = TCP + 80</p>
-<p>https = TCP + 443</p>
-<p>ftp = TCP + 21</p>
-<p>SMTP = TCP + 25</p>
-<p>POP3 = TCP + 110</p>
-<p>RDP = TCP + 3389</p>
-<p>共享文件夹 = TCP + 445</p>
-<p>SQLServer = TCP + 1433</p>
-<p>DNS = UDP + 53 OR TCP + 53</p>
-</blockquote>
-<h2 id="应用层协议和服务之间的关系">应用层协议和服务之间的关系</h2>
-<blockquote>
-<p>服务运行后在TCP或UDP的某个端口监听客户端请求。</p>
-</blockquote>
-<h2 id="udp协议">UDP协议</h2>
-<blockquote>
-<p>两个对等运输实体在通信时传送的数据单位叫作运输协议数据单元。</p>
-<p>TCP传送的协议数据单元是<strong>TCP报文段</strong>。</p>
-<p>UDP传送的协议数据单元是<strong>UDP报文</strong>或<strong>用户数据报</strong>。</p>
-<p>UDP的首部格式<img src="/2021/02/20/computerNetwork/%E7%AC%AC5%E7%AB%A0-%E4%BC%A0%E8%BE%93%E5%B1%82/UDP首部格式.png" alt="UDP首部格式"></p>
-</blockquote>
-<h2 id="tcp协议">TCP协议</h2>
-<blockquote>
-<p><strong>TCP的特点</strong></p>
-<p>​ TCP是面向连接的传输层协议，每条TCP连接只能有两个端点，故TCP连接是点对点的。</p>
-<p>​ TCP提供可靠交付的服务，TCP提供全双工通信。</p>
-<p>​ TCP面向字节流。</p>
-<p>​ 提供流量控制。</p>
-<p>​ 避免网络拥塞</p>
-</blockquote>
-<h3 id="tcp如何">TCP如何</h3>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>计算机网络</category>
-      </categories>
-      <tags>
-        <tag>网络</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>常用设计模式介绍</title>
-    <url>/2021/02/20/designPattern/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</url>
-    <content><![CDATA[<h1 id="设计模式">设计模式</h1>
-<h2 id="策略模式">策略模式</h2>
-<blockquote>
-<p>将行为抽象，通过子类实现不同的行为来将某个对象的行为从父类抽取出，通过组合的方式来消除耦合。</p>
-</blockquote>
-<h2 id="命令模式">命令模式</h2>
-<blockquote>
-<p>也是将行为抽象，但是目的是将行为和行为执行者二者解耦，通过将行为和行为执行者组合的方式，加上控制器控制，来便于拓展。</p>
-</blockquote>
-<h2 id="工厂模式">工厂模式</h2>
-<blockquote>
-<p>简单工厂即在类中直接添加工厂对象，在工厂对象中直接创建实例。</p>
-<p>工厂模式：将工厂的创建实例方法抽象化，通过子类继承并重写对应方法的方式完成。</p>
-<p>抽象工厂模式：将一系列创建实例的方法抽象化，形成接口，子类实现该接口，有点类似工厂模式。</p>
-</blockquote>
-<h2 id="单例模式">单例模式</h2>
-<blockquote>
-<p>即让一个类只能有一个对象实例。</p>
-<p>double check方式实现比较好。</p>
-<figure>
-<img src="/2021/02/20/designPattern/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/单例模式.png" alt="单例模式"><figcaption aria-hidden="true">单例模式</figcaption>
-</figure>
-</blockquote>
-<h2 id="装饰者模式">装饰者模式</h2>
-<blockquote>
-<p>子类继承分类时，不是将父类的方法直接重写，而是在父类方法的基础上添加自己的功能。</p>
-</blockquote>
-<h2 id="观察者模式">观察者模式</h2>
-<blockquote>
-<p>分为主题(observable)和观察者(observer)两个模块，根主题是一种接口/类，提供添加观察者、移除观察者、通知观察者等方法，观察者则需要实现一个接口表示它为观察者，通常要实现update方法。主题的数据改变时可以通知观察者，数据可以有主题直接推送给观察者和观察者向主题拉取数据两个方式。</p>
-</blockquote>
-<h2 id="适配器模式">适配器模式</h2>
-<blockquote>
-<p>将一个类的接口转换成另一个接口，让本来不兼容的类可以合作无间。</p>
-</blockquote>
-<h2 id="外观模式">外观模式</h2>
-<blockquote>
-<p>将多个接口简化为一个接口</p>
-</blockquote>
-<h2 id="模板方法模式">模板方法模式</h2>
-<blockquote>
-<p>将算法分抽象为许多步骤，将统一的流程由父类实现，子类实现具体的不同部分。</p>
-</blockquote>
-<h2 id="迭代器模式">迭代器模式</h2>
-<blockquote>
-<p>给不同集合一种相同的遍历方法。</p>
-</blockquote>
-<h2 id="组合模式">组合模式</h2>
-<blockquote>
-<p>通过一致的方式处理个别对象及对象的组合，如对树和树的叶子节点采用统一的抽象方式。</p>
-</blockquote>
-<h2 id="状态模式">状态模式</h2>
-<blockquote>
-<p>状态机，将状态进行抽象，具体的状态类则实现自己具体的行为，状态类自己控制状态的转化。</p>
-</blockquote>
-<h2 id="代理模式">代理模式</h2>
-<blockquote>
-<p>给客户一个某种对象的代理，该代理对象控制对原对象的引用，目的是控制客户对对象的访问。</p>
-<p>动态代理、静态代理、远程代理等。</p>
-<p>静态代理</p>
-<p>动态代理：JDK代理和cglib代理。JDK代理需要被代理类实现接口，而cglib没有这个限制</p>
-</blockquote>
-<h2 id="mvc">MVC</h2>
-<blockquote>
-<p>模型、视图、控制器。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>代码规范</category>
-        <category>设计模式</category>
-      </categories>
-      <tags>
-        <tag>设计模式</tag>
+        <tag>数据库</tag>
       </tags>
   </entry>
   <entry>
@@ -3271,8 +3580,8 @@
 ]]></content>
       <categories>
         <category>基础知识</category>
-        <category>源码分析</category>
         <category>计算机网络</category>
+        <category>源码分析</category>
       </categories>
       <tags>
         <tag>I/O</tag>

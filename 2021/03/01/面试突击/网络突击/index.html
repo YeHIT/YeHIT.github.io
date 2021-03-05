@@ -30,7 +30,7 @@
 <meta property="og:description" content="网络突击 Http相关 概述  HTTP基于TCP&#x2F;IP通信协议传递数据。 HTTP就是一个用文本格式描述报文头并用双换行分隔报文头和内容，在TCP基础上实现的请求-响应模式的双向通信协议。 HTTP是无连接的：每次连接只处理一个请求。服务器处理完客户的请求，并收到客户的应答后，即断开连接。引出Keep-alive HTTP是媒体独立的：只要客户端和服务器知道如何处理数据内容，任何数">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-02-28T16:00:00.000Z">
-<meta property="article:modified_time" content="2021-03-03T05:33:24.528Z">
+<meta property="article:modified_time" content="2021-03-04T16:27:44.623Z">
 <meta property="article:author" content="Ye">
 <meta property="article:tag" content="网络">
 <meta name="twitter:card" content="summary">
@@ -186,7 +186,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E7%AA%81%E5%87%BB"><span class="nav-number">1.</span> <span class="nav-text">网络突击</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#http%E7%9B%B8%E5%85%B3"><span class="nav-number">1.1.</span> <span class="nav-text">Http相关</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.1.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#http%E4%BA%8B%E5%8A%A1-http%E8%AF%B7%E6%B1%82%E5%91%BD%E4%BB%A4-%E5%93%8D%E5%BA%94%E7%A0%81"><span class="nav-number">1.1.2.</span> <span class="nav-text">Http事务 &#x3D; http请求命令 + 响应码</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%B7%E6%B1%82%E6%8A%A5%E6%96%87"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">请求报文</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%93%8D%E5%BA%94%E6%8A%A5%E6%96%87"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">响应报文</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#get%E5%92%8Cpost%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.1.3.</span> <span class="nav-text">GET和POST的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cookiesessiontoken"><span class="nav-number">1.1.4.</span> <span class="nav-text">Cookie、Session、Token</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#http%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="nav-number">1.1.5.</span> <span class="nav-text">HTTP工作流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#http%E5%8F%91%E5%B1%95%E6%B5%81%E7%A8%8B"><span class="nav-number">1.1.6.</span> <span class="nav-text">HTTP发展流程</span></a></li></ol></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E7%AA%81%E5%87%BB"><span class="nav-number">1.</span> <span class="nav-text">网络突击</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#http%E7%9B%B8%E5%85%B3"><span class="nav-number">1.1.</span> <span class="nav-text">Http相关</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.1.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#http%E4%BA%8B%E5%8A%A1-http%E8%AF%B7%E6%B1%82%E5%91%BD%E4%BB%A4-%E5%93%8D%E5%BA%94%E7%A0%81"><span class="nav-number">1.1.2.</span> <span class="nav-text">Http事务 &#x3D; http请求命令 + 响应码</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%B7%E6%B1%82%E6%8A%A5%E6%96%87"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">请求报文</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%93%8D%E5%BA%94%E6%8A%A5%E6%96%87"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">响应报文</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#get%E5%92%8Cpost%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.1.3.</span> <span class="nav-text">GET和POST的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cookiesessiontoken"><span class="nav-number">1.1.4.</span> <span class="nav-text">Cookie、Session、Token</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#http%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="nav-number">1.1.5.</span> <span class="nav-text">HTTP工作流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#http%E5%8F%91%E5%B1%95%E6%B5%81%E7%A8%8B"><span class="nav-number">1.1.6.</span> <span class="nav-text">HTTP发展流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#http%E5%92%8Chttps"><span class="nav-number">1.1.7.</span> <span class="nav-text">HTTP和HTTPS</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tcp%E5%92%8Cudp"><span class="nav-number">1.2.</span> <span class="nav-text">TCP和UDP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#tcp%E5%92%8Cudp%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.2.1.</span> <span class="nav-text">TCP和UDP的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tcp%E6%98%AF%E6%80%8E%E4%B9%88%E4%BF%9D%E8%AF%81%E5%8F%AF%E9%9D%A0%E6%80%A7%E7%9A%84"><span class="nav-number">1.2.2.</span> <span class="nav-text">TCP是怎么保证可靠性的？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tcp%E6%8F%A1%E6%89%8B%E4%B8%8E%E6%8C%A5%E6%89%8B"><span class="nav-number">1.2.3.</span> <span class="nav-text">TCP握手与挥手</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#tcp%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B"><span class="nav-number">1.2.3.1.</span> <span class="nav-text">TCP三次握手</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#tcp%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B"><span class="nav-number">1.2.3.2.</span> <span class="nav-text">TCP四次挥手</span></a></li></ol></li></ol></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -202,20 +202,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-count">36</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-count">13</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-count">25</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -299,7 +299,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-03 13:33:24" itemprop="dateModified" datetime="2021-03-03T13:33:24+08:00">2021-03-03</time>
+        <time title="修改时间：2021-03-05 00:27:44" itemprop="dateModified" datetime="2021-03-05T00:27:44+08:00">2021-03-05</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -326,14 +326,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>2.7k</span>
+      <span>5.2k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
+      <span>5 分钟</span>
     </span>
 </div>
 
@@ -417,12 +417,15 @@
 </blockquote>
 <h3 id="cookiesessiontoken">Cookie、Session、Token</h3>
 <blockquote>
-
+<p>本质上都是用于存储用户信息的。</p>
+<p>cookie是浏览器层面储存的一种k-v结构数据，当发送请求给服务端时可以把cookie发送给服务端。但是由于cookie是存储在浏览器上的，所以cookie往往不能用来存储用户的私密数据。</p>
+<p>session则是在服务端层面存储用户信息，服务端在使用session时往往会产生一个特殊的sessionId，然后将这个id交给客户端，客户端每次访问服务端时带上这个id即可。但是由于session存储在服务端，所以如果有大量用户时服务端往往会消耗大量资源来存储session，并且如果是多服务端的结构，还需要采用一定操作来保证session的存储。</p>
+<p>token=header密文+payload密文+签名：本质上是将用户第一次发送的用户名+密码的信息进行签名加密然后再发还给用户，而用户浏览器则保存这个信息，在之后的访问过程每次带上这个token供服务端验证。可以防止CSRF(跨站请求伪造)攻击，即在页面中放入一些恶意链接，这些链接会指向如转账之类的功能，由于浏览器发送请求时会默认带上cookie，所以导致请求通过校验被执行。而使用token浏览器就不会默认发送，从而防止csrf攻击。验证时服务端将两个密文解密再签名同自带的签名进行比对判断是否通过认证。此外还可以对payload密文解密来判断token是否过期。</p>
 </blockquote>
 <h3 id="http工作流程">HTTP工作流程</h3>
 <blockquote>
 <p>DNS域名解析-&gt;TCP三次握手-&gt;发起HTTP请求-&gt;服务器响应HTTP请求-&gt;浏览器解析HTML并请求资源-&gt;浏览器渲染页面</p>
-<p>DNS既用TCP又用UDP。</p>
+<p>DNS既用TCP又用UDP，使用53号端口。</p>
 <p>在域名解析时使用UDP。因为解析的数据少，UDP较快。</p>
 <p>而在域名服务器之间执行数据同步时会使用TCP。因为此时数据量大，TCP是可靠连接，保证数据准确性。</p>
 <p>DNS域名解析流程：</p>
@@ -440,6 +443,112 @@
 <p>此外http2.0还使用了首部压缩技术，对于一条连接使用首部表来维护key-value，若增加新的key-value则加入表尾，避免每次请求都需要携带首部。此外还对首部使用了HPACK算法压缩。</p>
 <p>不仅如此http2.0还支持服务器主动推送，即先请求服务器，服务器不用解析就可以直接将预先设置好的内容推送给客户端。</p>
 <p>http3.0：基于QUIC协议，底层使用UDP通信。</p>
+</blockquote>
+<h3 id="http和https">HTTP和HTTPS</h3>
+<blockquote>
+<p>HTTP是超文本文件传输协议通信使用明文传输，HTTPS则是基于HTTP协议通过SSL(处于TCP/IP协议与各种应用层协议之间)或TLS(前身是SSL)提供加密处理数据、验证对方身份及数据完整性保护。</p>
+<p>HTTPS的特点：</p>
+<p>​ 内容加密：采用混合加密技术，中间者无法直接查看明文内容。</p>
+<p>​ 验证身份：通过证书认证客户端访问的是自己的服务器。</p>
+<p>​ 保护数据完整性：防止传输的内容被中间人冒充或篡改。</p>
+</blockquote>
+<h2 id="tcp和udp">TCP和UDP</h2>
+<h3 id="tcp和udp的区别">TCP和UDP的区别</h3>
+<blockquote>
+<p>TCP是面向连接的，UDP是无连接的。</p>
+<p>TCP消耗资源较大，UDP消耗资源较少。</p>
+<p>TCP是字节流传输，UDP是数据报传输。</p>
+<p>TCP可靠性高，UDP不保证消息可靠性。</p>
+<p>TCP可以进行流量控制，UDP不具有流量控制的能力。</p>
+<p>TCP适用于对于消息准确性和顺序要求较高的场景，UDP应用于对于通信效率、准确性要求相对较低的场景。</p>
+</blockquote>
+<h3 id="tcp是怎么保证可靠性的">TCP是怎么保证可靠性的？</h3>
+<blockquote>
+<p>1、使用报文里的校验和字段。</p>
+<p>2、使用了序列号机制，即每次发送报文都会附上相应的序列号，而接收到请求的那方会发送ACK对报文进行确认，同时ACK也会附带对应应答的序列号，此时发送方就可以对接收到ACK附带的序列号进行检测。若序列号正确再发送其他的报文，若错误则重发。</p>
+<p>3、超时重传：即报文在发出一定时间内未收到接收方的，发送方就会重传。</p>
+<p>4、三次握手和四次挥手机制。</p>
+<p>5、流量控制：由于接收端处理数据的速度是有限的，为了不让过多的数据让接收端无法处理，tcp报文中有个窗口大小字段，可以让接收端在接收报文，发出ACK信号时附上该值，让发送方及时调整。</p>
+<p>6、拥塞控制：流量控制是发送方接收方之间，而拥塞控制是相对整个网络通信环境的。TCP采用慢启动、拥塞避免和快启动、快重传的方式来降低网络拥塞的可能。</p>
+<p>​ 快重传即收到连续三个冗余ACK，则重新发送报文段。因为TCP使用累积确认的机制，即接收端受到比期望序号大的报文，会重复发送最近一次确认的报文段的确认信号。</p>
+</blockquote>
+<h3 id="tcp握手与挥手">TCP握手与挥手</h3>
+<h4 id="tcp三次握手">TCP三次握手</h4>
+<blockquote>
+<p>三次握手的流程：</p>
+<table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">A</th>
+<th style="text-align: center;">B</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">A发送SYN信号及A的初始序号x，此时A进入SYN_SEND状态</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"></td>
+<td style="text-align: center;">B接收到了A发送的SYN信号与A初始序号x，需要对SYN信号发送ACK应答且应答序号为x+1，同时也向A发出SYN信号和自己的序号y，然后进入SYN_RECV状态</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">A接收到服务端发送的SYN和ACK信号，会发送ACK信号并将序号设为y+1，然后发送给客户端，发送完毕后A进入ESTABLISHED状态，完成三次握手。</td>
+<td style="text-align: center;">B收到ACK也进入ESTABLISHED状态</td>
+</tr>
+</tbody>
+</table>
+<p><strong>为什么不是四次握手，如将B的SYN信号和ACK信号拆开发送</strong>。原因：避免资源浪费。</p>
+<p><strong>为什么B需要等待A的ACK信号？即为什么不是两次握手？</strong>原因：本质上为了避免旧重复连接造成资源浪费的问题，若B发出SYN和ACK信号后直接进入ESTABLISHED状态，假定A、B先前存在连接，然后断开了连接，而此时B在之后的一段时间中收到了A早期发送的SYN信号，若B直接进入ESTABLISHED状态，此时显然A是没有连接需求的，也不会向B发送数据，而B也不知道这一点，这样就会浪费掉连接资源。而使用三次握手，A、B之间存在序列号，若发生之前的情况，B会对A发出信号和自己的ACK序号，此时A收到ACK时就会发现自己当前的序列号不能和B的ACK对应，就会给B发送RESET信号，从而避免资源浪费。</p>
+<p><strong>SYN攻击</strong>：即随机IP访问服务器发送大量SYN请求。</p>
+</blockquote>
+<h4 id="tcp四次挥手">TCP四次挥手</h4>
+<blockquote>
+<p>四次挥手的流程：</p>
+<table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">A</th>
+<th style="text-align: center;">B</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">A发送FIN信号及自己的序列号给B，然后进入FIN_WAIT1状态</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"></td>
+<td style="text-align: center;">B接收到了A发送的FIN信号会向A发送ACK，然后进入CLOSE_WAIT状态</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">客户端收到ACK信号进入FIN_WAIT2状态</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"></td>
+<td style="text-align: center;">一段时间后，服务端发送完数据，就会给客户端发送FIN报文，此时服务端进入LAST_ACK状态</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">当客户端接收到FIN信号时发送ACK信号给服务端，此时客户端会进入TIME_WAIT状态。若超过2MSL没有收到回复则客户端关闭连接进入CLOSED状态。</td>
+<td style="text-align: center;">当服务端接收到ACK信号时会关闭连接进入CLOSED状态</td>
+</tr>
+</tbody>
+</table>
+<p><strong>为什么断开连接需要四次挥手？</strong></p>
+<p>​ 因为TCP连接是全双工的，所以必须保证每个方向都单独进行关闭。当客户端想关闭自己这方的连接时，服务端可能还需要发送消息，故客户端只能先发送FIN，然后等待服务端完成了自己操作后发出FIN才完成一个连接两个方向的关闭。</p>
+<p><strong>为什么客户端发送ACK信号后还需要等待2MSL长度的时间？</strong></p>
+<p>​ 主要有两个原因：</p>
+<p>​ 1、如果ACK信号在传输过程中丢失了，客户端可以等待服务端重新发送FIN报文，此时再发送ACK报文来保证连接被正常关闭。</p>
+<p>​ 2、2MSL时间是网络TCP生存时间的两倍，设置这个时间是为了给服务器足够的超时重传时间，也让客户端可以等待网络中在之前连接中发出的包全部消失。</p>
 </blockquote>
 
     </div>
@@ -553,13 +662,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">82k</span>
+    <span title="站点总字数">88k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:14</span>
+    <span title="站点阅读时长">1:20</span>
   </span>
 </div>
 <div class="busuanzi-count">
