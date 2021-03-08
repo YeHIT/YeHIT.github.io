@@ -198,7 +198,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">36</span>
+          <span class="site-state-item-count">38</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -211,7 +211,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-count">27</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/07/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%AA%81%E5%87%BB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/" class="post-title-link" itemprop="url">java并发突击</a>
+          <a href="/2021/03/07/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%AA%81%E5%87%BB/" class="post-title-link" itemprop="url">数据结构突击</a>
         </h2>
 
         <div class="post-meta-container">
@@ -286,16 +286,10 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
+      
 
-      <time title="创建时间：2021-03-04 00:00:00" itemprop="dateCreated datePublished" datetime="2021-03-04T00:00:00+08:00">2021-03-04</time>
+      <time title="创建时间：2021-03-07 00:00:00 / 修改时间：14:39:34" itemprop="dateCreated datePublished" datetime="2021-03-07T00:00:00+08:00">2021-03-07</time>
     </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-05 13:06:22" itemprop="dateModified" datetime="2021-03-05T13:06:22+08:00">2021-03-05</time>
-      </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
@@ -314,7 +308,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>1.5k</span>
+      <span>1.4k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -332,61 +326,57 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="java并发突击">Java并发突击</h1>
-<h2 id="线程创建的方式">线程创建的方式</h2>
+          <h1 id="数据结构突击">数据结构突击</h1>
+<h2 id="树">树</h2>
+<h3 id="二叉树">二叉树</h3>
 <blockquote>
-<p>继承thread类，重写run方法</p>
-<p>实现runnable接口，重写run方法。</p>
-<p>实现callable接口，实现call方法</p>
+<p>即每个结点都带有左右子树的树结构</p>
 </blockquote>
-<h2 id="线程池">线程池</h2>
+<h3 id="二叉搜索树">二叉搜索树</h3>
 <blockquote>
-<p>为什么使用线程池？</p>
-<p>​ 为了避免线程的创建、销毁导致的线程开销，采用线程池管理一定数量的线程达到可复用线程的效果。</p>
-<p>Executors自带的线程池</p>
-<p>​ <strong>newSingleThreadExecutor</strong>：单线程线程池，这个线程池只有一个线程在工作。</p>
-<p>​ <strong>newFixedThreadPool</strong>：固定大小的线程池。每次提交一个任务就创建一个线程，直到线程达到线程池最大大小。超出的线程会在队列中等待。</p>
-<p>​ <strong>newCachedThreadPool</strong>：创建一个可缓存的线程池，当线程池大小超过了处理任务所需要的线程，会回收部分空闲线程，当任务增加时此线程池可以智能添加线程来处理任务。该线程池不会对大小进行限制。</p>
-<p>​ <strong>newScheduledThreadPool</strong>：创建一个大小无限的线程池，支持定时及周期性任务。</p>
-<p>​ <strong>newSingleThreadScheduled</strong>：创建一个只有一个线程的线程池，支持定时及周期性任务。</p>
-<p>​ <strong>newWorkStealingPool</strong>：创建一个拥有多个任务队列的线程池。</p>
-<p>自带线程池的缺点，newSingleThreadExecutor和newFixedThreadPool创建了一个长度Integer.MAX_VALUE的阻塞队列，导致任务过多堆积时耗费大量内存，产生OOM错误。newCachedThreadPool和newScheduledThreadPool创建的线程池最大线程数量为Integer.MAX_VALUE，导致可能创建了大量的线程，消耗资源，甚至造成OOM。</p>
+<p>在二叉树的基础上需要满足任一子树，左孩子的值小于根节点值，右孩子的值大于根节点值。</p>
+<p>优点：既有链表的快速插入与删除操作的特点，又有数组快速查找的优势。</p>
+<p>缺点：在特定情况下，如插入都是按序插入，会导致树结构退化为链表。查找效率下降。</p>
 </blockquote>
-<h2 id="自定义线程池">自定义线程池</h2>
+<h3 id="二叉平衡树">二叉平衡树</h3>
 <blockquote>
-<p>自己创建线程池new ThreadPoolExecutor()可以传递参数：</p>
-<p>​ corePoolSize：核心线程数量，即线程池会保持的线程数</p>
-<p>​ maximumPoolSize：最大线程数量，即线程池</p>
-<p>​ keepAliveTime：空闲线程最大存活时间</p>
-<p>​ TimeUnit：时间单位</p>
-<p>​ BlockingQueue：阻塞队列</p>
-<p>​ ThreadFactory：线程工厂</p>
-<p>​ RejectedExecutionHandler：拒绝策略</p>
+<p>特点：是高度平衡的二叉搜索树，要求左右子树高度差绝对值不超过1，且左右子树都是二叉搜索树。</p>
+<p>优点：由于树高度平衡，让查找操作的时间复杂度变为O(logN)。</p>
+<p>缺点：由于对树的平衡要求过高，导致每次插入和删除操作需要耗费大量资源对树进行平衡，耗费大量性能。</p>
+<p>适用场景：读多写少的场景。</p>
 </blockquote>
-<h3 id="线程池执行execute的流程">线程池执行execute的流程</h3>
+<h3 id="红黑树">红黑树</h3>
 <blockquote>
-<p>当当前线程数少于核心线程数时会新增worker线程。</p>
-<p>若任务可以成功入队，则将任务入队，同时检测当前线程池状态，若为不是RUNNING状态则将任务移出队列且执行拒绝策略。</p>
-<p>若入队失败，则尝试创建新的worker，若创建失败执行拒绝策略。</p>
+<p>特点：基于二叉平衡树的优点和缺点，红黑树放宽了树的平衡条件。最终会让根到叶子节点的路径最长不超过最短的两倍。它的特点为：</p>
+<p>​ 具有二叉查找树的特点。</p>
+<p>​ 根节点是黑色的。</p>
+<p>​ 每个叶子节点都是黑色的空节点，即叶子节点不存数据。</p>
+<p>​ 任何相邻的节点不能同时为红色，即红色节点是被黑色节点隔开的。</p>
+<p>​ 每个结点，从该节点到达其可达叶子节点的所有路径都包含相同数目的黑色节点。</p>
+<p>优点：红黑树对于平衡条件要求不是十分严格，让每次插入、删除操作的开销减少，且平衡条件也避免了像二叉搜索树退化成链表的情况，使得搜索操作时间复杂度是O(logN)。</p>
+<p>适用场景：写频繁的场景。</p>
 </blockquote>
-<h3 id="线程池拒绝策略">线程池拒绝策略</h3>
+<h3 id="b树">B树</h3>
 <blockquote>
-<p>AbortPolicy：丢弃任务并抛出异常。</p>
-<p>CallerRunsPolicy：判断当前线程池是否关闭，若未关闭则直接调用线程的run方法。</p>
-<p>DiscardOldestPolicy：丢弃队列最前的任务，然后重新使用线程池执行被拒绝的任务。</p>
-<p>DiscardPolicy：丢弃任务，什么也不做。</p>
-<p>NewThreadRunsPolicy：创建一个线程去执行被丢弃的任务。</p>
+<p>是一种多路平衡查找树，为了针对磁盘等存储设备设计的。读取磁盘往往是以磁盘块为单位的，位于同一个磁盘块的数据会被一次性读出。InnoDB存储引擎中有页的概念，默认每个页大小为16KB。</p>
+<p>一个m阶的B-Tree的特性：</p>
+<p>​ 每个结点最多有m个孩子。</p>
+<p>​ 除了根节点和叶子节点外，其他每个节点至少有Ceil(m/2)个孩子。</p>
+<p>​ 若根节点不是叶子节点，则至少有2个孩子。</p>
+<p>​ 所有叶子结点在同一层，且不含其他关键字信息。</p>
+<p>​ 非叶子结点大致是由指针，关键字，数据组成。</p>
+<p>操作：</p>
+<p>​ 插入：B树的插入在<strong>叶结点</strong>，当结点空间满了，则分裂为两个相邻结点，中间关键字上移到父节点中。若父节点也满了，同样分裂并上移，直至根节点，<strong>若根节点也满了，则中间元素上移到新的根结点中，树的深度增加一层</strong>。</p>
+<p>​ 删除：若没有左右孩子结点，则直接删除，否则将孩子结点中相近的结点上移到当前节点中。然后调整平衡性。</p>
+<p>优点：经常访问的数据可能离根节点较低，需要的I/O查询次数少，从而效率高。</p>
+<p>缺点：由于节点既存放数据又存放指针，导致每个节点可以指向的数据块数量少，从而导致树的高度高，且由于数据分布在各层，也导致查询数据的I/O次数不同，使得耗时难以估计。由于叶子之间没有联系，无法从一个叶子结点找到另一个叶子结点，故B-树难以进行范围查询。</p>
 </blockquote>
-<h2 id="synchronized">Synchronized</h2>
-<h2 id="juc">JUC</h2>
-<h3 id="reentrantlock">ReentrantLock</h3>
+<h3 id="b树-1">B+树</h3>
 <blockquote>
-<p>可重入锁本质上是针对一个线程的，当一个线程抢占成功锁之后，若线程内部还有进行锁操作，那么会将锁的state值增加，释放时则将该值减少，直到减少到0时又可以被重新抢占。</p>
-<p>释放锁过程也是先判断逐步释放。判断当前释放锁之后锁状态是否为0，若为0则通过unpark方法唤醒队列中的后继线程。</p>
-<p>java实现的锁的方式分为公平锁和非公平锁。</p>
-<p>公平锁和非公平锁的队列都是基于锁内部维护的一个双向链表。</p>
-<p>公平锁的公平性体现在每次重新抢占时会先判断队列中是否存在等待线程，若存在则让队列的线程先抢夺。</p>
-<p>非公平锁非公平体现在每次抢占时不会判断队列中是否存在等待线程，直接进行抢占。</p>
+<p>对B-树进行优化，将所有的数据都放在叶子结点，其他结点只存放关键字和孩子指针，且所有的叶子结点和相连的结点使用链表相连，便于范围查找和遍历。</p>
+<p>优势：B+数在内部节点上不含数据信息，使得内部节点可以存放更多的索引信息，降低了树高，减少了I/O查询次数。且B+树的叶子结点是相连的，对树的遍历只需要一次线性遍历，而B-树需要每层递归遍历。</p>
+<p>具体计算：</p>
+<p>​ 以InnoDB为例，默认页大小为16KB，若主键占8B，指针占8B，一条记录占1KB大小，则每个页可以存放1K的索引信息，16条记录，若树高为一(即只有根节点和叶子节点)则可以获取的记录数为1K * 16 = 16K，树高为2则可以获取的记录为 16M，树高为3可以获取的记录为16G。</p>
 </blockquote>
 
       
@@ -407,7 +397,7 @@
 
 
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/36/">36</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/38/">38</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -452,13 +442,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">88k</span>
+    <span title="站点总字数">103k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:20</span>
+    <span title="站点阅读时长">1:34</span>
   </span>
 </div>
 <div class="busuanzi-count">

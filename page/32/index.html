@@ -198,7 +198,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">36</span>
+          <span class="site-state-item-count">38</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -211,7 +211,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-count">27</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/codeAnalyse/nginx%E4%BA%86%E8%A7%A3/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/computerNetwork/%E7%AC%AC1%E7%AB%A0-%E6%A6%82%E8%AE%BA/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/codeAnalyse/nginx%E4%BA%86%E8%A7%A3/" class="post-title-link" itemprop="url">Nginx了解</a>
+          <a href="/2021/02/20/computerNetwork/%E7%AC%AC1%E7%AB%A0-%E6%A6%82%E8%AE%BA/" class="post-title-link" itemprop="url">概论</a>
         </h2>
 
         <div class="post-meta-container">
@@ -288,7 +288,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:13:13" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:05:46" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -296,7 +296,11 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%A1%86%E6%9E%B6%E5%85%A5%E9%97%A8/" itemprop="url" rel="index"><span itemprop="name">框架入门</span></a>
+          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
         </span>
     </span>
 
@@ -308,14 +312,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>6k</span>
+      <span>1.8k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>5 分钟</span>
+      <span>2 分钟</span>
     </span>
 </div>
 
@@ -326,183 +330,169 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="nginx">Nginx</h1>
-<h2 id="概述">概述</h2>
+          <h1 id="概论">概论</h1>
+<h2 id="网络大小划分">网络大小划分</h2>
 <blockquote>
-<p>Nginx是高性能的http和反向代理服务器，也是一个IMAP/SMTP/POP3等邮件代理服务器。</p>
-<p>正向代理和反向代理</p>
-<p>正向代理：客户端client通过设置，使用代理服务器proxy去访问远程服务器server。客户端知道代理存在。</p>
-<p>​ | client - proxy | - server</p>
-<p>使用场景：</p>
-<p>​ 可以访问原来无法访问的资源。</p>
-<p>​ 做缓存使用，加快访问速度。</p>
-<p>​ 对客户端授权或记录访问信息。</p>
-<p>反向代理：服务器通过代理服务接收连接请求，再转发给内部网络的服务器，将结果返回给客户端。客户端不知道代理存在。</p>
-<p>​ client - | proxy - server |</p>
-<p>使用场景：</p>
-<p>​ 保证内网安全，阻止web攻击。</p>
-<p>​ 负载均衡。</p>
+<p>个域网</p>
+<p>局域网：用于企业时被称为企业网络</p>
+<p>城域网</p>
+<p>广域网</p>
+<p>互联网</p>
 </blockquote>
-<h2 id="nginx命令">Nginx命令</h2>
+<h2 id="报文的不同称呼">报文的不同称呼</h2>
 <blockquote>
-<p>启动命令./Nginx</p>
-<p>杀死进程 kill SIGNAL pid</p>
-<p>​ kill -9 pid 强制停止</p>
-<p>​ kill -TERM pid 快速停止</p>
-<p>​ kill -QUIT pid 平缓停止</p>
-<p>查看版本 ./Nginx -V</p>
-<p>信号处理 ./Nginx -s SIGNAL(stop、quit、reopen、reload)</p>
-<p>​ 关闭 ./Nginx -s stop</p>
-<p>​ 重加载 ./Nginx -s reload</p>
-<p>​ 平缓停止 ./Nginx -s quit</p>
-<p>​ 快速停止 ./Nginx -s stop</p>
+<p>网络层中叫数据包/包</p>
 </blockquote>
-<h2 id="nginx配置">Nginx配置</h2>
-<h3 id="全局块">全局块</h3>
+<h1 id="因特网边缘部分的通信方式">因特网边缘部分的通信方式</h1>
 <blockquote>
-<p>全局块：指定运行时的用户组、进程id存放位置、日志存放位置、worker process数量等。</p>
-<p>#user nobody ：配置用户或用户组</p>
-<p>#worker_processes 1 ：运行启动的进程数</p>
-<p>#error_log logs/error.log 级别 ：日志路径及级别设置</p>
-<p>#pid logs/nginx.pid 进程id的文件地址</p>
+<h4 id="客户服务器方式-cs">客户服务器方式 C/S</h4>
+<h4 id="对等方式-p2ppeer-to-peer">对等方式 P2P(peer to peer)</h4>
+<p>既是服务器又是客户机</p>
 </blockquote>
-<h3 id="events块">events块</h3>
+<h1 id="数据交换方式">数据交换方式</h1>
 <blockquote>
-<p>events块：影响Nginx服务器和用户网络连接配置，如每个进程最大连接数、选择哪种事件驱动模型、是否序列化events块：影响Nginx服务器和用户网络连接配置，如每个进程最大连接数、选择哪种事件驱动模型、是否序列化。</p>
-<p>events{</p>
-<p>​ #worker_connections 1024：每个进程的最大连接数</p>
-<p>}</p>
+<h4 id="电路交换---面向连接">电路交换---面向连接</h4>
+<p>交换机位于中心，需要连接时会通过电路连接两个主机。</p>
+<p>建立连接:申请占用通信资源。</p>
+<p>通话:一直占用通信资源。</p>
+<p>释放连接:释放通信资源</p>
+<p>适用于数据量很大的实时传输，核心路由器之间可以用电路交换</p>
+<h4 id="报文交换">报文交换</h4>
+<p>报文一般比分组长的多</p>
+<p>报文发送时间长</p>
+<h4 id="分组交换计算机使用的方式">分组交换:计算机使用的方式</h4>
+<p>发送端对报文进行拆分成不同小组，添加首部组合成一个数据然后发送给接收端。</p>
+<p>接收端对数据进行拆除首部，然后根据首部的信息将收到的数据组合成报文</p>
 </blockquote>
-<h3 id="http块">http块</h3>
+<h1 id="局域网和广域网不单单从覆盖范围划分还要从使用的技术是什么">局域网和广域网不单单从覆盖范围划分，还要从使用的技术是什么</h1>
 <blockquote>
-<p>http块：配置代理、缓存、日志等绝大部分功能的地方。可以嵌套多个server块，而不同的server可以对应不同的域名(虚拟主机)。</p>
-<p>虚拟主机：同一台Nginx服务器，可以支持多个网站的运行，每个虚拟主机之间都互相独立，具有完整功能。</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 相对路径</span><br><span class="line">			root html;</span><br><span class="line">			# 默认跳转的首页地址</span><br><span class="line">			index index.html index.htm;</span><br><span class="line"></span><br><span class="line">		&#125;	</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>日志配置：可以获取用户地址信息、跳转来源、终端、url访问量等。</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#log_format main &#x27;$remote_addr - $remote_user [$time_local] &quot;$request&quot; &#x27;</span><br><span class="line">#                  &#x27;$status $body_bytes_sent &quot;$http_referer&quot; &#x27;</span><br><span class="line">#                  &#x27;&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;&#x27;;</span><br><span class="line"></span><br><span class="line">#access_log logs/access.log main;</span><br></pre></td></tr></table></figure>
-<table>
-<thead>
-<tr class="header">
-<th></th>
-<th>用途</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>remote_addr</td>
-<td>客户端的ip地址</td>
-</tr>
-<tr class="even">
-<td>remote_user</td>
-<td>客户端的用户名称</td>
-</tr>
-<tr class="odd">
-<td>time_local</td>
-<td>访问时间和时区</td>
-</tr>
-<tr class="even">
-<td>request</td>
-<td>请求方法</td>
-</tr>
-<tr class="odd">
-<td>status</td>
-<td>响应状态码 如：200</td>
-</tr>
-<tr class="even">
-<td>body_bytes_sent</td>
-<td>主体内容字节数 如：612</td>
-</tr>
-<tr class="odd">
-<td>http_referer</td>
-<td>记录是从哪个链接访问过来的</td>
-</tr>
-<tr class="even">
-<td>http_user_agent</td>
-<td>用户使用的代理（浏览器）</td>
-</tr>
-<tr class="odd">
-<td>http_x_forwarded_for</td>
-<td>通过代理服务器来记录客户端的ip地址</td>
-</tr>
-</tbody>
-</table>
+<p>局域网 自己购买设备、自己维护、带宽固定 距离100米内</p>
+<p>广域网 花钱买服务、花钱买带宽</p>
 </blockquote>
-<h3 id="反向代理配置">反向代理配置</h3>
+<h1 id="网络的拓扑结构">网络的拓扑结构</h1>
 <blockquote>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 相对路径</span><br><span class="line">			root html;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://127.0.0.1:8080</span><br><span class="line">			# 默认跳转的首页地址</span><br><span class="line">			index index.html index.htm;</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>代理多个tomcat服务器，通过路径来映射</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location ~ path1 &#123;</span><br><span class="line">			# 相对路径</span><br><span class="line">			root html;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://127.0.0.1:8080</span><br><span class="line">			# 默认跳转的首页地址</span><br><span class="line">			index index.html index.htm;</span><br><span class="line">        &#125;	</span><br><span class="line">		location ~ path2 &#123;</span><br><span class="line">			# 相对路径</span><br><span class="line">			root html;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://127.0.0.1:8081</span><br><span class="line">			# 默认跳转的首页地址</span><br><span class="line">			index index.html index.htm;</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="负载均衡">负载均衡</h3>
+<p>总线型、环形、星型、树型、网状结构</p>
 </blockquote>
+<h1 id="网络工作方式">网络工作方式</h1>
 <blockquote>
-<p>早期使用DNS(域名解析系统)做负载，具体来说就是给客户端解析不同的ip地址，让流量直接到达服务器。</p>
-<p>优点： 1） 通过健康检查，避免单点故障 2） 当发现节点故障时，从集群中移除，保证应用的高可用</p>
-<p>四层负载均衡，在OSI模型的传输层，主要是转发。 七层负载均衡，在OSI模型的应用层，主要是代理。</p>
-<p>负载均衡器可以处理HTTP/HTTPS/TCP/UDP等的请求。</p>
-<p>负载均衡的调度算法：</p>
-<p>​ 轮询。</p>
-<p>​ 最小连接：优先选择连接数最少的服务器，适用于会话时间较长的业务处理。</p>
-<p>​ IP映射，根据请求的ip地址进行散列，让同一ip下的请求都映射到同一服务器上，可以解决session问题。</p>
-<p>Nginx设置默认轮询算法</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080;</span><br><span class="line">		server 192.168.1.20:8081;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>设置权重的情况，默认权重是1。</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080 weight = 1;</span><br><span class="line">		server 192.168.1.20:8081 weight = 2;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>根据ip地址固定server处理，使用ip_hash。</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080 weight = 1;</span><br><span class="line">		server 192.168.1.20:8081 weight = 2;</span><br><span class="line">		ip_hash;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>资源子网、通信子网、接入网</p>
 </blockquote>
-<h3 id="动静分离">动静分离</h3>
+<h1 id="计算机网络的性能">计算机网络的性能</h1>
 <blockquote>
-<p>将静态资源和动态资源分开。</p>
-<p>静态资源直接查找Nginx的静态资源地址。</p>
-<p>动态资源请求通过反向代理映射到tomcat路径下的资源。</p>
-<p>实现方式：</p>
-<p>​ 单独把静态文件放在独立的服务器及独立的域名下(推荐)。</p>
-<p>​ 将动态资源和静态资源混合在一起，通过Nginx分开。</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080 weight = 1;</span><br><span class="line">		server 192.168.1.20:8081 weight = 2;</span><br><span class="line">		ip_hash;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 访问动态资源</span><br><span class="line">		location ~ .*.jsp$ &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">		# 访问静态资源</span><br><span class="line">		location ~ .*\.(gif|jpg|css)$ &#123;</span><br><span class="line">			root /usr/local/nginx/image;</span><br><span class="line">			// 缓存时间</span><br><span class="line">			expires 3d;</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="location块的匹配规则">location块的匹配规则</h3>
+<p>速率:主机在数字信道传送数据位数的速率，也成为data rate 或bit rate。</p>
+<p>带宽:数据信道所能传送的最高数据率。</p>
+<p>吞吐量:单位时间内通过某个网络的数据量。</p>
+<p>时延:</p>
+<blockquote>
+<p>发送时延 数据块长度/信道带宽</p>
+<p>传播时延:信道长度/信号在信道上的传播速率</p>
+<p>处理时延:在</p>
+<p>排队时延:在接收方主机处等待的时间</p>
 </blockquote>
+<p>时延带宽积 :传播时延 * 带宽</p>
+<p>往返时间RTT:从发送方发送数据开始到发送方收到接收方确认。</p>
+<p>利用率:</p>
 <blockquote>
-<p>匹配规则：</p>
-<p>​ location = /uri 精确匹配</p>
-<p>​ location ^~ /uri 前缀匹配，顺序在正则之前</p>
-<p>​ location ~ pattern 区分大小写的正则匹配</p>
-<p>​ location ~* pattern 不区分大小写的正则匹配</p>
-<p>​ location /uri 前缀匹配，顺序在正则之后(两种前缀匹配不能同时出现)</p>
-<p>​ location / 通用匹配，接收未匹配到其他location的请求。</p>
-<p>匹配顺序：</p>
-<p>​ 首先会进行精确匹配，然后会进行前缀匹配，具体顺序按指令长度从长到短的顺序依次匹配。</p>
-<p>​ 使用正则匹配时，是按照配置文件的顺序依次匹配的。如果不希望前缀匹配后进行正则匹配，那么使用^~。</p>
+<p>信道利用率 = 有数据通过时间 / (有 + 无数据通过的时间)</p>
+<p>网络利用率：信道利用率加权平均值</p>
 </blockquote>
-<h3 id="url重写">URL重写</h3>
-<blockquote>
-<p>即对URL的规范化处理。</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080 weight = 1;</span><br><span class="line">		server 192.168.1.20:8081 weight = 2;</span><br><span class="line">		ip_hash;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		</span><br><span class="line">		# 重写URL</span><br><span class="line">		rewrite ^/(.*) http://www.xxxx.com/xxx;</span><br><span class="line"></span><br><span class="line">		# 访问动态资源</span><br><span class="line">		location ~ .*.jsp$ &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">		# 访问静态资源</span><br><span class="line">		location ~ .*\.(gif|jpg|css)$ &#123;</span><br><span class="line">			root /usr/local/nginx/image;</span><br><span class="line">			// 缓存时间</span><br><span class="line">			expires 3d;</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="nginx安装">Nginx安装</h2>
+<p>非性能指标:费用、质量、标准化、可靠性、可扩展性、可升级性、管理与维护</p>
 </blockquote>
+<h1 id="计算机网络的体系结构">计算机网络的体系结构</h1>
 <blockquote>
-<p>在各官网下载相关组件 nginx openssl zlib pcre 等等</p>
-<p>以openssl为例 1） 通过rz上传压缩包 2） 通过tar -xvf *.tar.gz 进行解压缩 3）cd openssl-1.1.1d 进行配置检查以及编译 ./config 执行配置检查 make &amp; make install 进行编译和安装</p>
-<p>​ 如上过程，适用于zlib和pcre ​ 注意： 对于 pcre而言， 执行检查命令为 ./configure 4) 安装nginx过程中 执行配置检查</p>
-<pre><code>./configure --sbin-path=/usr/local/nginx/nginx \
---conf-path=/usr/local/nginx/nginx.conf \
---pid-path=/usr/local/nginx/nginx.pid \
---with-http_ssl_module \
---with-pcre=/usr/local/src/pcre-8.44 \
---with-zlib=/usr/local/src/zlib-1.2.11 \
---with-openssl=/usr/local/src/openssl-1.1.1d</code></pre>
-<ol start="5" type="1">
-<li>仍然执行 make 以及 make install<br>
-</li>
-<li>nginx安装成功 ./nginx验证</li>
-</ol>
-<p>注意事项：nginx服务器，需要虚拟机开放80端口的访问 防火墙配置 （同样适用于开放8080 8081端口） firewall-cmd --list-all 查看当前配置 firewall-cmd --add-service=http --permanent 开放http访问 firewall-cmd --add-port=80/tcp --permanent 开放80端口 firewall-cmd --reload 重启防火墙保存</p>
-<p>jdk的安装 1） 解压缩 -- 拷贝目录到 /usr/local/java 2) 更改环境变量 vim /etc/profile</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">export JAVA_HOME=/usr/local/java</span><br><span class="line">export JAVA_BIN=$JAVA_HOME/bin</span><br><span class="line">export PATH=$PATH:$JAVA_HOME/bin</span><br><span class="line">export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar</span><br><span class="line">export PATH=$JAVA_HOME/bin:$JRE_HOME/bin:$PATH</span><br></pre></td></tr></table></figure>
-<ol start="3" type="1">
-<li>让环境变量生效 source /etc/profile</li>
-<li>验证版本 java -version</li>
-</ol>
-<p>tomcat的安装 1） 解压缩 -- 拷贝目录到 /usr/local/tomcat 2) 执行启动 ./startup.sh</p>
+<p>OSI(开放式系统互联)七层模型:分层有利于标准化，且分层后各层之间的变化不会影响到其他层，尽量降低了相互之间的依赖。</p>
+<p>物理层:规定电压、接口标准</p>
+<p>数据链路层:输入如何封装，添加物理层地址，MAC</p>
+<p>网络层:选择最佳路径，IP地址编址</p>
+<p>传输层:可靠传输(建立会话)、不可靠传输(不建立会话)、流量控制。</p>
+<p>会话层:服务和客户端建立的会话。 netstat -nb</p>
+<p>表示层:加密、压缩、编码，开发人员考虑。</p>
+<p>应用层: 能够产生网络流量，能够和用户交互的应用程序。</p>
+</blockquote>
+<h1 id="网络排错">网络排错</h1>
+<blockquote>
+<p>需要从底层到高层逐一排查</p>
+</blockquote>
+<h1 id="网络安全和osi参考模型的关系">网络安全和OSI参考模型的关系</h1>
+<blockquote>
+<p>物理层安全</p>
+<p>数据链路层安全:ADSL、无线AP</p>
+<p>网络层安全</p>
+<p>应用层安全: SQL注入漏洞、上传漏洞</p>
+</blockquote>
+<h1 id="一些基本概念">一些基本概念</h1>
+<blockquote>
+<p>实体:交换信息的硬件或软件进程。</p>
+<p>协议:控制两个对等实体通信的规则。</p>
+<p>服务:下层向上层提供服务，上层需要使用下层提供的服务来实现本层的功能。</p>
+<p>服务访问点:相邻两层实体间交换信息的地方。</p>
+<p>AP接入点和无线路由器和基站作用相差不大，主要负责中继无线计算机之间的数据包，还负责中继无线计算机和Internet之间的数据包。</p>
+<p>IEEE802.11俗称WIFI。以太网IEEE802.3。</p>
+<p>将两个或多个网络连接起来并提供必要转换的机器，其硬件和软件方面的总称是网关。路由器就是一个网关，在网络层交换数据包。</p>
+<p>不可靠的无连接服务通常称为数据报服务。</p>
+</blockquote>
+<h1 id="tpcip">TPC/IP</h1>
+<blockquote>
+<p>五层模型:</p>
+<p>应用层:</p>
+<blockquote>
+<p>数据单元:传输数据单元PDU</p>
+</blockquote>
+<p>运输层:</p>
+<blockquote>
+<p>数据单元:报文</p>
+</blockquote>
+<p>网络层:</p>
+<blockquote>
+<p>数据单元:(IP数据报/IP分组/包)</p>
+</blockquote>
+<p>数据链路层:</p>
+<blockquote>
+<p>数据单元:数据帧</p>
+</blockquote>
+<p>物理层:</p>
+<blockquote>
+<p>数据单元:比特010101</p>
+</blockquote>
+</blockquote>
+<h1 id="osi参考模型">OSI参考模型</h1>
+<blockquote>
+<p>应用层:</p>
+<p>​ 所有可以和用户交互产生网络流量的程序。</p>
+<p>​ 文件传输FTP、电子邮件SMTP、万维网HTTP</p>
+<p>表示层</p>
+<p>​ 用于处理两个通信系统中交换信息的表示方式。</p>
+<p>​ 数据格式变换、数据加密解密、数据压缩和恢复</p>
+<p>​ JPEG、ASCII</p>
+<p>会话层</p>
+<p>​ 向表示层实体/用户进程提供建立连接并在连接上有序地传输数据。</p>
+<p>​ 建立、管理、终止会话。</p>
+<p>​ 使用检验点可以使会话在通信失效时从检验点/同步点进行恢复通信，实现数据同步。</p>
+<p>​ ADSP、ASP</p>
+<p>传输层</p>
+<p>​ 负责主机中两个进程的通信，即端到端的通信。传输单位是报文/用户数据报</p>
+<p>​ 可靠传输、不可靠传输</p>
+<p>​ 差错控制</p>
+<p>​ 复用分用</p>
+<p>网络层</p>
+<p>​ 路由选择</p>
+<p>​ 流量控制</p>
+<p>​ 差错控制</p>
+<p>​ 拥塞控制</p>
+<p>数据链路层 加上报头和报尾。</p>
+<p>​ 把网络层传下来的数据报组装成帧</p>
+<p>​ 差错控制</p>
+<p>​ 流量控制</p>
+<p>​ 接入控制</p>
+<p>​ SDLC、HDLC、PPP、STP</p>
+<p>物理层</p>
+<p>​ 在物理媒体上实现比特流的透明传输</p>
+<p>​ 定义接口特性</p>
+<p>​ 定义传输模式</p>
+<p>​ 定义传输速率</p>
+<p>​ 比特同步</p>
+<p>​ 比特编码</p>
+<p>​ RJ45、802.3</p>
 </blockquote>
 
       
@@ -523,7 +513,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/31/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/31/">31</a><span class="page-number current">32</span><a class="page-number" href="/page/33/">33</a><span class="space">&hellip;</span><a class="page-number" href="/page/36/">36</a><a class="extend next" rel="next" href="/page/33/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/31/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/31/">31</a><span class="page-number current">32</span><a class="page-number" href="/page/33/">33</a><span class="space">&hellip;</span><a class="page-number" href="/page/38/">38</a><a class="extend next" rel="next" href="/page/33/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -568,13 +558,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">88k</span>
+    <span title="站点总字数">103k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:20</span>
+    <span title="站点阅读时长">1:34</span>
   </span>
 </div>
 <div class="busuanzi-count">

@@ -198,7 +198,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">36</span>
+          <span class="site-state-item-count">38</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -211,7 +211,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-count">27</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/JVMKnowledge/2.%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/" class="post-title-link" itemprop="url">网络层</a>
+          <a href="/2021/02/20/JVMKnowledge/2.%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86/" class="post-title-link" itemprop="url">2.垃圾收集</a>
         </h2>
 
         <div class="post-meta-container">
@@ -288,7 +288,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：17:14:02" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：15:58:55" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -296,11 +296,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
-        </span>
-          ，
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
+          <a href="/categories/JVM/" itemprop="url" rel="index"><span itemprop="name">JVM</span></a>
         </span>
     </span>
 
@@ -312,14 +308,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>2.5k</span>
+      <span>4k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
+      <span>4 分钟</span>
     </span>
 </div>
 
@@ -330,181 +326,150 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="网络层">网络层</h1>
-<h2 id="网络层传输单元为数据报">网络层传输单元为数据报</h2>
-<h2 id="网络层提供的两种服务">网络层提供的两种服务</h2>
+          <h1 id="垃圾收集">垃圾收集</h1>
 <blockquote>
-<p>网络层关注的是如何将分组从源端沿着网络路劲送达目的端。</p>
-<p>它向运输层通过了虚电路服务和数据报服务。</p>
-<p>计算机通信的过程中可靠交付由端系统负责，而不是网络负责。</p>
-<p>虚电路服务</p>
-<p>​ 通过指定数据的逻辑连接，向端系统保证了数据的按序到达，免去了端系统在顺序控制上的开销。</p>
-<p>​ 逻辑上的连接而非真正建立了一条物理连接。</p>
-<p>数据报服务</p>
-<p>​ 网络层向上提供简单灵活的、<strong>无连接的</strong>、尽最大努力交付的数据报服务。</p>
-<p>​ 优点:传输网络不提供端到端的可靠传输服务，使得网络造价降低，运行方式灵活，适用多种应用。</p>
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: center;">两个服务对比</th>
-<th style="text-align: center;">虚电路服务</th>
-<th style="text-align: center;">数据报服务</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;">思路</td>
-<td style="text-align: center;">可靠通信由网络保证</td>
-<td style="text-align: center;">可靠通信由用户主机保证</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">连接的建立</td>
-<td style="text-align: center;">必须有</td>
-<td style="text-align: center;">不需要</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">终点地址</td>
-<td style="text-align: center;">仅在连接建立阶段使用，每个分组使用短的虚电路号</td>
-<td style="text-align: center;">每个分组都要有终点的完整地址</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">分组的转发</td>
-<td style="text-align: center;">属于同一条虚电路的分组均按照同一路由进行转发</td>
-<td style="text-align: center;">每个分组独立选择路由进行转发</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">当结点出故障时</td>
-<td style="text-align: center;">所有通过出故障结点的虚电路均不能工作</td>
-<td style="text-align: center;">出故障的结点可能丢失分组，一些路由可能发生变化</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">分组的顺序</td>
-<td style="text-align: center;">总数按发送顺序到达终点</td>
-<td style="text-align: center;">到达终点时不一定按发送顺序</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">端到端的差错处理和流量控制</td>
-<td style="text-align: center;">可以由网络负责,也可以由用户主机负责</td>
-<td style="text-align: center;">由用户主机负责</td>
-</tr>
-</tbody>
-</table>
+<p>垃圾收集的步骤：判断对象是否存活(可回收) -&gt;</p>
 </blockquote>
-<h2 id="网际协议ip">网际协议IP</h2>
-<h3 id="虚拟互联网">虚拟互联网</h3>
+<h2 id="判断对象存活">判断对象存活</h2>
+<h3 id="引用计数">引用计数</h3>
 <blockquote>
-<p>网络互连的设备:</p>
-<p>​ 概念:中间设备又称为中间系统或中继系统</p>
-<p>​ 物理层中继系统:转发器。</p>
-<p>​ 数据链路层中继系统:网桥或桥接器。</p>
-<p>​ 网络层中继系统:路由器。</p>
-<p>​ 网络层以上的中继系统:网关。</p>
-<p>网络层协议:IP协议最主要。与IP协议配套的协议:</p>
-<p>​ ARP地址解析协议。(位于底层)解析MAC地址</p>
-<p>​ RARP逆地址解析协议。(位于底层)</p>
-<p>​ ICMP网际控制报文协议。(位于顶层)报告网络故障</p>
-<p>​ IGMP网际组管理协议。(位于顶层)</p>
+<p>在对象中添加一个引用计数器，当一个地方有引用它时计数器值加一；引用失效时，计数器值就减一。计数器为0的对象是不可能再被引用的。</p>
+<p>存在循环引用的问题</p>
+<p>Java中没有使用。</p>
 </blockquote>
-<h2 id="ipv4地址组成">IPv4地址组成</h2>
+<h3 id="可达性分析算法">可达性分析算法</h3>
 <blockquote>
-<p>IPv4地址由32位IP组成，其中分为网络ID和主机ID。主机ID不能全为0(全0表示网段)也不能全为1(全1表示广播)</p>
-<p>A类地址:前8位为网络ID，后24位为主机ID。 0xxxxxxx | x....x 1~126 (127的地址用于做循环测试，本机地址)</p>
-<p>B类地址:前16位为网络ID，后8位为主机ID。 10x.....x | x....x 128~191</p>
-<p>C类地址:前24位为网络ID，后8位为主机ID。 110x....x | x...x 192~223</p>
-<p>D类组播使用。 1110| x.....x(多播地址) 224~239</p>
-<p>E类研究使用。 1111| x.....x(保留为今后使用) 240~255</p>
-<p>特殊的几个地址:</p>
-<p>​ 127.0.0.1 本地环回地址</p>
-<p>​ 169.254.0.0 微软在无法自动获取IP时自动分给计算机的IP地址。</p>
-<p>​ 保留的私网地址。</p>
-<ul>
-<li>10.0.0.0 ------ 10.255.255.255</li>
-<li>172.16.0.0 ------ 127.31.255.255</li>
-<li>192.168.0.0 ------- 192.168.255.255</li>
-</ul>
+<p>基本思路：通过一系列称为GC Roots的根对象作为起始点集，当某个对象到起始点集间没有任何引用链相连时，这个对象就是不可能再被使用的。</p>
+<p>Java中固定可作为GC Roots的对象：</p>
+<p>​ 在虚拟机栈中引用的对象，如各个线程被调用的方法堆栈中使用到的参数、局部变量、临时变量等。</p>
+<p>​ 在方法区类静态属性引用的对象，如Java类引用类型静态变量。</p>
+<p>​ 在本地方法栈中JNI(Native方法)引用的对象。</p>
+<p>​ Java虚拟机内部的引用，如基本数据类型对应的Class对象，一些常驻的异常对象(NullPointExcepiton、OutOfMemoryError）还有系统类加载器。</p>
+<p>​ 所有被同步锁持有的对象。</p>
+<p>​ 反应Java虚拟机内部情况的JM XBean、JVMTI中注册的回调、本地代码缓存等。</p>
+<p>除了固定GC Roots集合外，根据用户选用的垃圾收集器及当前回收的内存区域不同，还可以有其他对象加入。</p>
+<p>被判定为不可达的对象还不会被立即回收。真正回收需要经历至少两个标记过程：</p>
+<p>​ 若对象在进行可达性分析后分析没有和GC Roots相连接的引用链，会被第一次标记。随后进行一次筛选，若这个对象没有覆盖finalize方法或该方法已经被虚拟机调用，则没有必要执行finalize方法。</p>
+<p>​ 若需要执行finalize方法，则会将对象放入F-Queue队列中，然后自动启用线程执行队列中对象的finalize方法。执行后收集器会对队列中对象进行第二次小规模标记，若对象在finalize方法中重新和引用链上的任何一个对象建立关联，第二次标记时它会被移除即将回收的集合。否则，它通常要被回收。</p>
 </blockquote>
-<h2 id="子网掩码的作用">子网掩码的作用</h2>
+<h2 id="回收方法区">回收方法区</h2>
 <blockquote>
-<p>同IP地址作与运算，得到的结果用于判断两个IP是否位于同一网段，从而判断这两个IP的信息交换是否要通过路由器。</p>
-<p>可以用于屏蔽IP地址的主机ID部分，来凸显IP地址的网络ID部分，借此判断两个IP能否直接信息交换。</p>
-<p>还可以将大的IP网络划分为若干小的网络。(划分子网、等分划分/边长划分)</p>
-<p>超网:通过子网掩码把若干个小网络合并为一个大网络。</p>
+<p>主要回收废弃的常量和不再使用的类型。</p>
+<p>回收常量要求：当前常量进入了常量池，且当前系统没有任何一个对象的值是该常量。</p>
+<p>回收类型的条件：</p>
+<p>​ 该类所有的实例已经被回收。</p>
+<p>​ 加载该类的类加载器被回收。</p>
+<p>​ 该类对应的java.lang.Class对象没有在任何地方被引用，无法在任何地方通过反射访问该类的方法。</p>
 </blockquote>
-<h2 id="ip地址与mac地址">IP地址与MAC地址</h2>
+<h2 id="引用的概念">引用的概念</h2>
 <blockquote>
-<p>网络层以上使用IP地址，链路层及以下使用MAC地址</p>
-<figure>
-<img src="/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/IP地址和MAC地址.png" alt="IP地址和MAC地址"><figcaption aria-hidden="true">IP地址和MAC地址</figcaption>
-</figure>
-<p>相比于IP数据报，MAC帧增加了</p>
-<p>交换机基于数据帧的MAC地址转发数据帧，路由器基于数据包的IP地址转发数据包。</p>
-<p>数据包在传输过程不变，过网络设备数据帧要用新的物理层地址重新封装。</p>
-<p>MAC地址决定了数据帧下一跳哪个设备接收，而IP地址决定了数据包的起点和终点</p>
+<p>Java的引用在JDK1.2后分为强引用、软引用、弱引用、虚引用。</p>
+<p>强引用：最传统的引用的概念，只有强引用关系存在，垃圾收集器就永远不回收被引用的对象。</p>
+<p>软引用：描述一些还有用但非必须的对象。只被软引用关联的对象，在系统将要发生内存溢出异常时，会将这些对象列入回收访问进行第二次回收，若回收还没有足够内存，抛出内存溢出异常。</p>
+<p>弱引用：描述非必须的对象，被弱引用关联的对象只能生存到下一次垃圾收集发送为止。</p>
+<p>虚引用：最弱的引用关系。无法通过虚引用来取得一个对象实例，为对象设置虚引用关联的唯一目的只是为了能在这个对象被收集器回收时收到一个系统通知。</p>
 </blockquote>
-<h2 id="协议">协议</h2>
+<h2 id="垃圾收集算法">垃圾收集算法</h2>
 <blockquote>
-<p>ARP协议:将IP地址转化为物理地址。会使用到广播。</p>
-<p>RARP协议:将物理地址转化为IP地址。</p>
-<p>ARP欺骗。</p>
+<p>可以分为引用计数式垃圾收集和追踪式垃圾收集。</p>
+<p>Java主流虚拟机中只有追踪式垃圾收集。</p>
 </blockquote>
-<h2 id="ip数据报">IP数据报</h2>
+<h3 id="分代收集理论">分代收集理论</h3>
 <blockquote>
-<p>IP数据报的首部和数据两部分组成。首部的前一部分是固定，共20字节，是所有IP数据报必须具有的。</p>
-<figure>
-<img src="/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/IP地址.png" alt="IP地址"><figcaption aria-hidden="true">IP地址</figcaption>
-</figure>
-<p>在首部的固定部分的后面是一些可选字段，其长度是可变的。</p>
-<p>各字段</p>
-<p>0-4位版本(表示为IPv4/IPv6) 4-8位首部长度(最小值为固定长度部分共20个字节。可表示最大15个单位，一个单位4个字节，故首部最大60个字节) 8-16区分服务(数据包所需的服务，定义优先级) 16-32总长度(数据包总大小，一般为1500)</p>
-<p>标识(每产生一个数据包就增加1) 标志(判断数据包是否分片) 片偏移(偏移量单位为8个字节)</p>
-<p>TTL生存时间值，指定IP包被路由器丢弃之前允许通过的最大网段数量。</p>
-<p>协议用于指明上层协议是什么，如ICMP、TCP、UDP等。</p>
-<p>首部校验和用于校验数据报是否可用。计算过程:发送端把数据报首部的信息拆成许多单字，然后初始校验和为0，将校验和同这些单字进行反码运算求和，结果取反码即为校验和。接收方重复此过程，若结果为0则保留，不为0则直接丢弃。</p>
-<p>源地址、目的地址即为IP地址。</p>
-<p>可选字段用于支持排错、测量及安全等措施</p>
+<p>弱分代假说：绝大多数对象都是朝生夕灭的。</p>
+<p>强分代假说：熬过越多次垃圾收集过程的对象越难消灭。</p>
+<p>跨代引用假说：跨代引用相对于同代引用来说仅占极少数。</p>
+<p>新生代收集（Minor GC/Young GC）：指目标只是新生代的垃圾收集。</p>
+<p>老年代收集（Major GC/Old GC）：指目标只是老年代的垃圾收集。目前只有CMS收集器会有单独收集老年代的行为。</p>
+<p>混合收集（Mixed GC）：指目标是收集整个新生代以及部分老年代的垃圾收集。目前只有G1收 集器会有这种行为。</p>
+<p>整堆收集（Full GC）：收集整个Java堆和方法区的垃圾收集</p>
 </blockquote>
-<h2 id="数据路由">数据路由</h2>
+<h3 id="标记-清除算法">标记-清除算法</h3>
 <blockquote>
-<p>数据路由在不同网段转发数据报。能去能回--------网络畅通。</p>
-<p>负载均衡</p>
+<p>先标记所有需要回收的对象，标记完成后统一回收掉所有被标记的对象。</p>
+<p>存在的问题：</p>
+<p>​ 若Java堆中包含大量对象，且大部分都是需要被回收的，需要进行大量的标记清除动作。</p>
+<p>​ 内存空间碎片化，标记、清除后会产生大量不连续的内存碎片。</p>
 </blockquote>
-<h2 id="icmp协议">ICMP协议</h2>
+<h3 id="标记-复制">标记-复制</h3>
 <blockquote>
-<p>报文类型:ICMP差错报告报文、ICMP询问报文</p>
-<p>报文前四个字节格式统一共3个字段:类型、代码、检验和，接着的四个字节内容与ICMP的类型有关。</p>
-<p>差错报告报文共五种:终点不可达、源点抑制(发数据报的速度过快)、时间超过、参数问题、改变路由/重定向。</p>
-<p>询问报文有两种:回送请求和回答报文、时间戳请求和回答报文。</p>
+<p>为了解决标记-清除算法面对大量可回收对象时执行效率低的问题。</p>
+<p>半区复制：将可用内存按容量划分为大小相等的两块，每次只使用其中一块，当一块内存用完了，将还存活着的对象复制到另一块上，然后将已使用过的内存空间一次清理掉。</p>
+<p>Appel式回收：分为1块Eden，两块Survivor，分配时使用1块Eden，1块Survivor。回收时将存活的对象放入另一块Survivor中，清理之前使用的Eden和Survivor。内存只浪费了1块Survivor。</p>
+<p>优点：当多数对象是可回收的情况时，算法复制的对象少，且分配内存时不用考虑有空间碎片的复杂情况，实现简单。</p>
+<p>缺点：浪费了内存空间。</p>
 </blockquote>
-<h2 id="动态路由协议">动态路由协议</h2>
+<h3 id="标记-整理算法">标记-整理算法</h3>
 <blockquote>
-<p>RIP最早的动态路由协议，周期性广播，30s广播一次。跳数16次。</p>
+<p>一般是针对老年代对象。标记完成后不是直接对可回收对象进行清理，而是让所有存活的对象都想内存空间一端移动，然后直接清理掉边界外的内存。</p>
+<p>缺点：移动过程耗时较长。</p>
+<p>优点：不用考虑内存碎片化问题，降低了内存分配器及内存访问器的复杂度。</p>
 </blockquote>
-<h2 id="ospf协议开放式最短路径优先---动态路由协议">OSPF协议(开放式最短路径优先)---动态路由协议</h2>
-<h2 id="bgp------外部网关协议">BGP ---- 外部网关协议</h2>
+<h2 id="hotpot算法细节">Hotpot算法细节</h2>
 <blockquote>
-<p>不同自治系统的路由器之间交换路由信息的协议</p>
-<p>报文类型：</p>
-<p>OPEN</p>
-<p>UDDATE</p>
-<p>KEEPALIVE</p>
-<p>NOTIFICATION</p>
-<p>ROUTE-REFRESH</p>
-<p>重要属性：</p>
-<p>AS-PATH: 包含前缀通告所经过的AS序列</p>
-<p>NEXT-HOP(下一跳): 开始一个AS-PATH的路由器接口，指向下一跳AS.</p>
+<p>根节点枚举(使用一个OopMap记录)</p>
+<p>安全点(到达安全点时将引用关系收集到OopMap，主动式中断和抢占式中断)</p>
+<p>安全区域(类似于安全点的扩展)</p>
+<p>记忆集和卡表：</p>
+<p>​ 记忆集：为了解决对象跨代引用问题，建立的从非收集区域指向收集区域的指针集合的抽象数据结构。</p>
+<p>​ 卡表：以卡精度实现的记忆集。每个记录精确到一块内存区域，该区域内有对象含有跨代指针。</p>
+<p>写屏障：为了在机器码的层面将维护卡表的动作放到每个赋值操作之中。赋值操作会在写屏障的覆盖范围中，赋值前部分为写前屏障，赋值后部分为写后屏障，一般来说，都是在写后屏障执行卡表的更新。</p>
+<p>卡表带来的高并发问题：伪共享，由于CPU的缓存系统是缓存行为单位存储的，当多线程修改互相独立的变量时，若这些变量刚好共享同一个缓存行，就会互相影响。为了避免这个问题，简单的解决方案是先检查卡表标记，当卡表元素未被标记时才将其标记变脏。</p>
+<p>并发的可达性分析：扫描过程时垃圾收集器和用户线程存在并发问题，，可用的解决方法有增量更新(插入引用时记录，扫描完成后以记录的再扫描)、原始快照(删除引用时记录，扫描完成时按记录的再扫描)。</p>
 </blockquote>
-<h2 id="nat和pat">NAT和PAT</h2>
+<h2 id="经典垃圾收集器">经典垃圾收集器</h2>
+<h3 id="serial收集器">Serial收集器</h3>
 <blockquote>
-
+<p>单线程、简单高效、是所有收集器里额外内存消耗最小的，但是进行垃圾收集时必须暂停其他所有工作线程。</p>
+<p>新生代采用复制算法暂停所有用户线程，老年代采用标记-整理算法暂停所有用户线程。</p>
 </blockquote>
-<h2 id="igmp-组播多播">IGMP 组播/多播</h2>
-<h2 id="dhcp">DHCP</h2>
+<h3 id="parnew收集器">ParNew收集器</h3>
 <blockquote>
-
+<p>是Serial收集器的多线程并行版本。可以和CMS收集器配合使用。</p>
+<p>新生代采用多线程复制算法暂停所有用户线程，老年代采用标记-整理算法暂停所有用户线程。</p>
 </blockquote>
-<h2 id="arp">ARP</h2>
+<h3 id="parallel-scavenge收集器">Parallel Scavenge收集器</h3>
 <blockquote>
-<p>默认网关为网络上的最低地址，如192.32.65.0/24的默认网关为192.32.65.1</p>
+<p>基于标记-复制算法实现的新生代收集器，也是能够并行收集的多线程收集器。</p>
+<p>而Parallel Scavenge收集器的目标则是达到一个可控制的吞吐量(Throughput)，吞吐量就是处理器用于运行用户代码的时间与处理器总消耗时间的比值。</p>
+<p>-XX：MaxGCPauseMillis：允许的值是一个大于0的毫秒数，收集器将尽力保证内存回收花费的时间不超过用户设定值，会降低吞吐量。</p>
+<p>-XX：GCTimeRatio：值应当是一个大于0小于100的整数，也就是垃圾收集时间占总时间的比率，相当于吞吐量的倒数。</p>
+<p>-XX：+UseAdaptiveSizePolicy：一个开关参数，开启后可以自动调节参数。</p>
+</blockquote>
+<h3 id="serial-old收集器">Serial Old收集器</h3>
+<blockquote>
+<p>是Serial收集器的老年代版本，是一个单线程收集器，使用标记-整理算法。</p>
+</blockquote>
+<h3 id="parrallel-old收集器">Parrallel Old收集器</h3>
+<blockquote>
+<p>是Parallel Scavenge收集器的老年代版本，支持多线程并发收集，基于标记-整理算法。</p>
+</blockquote>
+<h3 id="cms收集器">CMS收集器</h3>
+<blockquote>
+<p>是一种以获取最短回收停顿时间为目标的收集器。它是基于标记-清除算法实现的。其运作过程分为4步：</p>
+<p>​ 初始标记(需要stop the world)</p>
+<p>​ 并发标记</p>
+<p>​ 重新标记(需要stop the world)</p>
+<p>​ 并发清除</p>
+<p>缺点：</p>
+<p>​ CMS收集器对处理器资源非常敏感。会因为占据了一部分线程导致应用程序变慢。CMS默认启动回收线程为(处理器核心数量 + 3 )/4。导致处理器核心&lt;4时占用的性能过多。</p>
+<p>​ CMS处理器无法处理浮动垃圾，可能出现“Concurrent Mode Failure”，从而引发Full GC。因为标记结束后，很可能产生新垃圾，CMS无法在当次收集时处理，只能留到下次。所以CMS需要预留一部分空间给并发收集时程序运行使用，可以通过-XX：CMSInitiatingOccupancyFraction来调节。</p>
+<p>​ 由于CMS是基于标记-清除算法实现的，会产生大量空间碎片。当碎片过多，大对象很难分配，触发Full GC。-XX：+UseCMS-CompactAtFullCollection:开关参数，让CMS触发Full GC时进行碎片整理。</p>
+</blockquote>
+<h3 id="garbage-first收集器">Garbage First收集器</h3>
+<blockquote>
+<p>简称G1，它开创了收集器面向局部收集的设计思路和基于Region的内存布局形式。它是一款主要面向服务端应用的垃圾收集器。</p>
+<p>在G1之前的垃圾收集器垃圾收集的范围要么是整个新生代，要么是整个老年代，要么就是Full GC，G1则是面向堆内存任何部分来组成回收集，衡量标准是哪块内存中存放的垃圾数量最多。</p>
+<p>它开创了基于Region的堆内存布局。相当于将堆内存划分为大小相同的连续独立区域，每个区域按需要划分出空间。Region中还要特殊的Humongous区域，专门用于存储大对象。G1将大小超过一个Region容量一半的对象就判定为大对象。超过整个Region容量的对象会被存放到n个连续的Region中。</p>
+<p>流程：</p>
+<p>​ 初始标记</p>
+<p>​ 并发标记</p>
+<p>​ 最终标记</p>
+<p>​ 筛选回收</p>
+</blockquote>
+<h3 id="低延迟垃圾收集器">低延迟垃圾收集器</h3>
+<blockquote>
+<p>Shenandoah收集器</p>
 </blockquote>
 
       
@@ -525,7 +490,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/22/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><span class="page-number current">23</span><a class="page-number" href="/page/24/">24</a><span class="space">&hellip;</span><a class="page-number" href="/page/36/">36</a><a class="extend next" rel="next" href="/page/24/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/22/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><span class="page-number current">23</span><a class="page-number" href="/page/24/">24</a><span class="space">&hellip;</span><a class="page-number" href="/page/38/">38</a><a class="extend next" rel="next" href="/page/24/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -570,13 +535,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">88k</span>
+    <span title="站点总字数">103k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:20</span>
+    <span title="站点阅读时长">1:34</span>
   </span>
 </div>
 <div class="busuanzi-count">
