@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/computerNetwork/%E7%AC%AC1%E7%AB%A0-%E6%A6%82%E8%AE%BA/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/codeAnalyse/mybatis%E6%B5%81%E7%A8%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/computerNetwork/%E7%AC%AC1%E7%AB%A0-%E6%A6%82%E8%AE%BA/" class="post-title-link" itemprop="url">概论</a>
+          <a href="/2021/02/20/codeAnalyse/mybatis%E6%B5%81%E7%A8%8B/" class="post-title-link" itemprop="url">Mybatis流程源码分析</a>
         </h2>
 
         <div class="post-meta-container">
@@ -288,7 +288,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:05:46" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:15:02" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -296,11 +296,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
-        </span>
-          ，
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
+          <a href="/categories/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">源码分析</span></a>
         </span>
     </span>
 
@@ -312,14 +308,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>1.8k</span>
+      <span>3.5k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
+      <span>3 分钟</span>
     </span>
 </div>
 
@@ -330,169 +326,59 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="概论">概论</h1>
-<h2 id="网络大小划分">网络大小划分</h2>
+          <h1 id="mybatis流程">Mybatis流程</h1>
+<h2 id="创建sqlsessionfactory的流程">创建SqlSessionFactory的流程</h2>
 <blockquote>
-<p>个域网</p>
-<p>局域网：用于企业时被称为企业网络</p>
-<p>城域网</p>
-<p>广域网</p>
-<p>互联网</p>
+<p>由于创建工厂需要许多配置，mybatis利用了Builder模式。</p>
+<p>先创建SqlSessionFactoryBuilder，调用SqlSessionFactoryBuilder的build方法，本质上就是通过解析xml文件，将文件内容映射到Configuration对象中，然后利用这个对象产生builder创建工厂所需的配置，然后创建出SqlSessionFactory。</p>
+<p>具体则是先将xml的输入流传给SqlSessionFactoryBuilder，然后创建一个XMLConfigBuilder，负责解析xml内容放入configuration对象，解析的过程中会按类别解析，通过调用不同的方法解析xml的不同部分。解析mapper还有专门的XMLMapperBuilder其中对于二级缓存的处理也在这里进行。解析完成后configuration对象会保存全部的配置信息。</p>
 </blockquote>
-<h2 id="报文的不同称呼">报文的不同称呼</h2>
+<h2 id="利用sqlsessionfactory创建sqlsession的流程">利用SqlSessionFactory创建SqlSession的流程</h2>
 <blockquote>
-<p>网络层中叫数据包/包</p>
+<p>就是SqlSessionFactory调用openSession，传入ExecutorType、TransactionIsolationLevel、autoCommit三个参数，或让mybatis按默认设置，</p>
+<p>ExecutorType有BatchExecutor、ReuseExecutor、SimpleExecutor、CachingExecutor四种。</p>
+<p>​ BatchExecutor 让update操作变为批处理操作，即让连续的update先累积，等到下一次query操作前再一起执行。是使用List作为批处理存储。对于update操作会复用最近一次的statement。失败了会全部回滚。</p>
+<p>​ ReuseExecutor 复用Statement，利用Map&lt;String, Statement&gt;来判定。</p>
+<p>​ SimpleExecutor 即使用的Statement直接关闭。</p>
+<p>​ CachingExecutor 相当于在前面三个执行者的基础上套了一层缓存机制，让query方法先查看缓存，只有缓存没有时再让三个执行者执行操作。这里的缓存是通过mybatis自己实现的statement对象内部的cache实现的，有些类似hashmap，是利用cache和cachekey获得的结果。</p>
+<p>TransactionIsolationLevel即事物隔离级别。</p>
+<p>​ READ_UNCOMMITTED 读未提交 存在脏读、不可重复读、幻读</p>
+<p>​ READ_COMMITTED 读提交 存在不可重复读、幻读</p>
+<p>​ REPEATABLE_READ 可重复读 存在幻读</p>
+<p>​ SERIALIZABLE 序列化</p>
+<p>autoCommit是否自动提交。</p>
 </blockquote>
-<h1 id="因特网边缘部分的通信方式">因特网边缘部分的通信方式</h1>
+<h2 id="利用sqlsession创建mapper">利用SqlSession创建Mapper</h2>
 <blockquote>
-<h4 id="客户服务器方式-cs">客户服务器方式 C/S</h4>
-<h4 id="对等方式-p2ppeer-to-peer">对等方式 P2P(peer to peer)</h4>
-<p>既是服务器又是客户机</p>
+<p>SqlSession使用getMapper方法，实际上是调用了configuration中的mapperRegistry的getMapper方法，这里使用了动态代理的设计模式。同时这里还使用了工厂方法，根据不同的类名创建对应的代理工厂。</p>
+<p>这个动态代理是JDK代理，它需要使用对应类加载器，对应类接口，对应的InvocationHandler。在mybatis中InvocationHandler是MapperProxy，MapperProxy的重写的invoke函数逻辑是对于Object自带的方法直接调用，对于接口默认的方法直接调用(这个特性是由于JDK8让接口方法可以有默认实现)。对于接口的方法则创建一个MapperMethod对象，该对象使用了缓存机制，利用Map&lt;Method, MapperMethod&gt;缓存方法。</p>
+<p>而MapperMethod的excuse即为代理方法的实现，该类中含有MethodSignature、SqlCommand两个内部类用于实现解析sql及方法，而具体方法实现是根据判断当前sql是增删改查中的哪种再调用sqlSession的方法来实现的。</p>
 </blockquote>
-<h1 id="数据交换方式">数据交换方式</h1>
+<h2 id="executor与handler">Executor与Handler</h2>
 <blockquote>
-<h4 id="电路交换---面向连接">电路交换---面向连接</h4>
-<p>交换机位于中心，需要连接时会通过电路连接两个主机。</p>
-<p>建立连接:申请占用通信资源。</p>
-<p>通话:一直占用通信资源。</p>
-<p>释放连接:释放通信资源</p>
-<p>适用于数据量很大的实时传输，核心路由器之间可以用电路交换</p>
-<h4 id="报文交换">报文交换</h4>
-<p>报文一般比分组长的多</p>
-<p>报文发送时间长</p>
-<h4 id="分组交换计算机使用的方式">分组交换:计算机使用的方式</h4>
-<p>发送端对报文进行拆分成不同小组，添加首部组合成一个数据然后发送给接收端。</p>
-<p>接收端对数据进行拆除首部，然后根据首部的信息将收到的数据组合成报文</p>
+<p>Executor是通过StatementHandler来执行sql的。StatementHandler先prepare方法配置基础设置，然后使用parameterize来设置statement的参数。若为query操作则StatementHandler会使用ResultSetHandler来处理结果集。</p>
+<p>StatementHandler为抽象interface mybatis基于这个接口实现了抽象类BaseStatementHandler，还实现了路由类RoutingStatementHandler，路由类是用于根据参数创建对应具体类的。而抽象类是作为三个具体类的基础，三个具体类分别为CallableStatementHandler、PreparedStatementHandler、SimpleStatementHandler。</p>
+<p>抽象类提供给三个具体类prepare方法，其中prepare中含有抽象方法instantiateStatement，是由具体子类实现的。(模板方法模式)</p>
 </blockquote>
-<h1 id="局域网和广域网不单单从覆盖范围划分还要从使用的技术是什么">局域网和广域网不单单从覆盖范围划分，还要从使用的技术是什么</h1>
+<h2 id="mybatis对于数据库操作的整体流程">mybatis对于数据库操作的整体流程</h2>
 <blockquote>
-<p>局域网 自己购买设备、自己维护、带宽固定 距离100米内</p>
-<p>广域网 花钱买服务、花钱买带宽</p>
+<p>先使用builder模式，根据输入的xml输入流，利用对应XML解析对象解析，并将结果最终存入Configuration对象，然后利用Configuration对象创建出一个对应的SqlSessionFactory。</p>
+<p>然后需要通过sqlSessionFactory的openSession方法创建一个SqlSession，这里可以设置SqlSession的Executor、TransactionIsolationLevel和autoCommit。Executor代表这个SqlSession采用什么执行器，执行器是对statement对象的处理。具体执行器共有3种：SimpleExecutor 、ReuseExecutor 、BatchExecutor 。同时若启用了缓存cache，则会在执行器外再包装一层CachingExecutor ，相当于对于查询操作提供了二级缓存。这个缓存是位于mybatis的MappedStatement类中。本质上这种缓存就是一个嵌套的哈希结构。Map&lt;Cache, TransactionalCache&gt;，TransactionalCache也是key-value结构。</p>
+<p>而事物隔离即为正常的数据库事物隔离级别。</p>
+<p>创建完SqlSession后，调用SqlSession的getMapper方法获取对应mapper对象。这里使用了动态代理。mybatis是先根据传入的类对象，通过configuration的配置信息中的MapperRegistry类对象找到对应的proxy工厂，利用代理工厂创建对应的代理对象。代理对象的创建使用的是JDK动态代理，即传入需要代理的类加载器、需要代理的接口、以及InvocationHandler。mybatis的handler是先判断方法是否为Object的，然后判断方法是否为接口默认实现的。只有接口未实现的方法才进行特殊处理，处理过程即为根据方法的类型(增删改查)，执行SqlSession的对应方法。</p>
+<p>SqlSession执行对应方法则是利用SqlSession内部的executor执行对应操作的。所以实际上sql操作还是由executor执行的。而executor执行操作需要利用StatementHandler先后执行prepare初始化基本配置和parameterize处理参数。参数的处理利用了ParameterHandler，这个时候typeHandler就会起作用。若为query操作还需要对返回值进行处理，处理时利用了ResultSetHandler，这个时候typeHandler就会起作用。</p>
 </blockquote>
-<h1 id="网络的拓扑结构">网络的拓扑结构</h1>
+<h2 id="mybatis的缓存机制">mybatis的缓存机制</h2>
 <blockquote>
-<p>总线型、环形、星型、树型、网状结构</p>
+<p>mybatis共有两个缓存机制：一级缓存和二级缓存。</p>
+<p>一级缓存默认开启且无法关闭。</p>
+<p>二级缓存需要配置。</p>
+<p>一级缓存是Executor的基本实现类BaseExecutor中实现的，本质上是个Map&lt;Object, Object&gt;。由于每个SqlSession里都带有一个Executor，故一级缓存是SqlSession层面的。</p>
+<p>二级缓存则需要手动配置，开启后会在具体的Executor之外使用CachingExecutor包装，这里使用了装饰者模式。二级缓存本质上是在namespace层面的缓存。</p>
 </blockquote>
-<h1 id="网络工作方式">网络工作方式</h1>
+<h2 id="mybatis是怎么实现和springboot的整合的">mybatis是怎么实现和SpringBoot的整合的？</h2>
 <blockquote>
-<p>资源子网、通信子网、接入网</p>
-</blockquote>
-<h1 id="计算机网络的性能">计算机网络的性能</h1>
-<blockquote>
-<p>速率:主机在数字信道传送数据位数的速率，也成为data rate 或bit rate。</p>
-<p>带宽:数据信道所能传送的最高数据率。</p>
-<p>吞吐量:单位时间内通过某个网络的数据量。</p>
-<p>时延:</p>
-<blockquote>
-<p>发送时延 数据块长度/信道带宽</p>
-<p>传播时延:信道长度/信号在信道上的传播速率</p>
-<p>处理时延:在</p>
-<p>排队时延:在接收方主机处等待的时间</p>
-</blockquote>
-<p>时延带宽积 :传播时延 * 带宽</p>
-<p>往返时间RTT:从发送方发送数据开始到发送方收到接收方确认。</p>
-<p>利用率:</p>
-<blockquote>
-<p>信道利用率 = 有数据通过时间 / (有 + 无数据通过的时间)</p>
-<p>网络利用率：信道利用率加权平均值</p>
-</blockquote>
-<p>非性能指标:费用、质量、标准化、可靠性、可扩展性、可升级性、管理与维护</p>
-</blockquote>
-<h1 id="计算机网络的体系结构">计算机网络的体系结构</h1>
-<blockquote>
-<p>OSI(开放式系统互联)七层模型:分层有利于标准化，且分层后各层之间的变化不会影响到其他层，尽量降低了相互之间的依赖。</p>
-<p>物理层:规定电压、接口标准</p>
-<p>数据链路层:输入如何封装，添加物理层地址，MAC</p>
-<p>网络层:选择最佳路径，IP地址编址</p>
-<p>传输层:可靠传输(建立会话)、不可靠传输(不建立会话)、流量控制。</p>
-<p>会话层:服务和客户端建立的会话。 netstat -nb</p>
-<p>表示层:加密、压缩、编码，开发人员考虑。</p>
-<p>应用层: 能够产生网络流量，能够和用户交互的应用程序。</p>
-</blockquote>
-<h1 id="网络排错">网络排错</h1>
-<blockquote>
-<p>需要从底层到高层逐一排查</p>
-</blockquote>
-<h1 id="网络安全和osi参考模型的关系">网络安全和OSI参考模型的关系</h1>
-<blockquote>
-<p>物理层安全</p>
-<p>数据链路层安全:ADSL、无线AP</p>
-<p>网络层安全</p>
-<p>应用层安全: SQL注入漏洞、上传漏洞</p>
-</blockquote>
-<h1 id="一些基本概念">一些基本概念</h1>
-<blockquote>
-<p>实体:交换信息的硬件或软件进程。</p>
-<p>协议:控制两个对等实体通信的规则。</p>
-<p>服务:下层向上层提供服务，上层需要使用下层提供的服务来实现本层的功能。</p>
-<p>服务访问点:相邻两层实体间交换信息的地方。</p>
-<p>AP接入点和无线路由器和基站作用相差不大，主要负责中继无线计算机之间的数据包，还负责中继无线计算机和Internet之间的数据包。</p>
-<p>IEEE802.11俗称WIFI。以太网IEEE802.3。</p>
-<p>将两个或多个网络连接起来并提供必要转换的机器，其硬件和软件方面的总称是网关。路由器就是一个网关，在网络层交换数据包。</p>
-<p>不可靠的无连接服务通常称为数据报服务。</p>
-</blockquote>
-<h1 id="tpcip">TPC/IP</h1>
-<blockquote>
-<p>五层模型:</p>
-<p>应用层:</p>
-<blockquote>
-<p>数据单元:传输数据单元PDU</p>
-</blockquote>
-<p>运输层:</p>
-<blockquote>
-<p>数据单元:报文</p>
-</blockquote>
-<p>网络层:</p>
-<blockquote>
-<p>数据单元:(IP数据报/IP分组/包)</p>
-</blockquote>
-<p>数据链路层:</p>
-<blockquote>
-<p>数据单元:数据帧</p>
-</blockquote>
-<p>物理层:</p>
-<blockquote>
-<p>数据单元:比特010101</p>
-</blockquote>
-</blockquote>
-<h1 id="osi参考模型">OSI参考模型</h1>
-<blockquote>
-<p>应用层:</p>
-<p>​ 所有可以和用户交互产生网络流量的程序。</p>
-<p>​ 文件传输FTP、电子邮件SMTP、万维网HTTP</p>
-<p>表示层</p>
-<p>​ 用于处理两个通信系统中交换信息的表示方式。</p>
-<p>​ 数据格式变换、数据加密解密、数据压缩和恢复</p>
-<p>​ JPEG、ASCII</p>
-<p>会话层</p>
-<p>​ 向表示层实体/用户进程提供建立连接并在连接上有序地传输数据。</p>
-<p>​ 建立、管理、终止会话。</p>
-<p>​ 使用检验点可以使会话在通信失效时从检验点/同步点进行恢复通信，实现数据同步。</p>
-<p>​ ADSP、ASP</p>
-<p>传输层</p>
-<p>​ 负责主机中两个进程的通信，即端到端的通信。传输单位是报文/用户数据报</p>
-<p>​ 可靠传输、不可靠传输</p>
-<p>​ 差错控制</p>
-<p>​ 复用分用</p>
-<p>网络层</p>
-<p>​ 路由选择</p>
-<p>​ 流量控制</p>
-<p>​ 差错控制</p>
-<p>​ 拥塞控制</p>
-<p>数据链路层 加上报头和报尾。</p>
-<p>​ 把网络层传下来的数据报组装成帧</p>
-<p>​ 差错控制</p>
-<p>​ 流量控制</p>
-<p>​ 接入控制</p>
-<p>​ SDLC、HDLC、PPP、STP</p>
-<p>物理层</p>
-<p>​ 在物理媒体上实现比特流的透明传输</p>
-<p>​ 定义接口特性</p>
-<p>​ 定义传输模式</p>
-<p>​ 定义传输速率</p>
-<p>​ 比特同步</p>
-<p>​ 比特编码</p>
-<p>​ RJ45、802.3</p>
+
 </blockquote>
 
       
@@ -558,13 +444,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">116k</span>
+    <span title="站点总字数">117k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:46</span>
+    <span title="站点阅读时长">1:47</span>
   </span>
 </div>
 <div class="busuanzi-count">

@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/JavaBasicKnowledge/%E5%B9%B6%E5%8F%91%E7%9B%B8%E5%85%B3/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/JVMKnowledge/2.%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/JavaBasicKnowledge/%E5%B9%B6%E5%8F%91%E7%9B%B8%E5%85%B3/" class="post-title-link" itemprop="url">并发相关内容</a>
+          <a href="/2021/02/20/JVMKnowledge/2.%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86/" class="post-title-link" itemprop="url">2.垃圾收集</a>
         </h2>
 
         <div class="post-meta-container">
@@ -286,27 +286,17 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
+      
 
-      <time title="创建时间：2021-02-20 12:26:00" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：15:58:55" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
     </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-15 00:52:21" itemprop="dateModified" datetime="2021-03-15T00:52:21+08:00">2021-03-15</time>
-      </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
-        </span>
-          ，
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+          <a href="/categories/JVM/" itemprop="url" rel="index"><span itemprop="name">JVM</span></a>
         </span>
     </span>
 
@@ -318,14 +308,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>6.8k</span>
+      <span>4k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>6 分钟</span>
+      <span>4 分钟</span>
     </span>
 </div>
 
@@ -336,127 +326,150 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="并发相关">并发相关</h1>
-<h2 id="可见性">可见性</h2>
+          <h1 id="垃圾收集">垃圾收集</h1>
 <blockquote>
-<p>由于内存读取速度和CPU处理速度不匹配的问题，所以往往在CPU和内存之间存在缓存机制，而多个线程执行程序时，会先从内存中读取数据放入CPU缓存中，并且在程序执行的过程中往往不会对数据进行及时更改。导致两个线程之间的数据存在不可见的问题。如子线程使用一个boolean变量来循环，此时主线程改变了该变量，但子线程却不一定会退出循环。</p>
-<p>java中使用volatile解决这个问题。</p>
+<p>垃圾收集的步骤：判断对象是否存活(可回收) -&gt;</p>
 </blockquote>
-<h2 id="原子性">原子性</h2>
+<h2 id="判断对象存活">判断对象存活</h2>
+<h3 id="引用计数">引用计数</h3>
 <blockquote>
-<p>一系列操作是不可拆分的。</p>
-<p>如count++指令；</p>
-<p>会对应汇编的三条指令：</p>
-<p>​ count值加载到CPU寄存器</p>
-<p>​ 寄存器中+1操作</p>
-<p>​ 结果写入操作</p>
+<p>在对象中添加一个引用计数器，当一个地方有引用它时计数器值加一；引用失效时，计数器值就减一。计数器为0的对象是不可能再被引用的。</p>
+<p>存在循环引用的问题</p>
+<p>Java中没有使用。</p>
 </blockquote>
-<h2 id="有序性">有序性</h2>
+<h3 id="可达性分析算法">可达性分析算法</h3>
 <blockquote>
-<p>编译时会进行优化。</p>
-<p>int a = 6;</p>
-<p>int b = 10;</p>
-<p>优化时可能顺序交换了，导致问题。如下可能导致操作1和操作2互换位置，操作3和操作4互换位置，从而使得x = y = 0</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">reorder</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        Thread t1 = <span class="keyword">new</span> Thread(()-&gt;&#123;</span><br><span class="line">            a = <span class="number">1</span>; <span class="comment">//操作1</span></span><br><span class="line">            x = b; <span class="comment">//操作2</span></span><br><span class="line">        &#125;);</span><br><span class="line">        Thread t2 = <span class="keyword">new</span> Thread(()-&gt;&#123;</span><br><span class="line">            b = <span class="number">1</span>; <span class="comment">//操作3</span></span><br><span class="line">            y = a; <span class="comment">//操作4</span></span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        t1.start();</span><br><span class="line">        t2.start();</span><br><span class="line">        t1.join();</span><br><span class="line">        t2.join();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(x == <span class="number">0</span> &amp;&amp; y == <span class="number">0</span>)&#123;</span><br><span class="line">            System.out.println(a + <span class="string">&quot;---&quot;</span> + b + <span class="string">&quot;---&quot;</span> + x + <span class="string">&quot;---&quot;</span> + y + <span class="string">&quot;---&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        a = <span class="number">0</span>;</span><br><span class="line">        b = <span class="number">0</span>;</span><br><span class="line">        y = <span class="number">0</span>;</span><br><span class="line">        x = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<h2 id="happens-before原则">happens-before原则</h2>
+<p>基本思路：通过一系列称为GC Roots的根对象作为起始点集，当某个对象到起始点集间没有任何引用链相连时，这个对象就是不可能再被使用的。</p>
+<p>Java中固定可作为GC Roots的对象：</p>
+<p>​ 在虚拟机栈中引用的对象，如各个线程被调用的方法堆栈中使用到的参数、局部变量、临时变量等。</p>
+<p>​ 在方法区类静态属性引用的对象，如Java类引用类型静态变量。</p>
+<p>​ 在本地方法栈中JNI(Native方法)引用的对象。</p>
+<p>​ Java虚拟机内部的引用，如基本数据类型对应的Class对象，一些常驻的异常对象(NullPointExcepiton、OutOfMemoryError）还有系统类加载器。</p>
+<p>​ 所有被同步锁持有的对象。</p>
+<p>​ 反应Java虚拟机内部情况的JM XBean、JVMTI中注册的回调、本地代码缓存等。</p>
+<p>除了固定GC Roots集合外，根据用户选用的垃圾收集器及当前回收的内存区域不同，还可以有其他对象加入。</p>
+<p>被判定为不可达的对象还不会被立即回收。真正回收需要经历至少两个标记过程：</p>
+<p>​ 若对象在进行可达性分析后分析没有和GC Roots相连接的引用链，会被第一次标记。随后进行一次筛选，若这个对象没有覆盖finalize方法或该方法已经被虚拟机调用，则没有必要执行finalize方法。</p>
+<p>​ 若需要执行finalize方法，则会将对象放入F-Queue队列中，然后自动启用线程执行队列中对象的finalize方法。执行后收集器会对队列中对象进行第二次小规模标记，若对象在finalize方法中重新和引用链上的任何一个对象建立关联，第二次标记时它会被移除即将回收的集合。否则，它通常要被回收。</p>
 </blockquote>
+<h2 id="回收方法区">回收方法区</h2>
 <blockquote>
-<p>happens-before原则定义如下： 1. 如果一个操作happens-before另一个操作，那么第一个操作的执行结果将对第二个操作可见，而且第一个操作的执行顺序排在第二个操作之前。 2. 两个操作之间存在happens-before关系，并不意味着一定要按照happens-before原则制定的顺序来执行。如果重排序之后的执行结果与按照happens-before关系来执行的结果一致，那么这种重排序并不非法。</p>
-<p>程序次序规则：在一个线程内一段代码的执行结果是有序的。就是还会指令重排，但是随便它怎么排，结果是按照我们代码的顺序生成的不会变！</p>
-<p>管程锁定规则：就是无论是在单线程环境还是多线程环境，对于同一个锁来说，一个线程对这个锁解锁之后，另一个线程获取了这个锁都能看到前一个线程的操作结果！(管程是一种通用的同步原语，synchronized就是管程的实现）</p>
-<p>volatile变量规则：就是如果一个线程先去写一个volatile变量，然后一个线程去读这个变量，那么这个写操作的结果一定对读的这个线程可见。</p>
-<p>线程启动规则：在主线程A执行过程中，启动子线程B，那么线程A在启动子线程B之前对共享变量的修改结果对线程B可见。</p>
-<p>线程终止规则：在主线程A执行过程中，子线程B终止，那么线程B在终止之前对共享变量的修改结果在线程A中可见。</p>
-<p>线程中断规则：对线程interrupt()方法的调用先行发生于被中断线程代码检测到中断事件的发生，可以通过Thread.interrupted()检测到是否发生中断。</p>
-<p>传递规则：这个简单的，就是happens-before原则具有传递性，即A happens-before B ， B happens-before C，那么A happens-before C。</p>
-<p>对象终结规则：这个也简单的，就是一个对象的初始化的完成，也就是构造函数执行的结束一定 happens-before它的finalize()方法。</p>
+<p>主要回收废弃的常量和不再使用的类型。</p>
+<p>回收常量要求：当前常量进入了常量池，且当前系统没有任何一个对象的值是该常量。</p>
+<p>回收类型的条件：</p>
+<p>​ 该类所有的实例已经被回收。</p>
+<p>​ 加载该类的类加载器被回收。</p>
+<p>​ 该类对应的java.lang.Class对象没有在任何地方被引用，无法在任何地方通过反射访问该类的方法。</p>
 </blockquote>
-<h2 id="线程池">线程池</h2>
+<h2 id="引用的概念">引用的概念</h2>
 <blockquote>
-<p>可缓存线程池 Executors.newCachedThreadPool()</p>
-<p>​ 无上限</p>
-<p>定长线程池 Executors.newFixedThreadPool()</p>
-<p>​ 最大线程数即为设定的线程数</p>
-<p>单线程的线程池 Executors.newSingleThreadExecutor()</p>
-<p>​ 只容许一个线程</p>
-<p>计划任务线程池 Executors.newScheduledThreadPool()</p>
-<p>​ 定时任务。</p>
-<p>自定义线程池 ExecutorService myPool = new ThreadPoolExecutor();</p>
-<p>线程池可以传入callable对象和runnable对象。</p>
-<p>runnable没有返回值和异常，callable可以有返回值也可以抛出异常</p>
-<p>submit方法可以获得future对象，用于获取线程返回值和异常。</p>
+<p>Java的引用在JDK1.2后分为强引用、软引用、弱引用、虚引用。</p>
+<p>强引用：最传统的引用的概念，只有强引用关系存在，垃圾收集器就永远不回收被引用的对象。</p>
+<p>软引用：描述一些还有用但非必须的对象。只被软引用关联的对象，在系统将要发生内存溢出异常时，会将这些对象列入回收访问进行第二次回收，若回收还没有足够内存，抛出内存溢出异常。</p>
+<p>弱引用：描述非必须的对象，被弱引用关联的对象只能生存到下一次垃圾收集发送为止。</p>
+<p>虚引用：最弱的引用关系。无法通过虚引用来取得一个对象实例，为对象设置虚引用关联的唯一目的只是为了能在这个对象被收集器回收时收到一个系统通知。</p>
 </blockquote>
-<h4 id="底层实现">底层实现</h4>
+<h2 id="垃圾收集算法">垃圾收集算法</h2>
 <blockquote>
-<p>调用poolExecutor.execute(t1);方法时会执行的逻辑如下</p>
-<p>当当前线程数小于核心线程数数，调用addWorker方法</p>
-<p>addWorker方法主要判断了当前线程池状态，当线程池状态符合条件(处于Runing且数量小于规定数量时)，利用CAS操作判断是否可以添加新线程。</p>
-<p>若成功添加则调用new Worker创建新线程。然后利用ReentrantLock，锁定，并判断当前线程池状态是否为running，同时检查是否已经启动，若为running且未启动，则将worker添加到workers中(本质是个HashSet<Worker>)，更新largestPoolSize，然后启动线程。返回结果。</Worker></p>
-<p>这里启动线程的方法调用的实际上是worker的runWorker方法，该方法会判断(task != null || (task = getTask()) != null)，当当前worker存在任务或任务队列中存在任务时，worker会依次执行beforeExecute，task.run()，afterExecute方法，这个流程会加锁(使用Acquire和Release)</p>
-<p>getTask方法则本质上会使用阻塞队列的take方法，阻塞获取任务，或调用设定了超时时间的poll方法，获取任务。</p>
-<p>当没有可执行任务时，processWorkerExit，从workers中移除worker。</p>
-<p>当当前线程数大于核心线程数，会判断当前线程池状态是否为runnning，且能否成功添加到任务队列中。若成功入队，再次检查当前线程池状态是否符合running，若不是则移除任务。</p>
-<p>若无法入队，且当前线程数大于核心线程数，则尝试addWorker，若还不成功则reject任务，reject方式为自己选择的策略。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(Runnable command)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (command == <span class="keyword">null</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     * Proceed in 3 steps:</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 1. If fewer than corePoolSize threads are running, try to</span></span><br><span class="line"><span class="comment">     * start a new thread with the given command as its first</span></span><br><span class="line"><span class="comment">     * task.  The call to addWorker atomically checks runState and</span></span><br><span class="line"><span class="comment">     * workerCount, and so prevents false alarms that would add</span></span><br><span class="line"><span class="comment">     * threads when it shouldn&#x27;t, by returning false.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 2. If a task can be successfully queued, then we still need</span></span><br><span class="line"><span class="comment">     * to double-check whether we should have added a thread</span></span><br><span class="line"><span class="comment">     * (because existing ones died since last checking) or that</span></span><br><span class="line"><span class="comment">     * the pool shut down since entry into this method. So we</span></span><br><span class="line"><span class="comment">     * recheck state and if necessary roll back the enqueuing if</span></span><br><span class="line"><span class="comment">     * stopped, or start a new thread if there are none.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 3. If we cannot queue task, then we try to add a new</span></span><br><span class="line"><span class="comment">     * thread.  If it fails, we know we are shut down or saturated</span></span><br><span class="line"><span class="comment">     * and so reject the task.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">int</span> c = ctl.get();</span><br><span class="line">    <span class="keyword">if</span> (workerCountOf(c) &lt; corePoolSize) &#123;</span><br><span class="line">        <span class="keyword">if</span> (addWorker(command, <span class="keyword">true</span>))</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        c = ctl.get();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (isRunning(c) &amp;&amp; workQueue.offer(command)) &#123;</span><br><span class="line">        <span class="keyword">int</span> recheck = ctl.get();</span><br><span class="line">        <span class="keyword">if</span> (! isRunning(recheck) &amp;&amp; remove(command))</span><br><span class="line">            reject(command);</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (workerCountOf(recheck) == <span class="number">0</span>)</span><br><span class="line">            addWorker(<span class="keyword">null</span>, <span class="keyword">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (!addWorker(command, <span class="keyword">false</span>))</span><br><span class="line">        reject(command);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="juc工具">juc工具</h2>
+<p>可以分为引用计数式垃圾收集和追踪式垃圾收集。</p>
+<p>Java主流虚拟机中只有追踪式垃圾收集。</p>
 </blockquote>
-<h3 id="countdownlatch">CountDownLatch</h3>
+<h3 id="分代收集理论">分代收集理论</h3>
 <blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CountDownLatch cdl = <span class="keyword">new</span> CountDownLatch(<span class="number">4</span>);</span><br></pre></td></tr></table></figure>
-<p>在线程中调用cdl.countdown()</p>
-<p>主线程使用cdl.await()</p>
-<p>只有当cdl变为0时才能触发await后的操作。</p>
+<p>弱分代假说：绝大多数对象都是朝生夕灭的。</p>
+<p>强分代假说：熬过越多次垃圾收集过程的对象越难消灭。</p>
+<p>跨代引用假说：跨代引用相对于同代引用来说仅占极少数。</p>
+<p>新生代收集（Minor GC/Young GC）：指目标只是新生代的垃圾收集。</p>
+<p>老年代收集（Major GC/Old GC）：指目标只是老年代的垃圾收集。目前只有CMS收集器会有单独收集老年代的行为。</p>
+<p>混合收集（Mixed GC）：指目标是收集整个新生代以及部分老年代的垃圾收集。目前只有G1收 集器会有这种行为。</p>
+<p>整堆收集（Full GC）：收集整个Java堆和方法区的垃圾收集</p>
 </blockquote>
-<h3 id="cyclicbarrier">CyclicBarrier</h3>
+<h3 id="标记-清除算法">标记-清除算法</h3>
 <blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CyclicBarrier cb = <span class="keyword">new</span> CyclicBarrier(<span class="number">4</span>);</span><br></pre></td></tr></table></figure>
-<p>先设置栅栏大小，然后在线程中调用cb.await()可以同时等待设置大小个数的线程执行完操作再运行。可以重复使用。</p>
-<p>也可以如下初始化，在等待完成时自动执行runnable的run方法。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">CyclicBarrier cb = <span class="keyword">new</span> CyclicBarrier(<span class="number">4</span>, <span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;xxxx&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>先标记所有需要回收的对象，标记完成后统一回收掉所有被标记的对象。</p>
+<p>存在的问题：</p>
+<p>​ 若Java堆中包含大量对象，且大部分都是需要被回收的，需要进行大量的标记清除动作。</p>
+<p>​ 内存空间碎片化，标记、清除后会产生大量不连续的内存碎片。</p>
 </blockquote>
-<h3 id="semaphore">Semaphore</h3>
+<h3 id="标记-复制">标记-复制</h3>
 <blockquote>
-<p>信号量，通过acquire方法和release实现类似锁的效果。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Semaphore semaphore = <span class="keyword">new</span> Semaphore(<span class="number">4</span>);</span><br><span class="line">semaphore.acquire();</span><br><span class="line">semaphore.release();</span><br></pre></td></tr></table></figure>
-<h3 id="phaser">Phaser</h3>
+<p>为了解决标记-清除算法面对大量可回收对象时执行效率低的问题。</p>
+<p>半区复制：将可用内存按容量划分为大小相等的两块，每次只使用其中一块，当一块内存用完了，将还存活着的对象复制到另一块上，然后将已使用过的内存空间一次清理掉。</p>
+<p>Appel式回收：分为1块Eden，两块Survivor，分配时使用1块Eden，1块Survivor。回收时将存活的对象放入另一块Survivor中，清理之前使用的Eden和Survivor。内存只浪费了1块Survivor。</p>
+<p>优点：当多数对象是可回收的情况时，算法复制的对象少，且分配内存时不用考虑有空间碎片的复杂情况，实现简单。</p>
+<p>缺点：浪费了内存空间。</p>
 </blockquote>
+<h3 id="标记-整理算法">标记-整理算法</h3>
 <blockquote>
-<p>可以随时注册，注销</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Phaser phaser = <span class="keyword">new</span> Phaser(<span class="number">9</span>);</span><br><span class="line"><span class="comment">//执行register后，上限值从9变为10</span></span><br><span class="line">phaser.register();</span><br><span class="line">phaser.arriveAndAwaitAdvance();</span><br><span class="line"><span class="comment">//执行以下方法后，下一轮的上限值从10变为9</span></span><br><span class="line">phaser.arriveAndDeregister();</span><br></pre></td></tr></table></figure>
-<p>当最后一个线程到达10时，线程会同时唤醒并运行。同时触发onAdvance方法，该方法可以通过自己创建一个phaser类继承Phaser，重写onAdvance方法，然后创建phaser时传入自己的类，即可。</p>
+<p>一般是针对老年代对象。标记完成后不是直接对可回收对象进行清理，而是让所有存活的对象都想内存空间一端移动，然后直接清理掉边界外的内存。</p>
+<p>缺点：移动过程耗时较长。</p>
+<p>优点：不用考虑内存碎片化问题，降低了内存分配器及内存访问器的复杂度。</p>
 </blockquote>
-<h3 id="exchanger">Exchanger</h3>
+<h2 id="hotpot算法细节">Hotpot算法细节</h2>
 <blockquote>
-<p>线程之间数据交换。需要两个线程都调用此方法，不然会阻塞。只能用于两个线程之间。</p>
-<p>exchanger.exchange("xxxx")；</p>
-<p>Exchanger<String> exchanger 创建时需要使用泛型。</String></p>
+<p>根节点枚举(使用一个OopMap记录)</p>
+<p>安全点(到达安全点时将引用关系收集到OopMap，主动式中断和抢占式中断)</p>
+<p>安全区域(类似于安全点的扩展)</p>
+<p>记忆集和卡表：</p>
+<p>​ 记忆集：为了解决对象跨代引用问题，建立的从非收集区域指向收集区域的指针集合的抽象数据结构。</p>
+<p>​ 卡表：以卡精度实现的记忆集。每个记录精确到一块内存区域，该区域内有对象含有跨代指针。</p>
+<p>写屏障：为了在机器码的层面将维护卡表的动作放到每个赋值操作之中。赋值操作会在写屏障的覆盖范围中，赋值前部分为写前屏障，赋值后部分为写后屏障，一般来说，都是在写后屏障执行卡表的更新。</p>
+<p>卡表带来的高并发问题：伪共享，由于CPU的缓存系统是缓存行为单位存储的，当多线程修改互相独立的变量时，若这些变量刚好共享同一个缓存行，就会互相影响。为了避免这个问题，简单的解决方案是先检查卡表标记，当卡表元素未被标记时才将其标记变脏。</p>
+<p>并发的可达性分析：扫描过程时垃圾收集器和用户线程存在并发问题，，可用的解决方法有增量更新(插入引用时记录，扫描完成后以记录的再扫描)、原始快照(删除引用时记录，扫描完成时按记录的再扫描)。</p>
 </blockquote>
-<h2 id="forkjoin并行计算框架">ForkJoin并行计算框架</h2>
+<h2 id="经典垃圾收集器">经典垃圾收集器</h2>
+<h3 id="serial收集器">Serial收集器</h3>
 <blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        Long time1 = System.currentTimeMillis();</span><br><span class="line">        <span class="comment">// fork 拆解, join 合并</span></span><br><span class="line">        ForkJoinPool forkJoinPool = <span class="keyword">new</span> ForkJoinPool();</span><br><span class="line">        ForkJoinTask&lt;Long&gt; result = forkJoinPool.submit(<span class="keyword">new</span> CountTask(<span class="number">1</span>,<span class="number">100000000</span>));</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            System.out.println(result.get().toString());</span><br><span class="line"></span><br><span class="line">            Long time2 = System.currentTimeMillis();</span><br><span class="line">            System.out.println(time2 - time1);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (ExecutionException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">CountTask</span> <span class="keyword">extends</span> <span class="title">RecursiveTask</span>&lt;<span class="title">Long</span>&gt;</span>&#123;</span><br><span class="line">        <span class="keyword">int</span> start;</span><br><span class="line">        <span class="keyword">int</span> end;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">CountTask</span><span class="params">(<span class="keyword">int</span> start,<span class="keyword">int</span> end)</span></span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.start = start;</span><br><span class="line">            <span class="keyword">this</span>.end = end;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">protected</span> Long <span class="title">compute</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">long</span> sum = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">if</span>(end - start &lt;= <span class="number">2</span>)&#123;</span><br><span class="line">                <span class="comment">// 拆解</span></span><br><span class="line">                <span class="keyword">for</span>(<span class="keyword">int</span> i = start ; i &lt;= end ; i++)&#123;</span><br><span class="line">                    sum += i;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// 拆分</span></span><br><span class="line">                <span class="keyword">int</span> mid = (start + end) / <span class="number">2</span>;</span><br><span class="line">                CountTask leftTask = <span class="keyword">new</span> CountTask(start, mid);</span><br><span class="line">                CountTask rightTask = <span class="keyword">new</span> CountTask(mid + <span class="number">1</span>,end);</span><br><span class="line">                <span class="comment">// 拆分任务</span></span><br><span class="line">                invokeAll(leftTask,rightTask);</span><br><span class="line"><span class="comment">//                leftTask.fork();</span></span><br><span class="line"><span class="comment">//                rightTask.fork();</span></span><br><span class="line">                <span class="comment">//获取结果</span></span><br><span class="line">                <span class="keyword">long</span> leftResult = leftTask.join();</span><br><span class="line">                <span class="keyword">long</span> rightResult = rightTask.join();</span><br><span class="line"><span class="comment">//                System.out.println(leftResult + &quot;----&quot; + rightResult);</span></span><br><span class="line">                sum = leftResult + rightResult;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 拆解任务的阈值,如何定义一个任务是最小任务</span></span><br><span class="line">            <span class="keyword">return</span> sum;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<h2 id="threadlocal">ThreadLocal</h2>
+<p>单线程、简单高效、是所有收集器里额外内存消耗最小的，但是进行垃圾收集时必须暂停其他所有工作线程。</p>
+<p>新生代采用复制算法暂停所有用户线程，老年代采用标记-整理算法暂停所有用户线程。</p>
 </blockquote>
+<h3 id="parnew收集器">ParNew收集器</h3>
 <blockquote>
-<p>线程本地变量，创建一个线程独立的变量。</p>
-<p>底层实现的原理：本质上是一个线程中存在一个ThreadLocalMap，用于存储ThreadLocal，该map的key为创建的ThreadLocal对象，而非Thread本身</p>
-<p>ThreadLocal对象使用结束后需要调用remove方法，使其从map中被移除，避免在线程复用时拿到了上次的值。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(T value)</span> </span>&#123;</span><br><span class="line"> Thread t = Thread.currentThread();</span><br><span class="line"> ThreadLocalMap map = getMap(t);</span><br><span class="line"> <span class="keyword">if</span> (map != <span class="keyword">null</span>)</span><br><span class="line">     map.set(<span class="keyword">this</span>, value);</span><br><span class="line"> <span class="keyword">else</span></span><br><span class="line">     createMap(t, value);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> T <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line"> Thread t = Thread.currentThread();</span><br><span class="line"> ThreadLocalMap map = getMap(t);</span><br><span class="line"> <span class="keyword">if</span> (map != <span class="keyword">null</span>) &#123;</span><br><span class="line">     ThreadLocalMap.Entry e = map.getEntry(<span class="keyword">this</span>);</span><br><span class="line">     <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">         <span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">         T result = (T)e.value;</span><br><span class="line">         <span class="keyword">return</span> result;</span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">return</span> setInitialValue();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="synchronized">synchronized</h2>
+<p>是Serial收集器的多线程并行版本。可以和CMS收集器配合使用。</p>
+<p>新生代采用多线程复制算法暂停所有用户线程，老年代采用标记-整理算法暂停所有用户线程。</p>
 </blockquote>
+<h3 id="parallel-scavenge收集器">Parallel Scavenge收集器</h3>
 <blockquote>
-<p>同步普通方法，同步的是this</p>
-<p>同步静态方法，同步的是类</p>
-<p>同步代码块</p>
+<p>基于标记-复制算法实现的新生代收集器，也是能够并行收集的多线程收集器。</p>
+<p>而Parallel Scavenge收集器的目标则是达到一个可控制的吞吐量(Throughput)，吞吐量就是处理器用于运行用户代码的时间与处理器总消耗时间的比值。</p>
+<p>-XX：MaxGCPauseMillis：允许的值是一个大于0的毫秒数，收集器将尽力保证内存回收花费的时间不超过用户设定值，会降低吞吐量。</p>
+<p>-XX：GCTimeRatio：值应当是一个大于0小于100的整数，也就是垃圾收集时间占总时间的比率，相当于吞吐量的倒数。</p>
+<p>-XX：+UseAdaptiveSizePolicy：一个开关参数，开启后可以自动调节参数。</p>
 </blockquote>
-<h2 id="reentrantlock">ReentrantLock</h2>
+<h3 id="serial-old收集器">Serial Old收集器</h3>
 <blockquote>
-<p>可重入锁，即自己加了锁还可以再次加锁，如a.lock(); xxxx; a.lock(); a.unlock(); a.unlock();</p>
-<p>tryLock() 返回是否拿到锁了。</p>
+<p>是Serial收集器的老年代版本，是一个单线程收集器，使用标记-整理算法。</p>
 </blockquote>
-<h2 id="readwritelock">ReadWriteLock</h2>
+<h3 id="parrallel-old收集器">Parrallel Old收集器</h3>
 <blockquote>
-<p>读写锁一般如下使用</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ReadWriteLock lock = <span class="keyword">new</span> ReentrantReadWriteLock();</span><br><span class="line">lock.readLock().lock();</span><br><span class="line">lock.writeLock().lock();</span><br></pre></td></tr></table></figure>
+<p>是Parallel Scavenge收集器的老年代版本，支持多线程并发收集，基于标记-整理算法。</p>
+</blockquote>
+<h3 id="cms收集器">CMS收集器</h3>
+<blockquote>
+<p>是一种以获取最短回收停顿时间为目标的收集器。它是基于标记-清除算法实现的。其运作过程分为4步：</p>
+<p>​ 初始标记(需要stop the world)</p>
+<p>​ 并发标记</p>
+<p>​ 重新标记(需要stop the world)</p>
+<p>​ 并发清除</p>
+<p>缺点：</p>
+<p>​ CMS收集器对处理器资源非常敏感。会因为占据了一部分线程导致应用程序变慢。CMS默认启动回收线程为(处理器核心数量 + 3 )/4。导致处理器核心&lt;4时占用的性能过多。</p>
+<p>​ CMS处理器无法处理浮动垃圾，可能出现“Concurrent Mode Failure”，从而引发Full GC。因为标记结束后，很可能产生新垃圾，CMS无法在当次收集时处理，只能留到下次。所以CMS需要预留一部分空间给并发收集时程序运行使用，可以通过-XX：CMSInitiatingOccupancyFraction来调节。</p>
+<p>​ 由于CMS是基于标记-清除算法实现的，会产生大量空间碎片。当碎片过多，大对象很难分配，触发Full GC。-XX：+UseCMS-CompactAtFullCollection:开关参数，让CMS触发Full GC时进行碎片整理。</p>
+</blockquote>
+<h3 id="garbage-first收集器">Garbage First收集器</h3>
+<blockquote>
+<p>简称G1，它开创了收集器面向局部收集的设计思路和基于Region的内存布局形式。它是一款主要面向服务端应用的垃圾收集器。</p>
+<p>在G1之前的垃圾收集器垃圾收集的范围要么是整个新生代，要么是整个老年代，要么就是Full GC，G1则是面向堆内存任何部分来组成回收集，衡量标准是哪块内存中存放的垃圾数量最多。</p>
+<p>它开创了基于Region的堆内存布局。相当于将堆内存划分为大小相同的连续独立区域，每个区域按需要划分出空间。Region中还要特殊的Humongous区域，专门用于存储大对象。G1将大小超过一个Region容量一半的对象就判定为大对象。超过整个Region容量的对象会被存放到n个连续的Region中。</p>
+<p>流程：</p>
+<p>​ 初始标记</p>
+<p>​ 并发标记</p>
+<p>​ 最终标记</p>
+<p>​ 筛选回收</p>
+</blockquote>
+<h3 id="低延迟垃圾收集器">低延迟垃圾收集器</h3>
+<blockquote>
+<p>Shenandoah收集器</p>
 </blockquote>
 
       
@@ -522,13 +535,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">116k</span>
+    <span title="站点总字数">117k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:46</span>
+    <span title="站点阅读时长">1:47</span>
   </span>
 </div>
 <div class="busuanzi-count">
