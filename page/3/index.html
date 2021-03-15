@@ -198,7 +198,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">38</span>
+          <span class="site-state-item-count">43</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -211,7 +211,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-count">30</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/10/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80%E7%AA%81%E5%87%BB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/" class="post-title-link" itemprop="url">java并发突击</a>
+          <a href="/2021/03/10/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80%E7%AA%81%E5%87%BB/" class="post-title-link" itemprop="url">数据库基础突击</a>
         </h2>
 
         <div class="post-meta-container">
@@ -286,16 +286,10 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
+      
 
-      <time title="创建时间：2021-03-04 00:00:00" itemprop="dateCreated datePublished" datetime="2021-03-04T00:00:00+08:00">2021-03-04</time>
+      <time title="创建时间：2021-03-10 00:00:00 / 修改时间：23:53:51" itemprop="dateCreated datePublished" datetime="2021-03-10T00:00:00+08:00">2021-03-10</time>
     </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-05 13:06:22" itemprop="dateModified" datetime="2021-03-05T13:06:22+08:00">2021-03-05</time>
-      </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
@@ -314,7 +308,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>1.5k</span>
+      <span>371</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -332,61 +326,21 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="java并发突击">Java并发突击</h1>
-<h2 id="线程创建的方式">线程创建的方式</h2>
+          <h1 id="数据库基础突击">数据库基础突击</h1>
+<h2 id="基本关系代数">基本关系代数</h2>
+<figure>
+<img src="/2021/03/10/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80%E7%AA%81%E5%87%BB/基本关系代数.png" alt="img"><figcaption aria-hidden="true">img</figcaption>
+</figure>
+<h2 id="数据库的范式">数据库的范式</h2>
 <blockquote>
-<p>继承thread类，重写run方法</p>
-<p>实现runnable接口，重写run方法。</p>
-<p>实现callable接口，实现call方法</p>
+<p>数据库第一范式：属性不可再分特性。即所以字段都是不可分割的原子值，如一个字段为用户信息：姓名 + 生日，就不符合第一范式。</p>
+<p>数据库第二范式：确保表中的每列都和主键相关。而不能只是部分相关。如主键为订单号和商品号，有些信息只依赖商品号，就破坏了第二范式，需要拆分成两个表。</p>
+<p>第三范式：属性不依赖于其它非主属性，属性直接依赖于主键。如一个学生表，主键为学生id，这个表格中还存有学生的班主任相关信息，此时相关信息依赖班主任，需要拆分。</p>
 </blockquote>
-<h2 id="线程池">线程池</h2>
+<h2 id="sql注入">SQL注入</h2>
 <blockquote>
-<p>为什么使用线程池？</p>
-<p>​ 为了避免线程的创建、销毁导致的线程开销，采用线程池管理一定数量的线程达到可复用线程的效果。</p>
-<p>Executors自带的线程池</p>
-<p>​ <strong>newSingleThreadExecutor</strong>：单线程线程池，这个线程池只有一个线程在工作。</p>
-<p>​ <strong>newFixedThreadPool</strong>：固定大小的线程池。每次提交一个任务就创建一个线程，直到线程达到线程池最大大小。超出的线程会在队列中等待。</p>
-<p>​ <strong>newCachedThreadPool</strong>：创建一个可缓存的线程池，当线程池大小超过了处理任务所需要的线程，会回收部分空闲线程，当任务增加时此线程池可以智能添加线程来处理任务。该线程池不会对大小进行限制。</p>
-<p>​ <strong>newScheduledThreadPool</strong>：创建一个大小无限的线程池，支持定时及周期性任务。</p>
-<p>​ <strong>newSingleThreadScheduled</strong>：创建一个只有一个线程的线程池，支持定时及周期性任务。</p>
-<p>​ <strong>newWorkStealingPool</strong>：创建一个拥有多个任务队列的线程池。</p>
-<p>自带线程池的缺点，newSingleThreadExecutor和newFixedThreadPool创建了一个长度Integer.MAX_VALUE的阻塞队列，导致任务过多堆积时耗费大量内存，产生OOM错误。newCachedThreadPool和newScheduledThreadPool创建的线程池最大线程数量为Integer.MAX_VALUE，导致可能创建了大量的线程，消耗资源，甚至造成OOM。</p>
-</blockquote>
-<h2 id="自定义线程池">自定义线程池</h2>
-<blockquote>
-<p>自己创建线程池new ThreadPoolExecutor()可以传递参数：</p>
-<p>​ corePoolSize：核心线程数量，即线程池会保持的线程数</p>
-<p>​ maximumPoolSize：最大线程数量，即线程池</p>
-<p>​ keepAliveTime：空闲线程最大存活时间</p>
-<p>​ TimeUnit：时间单位</p>
-<p>​ BlockingQueue：阻塞队列</p>
-<p>​ ThreadFactory：线程工厂</p>
-<p>​ RejectedExecutionHandler：拒绝策略</p>
-</blockquote>
-<h3 id="线程池执行execute的流程">线程池执行execute的流程</h3>
-<blockquote>
-<p>当当前线程数少于核心线程数时会新增worker线程。</p>
-<p>若任务可以成功入队，则将任务入队，同时检测当前线程池状态，若为不是RUNNING状态则将任务移出队列且执行拒绝策略。</p>
-<p>若入队失败，则尝试创建新的worker，若创建失败执行拒绝策略。</p>
-</blockquote>
-<h3 id="线程池拒绝策略">线程池拒绝策略</h3>
-<blockquote>
-<p>AbortPolicy：丢弃任务并抛出异常。</p>
-<p>CallerRunsPolicy：判断当前线程池是否关闭，若未关闭则直接调用线程的run方法。</p>
-<p>DiscardOldestPolicy：丢弃队列最前的任务，然后重新使用线程池执行被拒绝的任务。</p>
-<p>DiscardPolicy：丢弃任务，什么也不做。</p>
-<p>NewThreadRunsPolicy：创建一个线程去执行被丢弃的任务。</p>
-</blockquote>
-<h2 id="synchronized">Synchronized</h2>
-<h2 id="juc">JUC</h2>
-<h3 id="reentrantlock">ReentrantLock</h3>
-<blockquote>
-<p>可重入锁本质上是针对一个线程的，当一个线程抢占成功锁之后，若线程内部还有进行锁操作，那么会将锁的state值增加，释放时则将该值减少，直到减少到0时又可以被重新抢占。</p>
-<p>释放锁过程也是先判断逐步释放。判断当前释放锁之后锁状态是否为0，若为0则通过unpark方法唤醒队列中的后继线程。</p>
-<p>java实现的锁的方式分为公平锁和非公平锁。</p>
-<p>公平锁和非公平锁的队列都是基于锁内部维护的一个双向链表。</p>
-<p>公平锁的公平性体现在每次重新抢占时会先判断队列中是否存在等待线程，若存在则让队列的线程先抢夺。</p>
-<p>非公平锁非公平体现在每次抢占时不会判断队列中是否存在等待线程，直接进行抢占。</p>
+<p>本质上就是利用输入，对sql语句进行拼接，如拼接or 1 = 1的语句。在查询操作时在条件后拼接or 1 = 1 可以直接获取数据库的全部数据。</p>
+<p>防止的方法：使用preparedStatement处理参数，本质上就是就是在参数处添加了单引号，避免参数直接作为表达式被拼接到sql中。</p>
 </blockquote>
 
       
@@ -407,7 +361,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/38/">38</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/43/">43</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -452,13 +406,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">103k</span>
+    <span title="站点总字数">116k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:34</span>
+    <span title="站点阅读时长">1:46</span>
   </span>
 </div>
 <div class="busuanzi-count">

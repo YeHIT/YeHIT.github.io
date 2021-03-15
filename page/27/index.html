@@ -198,7 +198,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">38</span>
+          <span class="site-state-item-count">43</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -211,7 +211,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-count">30</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/JavaBasicKnowledge/%E5%B9%B6%E5%8F%91%E7%9B%B8%E5%85%B3/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/JVMKnowledge/1.JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/JavaBasicKnowledge/%E5%B9%B6%E5%8F%91%E7%9B%B8%E5%85%B3/" class="post-title-link" itemprop="url">并发相关内容</a>
+          <a href="/2021/02/20/JVMKnowledge/1.JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" class="post-title-link" itemprop="url">1.JAVA内存管理</a>
         </h2>
 
         <div class="post-meta-container">
@@ -286,27 +286,17 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
+      
 
-      <time title="创建时间：2021-02-20 12:26:00" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：17:11:45" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
     </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-03 12:40:42" itemprop="dateModified" datetime="2021-03-03T12:40:42+08:00">2021-03-03</time>
-      </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
-        </span>
-          ，
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+          <a href="/categories/JVM/" itemprop="url" rel="index"><span itemprop="name">JVM</span></a>
         </span>
     </span>
 
@@ -318,14 +308,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>6.8k</span>
+      <span>3.2k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>6 分钟</span>
+      <span>3 分钟</span>
     </span>
 </div>
 
@@ -336,127 +326,112 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="并发相关">并发相关</h1>
-<h2 id="可见性">可见性</h2>
+          <h1 id="java内存管理">JAVA内存管理</h1>
+<h2 id="java内存区域">Java内存区域</h2>
+<h3 id="总览">总览</h3>
 <blockquote>
-<p>由于内存读取速度和CPU处理速度不匹配的问题，所以往往在CPU和内存之间存在缓存机制，而多个线程执行程序时，会先从内存中读取数据放入CPU缓存中，并且在程序执行的过程中往往不会对数据进行及时更改。导致两个线程之间的数据存在不可见的问题。如子线程使用一个boolean变量来循环，此时主线程改变了该变量，但子线程却不一定会退出循环。</p>
-<p>java中使用volatile解决这个问题。</p>
+<p>堆+栈+程序计数器</p>
+<p>堆: 方法区 + 堆</p>
+<p>栈: 虚拟机栈 + 本地方法栈</p>
 </blockquote>
-<h2 id="原子性">原子性</h2>
+<figure>
+<img src="/2021/02/20/JVMKnowledge/1.JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Java内存区域.png" alt="Java内存区域"><figcaption aria-hidden="true">Java内存区域</figcaption>
+</figure>
+<h3 id="各部分的作用">各部分的作用</h3>
+<h4 id="程序计数器">程序计数器</h4>
 <blockquote>
-<p>一系列操作是不可拆分的。</p>
-<p>如count++指令；</p>
-<p>会对应汇编的三条指令：</p>
-<p>​ count值加载到CPU寄存器</p>
-<p>​ 寄存器中+1操作</p>
-<p>​ 结果写入操作</p>
+<p>是当前线程所执行的字节码的行号指示器。各线程均有一个程序计数器。如果执行的是Java方法，则程序计数器记录的值为正在执行的虚拟机字节码的地址。若执行的是本地方法，则此时程序计数器的值为undefined。该区域没有规定任何OutOfMemoryError情况。</p>
 </blockquote>
-<h2 id="有序性">有序性</h2>
+<h4 id="java虚拟机栈">Java虚拟机栈</h4>
 <blockquote>
-<p>编译时会进行优化。</p>
-<p>int a = 6;</p>
-<p>int b = 10;</p>
-<p>优化时可能顺序交换了，导致问题。如下可能导致操作1和操作2互换位置，操作3和操作4互换位置，从而使得x = y = 0</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">reorder</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        Thread t1 = <span class="keyword">new</span> Thread(()-&gt;&#123;</span><br><span class="line">            a = <span class="number">1</span>; <span class="comment">//操作1</span></span><br><span class="line">            x = b; <span class="comment">//操作2</span></span><br><span class="line">        &#125;);</span><br><span class="line">        Thread t2 = <span class="keyword">new</span> Thread(()-&gt;&#123;</span><br><span class="line">            b = <span class="number">1</span>; <span class="comment">//操作3</span></span><br><span class="line">            y = a; <span class="comment">//操作4</span></span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        t1.start();</span><br><span class="line">        t2.start();</span><br><span class="line">        t1.join();</span><br><span class="line">        t2.join();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(x == <span class="number">0</span> &amp;&amp; y == <span class="number">0</span>)&#123;</span><br><span class="line">            System.out.println(a + <span class="string">&quot;---&quot;</span> + b + <span class="string">&quot;---&quot;</span> + x + <span class="string">&quot;---&quot;</span> + y + <span class="string">&quot;---&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        a = <span class="number">0</span>;</span><br><span class="line">        b = <span class="number">0</span>;</span><br><span class="line">        y = <span class="number">0</span>;</span><br><span class="line">        x = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<h2 id="happens-before原则">happens-before原则</h2>
+<p>生命周期和线程一致，且是线程私有的。当每个方法被执行时，Java虚拟机栈就会创建一个栈帧来保存局部变量表、操作数栈、动态连接、方法出口等信息。每个方法从被调用到执行完毕的过程，对应着一个栈帧在虚拟机栈中入栈到出栈的过程。</p>
+<p>局部变量表用于存储各种Java虚拟机的<strong>基本数据类型</strong>、<strong>对象引用</strong>(reference类型，不等同与对象本身，可以是对象起始地址的引用指针，也可以是指向一个代表对象句柄或其他与此对象有关的位置)和<strong>returnAdress类型</strong>(指向了一条字节码指令的地址)。在虚拟机栈中，这些数据类型都是用变量槽来表示的。其中64位的long和double占两个变量槽，其他的均只占一个变量槽。局部变量表的大小在<strong>编译期间</strong>就已经完成，故方法所需栈帧分配的局部变量表空间是完全确定的，且不会发生改变。这里空间是指变量槽数，不是具体字节/比特数。</p>
+<p>当调用的方法是非static方法时，局部变量表中第0索引的Slot变量槽默认是this关键字指向的对象。</p>
+<p>可能出现的异常：</p>
+<p>​ StackOverflowError：线程请求栈深度超过虚拟机允许的深度。</p>
+<p>​ OutOfMemoryError：当虚拟机栈容量可以动态拓展时，不能申请到足够的内存。</p>
 </blockquote>
+<h4 id="本地方法栈">本地方法栈</h4>
 <blockquote>
-<p>happens-before原则定义如下： 1. 如果一个操作happens-before另一个操作，那么第一个操作的执行结果将对第二个操作可见，而且第一个操作的执行顺序排在第二个操作之前。 2. 两个操作之间存在happens-before关系，并不意味着一定要按照happens-before原则制定的顺序来执行。如果重排序之后的执行结果与按照happens-before关系来执行的结果一致，那么这种重排序并不非法。</p>
-<p>程序次序规则：在一个线程内一段代码的执行结果是有序的。就是还会指令重排，但是随便它怎么排，结果是按照我们代码的顺序生成的不会变！</p>
-<p>管程锁定规则：就是无论是在单线程环境还是多线程环境，对于同一个锁来说，一个线程对这个锁解锁之后，另一个线程获取了这个锁都能看到前一个线程的操作结果！(管程是一种通用的同步原语，synchronized就是管程的实现）</p>
-<p>volatile变量规则：就是如果一个线程先去写一个volatile变量，然后一个线程去读这个变量，那么这个写操作的结果一定对读的这个线程可见。</p>
-<p>线程启动规则：在主线程A执行过程中，启动子线程B，那么线程A在启动子线程B之前对共享变量的修改结果对线程B可见。</p>
-<p>线程终止规则：在主线程A执行过程中，子线程B终止，那么线程B在终止之前对共享变量的修改结果在线程A中可见。</p>
-<p>线程中断规则：对线程interrupt()方法的调用先行发生于被中断线程代码检测到中断事件的发生，可以通过Thread.interrupted()检测到是否发生中断。</p>
-<p>传递规则：这个简单的，就是happens-before原则具有传递性，即A happens-before B ， B happens-before C，那么A happens-before C。</p>
-<p>对象终结规则：这个也简单的，就是一个对象的初始化的完成，也就是构造函数执行的结束一定 happens-before它的finalize()方法。</p>
+<p>和虚拟机栈类似，虚拟机栈为虚拟机执行Java方法服务，而本地方法栈是为虚拟机使用到的本地方法服务。</p>
 </blockquote>
-<h2 id="线程池">线程池</h2>
+<h4 id="java堆">Java堆</h4>
 <blockquote>
-<p>可缓存线程池 Executors.newCachedThreadPool()</p>
-<p>​ 无上限</p>
-<p>定长线程池 Executors.newFixedThreadPool()</p>
-<p>​ 最大线程数即为设定的线程数</p>
-<p>单线程的线程池 Executors.newSingleThreadExecutor()</p>
-<p>​ 只容许一个线程</p>
-<p>计划任务线程池 Executors.newScheduledThreadPool()</p>
-<p>​ 定时任务。</p>
-<p>自定义线程池 ExecutorService myPool = new ThreadPoolExecutor();</p>
-<p>线程池可以传入callable对象和runnable对象。</p>
-<p>runnable没有返回值和异常，callable可以有返回值也可以抛出异常</p>
-<p>submit方法可以获得future对象，用于获取线程返回值和异常。</p>
+<p>Java堆是虚拟机所管理的内存中最大的一块。它是被所有线程共享的一块内存区域，在虚拟机启动时创建。java堆的唯一目的就是存放对象实例。它也是垃圾收集器管理的内存区域。大部分垃圾收集器都是基于分代收集理论设计的。</p>
+<p>从分配内存的角度看，所有线程共享的Java堆可以划分出多个线程私有的分配缓冲区。</p>
+<p>可能出现的异常：</p>
+<p>​ OutOfMemoryError：Java堆中没有内存完成实例分配，且堆无法再拓展。</p>
 </blockquote>
-<h4 id="底层实现">底层实现</h4>
+<h4 id="方法区">方法区</h4>
 <blockquote>
-<p>调用poolExecutor.execute(t1);方法时会执行的逻辑如下</p>
-<p>当当前线程数小于核心线程数数，调用addWorker方法</p>
-<p>addWorker方法主要判断了当前线程池状态，当线程池状态符合条件(处于Runing且数量小于规定数量时)，利用CAS操作判断是否可以添加新线程。</p>
-<p>若成功添加则调用new Worker创建新线程。然后利用ReentrantLock，锁定，并判断当前线程池状态是否为running，同时检查是否已经启动，若为running且未启动，则将worker添加到workers中(本质是个HashSet<Worker>)，更新largestPoolSize，然后启动线程。返回结果。</Worker></p>
-<p>这里启动线程的方法调用的实际上是worker的runWorker方法，该方法会判断(task != null || (task = getTask()) != null)，当当前worker存在任务或任务队列中存在任务时，worker会依次执行beforeExecute，task.run()，afterExecute方法，这个流程会加锁(使用Acquire和Release)</p>
-<p>getTask方法则本质上会使用阻塞队列的take方法，阻塞获取任务，或调用设定了超时时间的poll方法，获取任务。</p>
-<p>当没有可执行任务时，processWorkerExit，从workers中移除worker。</p>
-<p>当当前线程数大于核心线程数，会判断当前线程池状态是否为runnning，且能否成功添加到任务队列中。若成功入队，再次检查当前线程池状态是否符合running，若不是则移除任务。</p>
-<p>若无法入队，且当前线程数大于核心线程数，则尝试addWorker，若还不成功则reject任务，reject方式为自己选择的策略。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(Runnable command)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (command == <span class="keyword">null</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     * Proceed in 3 steps:</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 1. If fewer than corePoolSize threads are running, try to</span></span><br><span class="line"><span class="comment">     * start a new thread with the given command as its first</span></span><br><span class="line"><span class="comment">     * task.  The call to addWorker atomically checks runState and</span></span><br><span class="line"><span class="comment">     * workerCount, and so prevents false alarms that would add</span></span><br><span class="line"><span class="comment">     * threads when it shouldn&#x27;t, by returning false.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 2. If a task can be successfully queued, then we still need</span></span><br><span class="line"><span class="comment">     * to double-check whether we should have added a thread</span></span><br><span class="line"><span class="comment">     * (because existing ones died since last checking) or that</span></span><br><span class="line"><span class="comment">     * the pool shut down since entry into this method. So we</span></span><br><span class="line"><span class="comment">     * recheck state and if necessary roll back the enqueuing if</span></span><br><span class="line"><span class="comment">     * stopped, or start a new thread if there are none.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 3. If we cannot queue task, then we try to add a new</span></span><br><span class="line"><span class="comment">     * thread.  If it fails, we know we are shut down or saturated</span></span><br><span class="line"><span class="comment">     * and so reject the task.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">int</span> c = ctl.get();</span><br><span class="line">    <span class="keyword">if</span> (workerCountOf(c) &lt; corePoolSize) &#123;</span><br><span class="line">        <span class="keyword">if</span> (addWorker(command, <span class="keyword">true</span>))</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        c = ctl.get();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (isRunning(c) &amp;&amp; workQueue.offer(command)) &#123;</span><br><span class="line">        <span class="keyword">int</span> recheck = ctl.get();</span><br><span class="line">        <span class="keyword">if</span> (! isRunning(recheck) &amp;&amp; remove(command))</span><br><span class="line">            reject(command);</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (workerCountOf(recheck) == <span class="number">0</span>)</span><br><span class="line">            addWorker(<span class="keyword">null</span>, <span class="keyword">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (!addWorker(command, <span class="keyword">false</span>))</span><br><span class="line">        reject(command);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="juc工具">juc工具</h2>
+<p>HotSpot：JDK8后使用在本地内存中实现的元空间来代替JDK7中永久代还剩余的内容，JDK6之前使用永久代来实现方法区。</p>
+<p>方法区是各个线程共享的内存区域，用于存储已被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等数据。</p>
+<p>这个区域的回收目标主要是针对常量池的回收和对类型的卸载。</p>
+<p>可能出现的异常：</p>
+<p>​ OutOfMemoryError：方法区无法满足新的内存分配需求。</p>
 </blockquote>
-<h3 id="countdownlatch">CountDownLatch</h3>
+<h5 id="运行时常量池">运行时常量池</h5>
 <blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CountDownLatch cdl = <span class="keyword">new</span> CountDownLatch(<span class="number">4</span>);</span><br></pre></td></tr></table></figure>
-<p>在线程中调用cdl.countdown()</p>
-<p>主线程使用cdl.await()</p>
-<p>只有当cdl变为0时才能触发await后的操作。</p>
+<p>运行时常量池是方法区的一部分。该部分用于存放编译器生成的各种字面量与符号引用即常量池表。</p>
 </blockquote>
-<h3 id="cyclicbarrier">CyclicBarrier</h3>
+<h4 id="直接内存">直接内存</h4>
 <blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CyclicBarrier cb = <span class="keyword">new</span> CyclicBarrier(<span class="number">4</span>);</span><br></pre></td></tr></table></figure>
-<p>先设置栅栏大小，然后在线程中调用cb.await()可以同时等待设置大小个数的线程执行完操作再运行。可以重复使用。</p>
-<p>也可以如下初始化，在等待完成时自动执行runnable的run方法。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">CyclicBarrier cb = <span class="keyword">new</span> CyclicBarrier(<span class="number">4</span>, <span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;xxxx&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>直接内存不是虚拟机运行时数据区的一部分，也不是Java虚拟机规范中定义的内存区域。</p>
+<p>如JDK1.4引入的NIO可以使用Native函数分配堆外内存，然后通过一个存储在Java堆里的DirectByteBuffer对象作为这块内存的引用进行操作。</p>
+<p>本机的直接内存的分配不会受到Java堆大小的限制，但是会受到本机总内存大小及处理器寻址空间的限制。</p>
 </blockquote>
-<h3 id="semaphore">Semaphore</h3>
+<h2 id="hotspot虚拟机对象相关内容">HotSpot虚拟机对象相关内容</h2>
+<h3 id="对象创建">对象创建</h3>
 <blockquote>
-<p>信号量，通过acquire方法和release实现类似锁的效果。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Semaphore semaphore = <span class="keyword">new</span> Semaphore(<span class="number">4</span>);</span><br><span class="line">semaphore.acquire();</span><br><span class="line">semaphore.release();</span><br></pre></td></tr></table></figure>
-<h3 id="phaser">Phaser</h3>
+<p>步骤分为：类加载检查 -&gt; 分配内存 -&gt; 初始化 -&gt; 对象设置 -&gt; 等待执行构造函数</p>
+<p>类加载检查：当Java虚拟机遇到一条字节码new指令时，首先检查这个指令的参数是否可以从常量池地位到一个类的符号引用，并且检查这个符号引用代表的类是否已经被加载、解析、初始化过。若没有执行相应类的类加载过程。</p>
+<p>分配内存：类加载完成后对象所需内存大小可以完全确定，分配内存的方法分为指针碰撞法和空闲列表法。</p>
+<p>​ 指针碰撞法：将Java堆的内存视为绝对规整，使用过的内存在一边，未使用过的内存在另一边，分配内存时只需要将指针朝未使用过的内存那边移动即可。该方法要求垃圾收集器需要有空间压缩整理能力。</p>
+<p>​ 空闲列表法：Java堆的内存中使用过的内存和未使用过的内存交错在一起，需要维护一个列表记录哪些内存块可用。</p>
+<p>分配内存时需要考虑并发问题：即当A利用指针分配内存但还为修改指针位置时，B也使用原来的指针分配内存。解决该问题可以使用CAS加失败重试或把内存操作按照线程划分在不同的空间之中进行，即每个线程在Java堆中预先分配一小块内存，称为TLAB(本地线程分配缓冲)，只有本地缓冲区的内存用完了，分配新缓冲区时才需要同步锁定。</p>
+<p>初始化：虚拟机将分配到的内存空间都初始化为0值。</p>
+<p>对象设置：将对象信息如对象是哪个类的实例、如何找到类的元数据信息、对象的GC分代年龄等存入对象的对象头中。</p>
+<p>等待执行构造函数：虚拟机等到执行了<init>()方法，完成对对象的全部初始化，此时对象才算被完全的构造出来。</init></p>
 </blockquote>
+<h3 id="对象内存布局">对象内存布局</h3>
 <blockquote>
-<p>可以随时注册，注销</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Phaser phaser = <span class="keyword">new</span> Phaser(<span class="number">9</span>);</span><br><span class="line"><span class="comment">//执行register后，上限值从9变为10</span></span><br><span class="line">phaser.register();</span><br><span class="line">phaser.arriveAndAwaitAdvance();</span><br><span class="line"><span class="comment">//执行以下方法后，下一轮的上限值从10变为9</span></span><br><span class="line">phaser.arriveAndDeregister();</span><br></pre></td></tr></table></figure>
-<p>当最后一个线程到达10时，线程会同时唤醒并运行。同时触发onAdvance方法，该方法可以通过自己创建一个phaser类继承Phaser，重写onAdvance方法，然后创建phaser时传入自己的类，即可。</p>
+<p>存储布局划分为三个部分：对象头、实例数据、对齐填充(padding)</p>
+<p>对象头可以分为两类：</p>
+<p>​ 一类存储对象自身的运行时数据，如HashCode、GC分代年龄、锁状态标识、线程持有的锁、偏向线程ID、偏向时间戳等。被称为Mark Word。</p>
+<p>​ 另一类为类型指针，即对象指向它的类型元数据的指针。Java虚拟机通过这个指针来确定该对象是哪个类的实例。若对象为Java数组，对象头中还要一块用于记录数组长度的数据。</p>
+<p>实例数据：即对象真正存储的有效信息，无论是从父类继承还是子类自己定义的字段。存储顺序可以通过(-XX:FieldsAllocationStyle参数)及字段在源码中定义顺序来调整。HotSpot默认分配顺序会将相同宽度的字段分配到一起存放，如longs/doubles。</p>
+<p>padding：即填充部分，无意义，只是用于将数据对齐。</p>
 </blockquote>
-<h3 id="exchanger">Exchanger</h3>
+<h3 id="对象访问定位">对象访问定位</h3>
 <blockquote>
-<p>线程之间数据交换。需要两个线程都调用此方法，不然会阻塞。只能用于两个线程之间。</p>
-<p>exchanger.exchange("xxxx")；</p>
-<p>Exchanger<String> exchanger 创建时需要使用泛型。</String></p>
+<p>Java程序会通过栈上的reference数据来操作栈上的具体对象。</p>
+<p>主流的访问方式分为句柄和直接指针：</p>
+<p>​ 句柄：Java堆中可能划分出一块内存作为句柄池，reference存储的就是对象的句柄地址，而句柄包含对象实例数据与类型数据各自具体的地址信息。</p>
+<p>​ 直接指针：reference存储的就是对象地址，访问对象本身不需要多一次间接访问。</p>
+<p>​ 两者的优点：句柄访问的优势在于reference存储的是稳定的句柄地址，对象被移动(垃圾回收时对象常常需要被移动)时只需要改变句柄中实例数据指针即可。直接指针的优势在于速度更快，减少了一次指针定位的开销。</p>
 </blockquote>
-<h2 id="forkjoin并行计算框架">ForkJoin并行计算框架</h2>
+<h2 id="触发异常的情况">触发异常的情况</h2>
+<h3 id="java堆内存的outofmemoryerror异常">Java堆内存的OutOfMemoryError异常</h3>
 <blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        Long time1 = System.currentTimeMillis();</span><br><span class="line">        <span class="comment">// fork 拆解, join 合并</span></span><br><span class="line">        ForkJoinPool forkJoinPool = <span class="keyword">new</span> ForkJoinPool();</span><br><span class="line">        ForkJoinTask&lt;Long&gt; result = forkJoinPool.submit(<span class="keyword">new</span> CountTask(<span class="number">1</span>,<span class="number">100000000</span>));</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            System.out.println(result.get().toString());</span><br><span class="line"></span><br><span class="line">            Long time2 = System.currentTimeMillis();</span><br><span class="line">            System.out.println(time2 - time1);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (ExecutionException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">CountTask</span> <span class="keyword">extends</span> <span class="title">RecursiveTask</span>&lt;<span class="title">Long</span>&gt;</span>&#123;</span><br><span class="line">        <span class="keyword">int</span> start;</span><br><span class="line">        <span class="keyword">int</span> end;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">CountTask</span><span class="params">(<span class="keyword">int</span> start,<span class="keyword">int</span> end)</span></span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.start = start;</span><br><span class="line">            <span class="keyword">this</span>.end = end;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">protected</span> Long <span class="title">compute</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">long</span> sum = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">if</span>(end - start &lt;= <span class="number">2</span>)&#123;</span><br><span class="line">                <span class="comment">// 拆解</span></span><br><span class="line">                <span class="keyword">for</span>(<span class="keyword">int</span> i = start ; i &lt;= end ; i++)&#123;</span><br><span class="line">                    sum += i;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// 拆分</span></span><br><span class="line">                <span class="keyword">int</span> mid = (start + end) / <span class="number">2</span>;</span><br><span class="line">                CountTask leftTask = <span class="keyword">new</span> CountTask(start, mid);</span><br><span class="line">                CountTask rightTask = <span class="keyword">new</span> CountTask(mid + <span class="number">1</span>,end);</span><br><span class="line">                <span class="comment">// 拆分任务</span></span><br><span class="line">                invokeAll(leftTask,rightTask);</span><br><span class="line"><span class="comment">//                leftTask.fork();</span></span><br><span class="line"><span class="comment">//                rightTask.fork();</span></span><br><span class="line">                <span class="comment">//获取结果</span></span><br><span class="line">                <span class="keyword">long</span> leftResult = leftTask.join();</span><br><span class="line">                <span class="keyword">long</span> rightResult = rightTask.join();</span><br><span class="line"><span class="comment">//                System.out.println(leftResult + &quot;----&quot; + rightResult);</span></span><br><span class="line">                sum = leftResult + rightResult;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 拆解任务的阈值,如何定义一个任务是最小任务</span></span><br><span class="line">            <span class="keyword">return</span> sum;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<h2 id="threadlocal">ThreadLocal</h2>
+<p>不断创建对象且保证GC Roots到对象之间有可达路径来避免垃圾回收机制清除这些对象。</p>
 </blockquote>
+<h3 id="虚拟机栈和本地方法栈溢出">虚拟机栈和本地方法栈溢出</h3>
 <blockquote>
-<p>线程本地变量，创建一个线程独立的变量。</p>
-<p>底层实现的原理：本质上是一个线程中存在一个ThreadLocalMap，用于存储ThreadLocal，该map的key为创建的ThreadLocal对象，而非Thread本身</p>
-<p>ThreadLocal对象使用结束后需要调用remove方法，使其从map中被移除，避免在线程复用时拿到了上次的值。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(T value)</span> </span>&#123;</span><br><span class="line"> Thread t = Thread.currentThread();</span><br><span class="line"> ThreadLocalMap map = getMap(t);</span><br><span class="line"> <span class="keyword">if</span> (map != <span class="keyword">null</span>)</span><br><span class="line">     map.set(<span class="keyword">this</span>, value);</span><br><span class="line"> <span class="keyword">else</span></span><br><span class="line">     createMap(t, value);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> T <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line"> Thread t = Thread.currentThread();</span><br><span class="line"> ThreadLocalMap map = getMap(t);</span><br><span class="line"> <span class="keyword">if</span> (map != <span class="keyword">null</span>) &#123;</span><br><span class="line">     ThreadLocalMap.Entry e = map.getEntry(<span class="keyword">this</span>);</span><br><span class="line">     <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">         <span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">         T result = (T)e.value;</span><br><span class="line">         <span class="keyword">return</span> result;</span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">return</span> setInitialValue();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="synchronized">synchronized</h2>
+<p>-Xss设置栈容量。</p>
+<p>1）如果线程请求的栈深度大于虚拟机所允许的最大深度，将抛出StackOverflowError异常。</p>
+<p>2）如果虚拟机的栈内存允许动态扩展，当扩展栈容量无法申请到足够的内存时，将抛出OutOfMemoryError异常。</p>
+<p>创建太多线程也会导致OutOfMemoryError异常。</p>
 </blockquote>
+<h2 id="方法区和运行时常量池溢出">方法区和运行时常量池溢出</h2>
 <blockquote>
-<p>同步普通方法，同步的是this</p>
-<p>同步静态方法，同步的是类</p>
-<p>同步代码块</p>
+<p>运行时常量池，从JDK7开始后原本存放到永久代的字符串常量池被移动到Java堆中。</p>
+<p>-XX：PermSize和-XX：MaxPermSize限制永久代大小。</p>
+<p>方法区溢出会在运行时产生大量的类时出现，OutOfMemoryError。</p>
 </blockquote>
-<h2 id="reentrantlock">ReentrantLock</h2>
+<h3 id="本机直接内存溢出">本机直接内存溢出</h3>
 <blockquote>
-<p>可重入锁，即自己加了锁还可以再次加锁，如a.lock(); xxxx; a.lock(); a.unlock(); a.unlock();</p>
-<p>tryLock() 返回是否拿到锁了。</p>
-</blockquote>
-<h2 id="readwritelock">ReadWriteLock</h2>
-<blockquote>
-<p>读写锁一般如下使用</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ReadWriteLock lock = <span class="keyword">new</span> ReentrantReadWriteLock();</span><br><span class="line">lock.readLock().lock();</span><br><span class="line">lock.writeLock().lock();</span><br></pre></td></tr></table></figure>
+<p>大小默认与Java堆最大值一致。可以通过-XX：MaxDirectMemorySize参数指定。</p>
+<p>直接或间接(NIO)使用了太多是Unsafe::allocateMemory()分配过多的直接内存会触发OutOfMemoryError异常。</p>
 </blockquote>
 
       
@@ -477,7 +452,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/26/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/26/">26</a><span class="page-number current">27</span><a class="page-number" href="/page/28/">28</a><span class="space">&hellip;</span><a class="page-number" href="/page/38/">38</a><a class="extend next" rel="next" href="/page/28/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/26/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/26/">26</a><span class="page-number current">27</span><a class="page-number" href="/page/28/">28</a><span class="space">&hellip;</span><a class="page-number" href="/page/43/">43</a><a class="extend next" rel="next" href="/page/28/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -522,13 +497,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">103k</span>
+    <span title="站点总字数">116k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:34</span>
+    <span title="站点阅读时长">1:46</span>
   </span>
 </div>
 <div class="busuanzi-count">

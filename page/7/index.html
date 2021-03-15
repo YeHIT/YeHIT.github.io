@@ -198,7 +198,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">38</span>
+          <span class="site-state-item-count">43</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -211,7 +211,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-count">30</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/03/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%AA%81%E5%87%BB/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/07/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%AA%81%E5%87%BB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/03/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%AA%81%E5%87%BB/" class="post-title-link" itemprop="url">消息队列突击</a>
+          <a href="/2021/03/07/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%AA%81%E5%87%BB/" class="post-title-link" itemprop="url">数据结构突击</a>
         </h2>
 
         <div class="post-meta-container">
@@ -288,7 +288,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-03-03 00:00:00 / 修改时间：13:28:01" itemprop="dateCreated datePublished" datetime="2021-03-03T00:00:00+08:00">2021-03-03</time>
+      <time title="创建时间：2021-03-07 00:00:00 / 修改时间：14:39:34" itemprop="dateCreated datePublished" datetime="2021-03-07T00:00:00+08:00">2021-03-07</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -308,7 +308,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>733</span>
+      <span>1.4k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -326,37 +326,57 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="消息队列突击">消息队列突击</h1>
+          <h1 id="数据结构突击">数据结构突击</h1>
+<h2 id="树">树</h2>
+<h3 id="二叉树">二叉树</h3>
 <blockquote>
-<p>常用的信息队列：rockketMQ、kafka</p>
+<p>即每个结点都带有左右子树的树结构</p>
 </blockquote>
-<h2 id="为什么使用消息队列">为什么使用消息队列?</h2>
+<h3 id="二叉搜索树">二叉搜索树</h3>
 <blockquote>
-<p>异步：开发过程中往往会存在后一个步骤需要等待前一个流程执行的操作，如果使用正常流程开发会导致操作线性化占用大量时间。使用消息队列允许前者将自己的结果放入队列中，然后让接下来的流程自己去调用结果执行。</p>
-<p>解耦：此外正常开发流程中还存在如果增加依赖者，需要手动修改代码，使用消息队列的话只需要主体将结果放入队列，依赖者自己去消费队列的信息即可，无须多余操作。</p>
-<p>削峰：遇到大量并发时，如果直接访问数据库往往会导致数据库连接异常。此时选择先将请求放入消息队列中，让对应数据库系统根据自己的承载能力消费即可。</p>
+<p>在二叉树的基础上需要满足任一子树，左孩子的值小于根节点值，右孩子的值大于根节点值。</p>
+<p>优点：既有链表的快速插入与删除操作的特点，又有数组快速查找的优势。</p>
+<p>缺点：在特定情况下，如插入都是按序插入，会导致树结构退化为链表。查找效率下降。</p>
 </blockquote>
-<h2 id="消息队列的消息可靠性">消息队列的消息可靠性</h2>
+<h3 id="二叉平衡树">二叉平衡树</h3>
 <blockquote>
-<p>生产者发送消息丢失：</p>
-<p>​ 一种方法是同步执行，然后等待消息发送，若发送失败则事务回滚。</p>
-<p>​ 另一种是异步发送消息，设置回调函数，等待消息队列告知是否发送成功，若不成功则重新发送，失败一定次数后，考虑人工干预。</p>
-<p>MQ本身丢失消息：</p>
-<p>​ 定期存储。多机存储。存储时可以设置只有当n个从机都存储成功了才会告知生产者消息发送成功。</p>
-<p>消费者丢失消息：</p>
-<p>​ 消费者消费消息成功后给生产者发送ack信号。</p>
+<p>特点：是高度平衡的二叉搜索树，要求左右子树高度差绝对值不超过1，且左右子树都是二叉搜索树。</p>
+<p>优点：由于树高度平衡，让查找操作的时间复杂度变为O(logN)。</p>
+<p>缺点：由于对树的平衡要求过高，导致每次插入和删除操作需要耗费大量资源对树进行平衡，耗费大量性能。</p>
+<p>适用场景：读多写少的场景。</p>
 </blockquote>
-<h2 id="消息队列不被重复消费">消息队列不被重复消费</h2>
+<h3 id="红黑树">红黑树</h3>
 <blockquote>
-<p>本质上就是让消费操作重复执行也不影响结果，即幂等性。</p>
-<p>主要看场景，如果消费需要修改数据库，那直接查看数据库中是否有这个数据若存在该数据则不执行插入。</p>
-<p>若使用的是redis，则直接更新redis即可。</p>
-<p>若是其他情况，往往需要维护一个全局唯一的id-消费消息的结构，或者放在redis中，消费者消费时先查询该结构，若没有查询结果则说明消息没有被消费过。</p>
+<p>特点：基于二叉平衡树的优点和缺点，红黑树放宽了树的平衡条件。最终会让根到叶子节点的路径最长不超过最短的两倍。它的特点为：</p>
+<p>​ 具有二叉查找树的特点。</p>
+<p>​ 根节点是黑色的。</p>
+<p>​ 每个叶子节点都是黑色的空节点，即叶子节点不存数据。</p>
+<p>​ 任何相邻的节点不能同时为红色，即红色节点是被黑色节点隔开的。</p>
+<p>​ 每个结点，从该节点到达其可达叶子节点的所有路径都包含相同数目的黑色节点。</p>
+<p>优点：红黑树对于平衡条件要求不是十分严格，让每次插入、删除操作的开销减少，且平衡条件也避免了像二叉搜索树退化成链表的情况，使得搜索操作时间复杂度是O(logN)。</p>
+<p>适用场景：写频繁的场景。</p>
 </blockquote>
-<h2 id="消息队列顺序消费">消息队列顺序消费</h2>
+<h3 id="b树">B树</h3>
 <blockquote>
-<p>即生产者生成的消息需要被按序执行。</p>
-<p>解决方案：消息队列中将这些需要按序执行的消息，放入一个队列中，让消费者消费时必须消费整个队列。</p>
+<p>是一种多路平衡查找树，为了针对磁盘等存储设备设计的。读取磁盘往往是以磁盘块为单位的，位于同一个磁盘块的数据会被一次性读出。InnoDB存储引擎中有页的概念，默认每个页大小为16KB。</p>
+<p>一个m阶的B-Tree的特性：</p>
+<p>​ 每个结点最多有m个孩子。</p>
+<p>​ 除了根节点和叶子节点外，其他每个节点至少有Ceil(m/2)个孩子。</p>
+<p>​ 若根节点不是叶子节点，则至少有2个孩子。</p>
+<p>​ 所有叶子结点在同一层，且不含其他关键字信息。</p>
+<p>​ 非叶子结点大致是由指针，关键字，数据组成。</p>
+<p>操作：</p>
+<p>​ 插入：B树的插入在<strong>叶结点</strong>，当结点空间满了，则分裂为两个相邻结点，中间关键字上移到父节点中。若父节点也满了，同样分裂并上移，直至根节点，<strong>若根节点也满了，则中间元素上移到新的根结点中，树的深度增加一层</strong>。</p>
+<p>​ 删除：若没有左右孩子结点，则直接删除，否则将孩子结点中相近的结点上移到当前节点中。然后调整平衡性。</p>
+<p>优点：经常访问的数据可能离根节点较低，需要的I/O查询次数少，从而效率高。</p>
+<p>缺点：由于节点既存放数据又存放指针，导致每个节点可以指向的数据块数量少，从而导致树的高度高，且由于数据分布在各层，也导致查询数据的I/O次数不同，使得耗时难以估计。由于叶子之间没有联系，无法从一个叶子结点找到另一个叶子结点，故B-树难以进行范围查询。</p>
+</blockquote>
+<h3 id="b树-1">B+树</h3>
+<blockquote>
+<p>对B-树进行优化，将所有的数据都放在叶子结点，其他结点只存放关键字和孩子指针，且所有的叶子结点和相连的结点使用链表相连，便于范围查找和遍历。</p>
+<p>优势：B+数在内部节点上不含数据信息，使得内部节点可以存放更多的索引信息，降低了树高，减少了I/O查询次数。且B+树的叶子结点是相连的，对树的遍历只需要一次线性遍历，而B-树需要每层递归遍历。</p>
+<p>具体计算：</p>
+<p>​ 以InnoDB为例，默认页大小为16KB，若主键占8B，指针占8B，一条记录占1KB大小，则每个页可以存放1K的索引信息，16条记录，若树高为一(即只有根节点和叶子节点)则可以获取的记录数为1K * 16 = 16K，树高为2则可以获取的记录为 16M，树高为3可以获取的记录为16G。</p>
 </blockquote>
 
       
@@ -377,7 +397,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/6/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/38/">38</a><a class="extend next" rel="next" href="/page/8/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/6/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/43/">43</a><a class="extend next" rel="next" href="/page/8/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -422,13 +442,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">103k</span>
+    <span title="站点总字数">116k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:34</span>
+    <span title="站点阅读时长">1:46</span>
   </span>
 </div>
 <div class="busuanzi-count">

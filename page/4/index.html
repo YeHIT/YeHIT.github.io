@@ -198,7 +198,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">38</span>
+          <span class="site-state-item-count">43</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -211,7 +211,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-count">30</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/redis%E7%AA%81%E5%87%BB/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/09/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E5%88%86%E5%B8%83%E5%BC%8F%E7%AA%81%E5%87%BB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/redis%E7%AA%81%E5%87%BB/" class="post-title-link" itemprop="url">redis突击</a>
+          <a href="/2021/03/09/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E5%88%86%E5%B8%83%E5%BC%8F%E7%AA%81%E5%87%BB/" class="post-title-link" itemprop="url">分布式突击</a>
         </h2>
 
         <div class="post-meta-container">
@@ -288,7 +288,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-03-04 00:00:00 / 修改时间：18:17:19" itemprop="dateCreated datePublished" datetime="2021-03-04T00:00:00+08:00">2021-03-04</time>
+      <time title="创建时间：2021-03-09 00:00:00 / 修改时间：20:08:47" itemprop="dateCreated datePublished" datetime="2021-03-09T00:00:00+08:00">2021-03-09</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -308,7 +308,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>289</span>
+      <span>733</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -326,24 +326,19 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="redis突击">redis突击</h1>
-<h2 id="redis为什么快">redis为什么快？</h2>
+          <h1 id="分布式突击">分布式突击</h1>
+<h2 id="分布式怎么进行数据切分访问">分布式怎么进行数据切分访问？</h2>
 <blockquote>
-<p>单线程：因为一开始的redis认为redis速度的瓶颈不在于cpu运算速度，而往往在于网络带宽和机器内存大小。使用单线程编程简单且没有线程切换的开销。</p>
-<p>数据存放在内存中。</p>
-<p>使用了I/O多路复用技术。</p>
-</blockquote>
-<h2 id="redis数据结构">redis数据结构</h2>
-<blockquote>
-<p>String、Hash、List、Set、SortedSet、HyperLogLog(可以用于统计网页每天的用户访问量数据)、Geo、Bitmap(可以用来记录用户的在线状态)、Stream(主要用于消息队列)</p>
-</blockquote>
-<h2 id="redis数据淘汰机制">redis数据淘汰机制</h2>
-<blockquote>
-<p>随机淘汰、ttl淘汰即淘汰即将过期的数据、LRU淘汰最近最少使用的数据。</p>
-</blockquote>
-<h2 id="缓存击穿缓存雪崩缓存穿透">缓存击穿、缓存雪崩、缓存穿透</h2>
-<blockquote>
-
+<p>显然分布式服务中，必然存在服务集群，一般而言是怎么访问这些集群的呢？往往使用hash来将用户划分到不同的区域，以简单的hash函数为例：</p>
+<p>​ 假设存在6台服务器，此时采用的hash函数为(key)%6，这样选择对应的服务器。显然是可以实现功能的。当如果服务器的数量突然减少或增加了，此时hash函数将要变化，而这时原有的映射关系将直接无用。怎么解决这个问题呢？<strong>一致性hash！</strong></p>
+<p><strong>一致性hash算法</strong></p>
+<p>​ 即使用2^32作为取模的数，将整个区域视为一个圆环，先对服务器进行哈希处理，让其发布在圆环的不同位置，然后当有请求到来时，对请求进行哈希处理，此时会发现请求也落在圆环的某个位置，然后沿顺时针查找该位置离哪个服务器最近，即可找到对应提供服务的服务器。此时若需要添加服务器，只需往圆环上添加新位置即可，只需局部调整，无须全部更新。</p>
+<figure>
+<img src="/2021/03/09/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E5%88%86%E5%B8%83%E5%BC%8F%E7%AA%81%E5%87%BB/一致性哈希环.png" alt="一致性哈希环"><figcaption aria-hidden="true">一致性哈希环</figcaption>
+</figure>
+<p>​ 当然这样有时会导致某些数据累积在同一台服务器上，一致性hash为了解决这个问题引入了虚拟节点机制，即用一个服务器结点计算多次哈希，在每个计算位置放置服务器结点，以保障数据可以比较合理的分布。</p>
+<p>一些分布式集群使用一致性hash(或类似原理)的场景：</p>
+<p>​ redis cluster：类似于一致性hash的思想，对于redis集群采用哈希槽的设计思想，即redis cluster有固定的16384即16K个哈希槽(因为16384个槽在传递配置信息时只需要传输2k的位图，16k/ 8bit = 2k，且16k大小的槽足够redis集群使用了)，对请求进行哈希操作时使用16384作为模数，让请求分布到槽中，而每个主机会负责管理一部分的槽。在进行主机的切换拓展时可以通过指定哪个槽由哪个主机负责来实现拓展和移除主机。</p>
 </blockquote>
 
       
@@ -364,7 +359,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/38/">38</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/43/">43</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -409,13 +404,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">103k</span>
+    <span title="站点总字数">116k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:34</span>
+    <span title="站点阅读时长">1:46</span>
   </span>
 </div>
 <div class="busuanzi-count">

@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-leaf.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-leaf.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-leaf.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"49.234.221.130","root":"/","images":"/images","scheme":"Pisces","version":"8.2.1","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+<meta name="description" content="智力题突击 海量数据处理 通用的数据结构&#x2F;方法  布隆过滤器(Bloom filter)：即位数组+多个hash函数，求文件字符重复。 hash：往往用于将重复的记录整合，统计。也可以用于拆分小文件。 位图(bitmap)：可以用于对数据的快速判重。即创建一个最大值+1大小 &#x2F; 8的整型数组，将数组的每一位用于判断数据是否存在。 堆：适用于找出海量数据的前n大的数。 双层桶划分：适">
+<meta property="og:type" content="article">
+<meta property="og:title" content="智力题突击">
+<meta property="og:url" content="http://49.234.221.130/2021/03/09/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E6%99%BA%E5%8A%9B%E9%A2%98%E7%AA%81%E5%87%BB/index.html">
+<meta property="og:site_name" content="Yesomething">
+<meta property="og:description" content="智力题突击 海量数据处理 通用的数据结构&#x2F;方法  布隆过滤器(Bloom filter)：即位数组+多个hash函数，求文件字符重复。 hash：往往用于将重复的记录整合，统计。也可以用于拆分小文件。 位图(bitmap)：可以用于对数据的快速判重。即创建一个最大值+1大小 &#x2F; 8的整型数组，将数组的每一位用于判断数据是否存在。 堆：适用于找出海量数据的前n大的数。 双层桶划分：适">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-03-08T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-03-10T13:00:19.480Z">
+<meta property="article:author" content="Ye">
+<meta property="article:tag" content="智力题">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://49.234.221.130/2021/03/09/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E6%99%BA%E5%8A%9B%E9%A2%98%E7%AA%81%E5%87%BB/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>智力题突击 | Yesomething</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Yesomething</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Ye's blog</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fas fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%99%BA%E5%8A%9B%E9%A2%98%E7%AA%81%E5%87%BB"><span class="nav-number">1.</span> <span class="nav-text">智力题突击</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%B7%E9%87%8F%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86"><span class="nav-number">1.1.</span> <span class="nav-text">海量数据处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E7%94%A8%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%96%B9%E6%B3%95"><span class="nav-number">1.1.1.</span> <span class="nav-text">通用的数据结构&#x2F;方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%B7%E9%87%8F%E6%97%A5%E5%BF%97%E6%95%B0%E6%8D%AE%E6%8F%90%E5%8F%96%E5%87%BA%E6%9F%90%E6%97%A5%E8%AE%BF%E9%97%AE%E7%99%BE%E5%BA%A6%E6%AC%A1%E6%95%B0%E6%9C%80%E5%A4%9A%E7%9A%84%E9%82%A3%E4%B8%AAip"><span class="nav-number">1.1.2.</span> <span class="nav-text">海量日志数据，提取出某日访问百度次数最多的那个IP。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%81%87%E8%AE%BE%E7%9B%AE%E5%89%8D%E6%9C%89%E4%B8%80%E5%8D%83%E4%B8%87%E4%B8%AA%E8%AE%B0%E5%BD%95%E8%BF%99%E4%BA%9B%E6%9F%A5%E8%AF%A2%E4%B8%B2%E7%9A%84%E9%87%8D%E5%A4%8D%E5%BA%A6%E6%AF%94%E8%BE%83%E9%AB%98%E8%99%BD%E7%84%B6%E6%80%BB%E6%95%B0%E6%98%AF1%E5%8D%83%E4%B8%87%E4%BD%86%E5%A6%82%E6%9E%9C%E9%99%A4%E5%8E%BB%E9%87%8D%E5%A4%8D%E5%90%8E%E4%B8%8D%E8%B6%85%E8%BF%873%E7%99%BE%E4%B8%87%E4%B8%AA%E5%8D%95%E4%B8%AA%E8%AE%B0%E5%BD%95%E5%A4%A7%E5%B0%8F0-255b%E8%AF%B7%E4%BD%A0%E7%BB%9F%E8%AE%A1%E6%9C%80%E7%83%AD%E9%97%A8%E7%9A%8410%E4%B8%AA%E6%9F%A5%E8%AF%A2%E4%B8%B2%E8%A6%81%E6%B1%82%E4%BD%BF%E7%94%A8%E7%9A%84%E5%86%85%E5%AD%98%E4%B8%8D%E8%83%BD%E8%B6%85%E8%BF%871g"><span class="nav-number">1.1.3.</span> <span class="nav-text">假设目前有一千万个记录（这些查询串的重复度比较高，虽然总数是1千万，但如果除去重复后，不超过3百万个。单个记录大小0-255B），请你统计最热门的10个查询串，要求使用的内存不能超过1G。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%89%E4%B8%80%E4%B8%AA1g%E5%A4%A7%E5%B0%8F%E7%9A%84%E4%B8%80%E4%B8%AA%E6%96%87%E4%BB%B6%E9%87%8C%E9%9D%A2%E6%AF%8F%E4%B8%80%E8%A1%8C%E6%98%AF%E4%B8%80%E4%B8%AA%E8%AF%8D%E8%AF%8D%E7%9A%84%E5%A4%A7%E5%B0%8F%E4%B8%8D%E8%B6%85%E8%BF%8716%E5%AD%97%E8%8A%82%E5%86%85%E5%AD%98%E9%99%90%E5%88%B6%E5%A4%A7%E5%B0%8F%E6%98%AF1m%E8%BF%94%E5%9B%9E%E9%A2%91%E6%95%B0%E6%9C%80%E9%AB%98%E7%9A%84100%E4%B8%AA%E8%AF%8D"><span class="nav-number">1.1.4.</span> <span class="nav-text">有一个1G大小的一个文件，里面每一行是一个词，词的大小不超过16字节，内存限制大小是1M。返回频数最高的100个词。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%8910%E4%B8%AA%E6%96%87%E4%BB%B6%E6%AF%8F%E4%B8%AA%E6%96%87%E4%BB%B61g%E6%AF%8F%E4%B8%AA%E6%96%87%E4%BB%B6%E7%9A%84%E6%AF%8F%E4%B8%80%E8%A1%8C%E5%AD%98%E6%94%BE%E7%9A%84%E9%83%BD%E6%98%AF%E7%94%A8%E6%88%B7%E7%9A%84query%E6%AF%8F%E4%B8%AA%E6%96%87%E4%BB%B6%E7%9A%84query%E9%83%BD%E5%8F%AF%E8%83%BD%E9%87%8D%E5%A4%8D%E8%A6%81%E6%B1%82%E4%BD%A0%E6%8C%89%E7%85%A7query%E7%9A%84%E9%A2%91%E5%BA%A6%E6%8E%92%E5%BA%8F"><span class="nav-number">1.1.5.</span> <span class="nav-text">有10个文件，每个文件1G，每个文件的每一行存放的都是用户的query，每个文件的query都可能重复。要求你按照query的频度排序。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%99%E5%AE%9Aab%E4%B8%A4%E4%B8%AA%E6%96%87%E4%BB%B6%E5%90%84%E5%AD%98%E6%94%BE50%E4%BA%BF%E4%B8%AAurl%E6%AF%8F%E4%B8%AAurl%E5%90%84%E5%8D%A064%E5%AD%97%E8%8A%82%E5%86%85%E5%AD%98%E9%99%90%E5%88%B6%E6%98%AF4g%E8%AE%A9%E4%BD%A0%E6%89%BE%E5%87%BAab%E6%96%87%E4%BB%B6%E5%85%B1%E5%90%8C%E7%9A%84url"><span class="nav-number">1.1.6.</span> <span class="nav-text">给定a、b两个文件，各存放50亿个url，每个url各占64字节，内存限制是4G，让你找出a、b文件共同的url</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%A82.5%E4%BA%BF%E4%B8%AA%E6%95%B4%E6%95%B0%E4%B8%AD%E6%89%BE%E5%87%BA%E4%B8%8D%E9%87%8D%E5%A4%8D%E7%9A%84%E6%95%B4%E6%95%B0%E6%B3%A8%E5%86%85%E5%AD%98%E4%B8%8D%E8%B6%B3%E4%BB%A5%E5%AE%B9%E7%BA%B3%E8%BF%992.5%E4%BA%BF%E4%B8%AA%E6%95%B4%E6%95%B0"><span class="nav-number">1.1.7.</span> <span class="nav-text">在2.5亿个整数中找出不重复的整数，注，内存不足以容纳这2.5亿个整数。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%85%BE%E8%AE%AF%E9%9D%A2%E8%AF%95%E9%A2%98%E7%BB%9940%E4%BA%BF%E4%B8%AA%E4%B8%8D%E9%87%8D%E5%A4%8D%E7%9A%84unsigned-int%E7%9A%84%E6%95%B4%E6%95%B0%E6%B2%A1%E6%8E%92%E8%BF%87%E5%BA%8F%E7%9A%84%E7%84%B6%E5%90%8E%E5%86%8D%E7%BB%99%E4%B8%80%E4%B8%AA%E6%95%B0%E5%A6%82%E4%BD%95%E5%BF%AB%E9%80%9F%E5%88%A4%E6%96%AD%E8%BF%99%E4%B8%AA%E6%95%B0%E6%98%AF%E5%90%A6%E5%9C%A8%E9%82%A340%E4%BA%BF%E4%B8%AA%E6%95%B0%E5%BD%93%E4%B8%AD"><span class="nav-number">1.1.8.</span> <span class="nav-text">腾讯面试题：给40亿个不重复的unsigned int的整数，没排过序的，然后再给一个数，如何快速判断这个数是否在那40亿个数当中？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%8E%B0%E6%9C%89%E4%B8%A4%E4%B8%AA%E5%90%84%E6%9C%8920%E4%BA%BF%E8%A1%8C%E7%9A%84%E6%96%87%E4%BB%B6%E6%AF%8F%E4%B8%80%E8%A1%8C%E9%83%BD%E5%8F%AA%E6%9C%89%E4%B8%80%E4%B8%AA%E6%95%B0%E5%AD%97%E6%B1%82%E8%BF%99%E4%B8%A4%E4%B8%AA%E6%96%87%E4%BB%B6%E7%9A%84%E4%BA%A4%E9%9B%86"><span class="nav-number">1.1.9.</span> <span class="nav-text">现有两个各有20亿行的文件，每一行都只有一个数字，求这两个文件的交集。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%B7%E9%87%8F%E6%95%B0%E6%8D%AE%E4%B8%AD%E4%BD%8D%E6%95%B0%E5%8F%AA%E6%9C%892g%E5%86%85%E5%AD%98%E7%9A%84pc%E6%9C%BA%E5%9C%A8%E4%B8%80%E4%B8%AA%E5%AD%98%E6%9C%8910g%E4%B8%AA%E6%95%B4%E6%95%B0%E7%9A%84%E6%96%87%E4%BB%B6%E4%BB%8E%E4%B8%AD%E6%89%BE%E5%88%B0%E4%B8%AD%E4%BD%8D%E6%95%B0%E5%86%99%E4%B8%80%E4%B8%AA%E7%AE%97%E6%B3%95"><span class="nav-number">1.1.10.</span> <span class="nav-text">海量数据中位数，只有2G内存的pc机，在一个存有10G个整数的文件，从中找到中位数，写一个算法。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%AA%E7%8E%A9%E5%AE%B6%E7%9A%84%E6%88%98%E6%96%97%E5%8A%9B%E8%A6%81%E6%8E%92%E5%90%8D%E5%89%8D500%E5%90%8D%E8%80%8C%E4%B8%94%E9%9C%80%E8%A6%81%E5%AE%9E%E6%97%B6%E6%9B%B4%E6%96%B0%E6%80%8E%E4%B9%88%E5%A4%84%E7%90%86"><span class="nav-number">1.1.11.</span> <span class="nav-text">100000个玩家的战斗力，要排名前500名，而且需要实时更新，怎么处理？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%99%BA%E5%8A%9B%E9%A2%98"><span class="nav-number">1.2.</span> <span class="nav-text">智力题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8C%B9%E9%A9%AC%E4%BA%94%E6%9D%A1%E8%B5%9B%E9%81%93%E9%80%89%E5%87%BA%E5%89%8D%E4%B8%89%E9%9C%80%E8%A6%81%E5%87%A0%E8%BD%AE"><span class="nav-number">1.2.1.</span> <span class="nav-text">25匹马，五条赛道，选出前三需要几轮？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%93%B6%E6%B0%B41%E7%93%B6%E6%AF%92%E8%8D%AF10%E5%8F%AA%E8%80%81%E9%BC%A0%E6%AF%92%E8%8D%AF%E4%B8%80%E5%A4%A9%E5%8F%91%E4%BD%9C%E9%9C%80%E8%A6%81%E5%A4%9A%E4%B9%85%E9%80%89%E5%87%BA%E6%AF%92%E8%8D%AF"><span class="nav-number">1.2.2.</span> <span class="nav-text">999瓶水，1瓶毒药10只老鼠，毒药一天发作，需要多久选出毒药？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9A%84%E4%B8%A4%E4%B8%AA%E6%95%B0%E6%8A%8A%E5%92%8C%E5%91%8A%E8%AF%89a%E7%A7%AF%E5%91%8A%E8%AF%89ba%E8%AF%B4%E4%B8%8D%E7%9F%A5%E9%81%93%E6%98%AF%E5%A4%9A%E5%B0%91b%E4%B9%9F%E8%AF%B4%E4%B8%8D%E7%9F%A5%E9%81%93%E8%BF%99%E6%97%B6a%E8%AF%B4%E6%88%91%E7%9F%A5%E9%81%93%E4%BA%86b%E6%8E%A5%E7%9D%80%E8%AF%B4%E6%88%91%E4%B9%9F%E7%9F%A5%E9%81%93%E4%BA%86%E9%97%AE%E8%BF%99%E4%B8%A4%E4%B8%AA%E6%95%B0%E6%98%AF%E5%A4%9A%E5%B0%91"><span class="nav-number">1.2.3.</span> <span class="nav-text">1-20的两个数把和告诉A,积告诉B，A说不知道是多少，B也说不知道，这时A说我知道了，B接着说我也知道了，问这两个数是多少？</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Ye"
+      src="/uploads/photo.jpg">
+  <p class="site-author-name" itemprop="name">Ye</p>
+  <div class="site-description" itemprop="description">Ye的个人技术记录博客</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">30</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/YeHIT" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;YeHIT" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1044377312@qq.com" title="E-Mail → mailto:1044377312@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+  <a href="https://github.com/YeHIT" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/09/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E6%99%BA%E5%8A%9B%E9%A2%98%E7%AA%81%E5%87%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/photo.jpg">
+      <meta itemprop="name" content="Ye">
+      <meta itemprop="description" content="Ye的个人技术记录博客">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Yesomething">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          智力题突击
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-03-09 00:00:00" itemprop="dateCreated datePublished" datetime="2021-03-09T00:00:00+08:00">2021-03-09</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-10 21:00:19" itemprop="dateModified" datetime="2021-03-10T21:00:19+08:00">2021-03-10</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/" itemprop="url" rel="index"><span itemprop="name">面试突击</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.6k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="智力题突击">智力题突击</h1>
+<h2 id="海量数据处理">海量数据处理</h2>
+<h3 id="通用的数据结构方法">通用的数据结构/方法</h3>
+<blockquote>
+<p>布隆过滤器(Bloom filter)：即位数组+多个hash函数，求文件字符重复。</p>
+<p>hash：往往用于将重复的记录整合，统计。也可以用于拆分小文件。</p>
+<p>位图(bitmap)：可以用于对数据的快速判重。即创建一个最大值+1大小 / 8的整型数组，将数组的每一位用于判断数据是否存在。</p>
+<p>堆：适用于找出海量数据的前n大的数。</p>
+<p>双层桶划分：适用于第k大，中位数，不重复或可重复的数字。</p>
+<p>外排序：适用于大数据的排序。</p>
+</blockquote>
+<h3 id="海量日志数据提取出某日访问百度次数最多的那个ip">海量日志数据，提取出某日访问百度次数最多的那个IP。</h3>
+<blockquote>
+<p>IP总数为2^32，约4G大小无法直接在内存中计算，可以考虑利用hash函数如将IP%1024，将不同的IP散列到不同的文件，然后对单个文件进行处理，如使用一个hashmap来统计，得到该文件中访问次数最多的IP，然后再将这1024个IP进行对比，找出总体最大的IP。</p>
+</blockquote>
+<h3 id="假设目前有一千万个记录这些查询串的重复度比较高虽然总数是1千万但如果除去重复后不超过3百万个单个记录大小0-255b请你统计最热门的10个查询串要求使用的内存不能超过1g">假设目前有一千万个记录（这些查询串的重复度比较高，虽然总数是1千万，但如果除去重复后，不超过3百万个。单个记录大小0-255B），请你统计最热门的10个查询串，要求使用的内存不能超过1G。</h3>
+<blockquote>
+<p>可以利用hash表将记录进行hash处理，以记录为key，以次数为value，大致可以将占用的空间只需 300w * 255 = 750M，然后转化为topk问题，可以维护一个容量为10的堆，遍历hash表，假设每个值都需要维护堆，则总时间复杂度为O(Nlog10)。</p>
+</blockquote>
+<h3 id="有一个1g大小的一个文件里面每一行是一个词词的大小不超过16字节内存限制大小是1m返回频数最高的100个词">有一个1G大小的一个文件，里面每一行是一个词，词的大小不超过16字节，内存限制大小是1M。返回频数最高的100个词。</h3>
+<blockquote>
+<p>和日志问题相同，也是遍历文件采用hash函数将文件拆分为5000个200B大小的小文件，然后统计各小文件中前100词频的词，再写入小文件，最后整合这些词频进行比较。</p>
+</blockquote>
+<h3 id="有10个文件每个文件1g每个文件的每一行存放的都是用户的query每个文件的query都可能重复要求你按照query的频度排序">有10个文件，每个文件1G，每个文件的每一行存放的都是用户的query，每个文件的query都可能重复。要求你按照query的频度排序。</h3>
+<blockquote>
+<p>依旧可以顺序读取10个文件，然后利用hash函数将其分为10个小文件，再统计小文件中query的频度，最后对各小文件进行归并排序即可。</p>
+</blockquote>
+<h3 id="给定ab两个文件各存放50亿个url每个url各占64字节内存限制是4g让你找出ab文件共同的url">给定a、b两个文件，各存放50亿个url，每个url各占64字节，内存限制是4G，让你找出a、b文件共同的url</h3>
+<blockquote>
+<p>方法1：先使用hash将a文件拆分为多个小文件，然后利用同样的hash对b进行处理也拆分为多个小文件，然后将a、b对应的小文件进行比对，如果发现url相同则输出到结果文件中，对全部的小文件进行处理最后即可得到相同的url。</p>
+<p>方法2：使用布隆过滤器。4G内存可以映射4 * 1024 * 1024 * 1024 * 8 约340亿bit，然后将a的url利用布隆过滤器映射到这些bit上，然后再将b的url利用布隆过滤器进行筛选即可获知是否存在共同的url。这种方法存在一定的错误率。</p>
+</blockquote>
+<h3 id="在2.5亿个整数中找出不重复的整数注内存不足以容纳这2.5亿个整数">在2.5亿个整数中找出不重复的整数，注，内存不足以容纳这2.5亿个整数。</h3>
+<blockquote>
+<p>1G内存有1024 * 1024 * 1024 * 8 约85亿个bit，2.5亿个数若一个数使用2个bit，00表示没有出现，01表示出现一次，10表示出现多次。则存放2.5亿数只要5亿bit，约70MB，然后遍历这些数，修改bitmap。最后对bitmap进行查询即可知道哪些数是不重复的。</p>
+</blockquote>
+<h3 id="腾讯面试题给40亿个不重复的unsigned-int的整数没排过序的然后再给一个数如何快速判断这个数是否在那40亿个数当中">腾讯面试题：给40亿个不重复的unsigned int的整数，没排过序的，然后再给一个数，如何快速判断这个数是否在那40亿个数当中？</h3>
+<blockquote>
+<p>方法1：使用512M大小内存作为位图，可以大致存储40亿bit，每个bit用于表示数的状态，0表示出现过，1表示未出现。然后将给定的数，使用位图进行查询即可判断是否在那40亿个数中。</p>
+<p>方法2：默认40亿个数是放在一个文件中，然后对40亿个数按最高位是否为0/1，划分成两个文件，再对这两个文件按次高位为0/1，划分出两个文件，直至全部都划分完毕。然后对于给定的数，只需要判断这个数是否可以找到对应文件即可。</p>
+</blockquote>
+<h3 id="现有两个各有20亿行的文件每一行都只有一个数字求这两个文件的交集">现有两个各有20亿行的文件，每一行都只有一个数字，求这两个文件的交集。</h3>
+<blockquote>
+<p>可以使用bitmap：数字上限为2^32 - 1约4G，则可以用512M空间作为bitmap，遍历一个文件，获取bitmap，然后使用bitmap对另一个文件进行判断即可。</p>
+</blockquote>
+<h3 id="海量数据中位数只有2g内存的pc机在一个存有10g个整数的文件从中找到中位数写一个算法">海量数据中位数，只有2G内存的pc机，在一个存有10G个整数的文件，从中找到中位数，写一个算法。</h3>
+<blockquote>
+<p>方法1：可以按最高位是否为1/0对数据进行拆分成两个文件，然后判断中位数在哪个文件中，然后对那个文件进行按次高位为0/1进行拆分，再判断中位数在哪个文件中，直到可以将数据读入pc进行排序计算中位数为止。</p>
+<p>方法2：可以使用桶排序，假定整数为int32，即占32bit，取高8bit分桶，即分出255个桶，将桶写入磁盘中，然后依次统计桶数量，判定中位数在哪个桶中。然后将该桶读入内存找出中位数即可。</p>
+</blockquote>
+<h3 id="个玩家的战斗力要排名前500名而且需要实时更新怎么处理">100000个玩家的战斗力，要排名前500名，而且需要实时更新，怎么处理？</h3>
+<blockquote>
+<p>不能全部玩家的数据都实时更新，可以通过记录前1000/2000名玩家的数据并对其进行实时更新，从而排名前500名。而对于普通玩家可以在他们本机记录他们的战斗力成长情况，若成长太快超过一定阈值，可以利用一些机制让该玩家加入实现更新的队伍中。</p>
+</blockquote>
+<h2 id="智力题">智力题</h2>
+<h3 id="匹马五条赛道选出前三需要几轮">25匹马，五条赛道，选出前三需要几轮？</h3>
+<blockquote>
+<p>先每5匹比一轮共5轮可以选从前5的马，假定排序为A1、B1、C1、D1、E1。此时可以排除D列、E列及A4、A5、B3/4/5、C2/3/4/5。且获知A1为第一。故只需在A2/3、B1/2、C1中取前二即可，故只需6轮。</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">A</th>
+<th style="text-align: center;">B</th>
+<th style="text-align: center;">C</th>
+<th style="text-align: center;">D</th>
+<th style="text-align: center;">E</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">5</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<h3 id="瓶水1瓶毒药10只老鼠毒药一天发作需要多久选出毒药">999瓶水，1瓶毒药10只老鼠，毒药一天发作，需要多久选出毒药？</h3>
+<blockquote>
+<p>即给每瓶水编号。从0到1000，可以使用<span class="math inline">\(2^{10}\)</span>表示，即每个老鼠代表一位。然后对应编号的水喂给对应编号的老鼠，最后看死的老鼠是哪几只从而判断出哪瓶药是有毒的。</p>
+</blockquote>
+<h3 id="的两个数把和告诉a积告诉ba说不知道是多少b也说不知道这时a说我知道了b接着说我也知道了问这两个数是多少">1-20的两个数把和告诉A,积告诉B，A说不知道是多少，B也说不知道，这时A说我知道了，B接着说我也知道了，问这两个数是多少？</h3>
+<blockquote>
+<p>由于开始时A、B都不知道，显然和至少有两种计算，积也至少有两种计算。</p>
+<p>故积不可能为质数，按从小到大考虑，1,2,3,4。4不为质数，然后验证其加法是否存在多种，即2+2和1+3。故可知数可能为2，2。</p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>这次一定!</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    投币
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Ye 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Ye 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Ye
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="http://49.234.221.130/2021/03/09/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E6%99%BA%E5%8A%9B%E9%A2%98%E7%AA%81%E5%87%BB/" title="智力题突击">http://49.234.221.130/2021/03/09/面试突击/智力题突击/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E6%99%BA%E5%8A%9B%E9%A2%98/" rel="tag"># 智力题</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/03/09/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E7%AE%97%E6%B3%95%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/" rel="prev" title="算法突击">
+                  <i class="fa fa-chevron-left"></i> 算法突击
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/03/09/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E5%88%86%E5%B8%83%E5%BC%8F%E7%AA%81%E5%87%BB/" rel="next" title="分布式突击">
+                  分布式突击 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ye</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">116k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:46</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'none'
+      },
+      options: {
+        renderActions: {
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+
+
+</body>
+</html>

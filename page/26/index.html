@@ -198,7 +198,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">38</span>
+          <span class="site-state-item-count">43</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -211,7 +211,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-count">30</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/JavaBasicKnowledge/HashMap/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/designPattern/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/JavaBasicKnowledge/HashMap/" class="post-title-link" itemprop="url">HashMap分析</a>
+          <a href="/2021/02/20/designPattern/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">常用设计模式介绍</a>
         </h2>
 
         <div class="post-meta-container">
@@ -288,7 +288,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:00:44" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：17:13:04" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -296,11 +296,11 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
+          <a href="/categories/%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83/" itemprop="url" rel="index"><span itemprop="name">代码规范</span></a>
         </span>
           ，
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+          <a href="/categories/%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
         </span>
     </span>
 
@@ -312,14 +312,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>1.7k</span>
+      <span>804</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
+      <span>1 分钟</span>
     </span>
 </div>
 
@@ -330,69 +330,71 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="hashmap">HashMap</h1>
-<h2 id="hashmap初始化">HashMap初始化</h2>
+          <h1 id="设计模式">设计模式</h1>
+<h2 id="策略模式">策略模式</h2>
 <blockquote>
-<p>初始化时可以设置初始大小和负载因子。默认负载因子0.75，默认容量为16。</p>
-<p>HashMap的threshold为负载因子 * 容量。</p>
+<p>将行为抽象，通过子类实现不同的行为来将某个对象的行为从父类抽取出，通过组合的方式来消除耦合。</p>
 </blockquote>
-<h2 id="hashmap的get方法">HashMap的get方法</h2>
+<h2 id="命令模式">命令模式</h2>
 <blockquote>
-<p>就是根据传入的key求出对应的hash值，然后根据hash值和数组长度-1进行&amp;运算获得对应下标位置，获取位置后判断当前结点是树结点还是链表结点，从而采取不同的处理方式。</p>
+<p>也是将行为抽象，但是目的是将行为和行为执行者二者解耦，通过将行为和行为执行者组合的方式，加上控制器控制，来便于拓展。</p>
 </blockquote>
-<h2 id="hashmap的remove方法">HashMap的remove方法</h2>
+<h2 id="工厂模式">工厂模式</h2>
 <blockquote>
-<p>根据传入的key求出对应hash值，找到对应桶位，然后根据对应结点的类型为树结点还是链表结点，根据不同结点的类型执行不同的删除操作。链表需要改变指向，树则需要再次平衡。</p>
+<p>简单工厂即在类中直接添加工厂对象，在工厂对象中直接创建实例。</p>
+<p>工厂模式：将工厂的创建实例方法抽象化，通过子类继承并重写对应方法的方式完成。</p>
+<p>抽象工厂模式：将一系列创建实例的方法抽象化，形成接口，子类实现该接口，有点类似工厂模式。</p>
 </blockquote>
-<h2 id="hashmap的resize方法">HashMap的resize方法</h2>
+<h2 id="单例模式">单例模式</h2>
 <blockquote>
-<p>先判断当前是否有table，如果没有table且未设置初始大小，则初始化容量为默认值，阈值为默认值 * 负载因子的数组。若设置了初始大小则初始化容量为设置的大小的二次幂值的数组。</p>
-<p>若存在table，先判断旧容量是否大于最大值，若大于则设置阈值为Integer.MAX_VALUE，返回table，否则判断旧容量左移1位后是否不超过最大容量且判断当前容量是否超过默认容量16，若不超过最大容量且当前容量超过默认容量则将旧阈值左移一位。否则将计算newCap * loadFactor，判断新容量是否大于最大容量，若不大于则使用newCap * loadFactor作为新阈值，使用newCap作为数组的新容量。</p>
-<p>创建完新数组后，需要将旧table的数据复制到新table之中。</p>
-<p>复制的过程：</p>
-<p>​ 遍历桶位，若某个桶位只有一个元素则直接根据hash值&amp;新数组容量-1判断需要插入到新数组的什么位置。</p>
-<p>​ 若该元素是树结点则使用spilt方法，插入到新数组。</p>
-<p>​ 若桶位存在多个链表结点，则大致流程为使用4个指针来记录新旧两个数组的头尾链表位置。即先记录头位置，然后将头位置赋值给尾位置，利用尾位置不断连接结点，最后将头结点赋值给桶位元素。</p>
+<p>即让一个类只能有一个对象实例。</p>
+<p>double check方式实现比较好。</p>
+<figure>
+<img src="/2021/02/20/designPattern/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/单例模式.png" alt="单例模式"><figcaption aria-hidden="true">单例模式</figcaption>
+</figure>
 </blockquote>
-<h2 id="hashmap的put方法">HashMap的put方法</h2>
+<h2 id="装饰者模式">装饰者模式</h2>
 <blockquote>
-<p>获取已存在的table，若当前table不存在则resize一个table，若存在则找到对应桶位，根据结点类型采取不同的插入操作，对于链表，插入完成后还会判断当前桶位元素个数是否大于树化阈值，若大于则将桶树化。对于树结点，插入时需要进行平衡。最后插入完成后，判断当前HashMap元素个数是否大于总阈值，若大于则resize扩容。</p>
+<p>子类继承分类时，不是将父类的方法直接重写，而是在父类方法的基础上添加自己的功能。</p>
 </blockquote>
-<h2 id="tips">tips</h2>
+<h2 id="观察者模式">观察者模式</h2>
 <blockquote>
-<p>jdk8后，HashMap红黑树和链表转化是根据泊松分布的，链表转化为树阈值为8，树退化为链表阈值为6。</p>
-<p>且红黑树的排序是根据节点的hashcode大小，对于实现了Comparable接口的则使用compare方法来比较。</p>
-<p>hashmap默认负载因子0.75，默认容量为16，最大容量为2^30次方，且容量必须为2的次幂大小，因为使用位运算来执行取模操作。</p>
-<p>hashmap在操作时会自增modcount，若在遍历时对hashmap执行了操作，则会由于modcount改变而抛出异常。</p>
-<p>HashMap线程非安全，HashTable线程安全，ConcurrentHashMap线程安全。</p>
-<p>HashTable本质是上是将各方法都加上了synchronized。</p>
+<p>分为主题(observable)和观察者(observer)两个模块，根主题是一种接口/类，提供添加观察者、移除观察者、通知观察者等方法，观察者则需要实现一个接口表示它为观察者，通常要实现update方法。主题的数据改变时可以通知观察者，数据可以有主题直接推送给观察者和观察者向主题拉取数据两个方式。</p>
 </blockquote>
-<h2 id="面试题">面试题</h2>
-<h3 id="key为null时执行put操作数据放在哪个桶位">key为null时，执行put操作，数据放在哪个桶位？</h3>
+<h2 id="适配器模式">适配器模式</h2>
 <blockquote>
-<p>key为null时HashMap求出的hash值为0，故放在第0个桶位。</p>
+<p>将一个类的接口转换成另一个接口，让本来不兼容的类可以合作无间。</p>
 </blockquote>
-<h3 id="hashmap的hash函数为什么需要将hash值移位并异或">HashMap的hash函数为什么需要将hash值移位并异或？</h3>
+<h2 id="外观模式">外观模式</h2>
 <blockquote>
-<p>注释里有说，为了让高位的hash值对数据产生影响。</p>
+<p>将多个接口简化为一个接口</p>
 </blockquote>
-<h3 id="为什么hashmap内部的散列表数组长度一定是2的次方数">为什么HashMap内部的散列表数组长度一定是2的次方数？</h3>
+<h2 id="模板方法模式">模板方法模式</h2>
 <blockquote>
-<p>让查找位置时使用数组长度-1的值会对应2进制的000011111111，后位均为1，提高HashMap的散列性。</p>
+<p>将算法分抽象为许多步骤，将统一的流程由父类实现，子类实现具体的不同部分。</p>
 </blockquote>
-<h3 id="hashmap内部的散列表结构什么时候初始化初始化大小有几种情况">HashMap内部的散列表结构，什么时候初始化？初始化大小有几种情况？</h3>
+<h2 id="迭代器模式">迭代器模式</h2>
 <blockquote>
-<p>构造方法共四种：无参构造、传入初始容量、传入初始容量及负载因子、传入Map</p>
-<p>传入Map时会调用resize会初始化。</p>
-<p>resize时会初始化。</p>
+<p>给不同集合一种相同的遍历方法。</p>
 </blockquote>
-<h3 id="hashmap为什么需要扩容扩容又是如何实现的">HashMap为什么需要扩容，扩容又是如何实现的？</h3>
+<h2 id="组合模式">组合模式</h2>
 <blockquote>
-<p>因为数组过小，会导致插入时会插入到同一个桶位导致查询效率下降，故用空间换时间的方式优化。</p>
+<p>通过一致的方式处理个别对象及对象的组合，如对树和树的叶子节点采用统一的抽象方式。</p>
 </blockquote>
-<h3 id="jdk8为什么hashmap引入红黑树">JDK8为什么HashMap引入红黑树？</h3>
+<h2 id="状态模式">状态模式</h2>
 <blockquote>
-<p>因为数据增大时链表的查询速度低。</p>
+<p>状态机，将状态进行抽象，具体的状态类则实现自己具体的行为，状态类自己控制状态的转化。</p>
+</blockquote>
+<h2 id="代理模式">代理模式</h2>
+<blockquote>
+<p>给客户一个某种对象的代理，该代理对象控制对原对象的引用，目的是控制客户对对象的访问。</p>
+<p>动态代理、静态代理、远程代理等。</p>
+<p>静态代理</p>
+<p>动态代理：JDK代理和cglib代理。JDK代理需要被代理类实现接口，而cglib没有这个限制</p>
+</blockquote>
+<h2 id="mvc">MVC</h2>
+<blockquote>
+<p>模型、视图、控制器。</p>
 </blockquote>
 
       
@@ -413,7 +415,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/25/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/25/">25</a><span class="page-number current">26</span><a class="page-number" href="/page/27/">27</a><span class="space">&hellip;</span><a class="page-number" href="/page/38/">38</a><a class="extend next" rel="next" href="/page/27/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/25/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/25/">25</a><span class="page-number current">26</span><a class="page-number" href="/page/27/">27</a><span class="space">&hellip;</span><a class="page-number" href="/page/43/">43</a><a class="extend next" rel="next" href="/page/27/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -458,13 +460,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">103k</span>
+    <span title="站点总字数">116k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:34</span>
+    <span title="站点阅读时长">1:46</span>
   </span>
 </div>
 <div class="busuanzi-count">
