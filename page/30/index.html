@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/codeAnalyse/mybatis%E6%B5%81%E7%A8%8B/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/codeAnalyse/nginx%E4%BA%86%E8%A7%A3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/codeAnalyse/mybatis%E6%B5%81%E7%A8%8B/" class="post-title-link" itemprop="url">Mybatis流程源码分析</a>
+          <a href="/2021/02/20/codeAnalyse/nginx%E4%BA%86%E8%A7%A3/" class="post-title-link" itemprop="url">Nginx了解</a>
         </h2>
 
         <div class="post-meta-container">
@@ -288,7 +288,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:15:02" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:13:13" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -296,7 +296,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">源码分析</span></a>
+          <a href="/categories/%E6%A1%86%E6%9E%B6%E5%85%A5%E9%97%A8/" itemprop="url" rel="index"><span itemprop="name">框架入门</span></a>
         </span>
     </span>
 
@@ -308,14 +308,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>3.5k</span>
+      <span>6k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>3 分钟</span>
+      <span>5 分钟</span>
     </span>
 </div>
 
@@ -326,59 +326,183 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="mybatis流程">Mybatis流程</h1>
-<h2 id="创建sqlsessionfactory的流程">创建SqlSessionFactory的流程</h2>
+          <h1 id="nginx">Nginx</h1>
+<h2 id="概述">概述</h2>
 <blockquote>
-<p>由于创建工厂需要许多配置，mybatis利用了Builder模式。</p>
-<p>先创建SqlSessionFactoryBuilder，调用SqlSessionFactoryBuilder的build方法，本质上就是通过解析xml文件，将文件内容映射到Configuration对象中，然后利用这个对象产生builder创建工厂所需的配置，然后创建出SqlSessionFactory。</p>
-<p>具体则是先将xml的输入流传给SqlSessionFactoryBuilder，然后创建一个XMLConfigBuilder，负责解析xml内容放入configuration对象，解析的过程中会按类别解析，通过调用不同的方法解析xml的不同部分。解析mapper还有专门的XMLMapperBuilder其中对于二级缓存的处理也在这里进行。解析完成后configuration对象会保存全部的配置信息。</p>
+<p>Nginx是高性能的http和反向代理服务器，也是一个IMAP/SMTP/POP3等邮件代理服务器。</p>
+<p>正向代理和反向代理</p>
+<p>正向代理：客户端client通过设置，使用代理服务器proxy去访问远程服务器server。客户端知道代理存在。</p>
+<p>​ | client - proxy | - server</p>
+<p>使用场景：</p>
+<p>​ 可以访问原来无法访问的资源。</p>
+<p>​ 做缓存使用，加快访问速度。</p>
+<p>​ 对客户端授权或记录访问信息。</p>
+<p>反向代理：服务器通过代理服务接收连接请求，再转发给内部网络的服务器，将结果返回给客户端。客户端不知道代理存在。</p>
+<p>​ client - | proxy - server |</p>
+<p>使用场景：</p>
+<p>​ 保证内网安全，阻止web攻击。</p>
+<p>​ 负载均衡。</p>
 </blockquote>
-<h2 id="利用sqlsessionfactory创建sqlsession的流程">利用SqlSessionFactory创建SqlSession的流程</h2>
+<h2 id="nginx命令">Nginx命令</h2>
 <blockquote>
-<p>就是SqlSessionFactory调用openSession，传入ExecutorType、TransactionIsolationLevel、autoCommit三个参数，或让mybatis按默认设置，</p>
-<p>ExecutorType有BatchExecutor、ReuseExecutor、SimpleExecutor、CachingExecutor四种。</p>
-<p>​ BatchExecutor 让update操作变为批处理操作，即让连续的update先累积，等到下一次query操作前再一起执行。是使用List作为批处理存储。对于update操作会复用最近一次的statement。失败了会全部回滚。</p>
-<p>​ ReuseExecutor 复用Statement，利用Map&lt;String, Statement&gt;来判定。</p>
-<p>​ SimpleExecutor 即使用的Statement直接关闭。</p>
-<p>​ CachingExecutor 相当于在前面三个执行者的基础上套了一层缓存机制，让query方法先查看缓存，只有缓存没有时再让三个执行者执行操作。这里的缓存是通过mybatis自己实现的statement对象内部的cache实现的，有些类似hashmap，是利用cache和cachekey获得的结果。</p>
-<p>TransactionIsolationLevel即事物隔离级别。</p>
-<p>​ READ_UNCOMMITTED 读未提交 存在脏读、不可重复读、幻读</p>
-<p>​ READ_COMMITTED 读提交 存在不可重复读、幻读</p>
-<p>​ REPEATABLE_READ 可重复读 存在幻读</p>
-<p>​ SERIALIZABLE 序列化</p>
-<p>autoCommit是否自动提交。</p>
+<p>启动命令./Nginx</p>
+<p>杀死进程 kill SIGNAL pid</p>
+<p>​ kill -9 pid 强制停止</p>
+<p>​ kill -TERM pid 快速停止</p>
+<p>​ kill -QUIT pid 平缓停止</p>
+<p>查看版本 ./Nginx -V</p>
+<p>信号处理 ./Nginx -s SIGNAL(stop、quit、reopen、reload)</p>
+<p>​ 关闭 ./Nginx -s stop</p>
+<p>​ 重加载 ./Nginx -s reload</p>
+<p>​ 平缓停止 ./Nginx -s quit</p>
+<p>​ 快速停止 ./Nginx -s stop</p>
 </blockquote>
-<h2 id="利用sqlsession创建mapper">利用SqlSession创建Mapper</h2>
+<h2 id="nginx配置">Nginx配置</h2>
+<h3 id="全局块">全局块</h3>
 <blockquote>
-<p>SqlSession使用getMapper方法，实际上是调用了configuration中的mapperRegistry的getMapper方法，这里使用了动态代理的设计模式。同时这里还使用了工厂方法，根据不同的类名创建对应的代理工厂。</p>
-<p>这个动态代理是JDK代理，它需要使用对应类加载器，对应类接口，对应的InvocationHandler。在mybatis中InvocationHandler是MapperProxy，MapperProxy的重写的invoke函数逻辑是对于Object自带的方法直接调用，对于接口默认的方法直接调用(这个特性是由于JDK8让接口方法可以有默认实现)。对于接口的方法则创建一个MapperMethod对象，该对象使用了缓存机制，利用Map&lt;Method, MapperMethod&gt;缓存方法。</p>
-<p>而MapperMethod的excuse即为代理方法的实现，该类中含有MethodSignature、SqlCommand两个内部类用于实现解析sql及方法，而具体方法实现是根据判断当前sql是增删改查中的哪种再调用sqlSession的方法来实现的。</p>
+<p>全局块：指定运行时的用户组、进程id存放位置、日志存放位置、worker process数量等。</p>
+<p>#user nobody ：配置用户或用户组</p>
+<p>#worker_processes 1 ：运行启动的进程数</p>
+<p>#error_log logs/error.log 级别 ：日志路径及级别设置</p>
+<p>#pid logs/nginx.pid 进程id的文件地址</p>
 </blockquote>
-<h2 id="executor与handler">Executor与Handler</h2>
+<h3 id="events块">events块</h3>
 <blockquote>
-<p>Executor是通过StatementHandler来执行sql的。StatementHandler先prepare方法配置基础设置，然后使用parameterize来设置statement的参数。若为query操作则StatementHandler会使用ResultSetHandler来处理结果集。</p>
-<p>StatementHandler为抽象interface mybatis基于这个接口实现了抽象类BaseStatementHandler，还实现了路由类RoutingStatementHandler，路由类是用于根据参数创建对应具体类的。而抽象类是作为三个具体类的基础，三个具体类分别为CallableStatementHandler、PreparedStatementHandler、SimpleStatementHandler。</p>
-<p>抽象类提供给三个具体类prepare方法，其中prepare中含有抽象方法instantiateStatement，是由具体子类实现的。(模板方法模式)</p>
+<p>events块：影响Nginx服务器和用户网络连接配置，如每个进程最大连接数、选择哪种事件驱动模型、是否序列化events块：影响Nginx服务器和用户网络连接配置，如每个进程最大连接数、选择哪种事件驱动模型、是否序列化。</p>
+<p>events{</p>
+<p>​ #worker_connections 1024：每个进程的最大连接数</p>
+<p>}</p>
 </blockquote>
-<h2 id="mybatis对于数据库操作的整体流程">mybatis对于数据库操作的整体流程</h2>
+<h3 id="http块">http块</h3>
 <blockquote>
-<p>先使用builder模式，根据输入的xml输入流，利用对应XML解析对象解析，并将结果最终存入Configuration对象，然后利用Configuration对象创建出一个对应的SqlSessionFactory。</p>
-<p>然后需要通过sqlSessionFactory的openSession方法创建一个SqlSession，这里可以设置SqlSession的Executor、TransactionIsolationLevel和autoCommit。Executor代表这个SqlSession采用什么执行器，执行器是对statement对象的处理。具体执行器共有3种：SimpleExecutor 、ReuseExecutor 、BatchExecutor 。同时若启用了缓存cache，则会在执行器外再包装一层CachingExecutor ，相当于对于查询操作提供了二级缓存。这个缓存是位于mybatis的MappedStatement类中。本质上这种缓存就是一个嵌套的哈希结构。Map&lt;Cache, TransactionalCache&gt;，TransactionalCache也是key-value结构。</p>
-<p>而事物隔离即为正常的数据库事物隔离级别。</p>
-<p>创建完SqlSession后，调用SqlSession的getMapper方法获取对应mapper对象。这里使用了动态代理。mybatis是先根据传入的类对象，通过configuration的配置信息中的MapperRegistry类对象找到对应的proxy工厂，利用代理工厂创建对应的代理对象。代理对象的创建使用的是JDK动态代理，即传入需要代理的类加载器、需要代理的接口、以及InvocationHandler。mybatis的handler是先判断方法是否为Object的，然后判断方法是否为接口默认实现的。只有接口未实现的方法才进行特殊处理，处理过程即为根据方法的类型(增删改查)，执行SqlSession的对应方法。</p>
-<p>SqlSession执行对应方法则是利用SqlSession内部的executor执行对应操作的。所以实际上sql操作还是由executor执行的。而executor执行操作需要利用StatementHandler先后执行prepare初始化基本配置和parameterize处理参数。参数的处理利用了ParameterHandler，这个时候typeHandler就会起作用。若为query操作还需要对返回值进行处理，处理时利用了ResultSetHandler，这个时候typeHandler就会起作用。</p>
+<p>http块：配置代理、缓存、日志等绝大部分功能的地方。可以嵌套多个server块，而不同的server可以对应不同的域名(虚拟主机)。</p>
+<p>虚拟主机：同一台Nginx服务器，可以支持多个网站的运行，每个虚拟主机之间都互相独立，具有完整功能。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 相对路径</span><br><span class="line">			root html;</span><br><span class="line">			# 默认跳转的首页地址</span><br><span class="line">			index index.html index.htm;</span><br><span class="line"></span><br><span class="line">		&#125;	</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>日志配置：可以获取用户地址信息、跳转来源、终端、url访问量等。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#log_format main &#x27;$remote_addr - $remote_user [$time_local] &quot;$request&quot; &#x27;</span><br><span class="line">#                  &#x27;$status $body_bytes_sent &quot;$http_referer&quot; &#x27;</span><br><span class="line">#                  &#x27;&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;&#x27;;</span><br><span class="line"></span><br><span class="line">#access_log logs/access.log main;</span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>remote_addr</td>
+<td>客户端的ip地址</td>
+</tr>
+<tr class="even">
+<td>remote_user</td>
+<td>客户端的用户名称</td>
+</tr>
+<tr class="odd">
+<td>time_local</td>
+<td>访问时间和时区</td>
+</tr>
+<tr class="even">
+<td>request</td>
+<td>请求方法</td>
+</tr>
+<tr class="odd">
+<td>status</td>
+<td>响应状态码 如：200</td>
+</tr>
+<tr class="even">
+<td>body_bytes_sent</td>
+<td>主体内容字节数 如：612</td>
+</tr>
+<tr class="odd">
+<td>http_referer</td>
+<td>记录是从哪个链接访问过来的</td>
+</tr>
+<tr class="even">
+<td>http_user_agent</td>
+<td>用户使用的代理（浏览器）</td>
+</tr>
+<tr class="odd">
+<td>http_x_forwarded_for</td>
+<td>通过代理服务器来记录客户端的ip地址</td>
+</tr>
+</tbody>
+</table>
 </blockquote>
-<h2 id="mybatis的缓存机制">mybatis的缓存机制</h2>
+<h3 id="反向代理配置">反向代理配置</h3>
 <blockquote>
-<p>mybatis共有两个缓存机制：一级缓存和二级缓存。</p>
-<p>一级缓存默认开启且无法关闭。</p>
-<p>二级缓存需要配置。</p>
-<p>一级缓存是Executor的基本实现类BaseExecutor中实现的，本质上是个Map&lt;Object, Object&gt;。由于每个SqlSession里都带有一个Executor，故一级缓存是SqlSession层面的。</p>
-<p>二级缓存则需要手动配置，开启后会在具体的Executor之外使用CachingExecutor包装，这里使用了装饰者模式。二级缓存本质上是在namespace层面的缓存。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 相对路径</span><br><span class="line">			root html;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://127.0.0.1:8080</span><br><span class="line">			# 默认跳转的首页地址</span><br><span class="line">			index index.html index.htm;</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>代理多个tomcat服务器，通过路径来映射</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location ~ path1 &#123;</span><br><span class="line">			# 相对路径</span><br><span class="line">			root html;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://127.0.0.1:8080</span><br><span class="line">			# 默认跳转的首页地址</span><br><span class="line">			index index.html index.htm;</span><br><span class="line">        &#125;	</span><br><span class="line">		location ~ path2 &#123;</span><br><span class="line">			# 相对路径</span><br><span class="line">			root html;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://127.0.0.1:8081</span><br><span class="line">			# 默认跳转的首页地址</span><br><span class="line">			index index.html index.htm;</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="负载均衡">负载均衡</h3>
 </blockquote>
-<h2 id="mybatis是怎么实现和springboot的整合的">mybatis是怎么实现和SpringBoot的整合的？</h2>
 <blockquote>
-
+<p>早期使用DNS(域名解析系统)做负载，具体来说就是给客户端解析不同的ip地址，让流量直接到达服务器。</p>
+<p>优点： 1） 通过健康检查，避免单点故障 2） 当发现节点故障时，从集群中移除，保证应用的高可用</p>
+<p>四层负载均衡，在OSI模型的传输层，主要是转发。 七层负载均衡，在OSI模型的应用层，主要是代理。</p>
+<p>负载均衡器可以处理HTTP/HTTPS/TCP/UDP等的请求。</p>
+<p>负载均衡的调度算法：</p>
+<p>​ 轮询。</p>
+<p>​ 最小连接：优先选择连接数最少的服务器，适用于会话时间较长的业务处理。</p>
+<p>​ IP映射，根据请求的ip地址进行散列，让同一ip下的请求都映射到同一服务器上，可以解决session问题。</p>
+<p>Nginx设置默认轮询算法</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080;</span><br><span class="line">		server 192.168.1.20:8081;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>设置权重的情况，默认权重是1。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080 weight = 1;</span><br><span class="line">		server 192.168.1.20:8081 weight = 2;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>根据ip地址固定server处理，使用ip_hash。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080 weight = 1;</span><br><span class="line">		server 192.168.1.20:8081 weight = 2;</span><br><span class="line">		ip_hash;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h3 id="动静分离">动静分离</h3>
+<blockquote>
+<p>将静态资源和动态资源分开。</p>
+<p>静态资源直接查找Nginx的静态资源地址。</p>
+<p>动态资源请求通过反向代理映射到tomcat路径下的资源。</p>
+<p>实现方式：</p>
+<p>​ 单独把静态文件放在独立的服务器及独立的域名下(推荐)。</p>
+<p>​ 将动态资源和静态资源混合在一起，通过Nginx分开。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080 weight = 1;</span><br><span class="line">		server 192.168.1.20:8081 weight = 2;</span><br><span class="line">		ip_hash;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 访问动态资源</span><br><span class="line">		location ~ .*.jsp$ &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">		# 访问静态资源</span><br><span class="line">		location ~ .*\.(gif|jpg|css)$ &#123;</span><br><span class="line">			root /usr/local/nginx/image;</span><br><span class="line">			// 缓存时间</span><br><span class="line">			expires 3d;</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="location块的匹配规则">location块的匹配规则</h3>
+</blockquote>
+<blockquote>
+<p>匹配规则：</p>
+<p>​ location = /uri 精确匹配</p>
+<p>​ location ^~ /uri 前缀匹配，顺序在正则之前</p>
+<p>​ location ~ pattern 区分大小写的正则匹配</p>
+<p>​ location ~* pattern 不区分大小写的正则匹配</p>
+<p>​ location /uri 前缀匹配，顺序在正则之后(两种前缀匹配不能同时出现)</p>
+<p>​ location / 通用匹配，接收未匹配到其他location的请求。</p>
+<p>匹配顺序：</p>
+<p>​ 首先会进行精确匹配，然后会进行前缀匹配，具体顺序按指令长度从长到短的顺序依次匹配。</p>
+<p>​ 使用正则匹配时，是按照配置文件的顺序依次匹配的。如果不希望前缀匹配后进行正则匹配，那么使用^~。</p>
+</blockquote>
+<h3 id="url重写">URL重写</h3>
+<blockquote>
+<p>即对URL的规范化处理。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080 weight = 1;</span><br><span class="line">		server 192.168.1.20:8081 weight = 2;</span><br><span class="line">		ip_hash;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		</span><br><span class="line">		# 重写URL</span><br><span class="line">		rewrite ^/(.*) http://www.xxxx.com/xxx;</span><br><span class="line"></span><br><span class="line">		# 访问动态资源</span><br><span class="line">		location ~ .*.jsp$ &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">		# 访问静态资源</span><br><span class="line">		location ~ .*\.(gif|jpg|css)$ &#123;</span><br><span class="line">			root /usr/local/nginx/image;</span><br><span class="line">			// 缓存时间</span><br><span class="line">			expires 3d;</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="nginx安装">Nginx安装</h2>
+</blockquote>
+<blockquote>
+<p>在各官网下载相关组件 nginx openssl zlib pcre 等等</p>
+<p>以openssl为例 1） 通过rz上传压缩包 2） 通过tar -xvf *.tar.gz 进行解压缩 3）cd openssl-1.1.1d 进行配置检查以及编译 ./config 执行配置检查 make &amp; make install 进行编译和安装</p>
+<p>​ 如上过程，适用于zlib和pcre ​ 注意： 对于 pcre而言， 执行检查命令为 ./configure 4) 安装nginx过程中 执行配置检查</p>
+<pre><code>./configure --sbin-path=/usr/local/nginx/nginx \
+--conf-path=/usr/local/nginx/nginx.conf \
+--pid-path=/usr/local/nginx/nginx.pid \
+--with-http_ssl_module \
+--with-pcre=/usr/local/src/pcre-8.44 \
+--with-zlib=/usr/local/src/zlib-1.2.11 \
+--with-openssl=/usr/local/src/openssl-1.1.1d</code></pre>
+<ol start="5" type="1">
+<li>仍然执行 make 以及 make install<br>
+</li>
+<li>nginx安装成功 ./nginx验证</li>
+</ol>
+<p>注意事项：nginx服务器，需要虚拟机开放80端口的访问 防火墙配置 （同样适用于开放8080 8081端口） firewall-cmd --list-all 查看当前配置 firewall-cmd --add-service=http --permanent 开放http访问 firewall-cmd --add-port=80/tcp --permanent 开放80端口 firewall-cmd --reload 重启防火墙保存</p>
+<p>jdk的安装 1） 解压缩 -- 拷贝目录到 /usr/local/java 2) 更改环境变量 vim /etc/profile</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">export JAVA_HOME=/usr/local/java</span><br><span class="line">export JAVA_BIN=$JAVA_HOME/bin</span><br><span class="line">export PATH=$PATH:$JAVA_HOME/bin</span><br><span class="line">export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar</span><br><span class="line">export PATH=$JAVA_HOME/bin:$JRE_HOME/bin:$PATH</span><br></pre></td></tr></table></figure>
+<ol start="3" type="1">
+<li>让环境变量生效 source /etc/profile</li>
+<li>验证版本 java -version</li>
+</ol>
+<p>tomcat的安装 1） 解压缩 -- 拷贝目录到 /usr/local/tomcat 2) 执行启动 ./startup.sh</p>
 </blockquote>
 
       

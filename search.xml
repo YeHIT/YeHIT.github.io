@@ -228,7 +228,7 @@
 </tr>
 </tbody>
 </table>
-<p>在读提交情况下一致性视图是在每次执行语句创建的，在可重复读的情况下一致性视图是在创建事务时创建的。即可重复读是每次创建视图让事务id自增，而读提交是在执行语句时让事务id自增。</p>
+<p>在读提交情况下一致性视图是在每次执行语句创建的，在可重复读的情况下一致性视图是在创建事务时创建的。</p>
 </blockquote>
 <h4 id="repeatable-read下mvcc的具体操作">REPEATABLE READ下MVCC的具体操作</h4>
 <blockquote>
@@ -286,7 +286,7 @@
 </blockquote>
 <h4 id="哈希索引">哈希索引</h4>
 <blockquote>
-<p>哈希索引基于哈希表实现，只有精确匹配索引所有列的查询才有效。只有精确匹配索引所有列的查询才有效。对于每行数据，存储引擎会对所有的索引计算一个哈希吗。哈希索引自身只需存储对应的哈希值，所以索引的结构十分紧凑，让哈希索引查找的速度非常快。</p>
+<p>哈希索引基于哈希表实现，只有精确匹配索引所有列的查询才有效。只有精确匹配索引所有列的查询才有效。对于每行数据，存储引擎会对所有的索引计算一个哈希码。哈希索引自身只需存储对应的哈希值，所以索引的结构十分紧凑，让哈希索引查找的速度非常快。</p>
 <p>哈希索引的限制：</p>
 <p>​ 哈希索引只包含哈希值和行指针，不存储字段值，所以不能使用索引中的值来避免读取行。</p>
 <p>​ 哈希索引数据不是按照索引值顺序存储的，所以无法用于排序。</p>
@@ -784,6 +784,39 @@
       </tags>
   </entry>
   <entry>
+    <title>算法突击</title>
+    <url>/2021/03/09/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E7%AE%97%E6%B3%95%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/</url>
+    <content><![CDATA[<h1 id="算法突击">算法突击</h1>
+<h2 id="排序算法">排序算法</h2>
+<blockquote>
+<p>快速排序<span class="math inline">\(O(nlogn)\)</span>、冒泡排序<span class="math inline">\(O(n^2)\)</span>、选择排序<span class="math inline">\(O(n^2)\)</span>、插入排序<span class="math inline">\(O(n^2)\)</span>、堆排序<span class="math inline">\(O(nlogn)\)</span>、归并排序<span class="math inline">\(O(nlogn)\)</span>、希尔排序<span class="math inline">\(O(n^{1.3})\)</span></p>
+<p>计数排序<span class="math inline">\(O(n+k)\)</span>、桶排序<span class="math inline">\(O(n+k)\)</span>、基数排序<span class="math inline">\(O(d*(n+r))\)</span></p>
+<p><strong>冒泡排序</strong>：即从小到大依次比较交换。</p>
+<p><strong>选择排序</strong>：即先遍历选出最大/最小。</p>
+<p><strong>插入排序</strong>：即从第1个数开始认为有序，遍历整个数组不断维护其中的有序部分。如a[0]=3，a[1]=1，按从小到大排序的话，遍历到a[1]时会将a[0]和a[1]交换位置。</p>
+<p>希尔排序：</p>
+<p><strong>归并排序</strong>：即先将数据拆分到只剩单个数为止，然后两两排序再合并。</p>
+<p><strong>快速排序</strong>：即先选择一个基准值然后按基准值将数据分为左右两个部分，然后在这两个部分再执行此过程。</p>
+<p><strong>堆排序</strong>：即构建数据构建堆。</p>
+<blockquote>
+<p>非比较排序</p>
+</blockquote>
+<p><strong>计数排序</strong>：构建数据的最大值创建对应大小的数组，然后遍历数据，访问到对应数据在对应数组位置加1，然后最后读取数组即可。</p>
+<p><strong>桶排序</strong>：划分多个范围相同的区间，每个子区间自排序，最后合并。</p>
+<figure>
+<img src="/2021/03/09/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E7%AE%97%E6%B3%95%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/桶排序.png" alt="桶排序"><figcaption aria-hidden="true">桶排序</figcaption>
+</figure>
+<p>基数排序：</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>面试突击</category>
+      </categories>
+      <tags>
+        <tag>算法</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>智力题突击</title>
     <url>/2021/03/09/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E6%99%BA%E5%8A%9B%E9%A2%98%E7%AA%81%E5%87%BB/</url>
     <content><![CDATA[<h1 id="智力题突击">智力题突击</h1>
@@ -908,39 +941,6 @@
       </categories>
       <tags>
         <tag>智力题</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>算法突击</title>
-    <url>/2021/03/09/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E7%AE%97%E6%B3%95%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/</url>
-    <content><![CDATA[<h1 id="算法突击">算法突击</h1>
-<h2 id="排序算法">排序算法</h2>
-<blockquote>
-<p>快速排序<span class="math inline">\(O(nlogn)\)</span>、冒泡排序<span class="math inline">\(O(n^2)\)</span>、选择排序<span class="math inline">\(O(n^2)\)</span>、插入排序<span class="math inline">\(O(n^2)\)</span>、堆排序<span class="math inline">\(O(nlogn)\)</span>、归并排序<span class="math inline">\(O(nlogn)\)</span>、希尔排序<span class="math inline">\(O(n^{1.3})\)</span></p>
-<p>计数排序<span class="math inline">\(O(n+k)\)</span>、桶排序<span class="math inline">\(O(n+k)\)</span>、基数排序<span class="math inline">\(O(d*(n+r))\)</span></p>
-<p><strong>冒泡排序</strong>：即从小到大依次比较交换。</p>
-<p><strong>选择排序</strong>：即先遍历选出最大/最小。</p>
-<p><strong>插入排序</strong>：即从第1个数开始认为有序，遍历整个数组不断维护其中的有序部分。如a[0]=3，a[1]=1，按从小到大排序的话，遍历到a[1]时会将a[0]和a[1]交换位置。</p>
-<p>希尔排序：</p>
-<p><strong>归并排序</strong>：即先将数据拆分到只剩单个数为止，然后两两排序再合并。</p>
-<p><strong>快速排序</strong>：即先选择一个基准值然后按基准值将数据分为左右两个部分，然后在这两个部分再执行此过程。</p>
-<p><strong>堆排序</strong>：即构建数据构建堆。</p>
-<blockquote>
-<p>非比较排序</p>
-</blockquote>
-<p><strong>计数排序</strong>：构建数据的最大值创建对应大小的数组，然后遍历数据，访问到对应数据在对应数组位置加1，然后最后读取数组即可。</p>
-<p><strong>桶排序</strong>：划分多个范围相同的区间，每个子区间自排序，最后合并。</p>
-<figure>
-<img src="/2021/03/09/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E7%AE%97%E6%B3%95%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/桶排序.png" alt="桶排序"><figcaption aria-hidden="true">桶排序</figcaption>
-</figure>
-<p>基数排序：</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>面试突击</category>
-      </categories>
-      <tags>
-        <tag>算法</tag>
       </tags>
   </entry>
   <entry>
@@ -2727,73 +2727,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Mybatis流程源码分析</title>
-    <url>/2021/02/20/codeAnalyse/mybatis%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h1 id="mybatis流程">Mybatis流程</h1>
-<h2 id="创建sqlsessionfactory的流程">创建SqlSessionFactory的流程</h2>
-<blockquote>
-<p>由于创建工厂需要许多配置，mybatis利用了Builder模式。</p>
-<p>先创建SqlSessionFactoryBuilder，调用SqlSessionFactoryBuilder的build方法，本质上就是通过解析xml文件，将文件内容映射到Configuration对象中，然后利用这个对象产生builder创建工厂所需的配置，然后创建出SqlSessionFactory。</p>
-<p>具体则是先将xml的输入流传给SqlSessionFactoryBuilder，然后创建一个XMLConfigBuilder，负责解析xml内容放入configuration对象，解析的过程中会按类别解析，通过调用不同的方法解析xml的不同部分。解析mapper还有专门的XMLMapperBuilder其中对于二级缓存的处理也在这里进行。解析完成后configuration对象会保存全部的配置信息。</p>
-</blockquote>
-<h2 id="利用sqlsessionfactory创建sqlsession的流程">利用SqlSessionFactory创建SqlSession的流程</h2>
-<blockquote>
-<p>就是SqlSessionFactory调用openSession，传入ExecutorType、TransactionIsolationLevel、autoCommit三个参数，或让mybatis按默认设置，</p>
-<p>ExecutorType有BatchExecutor、ReuseExecutor、SimpleExecutor、CachingExecutor四种。</p>
-<p>​ BatchExecutor 让update操作变为批处理操作，即让连续的update先累积，等到下一次query操作前再一起执行。是使用List作为批处理存储。对于update操作会复用最近一次的statement。失败了会全部回滚。</p>
-<p>​ ReuseExecutor 复用Statement，利用Map&lt;String, Statement&gt;来判定。</p>
-<p>​ SimpleExecutor 即使用的Statement直接关闭。</p>
-<p>​ CachingExecutor 相当于在前面三个执行者的基础上套了一层缓存机制，让query方法先查看缓存，只有缓存没有时再让三个执行者执行操作。这里的缓存是通过mybatis自己实现的statement对象内部的cache实现的，有些类似hashmap，是利用cache和cachekey获得的结果。</p>
-<p>TransactionIsolationLevel即事物隔离级别。</p>
-<p>​ READ_UNCOMMITTED 读未提交 存在脏读、不可重复读、幻读</p>
-<p>​ READ_COMMITTED 读提交 存在不可重复读、幻读</p>
-<p>​ REPEATABLE_READ 可重复读 存在幻读</p>
-<p>​ SERIALIZABLE 序列化</p>
-<p>autoCommit是否自动提交。</p>
-</blockquote>
-<h2 id="利用sqlsession创建mapper">利用SqlSession创建Mapper</h2>
-<blockquote>
-<p>SqlSession使用getMapper方法，实际上是调用了configuration中的mapperRegistry的getMapper方法，这里使用了动态代理的设计模式。同时这里还使用了工厂方法，根据不同的类名创建对应的代理工厂。</p>
-<p>这个动态代理是JDK代理，它需要使用对应类加载器，对应类接口，对应的InvocationHandler。在mybatis中InvocationHandler是MapperProxy，MapperProxy的重写的invoke函数逻辑是对于Object自带的方法直接调用，对于接口默认的方法直接调用(这个特性是由于JDK8让接口方法可以有默认实现)。对于接口的方法则创建一个MapperMethod对象，该对象使用了缓存机制，利用Map&lt;Method, MapperMethod&gt;缓存方法。</p>
-<p>而MapperMethod的excuse即为代理方法的实现，该类中含有MethodSignature、SqlCommand两个内部类用于实现解析sql及方法，而具体方法实现是根据判断当前sql是增删改查中的哪种再调用sqlSession的方法来实现的。</p>
-</blockquote>
-<h2 id="executor与handler">Executor与Handler</h2>
-<blockquote>
-<p>Executor是通过StatementHandler来执行sql的。StatementHandler先prepare方法配置基础设置，然后使用parameterize来设置statement的参数。若为query操作则StatementHandler会使用ResultSetHandler来处理结果集。</p>
-<p>StatementHandler为抽象interface mybatis基于这个接口实现了抽象类BaseStatementHandler，还实现了路由类RoutingStatementHandler，路由类是用于根据参数创建对应具体类的。而抽象类是作为三个具体类的基础，三个具体类分别为CallableStatementHandler、PreparedStatementHandler、SimpleStatementHandler。</p>
-<p>抽象类提供给三个具体类prepare方法，其中prepare中含有抽象方法instantiateStatement，是由具体子类实现的。(模板方法模式)</p>
-</blockquote>
-<h2 id="mybatis对于数据库操作的整体流程">mybatis对于数据库操作的整体流程</h2>
-<blockquote>
-<p>先使用builder模式，根据输入的xml输入流，利用对应XML解析对象解析，并将结果最终存入Configuration对象，然后利用Configuration对象创建出一个对应的SqlSessionFactory。</p>
-<p>然后需要通过sqlSessionFactory的openSession方法创建一个SqlSession，这里可以设置SqlSession的Executor、TransactionIsolationLevel和autoCommit。Executor代表这个SqlSession采用什么执行器，执行器是对statement对象的处理。具体执行器共有3种：SimpleExecutor 、ReuseExecutor 、BatchExecutor 。同时若启用了缓存cache，则会在执行器外再包装一层CachingExecutor ，相当于对于查询操作提供了二级缓存。这个缓存是位于mybatis的MappedStatement类中。本质上这种缓存就是一个嵌套的哈希结构。Map&lt;Cache, TransactionalCache&gt;，TransactionalCache也是key-value结构。</p>
-<p>而事物隔离即为正常的数据库事物隔离级别。</p>
-<p>创建完SqlSession后，调用SqlSession的getMapper方法获取对应mapper对象。这里使用了动态代理。mybatis是先根据传入的类对象，通过configuration的配置信息中的MapperRegistry类对象找到对应的proxy工厂，利用代理工厂创建对应的代理对象。代理对象的创建使用的是JDK动态代理，即传入需要代理的类加载器、需要代理的接口、以及InvocationHandler。mybatis的handler是先判断方法是否为Object的，然后判断方法是否为接口默认实现的。只有接口未实现的方法才进行特殊处理，处理过程即为根据方法的类型(增删改查)，执行SqlSession的对应方法。</p>
-<p>SqlSession执行对应方法则是利用SqlSession内部的executor执行对应操作的。所以实际上sql操作还是由executor执行的。而executor执行操作需要利用StatementHandler先后执行prepare初始化基本配置和parameterize处理参数。参数的处理利用了ParameterHandler，这个时候typeHandler就会起作用。若为query操作还需要对返回值进行处理，处理时利用了ResultSetHandler，这个时候typeHandler就会起作用。</p>
-</blockquote>
-<h2 id="mybatis的缓存机制">mybatis的缓存机制</h2>
-<blockquote>
-<p>mybatis共有两个缓存机制：一级缓存和二级缓存。</p>
-<p>一级缓存默认开启且无法关闭。</p>
-<p>二级缓存需要配置。</p>
-<p>一级缓存是Executor的基本实现类BaseExecutor中实现的，本质上是个Map&lt;Object, Object&gt;。由于每个SqlSession里都带有一个Executor，故一级缓存是SqlSession层面的。</p>
-<p>二级缓存则需要手动配置，开启后会在具体的Executor之外使用CachingExecutor包装，这里使用了装饰者模式。二级缓存本质上是在namespace层面的缓存。</p>
-</blockquote>
-<h2 id="mybatis是怎么实现和springboot的整合的">mybatis是怎么实现和SpringBoot的整合的？</h2>
-<blockquote>
-
-</blockquote>
-]]></content>
-      <categories>
-        <category>源码分析</category>
-      </categories>
-      <tags>
-        <tag>Mybatis</tag>
-        <tag>orm</tag>
-        <tag>数据库</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Nginx了解</title>
     <url>/2021/02/20/codeAnalyse/nginx%E4%BA%86%E8%A7%A3/</url>
     <content><![CDATA[<h1 id="nginx">Nginx</h1>
@@ -2982,6 +2915,73 @@
         <tag>并发</tag>
         <tag>网络</tag>
         <tag>负载均衡</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mybatis流程源码分析</title>
+    <url>/2021/02/20/codeAnalyse/mybatis%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h1 id="mybatis流程">Mybatis流程</h1>
+<h2 id="创建sqlsessionfactory的流程">创建SqlSessionFactory的流程</h2>
+<blockquote>
+<p>由于创建工厂需要许多配置，mybatis利用了Builder模式。</p>
+<p>先创建SqlSessionFactoryBuilder，调用SqlSessionFactoryBuilder的build方法，本质上就是通过解析xml文件，将文件内容映射到Configuration对象中，然后利用这个对象产生builder创建工厂所需的配置，然后创建出SqlSessionFactory。</p>
+<p>具体则是先将xml的输入流传给SqlSessionFactoryBuilder，然后创建一个XMLConfigBuilder，负责解析xml内容放入configuration对象，解析的过程中会按类别解析，通过调用不同的方法解析xml的不同部分。解析mapper还有专门的XMLMapperBuilder其中对于二级缓存的处理也在这里进行。解析完成后configuration对象会保存全部的配置信息。</p>
+</blockquote>
+<h2 id="利用sqlsessionfactory创建sqlsession的流程">利用SqlSessionFactory创建SqlSession的流程</h2>
+<blockquote>
+<p>就是SqlSessionFactory调用openSession，传入ExecutorType、TransactionIsolationLevel、autoCommit三个参数，或让mybatis按默认设置，</p>
+<p>ExecutorType有BatchExecutor、ReuseExecutor、SimpleExecutor、CachingExecutor四种。</p>
+<p>​ BatchExecutor 让update操作变为批处理操作，即让连续的update先累积，等到下一次query操作前再一起执行。是使用List作为批处理存储。对于update操作会复用最近一次的statement。失败了会全部回滚。</p>
+<p>​ ReuseExecutor 复用Statement，利用Map&lt;String, Statement&gt;来判定。</p>
+<p>​ SimpleExecutor 即使用的Statement直接关闭。</p>
+<p>​ CachingExecutor 相当于在前面三个执行者的基础上套了一层缓存机制，让query方法先查看缓存，只有缓存没有时再让三个执行者执行操作。这里的缓存是通过mybatis自己实现的statement对象内部的cache实现的，有些类似hashmap，是利用cache和cachekey获得的结果。</p>
+<p>TransactionIsolationLevel即事物隔离级别。</p>
+<p>​ READ_UNCOMMITTED 读未提交 存在脏读、不可重复读、幻读</p>
+<p>​ READ_COMMITTED 读提交 存在不可重复读、幻读</p>
+<p>​ REPEATABLE_READ 可重复读 存在幻读</p>
+<p>​ SERIALIZABLE 序列化</p>
+<p>autoCommit是否自动提交。</p>
+</blockquote>
+<h2 id="利用sqlsession创建mapper">利用SqlSession创建Mapper</h2>
+<blockquote>
+<p>SqlSession使用getMapper方法，实际上是调用了configuration中的mapperRegistry的getMapper方法，这里使用了动态代理的设计模式。同时这里还使用了工厂方法，根据不同的类名创建对应的代理工厂。</p>
+<p>这个动态代理是JDK代理，它需要使用对应类加载器，对应类接口，对应的InvocationHandler。在mybatis中InvocationHandler是MapperProxy，MapperProxy的重写的invoke函数逻辑是对于Object自带的方法直接调用，对于接口默认的方法直接调用(这个特性是由于JDK8让接口方法可以有默认实现)。对于接口的方法则创建一个MapperMethod对象，该对象使用了缓存机制，利用Map&lt;Method, MapperMethod&gt;缓存方法。</p>
+<p>而MapperMethod的excuse即为代理方法的实现，该类中含有MethodSignature、SqlCommand两个内部类用于实现解析sql及方法，而具体方法实现是根据判断当前sql是增删改查中的哪种再调用sqlSession的方法来实现的。</p>
+</blockquote>
+<h2 id="executor与handler">Executor与Handler</h2>
+<blockquote>
+<p>Executor是通过StatementHandler来执行sql的。StatementHandler先prepare方法配置基础设置，然后使用parameterize来设置statement的参数。若为query操作则StatementHandler会使用ResultSetHandler来处理结果集。</p>
+<p>StatementHandler为抽象interface mybatis基于这个接口实现了抽象类BaseStatementHandler，还实现了路由类RoutingStatementHandler，路由类是用于根据参数创建对应具体类的。而抽象类是作为三个具体类的基础，三个具体类分别为CallableStatementHandler、PreparedStatementHandler、SimpleStatementHandler。</p>
+<p>抽象类提供给三个具体类prepare方法，其中prepare中含有抽象方法instantiateStatement，是由具体子类实现的。(模板方法模式)</p>
+</blockquote>
+<h2 id="mybatis对于数据库操作的整体流程">mybatis对于数据库操作的整体流程</h2>
+<blockquote>
+<p>先使用builder模式，根据输入的xml输入流，利用对应XML解析对象解析，并将结果最终存入Configuration对象，然后利用Configuration对象创建出一个对应的SqlSessionFactory。</p>
+<p>然后需要通过sqlSessionFactory的openSession方法创建一个SqlSession，这里可以设置SqlSession的Executor、TransactionIsolationLevel和autoCommit。Executor代表这个SqlSession采用什么执行器，执行器是对statement对象的处理。具体执行器共有3种：SimpleExecutor 、ReuseExecutor 、BatchExecutor 。同时若启用了缓存cache，则会在执行器外再包装一层CachingExecutor ，相当于对于查询操作提供了二级缓存。这个缓存是位于mybatis的MappedStatement类中。本质上这种缓存就是一个嵌套的哈希结构。Map&lt;Cache, TransactionalCache&gt;，TransactionalCache也是key-value结构。</p>
+<p>而事物隔离即为正常的数据库事物隔离级别。</p>
+<p>创建完SqlSession后，调用SqlSession的getMapper方法获取对应mapper对象。这里使用了动态代理。mybatis是先根据传入的类对象，通过configuration的配置信息中的MapperRegistry类对象找到对应的proxy工厂，利用代理工厂创建对应的代理对象。代理对象的创建使用的是JDK动态代理，即传入需要代理的类加载器、需要代理的接口、以及InvocationHandler。mybatis的handler是先判断方法是否为Object的，然后判断方法是否为接口默认实现的。只有接口未实现的方法才进行特殊处理，处理过程即为根据方法的类型(增删改查)，执行SqlSession的对应方法。</p>
+<p>SqlSession执行对应方法则是利用SqlSession内部的executor执行对应操作的。所以实际上sql操作还是由executor执行的。而executor执行操作需要利用StatementHandler先后执行prepare初始化基本配置和parameterize处理参数。参数的处理利用了ParameterHandler，这个时候typeHandler就会起作用。若为query操作还需要对返回值进行处理，处理时利用了ResultSetHandler，这个时候typeHandler就会起作用。</p>
+</blockquote>
+<h2 id="mybatis的缓存机制">mybatis的缓存机制</h2>
+<blockquote>
+<p>mybatis共有两个缓存机制：一级缓存和二级缓存。</p>
+<p>一级缓存默认开启且无法关闭。</p>
+<p>二级缓存需要配置。</p>
+<p>一级缓存是Executor的基本实现类BaseExecutor中实现的，本质上是个Map&lt;Object, Object&gt;。由于每个SqlSession里都带有一个Executor，故一级缓存是SqlSession层面的。</p>
+<p>二级缓存则需要手动配置，开启后会在具体的Executor之外使用CachingExecutor包装，这里使用了装饰者模式。二级缓存本质上是在namespace层面的缓存。</p>
+</blockquote>
+<h2 id="mybatis是怎么实现和springboot的整合的">mybatis是怎么实现和SpringBoot的整合的？</h2>
+<blockquote>
+
+</blockquote>
+]]></content>
+      <categories>
+        <category>源码分析</category>
+      </categories>
+      <tags>
+        <tag>Mybatis</tag>
+        <tag>orm</tag>
+        <tag>数据库</tag>
       </tags>
   </entry>
   <entry>
@@ -4145,6 +4145,26 @@
       </tags>
   </entry>
   <entry>
+    <title>应用层</title>
+    <url>/2021/02/20/computerNetwork/%E7%AC%AC6%E7%AB%A0-%E5%BA%94%E7%94%A8%E5%B1%82/</url>
+    <content><![CDATA[<h2 id="使用tcp">使用TCP</h2>
+<blockquote>
+<p>HTTP、FTP、Telnet、SMTP</p>
+</blockquote>
+<h2 id="使用udp">使用UDP</h2>
+<blockquote>
+<p>流媒体、DNS、网络电话、电话会议</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>计算机网络</category>
+      </categories>
+      <tags>
+        <tag>网络</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>传输层</title>
     <url>/2021/02/20/computerNetwork/%E7%AC%AC5%E7%AB%A0-%E4%BC%A0%E8%BE%93%E5%B1%82/</url>
     <content><![CDATA[<h1 id="传输层">传输层</h1>
@@ -4203,48 +4223,6 @@
       </categories>
       <tags>
         <tag>网络</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>应用层</title>
-    <url>/2021/02/20/computerNetwork/%E7%AC%AC6%E7%AB%A0-%E5%BA%94%E7%94%A8%E5%B1%82/</url>
-    <content><![CDATA[<h2 id="使用tcp">使用TCP</h2>
-<blockquote>
-<p>HTTP、FTP、Telnet、SMTP</p>
-</blockquote>
-<h2 id="使用udp">使用UDP</h2>
-<blockquote>
-<p>流媒体、DNS、网络电话、电话会议</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>计算机网络</category>
-      </categories>
-      <tags>
-        <tag>网络</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Restful基本使用</title>
-    <url>/2021/02/20/designPattern/Restful%E9%A3%8E%E6%A0%BC/</url>
-    <content><![CDATA[<h1 id="restful风格">Restful风格</h1>
-<blockquote>
-<p>本质上就是将接口的功能让http的语义来表示。</p>
-<p>查询-&gt;GET</p>
-<p>新增-&gt;POST</p>
-<p>更新-&gt;PUT</p>
-<p>删除-&gt;DELETE</p>
-<p>本质上要做到，看url知道要什么，看http method知道要做什么，看http status code知道哪里有问题。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>代码规范</category>
-        <category>代码风格</category>
-      </categories>
-      <tags>
-        <tag>设计模式</tag>
-        <tag>代码风格</tag>
       </tags>
   </entry>
   <entry>
@@ -4323,6 +4301,28 @@
       </categories>
       <tags>
         <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Restful基本使用</title>
+    <url>/2021/02/20/designPattern/Restful%E9%A3%8E%E6%A0%BC/</url>
+    <content><![CDATA[<h1 id="restful风格">Restful风格</h1>
+<blockquote>
+<p>本质上就是将接口的功能让http的语义来表示。</p>
+<p>查询-&gt;GET</p>
+<p>新增-&gt;POST</p>
+<p>更新-&gt;PUT</p>
+<p>删除-&gt;DELETE</p>
+<p>本质上要做到，看url知道要什么，看http method知道要做什么，看http status code知道哪里有问题。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>代码规范</category>
+        <category>代码风格</category>
+      </categories>
+      <tags>
+        <tag>设计模式</tag>
+        <tag>代码风格</tag>
       </tags>
   </entry>
   <entry>
