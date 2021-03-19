@@ -1,6 +1,263 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>分布式突击</title>
+    <url>/2021/03/18/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E5%88%86%E5%B8%83%E5%BC%8F%E7%AA%81%E5%87%BB/</url>
+    <content><![CDATA[<h1 id="分布式突击">分布式突击</h1>
+<h2 id="分布式怎么进行数据切分访问">分布式怎么进行数据切分访问？</h2>
+<blockquote>
+<p>显然分布式服务中，必然存在服务集群，一般而言是怎么访问这些集群的呢？往往使用hash来将用户划分到不同的区域，以简单的hash函数为例：</p>
+<p>​ 假设存在6台服务器，此时采用的hash函数为(key)%6，这样选择对应的服务器。显然是可以实现功能的。当如果服务器的数量突然减少或增加了，此时hash函数将要变化，而这时原有的映射关系将直接无用。怎么解决这个问题呢？<strong>一致性hash！</strong></p>
+<p><strong>一致性hash算法</strong></p>
+<p>​ 即使用2^32作为取模的数，将整个区域视为一个圆环，先对服务器进行哈希处理，让其发布在圆环的不同位置，然后当有请求到来时，对请求进行哈希处理，此时会发现请求也落在圆环的某个位置，然后沿顺时针查找该位置离哪个服务器最近，即可找到对应提供服务的服务器。此时若需要添加服务器，只需往圆环上添加新位置即可，只需局部调整，无须全部更新。</p>
+<figure>
+<img src="/2021/03/18/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E5%88%86%E5%B8%83%E5%BC%8F%E7%AA%81%E5%87%BB/一致性哈希环.png" alt="一致性哈希环"><figcaption aria-hidden="true">一致性哈希环</figcaption>
+</figure>
+<p>​ 当然这样有时会导致某些数据累积在同一台服务器上，一致性hash为了解决这个问题引入了虚拟节点机制，即用一个服务器结点计算多次哈希，在每个计算位置放置服务器结点，以保障数据可以比较合理的分布。</p>
+<p>一些分布式集群使用一致性hash(或类似原理)的场景：</p>
+<p>​ redis cluster：类似于一致性hash的思想，对于redis集群采用哈希槽的设计思想，即redis cluster有固定的16384即16K个哈希槽(因为16384个槽在传递配置信息时只需要传输2k的位图，16k/ 8bit = 2k，且16k大小的槽足够redis集群使用了)，对请求进行哈希操作时使用16384作为模数，让请求分布到槽中，而每个主机会负责管理一部分的槽。在进行主机的切换拓展时可以通过指定哪个槽由哪个主机负责来实现拓展和移除主机。</p>
+</blockquote>
+<h2 id="分布式集群怎么选主">分布式集群怎么选主？</h2>
+<blockquote>
+<p>分布式集群中往往需要一个主进行管理操作，一般是通过主进行写操作，通过从机进行读操作。</p>
+<p>选主的算法：<strong>基于序号的选主算法(Bully算法)</strong>、<strong>多数派选主算法(Raft和ZAB算法)</strong></p>
+</blockquote>
+<h3 id="bully算法">Bully算法</h3>
+<blockquote>
+<p>选主过程主要分为三种消息</p>
+<table>
+<thead>
+<tr class="header">
+<th><strong>#</strong></th>
+<th><strong>消息类型</strong></th>
+<th><strong>消息描述</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>Election消息</td>
+<td>用于发起选举</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>Alive消息</td>
+<td>对Election消息的应答</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>Victory</td>
+<td>竞选成功的节点向其他节点宣誓主权</td>
+</tr>
+</tbody>
+</table>
+<p>触发选举的时机有两个：</p>
+<p>​ 错误结点恢复。</p>
+<p>​ 检测到master节点故障。</p>
+<p>选举过程：</p>
+<p>​ 1.各节点都判断自己的ID是否最大，若是最大的则直接向其他结点发送Victory消息。</p>
+<p>​ 2.若自己不是当前存活的结点中ID最大的，需要向比自己大的结点发送Election消息。</p>
+<p>​ 3.在规定时间内若没有收到任何结点的Alive消息，则会认为自己为最大的结点，并像其他结点发送Victory消息。若收到比自己大的结点的Alive消息，则会等待收到最大结点的Victory消息。</p>
+<p>​ 4.若收到了比自己小的节点发来的Election消息，则会回复Alive消息。</p>
+<p>优点：选举速度快、算法复杂度低、实现简单。</p>
+<p>缺点：所有节点需要每个节点的相关信息，需要额外信息存储。</p>
+<p>​ 若一个ID比现有集群的master大的结点加入，且不稳定即频繁退出、加入，会导致当前集群频繁进行选主。</p>
+</blockquote>
+<h3 id="raft算法---投票">Raft算法---投票</h3>
+<blockquote>
+<p>Etcd使用raft算法。</p>
+<p>raft集群各角色：</p>
+<table>
+<thead>
+<tr class="header">
+<th>角色</th>
+<th><strong>角色描述</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Leader</strong></td>
+<td>主节点，同一时刻只有一个主节点，负责整个集群的协调和管理</td>
+</tr>
+<tr class="even">
+<td><strong>Candidate</strong></td>
+<td>候选节点，只有候选节点才可以被选为新Leader，每个节点都可能成为候选节点</td>
+</tr>
+<tr class="odd">
+<td><strong>Follower</strong></td>
+<td>Leader的追随者，该角色不能发起选主</td>
+</tr>
+</tbody>
+</table>
+<p>触发选主时机：</p>
+<p>​ Leader故障或任期满。</p>
+<p><strong>数据提交流程</strong>：</p>
+<p>​ Leader收到数据操作请求时，先产生对应log，然后把log的请求发送给各个Follower。每个follower收到请求后会选择是否听从命令，听从返回true，反对返回false。当超过半数的follower成功写log，leader则开始第二阶段的提交，正式写入数据，然后也给其follower发送请求，当超过半数follower成功写入数据，该请求才正式完成。若这两个步骤其中某个步骤没有超过半数的follower成功执行，则这个事务不成功。</p>
+<p><strong>选主流程</strong>：</p>
+<figure>
+<img src="/2021/03/18/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E5%88%86%E5%B8%83%E5%BC%8F%E7%AA%81%E5%87%BB/Users\SmallYe\Desktop\blog\source_posts\面试突击\分布式突击\raft选主.png" alt="raft选主"><figcaption aria-hidden="true">raft选主</figcaption>
+</figure>
+<p>初始化时各个结点均为Follower，每个Follower内部维护了一个随机的timer。timer时间到了没有人主动联系时就会变为candidate。</p>
+<p>当出现candidate节点时，candidate节点会发送请求给follower节点，每个follower节点只能投一张票。</p>
+<p>对于相同情况的candidate，follower按照先来先投票的策略投票。</p>
+<p>发起选主的结点若得到一半以上的结点，则会成为主节点，状态变为Leader，其他结点会由Candidate变为Follower状态，此时Leader和Follower通过心跳保持连接。当follower接收到心跳信号时会刷新内部timer。</p>
+<p>若Leader任期到了，Leader会降为Follower，进行新一轮选主。</p>
+<p><strong>选主可能的问题</strong></p>
+<p>​ 当参选的candidate内部数据是缺失/错误的时，如何解决冲突？</p>
+<p>​ 1.可以当candidate变为Leader前，从所有的follower处获取数据。</p>
+<p>​ 2.当follower遇见这种candidate时不投票给他。(Raft选择的做法)。</p>
+<p>​ Raft具体解决方案：</p>
+<p>​ 在candidate请求被投票时会传递term、lastLogIndex、lastLogTerm三个信息。</p>
+<table>
+<thead>
+<tr class="header">
+<th>参数名</th>
+<th>参数含义</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>term</strong></td>
+<td>自身所处的选举周期</td>
+</tr>
+<tr class="even">
+<td><strong>lastLogIndex</strong></td>
+<td>log最新的index值</td>
+</tr>
+<tr class="odd">
+<td><strong>lastLogTerm</strong></td>
+<td>log中最近的index是在哪个term产生的</td>
+</tr>
+</tbody>
+</table>
+<p>​ 投票结点内部会维护currentTerm，节点自身所处term。log[]自身log集合。commitIndex，log中最后被提交的index值。</p>
+<p>​ 当term&lt;currentTrem时，拒绝投票。</p>
+<p>​ 当已经投票给其他结点时，拒绝投票。</p>
+<p>​ log匹配时，投票。</p>
+<p><strong>优点</strong>：选举速度快，算法复杂度低，易于实现。新结点加入时不会频繁切主，需要得到半数以上支持才会切主。</p>
+<p><strong>缺点</strong>：通信量大。</p>
+</blockquote>
+<h3 id="zab算法----优先级的民主投票">ZAB算法 -- 优先级的民主投票</h3>
+<blockquote>
+<p>ZAB是Zookeeper实现分布式协调而设计的。是对Raft算法的一种改进。</p>
+<p>ZAB选主的角色：</p>
+<p>​ Leader：主节点。</p>
+<p>​ Follower：跟随者。</p>
+<p>​ Observer：观察者。</p>
+<p>ZAB选举过程中，集群节点的状态：</p>
+<table>
+<thead>
+<tr class="header">
+<th>状态</th>
+<th><strong>状态描述</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Looking</strong></td>
+<td>选举状态，此状态下集群中没有Leader，自己进入选主状态。</td>
+</tr>
+<tr class="even">
+<td><strong>Leading</strong></td>
+<td>领导者状态，已选好主且当前结点为Leader</td>
+</tr>
+<tr class="odd">
+<td><strong>Following</strong></td>
+<td>追随者状态，选为Leader后，其他结点转为Following</td>
+</tr>
+<tr class="even">
+<td><strong>Observing</strong></td>
+<td>观察者状态，持观望态度</td>
+</tr>
+</tbody>
+</table>
+<p>ZAB算法的每个结点都有唯一三元组(server_id，server_zxId，epoch)表示。server_id为当前节点的ID，server_zxId为当前节点存放数据的最新值id，epoch为当前选主进行的轮数。</p>
+<p>具体选主时通过(vote_id，vote_zxId)表示投票给哪个节点，选主唯一原则是server_zxId值最大则成为Leader，如果相同则看server_id最大值。</p>
+<p><strong>具体选主流程：</strong></p>
+<p>​ 1.系统初始化时，即第一轮选主，epoch=1，所有节点zxID=0，此时所有节点都推选自己，将投票信息广播出去。</p>
+<p>​ 2.此时epoch和zxId都是相同的，根据ZAB算法判断，会依据server_id最大者为推选对象，节点更新vote_id重新广播。</p>
+<p>​ 3.节点都推选了server_id最大者后，该节点进入Leading状态，其他结点为Following状态，Leader和Follower建立心跳机制。</p>
+<p>优点：对系统无特殊要求。</p>
+<p>缺点：选举时间长，复杂度高。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>面试突击</category>
+      </categories>
+      <tags>
+        <tag>分布式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>系统设计突击</title>
+    <url>/2021/03/18/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1%E7%AA%81%E5%87%BB/</url>
+    <content><![CDATA[<h1 id="系统设计突击">系统设计突击</h1>
+<h2 id="如何设计微博关注功能即feed流设计">如何设计微博关注功能？即Feed流设计</h2>
+<blockquote>
+<p>该问题主要看产品类型，具体分类如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">类型</th>
+<th style="text-align: left;">关注关系</th>
+<th style="text-align: left;">是否有大V</th>
+<th style="text-align: left;">时效性</th>
+<th style="text-align: left;">排序</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">微博类</td>
+<td style="text-align: left;">单向</td>
+<td style="text-align: left;">有</td>
+<td style="text-align: left;">秒~分</td>
+<td style="text-align: left;">时间</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">抖音类</td>
+<td style="text-align: left;">单向/无</td>
+<td style="text-align: left;">有</td>
+<td style="text-align: left;">秒~分</td>
+<td style="text-align: left;">推荐</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">朋友圈类</td>
+<td style="text-align: left;">双向</td>
+<td style="text-align: left;">无</td>
+<td style="text-align: left;">秒</td>
+<td style="text-align: left;">时间</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">私信类</td>
+<td style="text-align: left;">双向</td>
+<td style="text-align: left;">无</td>
+<td style="text-align: left;">秒</td>
+<td style="text-align: left;">时间</td>
+</tr>
+</tbody>
+</table>
+<p>微博关注功能的主要难点在于，一个用户的粉丝数可能十分巨大，导致消息如何推送是一个问题。</p>
+<p>常见的设计方法：</p>
+<p>​ 首先将数据库分为，存储库和关系库。</p>
+<p>​ 存储库需要可靠存储用户的消息，不能丢失。需要能够支持读取某个人分布的所有消息。支持数据永久存储。</p>
+<p>​ 技术选型主要考虑关系型数据库Mysql或Nosql。其中Nosql水平拓展能力较高，方便在数据量巨大时的使用。</p>
+<p>​ 存储的信息往往可以是userID和messageID。</p>
+<p>​ 关系库则是用于存储用户之间的关系的。</p>
+<p><strong>数据的同步方式即用户怎么接收推送的？</strong></p>
+<p>​ 1.推模式(写扩散)：发送者发送一个消息后，立即将消息推送给发送者，此时发送者不一定在线，需要将消息同步到一个同步库中。一条消息要发送给多个粉丝所以需要复制多份，要求数据库支持大量写请求。用户上线时只需要读取自己的数据库，找到消息即可。</p>
+<p>​ 2.拉模式(读扩散)：这是一种拉的方式，即发送者发送消息后，数据只写入自己对应的数据库，然后用户上线时直接从自己的数据库中读取，此时消息的写入操作仅一次，消息的读取操作次数最多会达到最大粉丝数。因此这种设计要求数据库要有极强的读能力。但是这种设计存在一个问题，即每个用户需要记录自己上次读到了关注者的哪条消息，若关注者数量大，则需要占用大量空间存储该数据。</p>
+<p>​ 3.推拉结合模式：推模式在单向关系中因为存在大V，一天消息写扩散可能几百万次。而这些用户可能一大半都是僵尸用户，永远不会上线。存在资源浪费。而拉模式需要记录上次读取消息的位置，架构比较复杂。因此往往设计为普通用户使用推模式，大V使用拉模式，这样平衡架构复杂性和资源使用。</p>
+<p><strong>其他具体功能设计见https://developer.aliyun.com/article/706808</strong></p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>面试突击</category>
+      </categories>
+      <tags>
+        <tag>系统设计</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>查缺补漏</title>
     <url>/2021/03/13/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E5%A5%87%E6%80%AA%E7%9A%84%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/</url>
     <content><![CDATA[<h1 id="查缺补漏">查缺补漏</h1>
@@ -492,6 +749,61 @@
 <p>即MVCC使用的回滚日志。每次操作后会记录对应的undo操作。</p>
 </blockquote>
 <h2 id="mysql查询优化">Mysql查询优化</h2>
+<h3 id="sql执行顺序">Sql执行顺序</h3>
+<blockquote>
+<ul>
+<li><ol start="7" type="1">
+<li><ul>
+<li>SELECT</li>
+</ul></li>
+</ol></li>
+<li><ol start="8" type="1">
+<li><ul>
+<li>DISTINCT <select_list></select_list></li>
+</ul></li>
+</ol></li>
+<li><ol type="1">
+<li><ul>
+<li>FROM <left_table></left_table></li>
+</ul></li>
+</ol></li>
+<li><ol start="3" type="1">
+<li><ul>
+<li><join_type> JOIN <right_table></right_table></join_type></li>
+</ul></li>
+</ol></li>
+<li><ol start="2" type="1">
+<li><ul>
+<li>ON <join_condition></join_condition></li>
+</ul></li>
+</ol></li>
+<li><ol start="4" type="1">
+<li><ul>
+<li>WHERE <where_condition></where_condition></li>
+</ul></li>
+</ol></li>
+<li><ol start="5" type="1">
+<li><ul>
+<li>GROUP BY <group_by_list></group_by_list></li>
+</ul></li>
+</ol></li>
+<li><ol start="6" type="1">
+<li><ul>
+<li>HAVING <having_condition></having_condition></li>
+</ul></li>
+</ol></li>
+<li><ol start="9" type="1">
+<li><ul>
+<li>ORDER BY <order_by_condition></order_by_condition></li>
+</ul></li>
+</ol></li>
+<li><ol start="10" type="1">
+<li><ul>
+<li>LIMIT <limit_number></limit_number></li>
+</ul></li>
+</ol></li>
+</ul>
+</blockquote>
 <h3 id="mysql执行查询的流程">Mysql执行查询的流程</h3>
 <blockquote>
 <p>1、客户端发送一条查询给服务器。</p>
@@ -504,6 +816,8 @@
 <h3 id="显示查询执行情况">显示查询执行情况</h3>
 <blockquote>
 <p>使用SHOW PROFILE</p>
+<p>​ 先查看当前profiling是否开启，如果没开启则set profiling = 1开启profile机制。</p>
+<p>​ 然后执行对应sql，通过show profiles;查看执行的query情况，找出刚刚执行的sql，通过show profile for query number来展现具体的情况。</p>
 <p>使用SHOW STATUS</p>
 <p>使用慢查询日志。</p>
 </blockquote>
@@ -759,31 +1073,6 @@
       </tags>
   </entry>
   <entry>
-    <title>分布式突击</title>
-    <url>/2021/03/09/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E5%88%86%E5%B8%83%E5%BC%8F%E7%AA%81%E5%87%BB/</url>
-    <content><![CDATA[<h1 id="分布式突击">分布式突击</h1>
-<h2 id="分布式怎么进行数据切分访问">分布式怎么进行数据切分访问？</h2>
-<blockquote>
-<p>显然分布式服务中，必然存在服务集群，一般而言是怎么访问这些集群的呢？往往使用hash来将用户划分到不同的区域，以简单的hash函数为例：</p>
-<p>​ 假设存在6台服务器，此时采用的hash函数为(key)%6，这样选择对应的服务器。显然是可以实现功能的。当如果服务器的数量突然减少或增加了，此时hash函数将要变化，而这时原有的映射关系将直接无用。怎么解决这个问题呢？<strong>一致性hash！</strong></p>
-<p><strong>一致性hash算法</strong></p>
-<p>​ 即使用2^32作为取模的数，将整个区域视为一个圆环，先对服务器进行哈希处理，让其发布在圆环的不同位置，然后当有请求到来时，对请求进行哈希处理，此时会发现请求也落在圆环的某个位置，然后沿顺时针查找该位置离哪个服务器最近，即可找到对应提供服务的服务器。此时若需要添加服务器，只需往圆环上添加新位置即可，只需局部调整，无须全部更新。</p>
-<figure>
-<img src="/2021/03/09/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E5%88%86%E5%B8%83%E5%BC%8F%E7%AA%81%E5%87%BB/一致性哈希环.png" alt="一致性哈希环"><figcaption aria-hidden="true">一致性哈希环</figcaption>
-</figure>
-<p>​ 当然这样有时会导致某些数据累积在同一台服务器上，一致性hash为了解决这个问题引入了虚拟节点机制，即用一个服务器结点计算多次哈希，在每个计算位置放置服务器结点，以保障数据可以比较合理的分布。</p>
-<p>一些分布式集群使用一致性hash(或类似原理)的场景：</p>
-<p>​ redis cluster：类似于一致性hash的思想，对于redis集群采用哈希槽的设计思想，即redis cluster有固定的16384即16K个哈希槽(因为16384个槽在传递配置信息时只需要传输2k的位图，16k/ 8bit = 2k，且16k大小的槽足够redis集群使用了)，对请求进行哈希操作时使用16384作为模数，让请求分布到槽中，而每个主机会负责管理一部分的槽。在进行主机的切换拓展时可以通过指定哪个槽由哪个主机负责来实现拓展和移除主机。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>面试突击</category>
-      </categories>
-      <tags>
-        <tag>分布式</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>算法突击</title>
     <url>/2021/03/09/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E7%AE%97%E6%B3%95%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/</url>
     <content><![CDATA[<h1 id="算法突击">算法突击</h1>
@@ -823,7 +1112,10 @@
 <h2 id="海量数据处理">海量数据处理</h2>
 <h3 id="通用的数据结构方法">通用的数据结构/方法</h3>
 <blockquote>
-<p>布隆过滤器(Bloom filter)：即位数组+多个hash函数，求文件字符重复。</p>
+<p>布隆过滤器(Bloom filter)：即位数组+多个hash函数，求文件字符重复。位数组大小可以根据数学公式计算n为预估的数据量，p为希望的误判率。</p>
+<figure>
+<img src="/2021/03/09/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E6%99%BA%E5%8A%9B%E9%A2%98%E7%AA%81%E5%87%BB/布隆过滤器公式.png" alt="布隆过滤器公式"><figcaption aria-hidden="true">布隆过滤器公式</figcaption>
+</figure>
 <p>hash：往往用于将重复的记录整合，统计。也可以用于拆分小文件。</p>
 <p>位图(bitmap)：可以用于对数据的快速判重。即创建一个最大值+1大小 / 8的整型数组，将数组的每一位用于判断数据是否存在。</p>
 <p>堆：适用于找出海量数据的前n大的数。</p>
@@ -1056,12 +1348,31 @@
 </blockquote>
 <h2 id="synchronized">Synchronized</h2>
 <h2 id="juc">JUC</h2>
+<h3 id="abstractqueuedsynchronizeraqs">AbstractQueuedSynchronizer(AQS)</h3>
+<blockquote>
+<p>AQS继承了AOS(AbstractOwnableSynchronizer)，AOS本质上就实现了对排他线程的保存。</p>
+<p>内部通过state作为是否上锁的判断，当state为0时说明没有线程抢占到锁。可重入锁就是通过不断改变state实现的可重入。</p>
+<p>内部维护了一个waitStatus，共有SIGNAL(-1表示表示后继结点需要unparking)、CANCELLED(1,表示该线程已经取消竞争)、CONDITION(-2节点正在等待)、PROPAGATE(表示头结点将唤醒的动作传播下去)、0(默认)的状态。</p>
+<p>AQS中head结点没有使用，只起到标记的作用。</p>
+<p>本质上只有两个方法acquire和release。如果是共享锁使用acquireShared和releaseShared</p>
+<p>acquire如下：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">acquire</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!tryAcquire(arg) &amp;&amp;</span><br><span class="line">        acquireQueued(addWaiter(Node.EXCLUSIVE), arg))</span><br><span class="line">        selfInterrupt();</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">acquireQueued</span><span class="params">(<span class="keyword">final</span> Node node, <span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">boolean</span> failed = <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">boolean</span> interrupted = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">            <span class="keyword">final</span> Node p = node.predecessor();</span><br><span class="line">            <span class="keyword">if</span> (p == head &amp;&amp; tryAcquire(arg)) &#123;</span><br><span class="line">                setHead(node);</span><br><span class="line">                p.next = <span class="keyword">null</span>; <span class="comment">// help GC</span></span><br><span class="line">                failed = <span class="keyword">false</span>;</span><br><span class="line">                <span class="keyword">return</span> interrupted;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (shouldParkAfterFailedAcquire(p, node) &amp;&amp;</span><br><span class="line">                parkAndCheckInterrupt())</span><br><span class="line">                interrupted = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (failed)</span><br><span class="line">            cancelAcquire(node);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>先尝试获取资源，这里tryAcquire是由子类实现的。</p>
+<p>如果没有成功获取则addWaiter，将线程放入等待队列的尾部，标记为独占模式。</p>
+<p>acquireQueued当当前结点的前一个结点是头结点时会尝试抢占若抢占成功，头结点改为当前结点。抢占失败则将前驱结点的状态设为SIGNAL。</p>
+<p>最后将线程挂起。</p>
+<p>release：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">release</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (tryRelease(arg)) &#123;</span><br><span class="line">        Node h = head;</span><br><span class="line">        <span class="keyword">if</span> (h != <span class="keyword">null</span> &amp;&amp; h.waitStatus != <span class="number">0</span>)</span><br><span class="line">            unparkSuccessor(h);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>先调用子类的tryRelease方法释放状态，当完全释放后，判断当前头结点waitStatus是否不为0，不为0则找出离头结点最近的且不为取消状态的结点进行unpark。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">acquireShared</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (tryAcquireShared(arg) &lt; <span class="number">0</span>)</span><br><span class="line">        doAcquireShared(arg);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">doAcquireShared</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> Node node = addWaiter(Node.SHARED);</span><br><span class="line">    <span class="keyword">boolean</span> failed = <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">boolean</span> interrupted = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">            <span class="keyword">final</span> Node p = node.predecessor();</span><br><span class="line">            <span class="keyword">if</span> (p == head) &#123;</span><br><span class="line">                <span class="keyword">int</span> r = tryAcquireShared(arg);</span><br><span class="line">                <span class="keyword">if</span> (r &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">                    setHeadAndPropagate(node, r);</span><br><span class="line">                    p.next = <span class="keyword">null</span>; <span class="comment">// help GC</span></span><br><span class="line">                    <span class="keyword">if</span> (interrupted)</span><br><span class="line">                        selfInterrupt();</span><br><span class="line">                    failed = <span class="keyword">false</span>;</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (shouldParkAfterFailedAcquire(p, node) &amp;&amp;</span><br><span class="line">                parkAndCheckInterrupt())</span><br><span class="line">                interrupted = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (failed)</span><br><span class="line">            cancelAcquire(node);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>共享锁的话本质上就是将资源数目增多，每次抢占资源时会判断当前资源数目是否大于0，大于0则使用CAS抢占。抢占失败后执行doAcquireShared，类似独占锁的过程。先创建一个SHARABLE节点作为头结点，然后判断当前结点是否为头结点，若是头结点则进行抢占，抢占成功则根据当前资源数来决定是否还要进行抢占。抢占失败则将前驱结点设置的状态设置为SIGNAL。</p>
+</blockquote>
 <h3 id="reentrantlock">ReentrantLock</h3>
 <blockquote>
 <p>可重入锁本质上是针对一个线程的，当一个线程抢占成功锁之后，若线程内部还有进行锁操作，那么会将锁的state值增加，释放时则将该值减少，直到减少到0时又可以被重新抢占。</p>
 <p>释放锁过程也是先判断逐步释放。判断当前释放锁之后锁状态是否为0，若为0则通过unpark方法唤醒队列中的后继线程。</p>
 <p>java实现的锁的方式分为公平锁和非公平锁。</p>
-<p>公平锁和非公平锁的队列都是基于锁内部维护的一个双向链表。</p>
+<p>公平锁和非公平锁的队列都是基于ReentrantLock内部维护的Sync本质是个AQS。</p>
 <p>公平锁的公平性体现在每次重新抢占时会先判断队列中是否存在等待线程，若存在则让队列的线程先抢夺。</p>
 <p>非公平锁非公平体现在每次抢占时不会判断队列中是否存在等待线程，直接进行抢占。</p>
 </blockquote>
@@ -1079,21 +1390,206 @@
     <content><![CDATA[<h1 id="redis突击">redis突击</h1>
 <h2 id="redis为什么快">redis为什么快？</h2>
 <blockquote>
-<p>单线程：因为一开始的redis认为redis速度的瓶颈不在于cpu运算速度，而往往在于网络带宽和机器内存大小。使用单线程编程简单且没有线程切换的开销。</p>
+<p>单线程：因为一开始的redis认为redis速度的瓶颈不在于cpu运算速度，而往往在于网络带宽和机器内存大小。所以redis主要使用单线程，编程简单且没有线程切换的开销。</p>
 <p>数据存放在内存中。</p>
-<p>使用了I/O多路复用技术。</p>
+<p>使用了I/O多路复用技术，非阻塞I/O。</p>
+</blockquote>
+<h3 id="redis线程模型">redis线程模型</h3>
+<blockquote>
+<p>Redis处理网络请求是使用单线程Reactor模型，通过IO多路复用技术提高并发。</p>
+<p>Redis内部使用file event handler，该处理器是单线程的，故redis叫做单线程模型。</p>
+<p>客户端和redis的通信过程：</p>
+<figure>
+<img src="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/redis%E7%AA%81%E5%87%BB/redis客户端操作流程.png" alt="redis客户端操作流程"><figcaption aria-hidden="true">redis客户端操作流程</figcaption>
+</figure>
 </blockquote>
 <h2 id="redis数据结构">redis数据结构</h2>
 <blockquote>
-<p>String、Hash、List、Set、SortedSet、HyperLogLog(可以用于统计网页每天的用户访问量数据)、Geo、Bitmap(可以用来记录用户的在线状态)、Stream(主要用于消息队列)</p>
+<p>API数据结构：String、Hash、List、Set、SortedSet、HyperLogLog(可以用于统计网页每天的用户访问量数据)、Geo、Bitmap(可以用来记录用户的在线状态，使用天为key，用户id作为offset)、Stream(主要用于消息队列)</p>
+</blockquote>
+<h3 id="redis底层数据结构">redis底层数据结构</h3>
+<blockquote>
+<p>SDS、dict、ziplist、quicklist、skiplist、intset。</p>
+<p>SDS：redis自己实现的动态字符串。结构如下，该结构将字符串长度作为一个单独字段，使得每次查询字符串长度的时间复杂度为O(1)。</p>
+<p>该字符串的优势：</p>
+<p>​ 降低获取字符串长度的时间复杂度到O(1)。</p>
+<p>​ API 是安全的，不会造成缓冲区溢出。即使用时会预先检测当前大小是否足够使用。</p>
+<p>​ 减少了修改字符串时的内存重分配次数。</p>
+<p>​ 兼容c字符串的同时，提高了一些字符串工具方法的效率。</p>
+<p>​ 二进制安全（数据写入的格式和读取的格式一致）。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> __<span class="title">attribute__</span> ((__<span class="title">packed__</span>)) <span class="title">sdshdr8</span> &#123;</span></span><br><span class="line"> <span class="comment">//字符串真实长度</span></span><br><span class="line"> <span class="keyword">uint8_t</span> len; <span class="comment">/* used */</span></span><br><span class="line"> <span class="comment">//字符串除头部和终止符外的长度，即已分配的长度</span></span><br><span class="line"> <span class="keyword">uint8_t</span> alloc; <span class="comment">/* excluding the header and null terminator */</span></span><br><span class="line"> <span class="keyword">unsigned</span> <span class="keyword">char</span> flags; <span class="comment">/* 3 lsb of type, 5 unused bits */</span></span><br><span class="line"> <span class="keyword">char</span> buf[];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>dict：redis实现的类似哈希表结构。具体结构如下：</p>
+<p>它和传统的哈希算法类似，采用拉链法来解决冲突。主要不同在于它使用增量式重哈希的方法进行重哈希。在需要扩展内存时避免一次性对所有key进行重哈希，而是将重哈希操作分散到对dict的各个增删改查操作中去。每次只对一部分key进行重哈希，每次重哈希之间不影响dict操作。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dict</span> &#123;</span></span><br><span class="line"> dictType *type;</span><br><span class="line"> <span class="keyword">void</span> *privdata;</span><br><span class="line"> <span class="comment">//为了增量式重hash，redis的dict结构包含两个哈希表</span></span><br><span class="line"> dictht ht[<span class="number">2</span>];</span><br><span class="line"> <span class="keyword">long</span> rehashidx; <span class="comment">/* rehashing not in progress if rehashidx == -1 */</span></span><br><span class="line"> <span class="keyword">unsigned</span> <span class="keyword">long</span> iterators; <span class="comment">/* number of iterators currently running */</span></span><br><span class="line">&#125; dict;</span><br></pre></td></tr></table></figure>
+<p>ziplist：经过特殊编码的双向链表。一个普通的双向链表，链表中每一项都占用独立的一块内存，各项之间用地址指针（或引用）连接起来。这种方式会带来大量的内存碎片，而且地址指针也会占用额外的内存。而 ziplist 却是将表中每一项存放在前后 <strong>连续的地址空间</strong> 内，一个 ziplist 整体占用一大块内存。它是一个表（list），但其实不是一个链表（linked list）。</p>
+<p>优点：减少了两个指针空间开销，节约内存。</p>
+<p>缺点：每次插入或修改可能引发realloc，导致内存拷贝，降低性能。</p>
+<p>​ 当数据过多时查找操作开销大，性能低。</p>
+<p>quicklist：是以ziplist为节点组成的双向链表，ziplist本身也是可以维持数据项先后顺序的列表，且是内存紧缩的列表。</p>
+<p>设计思路：空间和时间的折中。双向链表便于两端的push和pop操作，但内存开销大。ziplist是连续内存，存储效率高但不利于修改。quicklist则将二者进行结合。可以通过list-max-ziplist-size配置quicklist的ziplist最大长度。</p>
+<p>skiplist：跳表，是一种有序的数据结构，通过每个节点维持多个指向其他结点的指针，达到快速访问结点的目的。</p>
+<p>intset：由整数组成的<strong>有序集合</strong>，从而在上面进行二分查找。其内存分配类似ziplist也使用连续内存空间。其用于存储元素都是整数的小集合。</p>
+</blockquote>
+<h3 id="api数据结构和底层数据结构的关联">API数据结构和底层数据结构的关联</h3>
+<blockquote>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">API数据结构</th>
+<th style="text-align: center;">限制</th>
+<th style="text-align: center;">具体底层实现</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">string</td>
+<td style="text-align: center;">512 MB</td>
+<td style="text-align: center;">SDS</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">list</td>
+<td style="text-align: center;">最大长度 <span class="math inline">\(2^{32}-1\)</span></td>
+<td style="text-align: center;">quicklist</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">set</td>
+<td style="text-align: center;">最大容量 <span class="math inline">\(2^{32}-1\)</span></td>
+<td style="text-align: center;">intset(小整数集) 、dict</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">sorted set</td>
+<td style="text-align: center;">最大容量 <span class="math inline">\(2^{32}-1\)</span></td>
+<td style="text-align: center;">ziplist(小集合)、dict + skiplist</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">hash</td>
+<td style="text-align: center;">最大KV容量 <span class="math inline">\(2^{32}-1\)</span></td>
+<td style="text-align: center;">ziplist(小集合)、dict</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">bitmap</td>
+<td style="text-align: center;">512 MB</td>
+<td style="text-align: center;">SDS</td>
+</tr>
+</tbody>
+</table>
 </blockquote>
 <h2 id="redis数据淘汰机制">redis数据淘汰机制</h2>
 <blockquote>
+<p>redis的回收过期对象策略，分为<strong>定期删除</strong>和<strong>惰性删除</strong>两种。</p>
+<p><strong>定期删除</strong>即默认x时间随机抽取一些设置了过期时间的key去检查是否过期，过期了则删除。</p>
+<p><strong>惰性删除</strong>即等到使用到这个key时再去检测是否过期，若过期则删除。</p>
+<p>当redis内存使用超过一定限制时会进行内存淘汰，redis的内存淘汰策略：</p>
+<p>​ 主要分为针对设置了过期时间key和未设置过期时间key。</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">默认策略noeviction</th>
+<th style="text-align: center;">到达阈值时再申请内存报错</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">allkeys-lru</td>
+<td style="text-align: center;">对所有key采用LRU策略删除。(实际上是采样删除)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">volatile-lru</td>
+<td style="text-align: center;">在设置过期时间的key中使用LRU策略删除</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">allkeys-random</td>
+<td style="text-align: center;">在主键空间中，随机移除某个key</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">volatile-random</td>
+<td style="text-align: center;">在设置了过期时间的key中，随机删除某个key</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">volatile-ttl</td>
+<td style="text-align: center;">在设置过期时间的key中，过期时间早的优先被删除</td>
+</tr>
+</tbody>
+</table>
 <p>随机淘汰、ttl淘汰即淘汰即将过期的数据、LRU淘汰最近最少使用的数据。</p>
 </blockquote>
 <h2 id="缓存击穿缓存雪崩缓存穿透">缓存击穿、缓存雪崩、缓存穿透</h2>
 <blockquote>
-
+<p><strong>缓存雪崩</strong>：本质上就是在redis中存放的大量key过期时间设置为相同时间，导致同一时间大批key都过期了，从而导致一瞬间大量请求都进入数据库中，使得数据库瞬间承受大量流量直接无法提供服务。</p>
+<p>解决方案：在设置key的过期时间时添加一个随机初始值，让每个key的过期时间尽量分散。</p>
+<p><strong>缓存穿透</strong>：指缓存中没有且数据库中也不存在的值被反复请求，如数据库采用自增id，显然都只能是正数，而请求不断访问负数id，会导致流量一直进入数据库，使数据库压力过大，无法提供服务。</p>
+<p>解决方案：首先考虑能不能再未访问缓存前就拦截，比如在接口层面进行参数校验，判断id是否合法，用户是否正常。</p>
+<p>​ 其次，利用布隆过滤器，将无法访问的数据库先加载到布隆过滤器中，当访问缓存时先通过布隆过滤器过滤，发现未命中才去访问redis。</p>
+<p>​ 还可以在访问到无效key时，先给这个key附上一个临时值，让同时访问到这个key的用户可以临时使用缓存。</p>
+<p><strong>缓存击穿</strong>：指缓存中本来存在的热点key，到了过期时间，大量请求直接访问到数据库，使得数据库压力过大，无法提供服务。</p>
+<p>解决方案：本质上就是解决<strong>热点key</strong>问题，如果已经发现了热点key，可以将对应key的过期时间设置为永不过期。还可以通过设置互斥锁(redis分布式锁)来让请求串行化避免同时有大量请求打入数据库。</p>
+<p>主要问题在于怎么确定热点key：</p>
+<p>​ 根据业务需求提前找出热点key。</p>
+<p>​ 当客户端发出请求时收集对应key数据，然后分析这些数据找出热点key。</p>
+<p>​ 如果在redis集群前还设计了代理层，可以在代理层统计具体数据。</p>
+<p>找出热点key后可以通过以下方法解决：</p>
+<p>​ 采用二级缓存，即在本地JVM上创建一个hashmap存储缓存。</p>
+<p>​ 可以对redis的key切片，即key+随机值均匀分布到多个redis实例上，访问时也随机访问即可。</p>
+</blockquote>
+<h2 id="redis集群部署">redis集群部署</h2>
+<blockquote>
+<p>主要由redis Sentinel哨兵集群和redis cluster集群。</p>
+<p>redis sentinel哨兵集群：本质上就是一台redis实例作为主，多台redis实例作为从，每个实例中都有一个sentinel作为哨兵，且哨兵数目至少为3个。哨兵作用是查看主redis是否宕机了，若超过一半的哨兵认为主redis宕机，那么就会执行切换流程。哨兵用于监听主机消息，从机则是用于处理读请求，主机负责写请求。</p>
+<p>而redis cluster集群：redis哨兵集群的改进版本，多机版本的redis，通过分槽来管理每个redis的数据命中，让数据可以分散到各个redis实例中。常见场景为3主3从，即将槽分为三个区间，每个redis主机负责一个区间，然后主机之间充当哨兵的作用，检测到某个主机宕机了，则让对应从机升级。</p>
+</blockquote>
+<h2 id="redis-持久化rdb和aof">redis 持久化RDB和AOF</h2>
+<blockquote>
+<p>因为redis集群部署时往往存在主从的概念，主从之间怎么传递数据呢？</p>
+<p>首先这个问题要知道redis持久化的方式。</p>
+<p>redis提供两种持久化的方式：RDB和AOF</p>
+<p><strong>RDB</strong>：在指定时间间隔对数据进行快照全量备份。</p>
+<p>​ 触发方式：</p>
+<p>​ 命令触发：Save：阻塞当前redis服务器，直到持久化完成。</p>
+<p>​ bgsave：fork一个子进程，由子进程负责持久化过程。</p>
+<p>​ 自动触发：根据配置文件的save m n配置规则自动触发。</p>
+<p>​ 从节点全量复制时，主节点发送rdb文件给从节点完成复制操作，主节点触发bgsave。</p>
+<p>​ 执行debug reload时</p>
+<p>​ 执行shutdown且没有开启aof时也会触发。</p>
+<p>​ 数据恢复方式：将备份文件(dump.rdb)移动到redis安装目录并启动服务即可。</p>
+<p>优点：RDB会产生多个数据文件，每个数据文件分别都代表了某一时刻Redis里的数据。且RBD对redis的性能影响较小，因为同步数据时只是fork了一个子进程进行持久化的，且数据恢复时比AOF来的快。</p>
+<p>缺点：RDB是快照文件，默认5分钟或者更久时间才生成一次，导致五分钟内数据丢失。且若RDB生成数据快照时文件很大会导致客户端暂停几毫秒甚至几秒。</p>
+<p><strong>AOF</strong>：相当于把每条指令作为日志，通过追加写入的方式写入到日志文件。类似binlog。</p>
+<p>​ 一般来说AOF可以更好地保护数据不丢失，一般设置每隔1秒执行一次AOF持久化，redis会通过一个后台线程执行一次fsync操作。</p>
+<p>​ 由于AOF是对指令作为日志进行写入，所以往往让AOF文件体积过大，redis对这种现象提供了AOF重写机制，但是即使执行重写操作也不会影响客户端对redis的读写，因为redis在重写rewrite aof时会对指令进行压缩，创建出一份需要恢复数据的最小日志出来。创建新日志时老日志文件还是照常写入，当新的merge的日志文件ready时，再交换新老日志文件即可。</p>
+<p>优点：可以每秒一次数据持久化，让数据丢失最多不超过一秒，且日志写入是以追加写入的方式进行的，避免磁盘的随机写。</p>
+<p>​ AOF文件一般是可读的方式进行写入的，打开AOF文件可以看到先前执行的操作。</p>
+<p>缺点：数据相同时AOF的文件大小往往远大于RDB大小，AOF开启后，redis支持的写QPS比RDB支持的写QPS小。</p>
+<p><strong>具体持久化选择</strong>：RDB+AOF，每隔一段时间使用RDB进行全量备份，然后数据恢复时利用RDB文件快速恢复，再使用AOF文件对RDB文件缺少的数据进行补充。</p>
+</blockquote>
+<h3 id="redis主从数据同步">redis主从数据同步</h3>
+<blockquote>
+<p>一般来说redis主机负责写入操作，redis从机负责读操作。二者数据同步就是利用redis持久化机制实现的。</p>
+<p>当启动一个从机slave时，它会发送一个<strong>psync</strong>指令给主机，若这个从机是第一次连接到主机，主机会进行一次全量复制。主机启动一个线程生成RDB快照，然后把新的写请求都缓存到内存中，RDB文件生成后，主机会将RDB文件发送给从机，从机获取RDB后会将数据写入磁盘，然后加载到内存。最后主机将内存中缓存的新命令发送给slave进行同步。</p>
+</blockquote>
+<h2 id="redis常见用法">redis常见用法</h2>
+<h3 id="假如redis里面有1亿个key其中有10w个key是以某个固定的已知的前缀开头的如何将它们全部找出来">假如Redis里面有1亿个key，其中有10w个key是以某个固定的已知的前缀开头的，如何将它们全部找出来？</h3>
+<blockquote>
+<p>使用keys指令，然后给定pattern即可查询出结果。</p>
+<p>由于redis是单线程的，使用keys指令在数据量大时可能导致redis被堵塞，可以通过scan index MATCH pattern的形式来达到同样的目的。且scan由于可以设置下标，一次查询的key数据量不会过大，不容易堵塞redis。</p>
+</blockquote>
+<h3 id="redis实现分布式锁">redis实现分布式锁</h3>
+<blockquote>
+<p>通过设置setnx key和key的expire过期时间。</p>
+</blockquote>
+<h3 id="redis实现异步队列">redis实现异步队列</h3>
+<blockquote>
+<p>通过list结构，<strong>rpush</strong>生成消息，<strong>lpop</strong>消费消息，或者使用<strong>blpop</strong>消费消息，使得没有消息可以消费时可以堵塞住消费者。</p>
+</blockquote>
+<h3 id="redis实现延时队列">redis实现延时队列</h3>
+<blockquote>
+<p>通过redis的SortedSet结构，以时间戳作为score，消息内容作为key，通过ZADD KEY timestamp task来生产消息，消费者通过轮询ZRANGEBYSCORE KEY -inf +inf limit 0 1 WITHSCORES的方式来获取数据，然后比对时间戳消息，若存储的时间戳大于当前时间戳则说明还无须执行，让消费者sleep一段时间再轮询。</p>
+<p>具体架构</p>
+<figure>
+<img src="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/redis%E7%AA%81%E5%87%BB/延迟队列架构.png" alt="延迟队列架构"><figcaption aria-hidden="true">延迟队列架构</figcaption>
+</figure>
+<p>生产者通过hash算法将延迟任务分散到不同的redis key中避免一个key存储大量延时消息。</p>
+<p>然后对每个redis key建立一个Event处理进程，所有的处理进程只负责分发消息，具体的业务逻辑则引入额外的消息队列进行处理。</p>
+<p>Event进程则采用Zookeeper选主单进程部署的方式，避免Event进程宕机后，redis key消息堆积的情况。</p>
 </blockquote>
 ]]></content>
       <categories>
@@ -1129,17 +1625,16 @@
 <blockquote>
 <p>用户态到内核态什么时候切换？</p>
 <p>​ 中断、系统调用、发生异常。</p>
-<p>用户态内核态切换过程主要需要保存用户态的寄存器，返回时会切换会用户态。</p>
+<p>用户态内核态切换过程主要需要保存用户态的寄存器，返回时会切换回用户态。</p>
 <p>进程上下文切换发生的场景：</p>
 <p>​ 1.运行中的进程执行完终止了，CPU 会释放出来，新的基础进程就可以被调度到CPU上运行了。</p>
 <p>​ 2. 运行中的进程时间片用完，进程被挂起</p>
-<ol start="3" type="1">
-<li>运行中的进程资源不足，进程被挂起</li>
-<li>运行中的进程执行Sleep方法主动挂起</li>
-<li>新进程优先级更高，运行中的进程被挂起</li>
-<li>发生硬件中断，运行中的进程会被中断挂起，转而执行内核中的中断服务程序。</li>
-</ol>
-<p>进程上下文包括虚拟内存、栈、全局变量等用户空间资源，还包括内核堆栈、寄存器等内核空间的状态。切换时需要保存的信息更多，而加再另一个进程的上下文时，也需要加载这个进程的虚拟内存和用户栈。</p>
+<p>​ 3.运行中的进程资源不足，进程被挂起</p>
+<p>​ 4.运行中的进程执行Sleep方法主动挂起</p>
+<p>​ 5.新进程优先级更高，运行中的进程被挂起</p>
+<p>​ 6.发生硬件中断，运行中的进程会被中断挂起，转而执行内核中的中断服务程序。</p>
+<p>进程是由内核来管理和调度的，进程的切换只能发生在内核态。进程上下文包括虚拟内存、栈、全局变量等用户空间资源，还包括内核堆栈、寄存器等内核空间的状态。切换时需要保存的信息更多，而加入另一个进程的上下文时，也需要加载这个进程的虚拟内存和用户栈。</p>
+<p>线程是操作系统调度的最小单位。同时线程会共享父进程的虚拟内存和全局变量等资源，因此父进程的资源加上线上自己的私有数据就叫做线程的上下文。</p>
 <p>线程上下文切换：</p>
 <p>​ 当线程属于同一个进程时，全局变量、虚拟内存不需要切换，只需要切换私有数据和寄存器等不共享的数据。</p>
 <p>​ 当线程属于不同进程时，同进程切换。</p>
@@ -1284,7 +1779,10 @@
 <p>我使用的是最后一种。</p>
 </blockquote>
 <h2 id="redis的使用">redis的使用</h2>
-<h2 id="zookeeper相关">zookeeper相关</h2>
+<h2 id="为什么使用zookeeper作为服务发现框架">为什么使用zookeeper作为服务发现框架？</h2>
+<blockquote>
+<p>可选项：redis、zookeeper(CP)、etcd(CP)、Eureka(AP)[juˈriːkə]。</p>
+</blockquote>
 ]]></content>
       <categories>
         <category>面试突击</category>
@@ -1297,6 +1795,18 @@
     <title>java基础突击</title>
     <url>/2021/03/01/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%9F%BA%E7%A1%80%E7%AA%81%E5%87%BB/</url>
     <content><![CDATA[<h1 id="java基础突击">java基础突击</h1>
+<h2 id="java基本类型">java基本类型</h2>
+<h3 id="stringstringbuffer和stringbuilder">String、StringBuffer和StringBuilder</h3>
+<blockquote>
+<p>String：底层是final修饰的char数组。存在不可变特性。</p>
+<p>为什么要不可变：1.复用hashcode避免重复计算。2.字符串是不可变的，才能实现字符串常量池，让同一个字符串可以从常量池中查找，实现资源复用。</p>
+<p>3.因为字符串是不可变的所以它是线程安全的。</p>
+<p>String的equals方法，先判断两个对象是否相等，若不相等再判断对象是否为String实例，若是遍历字符串逐一判断字符是否相等，全部相等则返回相等。</p>
+<p>String计算hashcode：通过h = 31 * h + val[i];计算。</p>
+<p>StringBuffer和StringBuilder都是AbstractStringBuilder的子类，本质都是一样的。</p>
+<p>StringBuffer：线程安全，因为使用synchronized修饰。底层是没有final修饰的char数组，初始化时默认大小是16，通过append方法来添加字符，添加时需要判断当前size是否需要扩容，扩容机制为原char数组长度 * 2 + 2。然后添加时就是利用给定的目的数组和size偏移对数组进行复制。</p>
+<p>StringBuilder：线程不安全。底层也是没有final修饰的char数组，初始化默认大小是16，通过append添加。</p>
+</blockquote>
 <h2 id="java容器">java容器</h2>
 <h3 id="arrays.sort怎么排序的">Arrays.sort()怎么排序的？</h3>
 <blockquote>
@@ -1308,6 +1818,42 @@
 <p>​ 对于实现了Comparable接口的类型，使用ComparableTimSort.sort()。</p>
 <p>​ 对于数量小于MIN_MERGE = 32的数组，使用二分插入排序。</p>
 <p>​ 对于数量大于MIN_MERGE的数组，使用timSort排序(大量优化的归并排序)。</p>
+</blockquote>
+<h3 id="arraylist具体实现">ArrayList具体实现</h3>
+<blockquote>
+<p>默认容量10，底层是数组，默认实现的拷贝方式是浅拷贝。</p>
+<p>add方法：</p>
+<p>​ 让size+1，然后判断是否需要扩容，如果初始化时没有参数则让size同默认值比较，否则直接让size和当前数组长度比较，若大于则进行扩容。</p>
+<p>​ 扩容即将旧数组长度扩大1.5倍然后转化为新数组长度，通过newCapacity = oldCapacity + (oldCapacity &gt;&gt; 1);的位运算加速计算。</p>
+<p>​ 若扩容后的值小于size，则让值变为size，若扩容后的值大于数组最大长度，则判断size是否大于数组最大长度，若大于则扩容后的值为Integer.MAX_VALUE，否则为数组最大长度。</p>
+</blockquote>
+<h3 id="vector">Vector</h3>
+<blockquote>
+<p>本质上就是将常用的方法使用synchronized锁住，只是扩容机制不同。</p>
+<p>Vector初始化时可以初始化每次扩容的大小，若没有设置该值则每次扩容一倍，否则每次扩容对应大小。</p>
+</blockquote>
+<h3 id="linkedlist">LinkedList</h3>
+<blockquote>
+<p>底层是链表。</p>
+</blockquote>
+<h3 id="collections.synchronizedlist">Collections.SynchronizedList</h3>
+<blockquote>
+<p>类似Vector，但是可以将不同的List转化为线程安全的List，底层是通过Synchronized(mutex)实现的。</p>
+</blockquote>
+<h3 id="copyonwritearraylist">CopyOnWriteArrayList</h3>
+<blockquote>
+<p>适用于读多写少的场景，因为每次操作需要复制数组。·</p>
+<p>底层使用ReentrantLock在add操作时上锁，add操作结束后释放。正如名字所说，每次添加操作都需要在原数组的基础上复制一个大小增加对应长度的数组进行使用。</p>
+<p>remove时也需要上锁，也是在原数组的基础上复制一个大小减少对应长度的数组进行使用。</p>
+<p>其计算hashcode的方法类似String，也是使用h = 31 * h + 对应对象的hashcode;</p>
+</blockquote>
+<h2 id="基础知识点">基础知识点</h2>
+<h3 id="浅拷贝和深拷贝">浅拷贝和深拷贝</h3>
+<blockquote>
+<p>浅拷贝拷贝对象时如果对象中含有其他对象，则只会拷贝这些对象的引用，如果对其中对象进行修改会相互影响。</p>
+<p>深拷贝即当拷贝对象中含有其他对象时，会创建一个另外的对象，让两个对象互不影响。</p>
+<p>实现深拷贝的方式：</p>
+<p>​ 要被拷贝的类实现clonable接口，并且让这个类中对应对象的类也实现clonable接口，然后重写clone方法，被拷贝对象的clone方法需要将对应对象的clone赋值给该对象。如：this.a = a.clone();</p>
 </blockquote>
 ]]></content>
       <categories>
@@ -1402,6 +1948,7 @@
 <p>​ 5xx：服务器错误。</p>
 <p>​ 具体：</p>
 <p>​ 200 OK：处理成功</p>
+<p>​ 206 Partial Content：断点续传时使用，本质上就是客户端在header上设置一个Content-Range 标识当前传输的位置，服务端根据这个位置来响应。</p>
 <p>​ 301 Moved Permanently：请求的资源已被永久移动到新URI。</p>
 <p>​ 302 Moved Temporarily：资源被临时移动到新URI。</p>
 <p>​ 303 See Other：重定向到另外页面</p>
@@ -1621,30 +2168,45 @@
 <h3 id="阻塞型iobio">阻塞型I/O(BIO)</h3>
 <blockquote>
 <p>线程调用recvfrom，持续等待直到复制完成。</p>
+<figure>
+<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/阻塞型IO.png" alt="阻塞型IO"><figcaption aria-hidden="true">阻塞型IO</figcaption>
+</figure>
 <p>优点：程序简单</p>
 <p>缺点：每个连接需要独立进程/线程，并发量大时维护程序的线程切换开销大。</p>
 </blockquote>
 <h3 id="非阻塞型io">非阻塞型I/O</h3>
 <blockquote>
 <p>线程调用recvfrom，不持续等待，而是不断轮询操作系统内核。</p>
+<figure>
+<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/非阻塞型IO.png" alt="非阻塞型IO"><figcaption aria-hidden="true">非阻塞型IO</figcaption>
+</figure>
 <p>优点：不会阻塞在内核的等待数据过程，每次发起的 I/O 请求可以立即返回，不用阻塞等待，实时性较好。</p>
 <p>缺点：轮询占用大量CPU时间，系统资源利用率低。</p>
 </blockquote>
 <h3 id="io多路复用nio">I/O多路复用(NIO)</h3>
 <blockquote>
 <p>如select、poll、epoll，用一个描述符管理多个描述符，同时管理多个I/O操作，当有事件发生时才堵塞进行复制。</p>
+<figure>
+<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/NIO.png" alt="NIO"><figcaption aria-hidden="true">NIO</figcaption>
+</figure>
 <p>优点：节省大量系统资源。</p>
 <p>缺点：在并发量低时延迟较多线程+堵塞I/O更高，因为I/O多路复用对单个连接需要进行两次系统调用。</p>
 </blockquote>
 <h3 id="信号驱动型io">信号驱动型I/O</h3>
 <blockquote>
 <p>使用信号来驱动，当数据准备好时进程会受到一个信号，在信号处理函数中处理数据。</p>
+<figure>
+<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/信号驱动型IO.png" alt="信号驱动型IO"><figcaption aria-hidden="true">信号驱动型IO</figcaption>
+</figure>
 <p>优点：线程没有在等待数据时被阻塞，提高资源利用率。</p>
 <p>缺点：信号I/O在大量I/O操作时可能会因为信号序列溢出导致无法通知。</p>
 </blockquote>
 <h3 id="异步ioaio">异步I/O(AIO)</h3>
 <blockquote>
 <p>类似于信号驱动I/O，但是AIO会在内核完成了数据复制操作后才给线程发送信号，线程无须等待。</p>
+<figure>
+<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/异步IO.png" alt="img"><figcaption aria-hidden="true">img</figcaption>
+</figure>
 <p>优点：异步I/O充分利用DMA，让I/O操作和计算重叠。</p>
 <p>缺点：AIO需要操作系统支持，目前AIO在linux中还不完善，且AIO代码编写复杂。</p>
 </blockquote>
@@ -1678,14 +2240,19 @@
 </blockquote>
 <h4 id="主从reactor模型">主从Reactor模型</h4>
 <blockquote>
-<p>主Reactor负责将新连接分发给Acceptor，然后将Acceptor处理后的数据分发给从reactor，从reactor负责处理其他事件，然后分发给handler处理，handler负责数据读取，而业务仍交给worker处理。</p>
+<figure>
+<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/主从reactor.png" alt="主从reactor"><figcaption aria-hidden="true">主从reactor</figcaption>
+</figure>
+<p>主Reactor负责将新连接分发给Acceptor，然后主Reactor将连接分发给从reactor。从reactor会将连接加入连接队列进行监听，并创建一个handler用于处理。新事件发生时，从reactor会调用连接对应的handler进行处理，handler负责数据读取，而业务仍交给worker处理。</p>
 <p>优点：父线程与子线程的数据交互简单职责明确，父线程只需要接收新连接，子线程完成后续的业务处理。</p>
 </blockquote>
 <h3 id="proactor模型">Proactor模型</h3>
 <blockquote>
-<p>proactor</p>
+<figure>
+<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/proactor模型.png" alt="proactor模型"><figcaption aria-hidden="true">proactor模型</figcaption>
+</figure>
 <p>异步网络模型。</p>
-<p>组件：Proactor Initiator、Proactor 、Handler 、AsyOptProcessor</p>
+<p>组件：Proactor Initiator、Proactor 、Handler 、AsyOptProcessor。即一个初始化器，一个注册器，一个proactor，一个handler</p>
 <p>流程：initiator创建Proactor 、Handler ，然后Proactor 和Handler 都通过AsyOptProcessor注册到内核。</p>
 <p>AsyOptProcessor处理注册请求，并处理I/O操作。</p>
 <p>AsyOptProcessor完成I/O操作后会通知Proactor，Proactor根据不同的事件类型回调不同的Handler进行业务处理。</p>
@@ -1763,8 +2330,116 @@
       </categories>
       <tags>
         <tag>I/O</tag>
-        <tag>网络</tag>
         <tag>操作系统</tag>
+        <tag>网络</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux介绍及基本指令</title>
+    <url>/2021/02/20/Linux/Linux%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%9F%BA%E6%9C%AC%E6%8C%87%E4%BB%A4/</url>
+    <content><![CDATA[<h1 id="linux介绍及基本指令">Linux介绍及基本指令</h1>
+<h2 id="linux区别">Linux区别</h2>
+<blockquote>
+<p>Ubantu：分为用户版和服务器版。</p>
+<p>​ 用户版，有着良好的用户界面，有强大的软件支持。</p>
+<p>​ 服务器版比较少用。</p>
+<p>Debian：系统十分稳定，内核非常小。</p>
+<p>RedHat：是一个商用的操作系统，性能非常好，软件支持也非常好。</p>
+<p>Centos：基本上相当于RedHat的复刻版本。免费。</p>
+</blockquote>
+<h2 id="根目录下各目录对应的功能">根目录下各目录对应的功能</h2>
+<h2 id="在linux中获取帮助">在linux中获取帮助</h2>
+<blockquote>
+<p>man 命令名：查看命令的操作说明</p>
+<p>命令行 --help：查看命令的语法</p>
+</blockquote>
+<h2 id="linux基本命令">Linux基本命令</h2>
+<blockquote>
+<p>ls：查看当前目录中所有文件及目录</p>
+<p>ll：查看当前目录内所有文件及目录详细信息。详细信息具体查看方式。以drwxr-xr-x为例(第一个字符拆出，然后每三个字符表示一个内容)：</p>
+<p>d：文件类型，目录。rwx：拥有者权限，可读，可写，可执行。r-x：用户组权限，可读，不可写，可执行。r-x：其他组权限，可读，不可写，可执行。</p>
+<p>具体文件类型有：d：路径。<em>-</em>：文件。 l ：连接(快捷方式)。b：表示可按块随机读写的设备。c：设备文件里的串行端口设备，如键盘、设备。</p>
+<p>表示权限的三个字符可以用0~7的数字表示。如rwx为7，r-x为5。</p>
+<p>ls -al：查看所有文件及目录包括隐藏目录。</p>
+<p>pwd：查看当前所在层级</p>
+<p>echo xxx：打印xxx</p>
+<p>date：查看日期</p>
+<p>cal：查看日历</p>
+<p>grep xxx：用于查看包含xxx的对象。</p>
+<p>curl 网址：向对应网址发出http请求。curl -i www.baidu.com ：向百度首页发出请求，会返回响应头。</p>
+<p>history：查看先前输入过的命令。</p>
+<p>df：查看磁盘使用情况。</p>
+</blockquote>
+<h2 id="文件基本命令">文件基本命令</h2>
+<blockquote>
+<p>vi xxx：打开临时记事本，基本可以认为是创建文件。</p>
+<p>mkdir xxx：创建文件夹</p>
+<p>rm -rf xxx：删除目录。</p>
+<p>cp a b ：把a文件复制到b处</p>
+<p>mv a b ：把a文件移动到b处（也可以当做重命名使用）</p>
+<p>tail -number xx：查看文件最后number行内容(可以用于监控日志使用tail -F/-f xxx)-F，-f分别为追踪文件名和追踪文件索引。</p>
+<p>cat xxx：查看文件内容，往往伴随着grep使用如 cat a.txt | grep "a:xxx"。</p>
+<p>less xxx：查看文件一页的内容。</p>
+<p>find xxx：查找文件(可以查找所有文件)。</p>
+<p>whereis xx：查找命令所在目录(只能查找二进制类的文件)。</p>
+<p>which xxx：在PATH变量指定的路径中搜索指定的系统命令的位置。</p>
+<p>sh xxx.sh：执行shell命令。这种执行sh文件不需要本身具有权限。</p>
+<p>path/xxx.sh：执行shell命令。sh文件本身需要有权限。(如./xxx.sh其中.表示当前目录)</p>
+</blockquote>
+<h2 id="文件解压缩">文件解压缩</h2>
+<blockquote>
+<p>zip -r 压缩后路径加名字 需要压缩的文件：压缩，如zip -r a.zip a.txt。这个命令需要yum install zip</p>
+<p>unzip -d 解压缩到的路径 解压缩的包：解压缩，如unzip -d . a.zip。这个命令需要yum install unzip。</p>
+<p>tar -cvf 压缩后路径加名字 需要压缩的文件：压缩，如tar -cvf a.txt。</p>
+<p>tar -zcvf 压缩后路径加名字 需要压缩的文件：压缩，如tar -zcvf a.txt。压缩后占的空间更少</p>
+<p>tar -xvf 解压缩到的路径 解压缩的包：解压缩，如tar -xvf a.txt。</p>
+<p>tar -zxvf 解压缩到的路径 解压缩的包：压缩，如tar -zxvf a.txt。</p>
+<p>tar的参数：c：表示create，即压缩，z：约等于zip，即打包后空间会更小，v：压缩后展示压缩包中文件名字。f：表示结束。x：extract，即解压缩。</p>
+<p>b：表示查看压缩包内容。其中c、x、b同时只能存在一个。</p>
+</blockquote>
+<h2 id="文件传输">文件传输</h2>
+<blockquote>
+<p>scp 目录加文件名 用户名@IP地址:目录加文件名：将文件传输利用网络传输到另一个服务器。如scp ./a.txt root@10.0.2.6:~/b.txt</p>
+</blockquote>
+<h2 id="进程管理命令">进程管理命令</h2>
+<blockquote>
+<p>top ：查看当前系统使用情况。</p>
+<p>ps：查看进程情况。</p>
+<p>ps aux：查看所有正在执行的进程。经常和grep配合使用。如ps aux | grep "top"</p>
+<p>lsof -i:port ：根据端口号查看进程。需要yum install lsof</p>
+<p>kill 进程号：杀死进程。</p>
+<p>kill -9 进程号：强制杀死进程。</p>
+<p>service xxx start：启动服务。</p>
+<p>service xxxx stop：关闭服务。</p>
+</blockquote>
+<h2 id="权限管理命令">权限管理命令</h2>
+<blockquote>
+<p>chmod xxx aaa：设置aaa的权限为xxx。第一个x为拥有者权限，第二个x为用户组权限，第三个x为其他组权限。如chmod 777 a.txt：表示将a.txt的权限均设为可读、可写、可执行。</p>
+</blockquote>
+<h2 id="软件安装命令">软件安装命令</h2>
+<blockquote>
+<p>yum install xxxx：安装xxxx</p>
+<p>yum install ifconfig -y：安装时自动同意。</p>
+</blockquote>
+<h2 id="安全相关命令">安全相关命令</h2>
+<blockquote>
+<p>systemctl disable firewalld ：关闭防火墙。</p>
+</blockquote>
+<h2 id="关机命令">关机命令</h2>
+<blockquote>
+<p>shutdown：关机</p>
+<p>reboot：重启</p>
+<p>poweroff：关机</p>
+<p>halt：进入系统停止的模式，屏幕可能保留一些信息，取决于电源管理模式。</p>
+<p>systemctl suspend：休眠</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>操作系统</category>
+      </categories>
+      <tags>
+        <tag>Linux指令</tag>
       </tags>
   </entry>
   <entry>
@@ -2462,208 +3137,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Linux介绍及基本指令</title>
-    <url>/2021/02/20/Linux/Linux%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%9F%BA%E6%9C%AC%E6%8C%87%E4%BB%A4/</url>
-    <content><![CDATA[<h1 id="linux介绍及基本指令">Linux介绍及基本指令</h1>
-<h2 id="linux区别">Linux区别</h2>
-<blockquote>
-<p>Ubantu：分为用户版和服务器版。</p>
-<p>​ 用户版，有着良好的用户界面，有强大的软件支持。</p>
-<p>​ 服务器版比较少用。</p>
-<p>Debian：系统十分稳定，内核非常小。</p>
-<p>RedHat：是一个商用的操作系统，性能非常好，软件支持也非常好。</p>
-<p>Centos：基本上相当于RedHat的复刻版本。免费。</p>
-</blockquote>
-<h2 id="根目录下各目录对应的功能">根目录下各目录对应的功能</h2>
-<h2 id="在linux中获取帮助">在linux中获取帮助</h2>
-<blockquote>
-<p>man 命令名：查看命令的操作说明</p>
-<p>命令行 --help：查看命令的语法</p>
-</blockquote>
-<h2 id="linux基本命令">Linux基本命令</h2>
-<blockquote>
-<p>ls：查看当前目录中所有文件及目录</p>
-<p>ll：查看当前目录内所有文件及目录详细信息。详细信息具体查看方式。以drwxr-xr-x为例(第一个字符拆出，然后每三个字符表示一个内容)：</p>
-<p>d：文件类型，目录。rwx：拥有者权限，可读，可写，可执行。r-x：用户组权限，可读，不可写，可执行。r-x：其他组权限，可读，不可写，可执行。</p>
-<p>具体文件类型有：d：路径。<em>-</em>：文件。 l ：连接(快捷方式)。b：表示可按块随机读写的设备。c：设备文件里的串行端口设备，如键盘、设备。</p>
-<p>表示权限的三个字符可以用0~7的数字表示。如rwx为7，r-x为5。</p>
-<p>ls -al：查看所有文件及目录包括隐藏目录。</p>
-<p>pwd：查看当前所在层级</p>
-<p>echo xxx：打印xxx</p>
-<p>date：查看日期</p>
-<p>cal：查看日历</p>
-<p>grep xxx：用于查看包含xxx的对象。</p>
-<p>curl 网址：向对应网址发出http请求。curl -i www.baidu.com ：向百度首页发出请求，会返回响应头。</p>
-<p>history：查看先前输入过的命令。</p>
-<p>df：查看磁盘使用情况。</p>
-</blockquote>
-<h2 id="文件基本命令">文件基本命令</h2>
-<blockquote>
-<p>vi xxx：打开临时记事本，基本可以认为是创建文件。</p>
-<p>mkdir xxx：创建文件夹</p>
-<p>rm -rf xxx：删除目录。</p>
-<p>cp a b ：把a文件复制到b处</p>
-<p>mv a b ：把a文件移动到b处（也可以当做重命名使用）</p>
-<p>tail -number xx：查看文件最后number行内容(可以用于监控日志使用tail -F/-f xxx)-F，-f分别为追踪文件名和追踪文件索引。</p>
-<p>cat xxx：查看文件内容，往往伴随着grep使用如 cat a.txt | grep "a:xxx"。</p>
-<p>less xxx：查看文件一页的内容。</p>
-<p>find xxx：查找文件(可以查找所有文件)。</p>
-<p>whereis xx：查找命令所在目录(只能查找二进制类的文件)。</p>
-<p>which xxx：在PATH变量指定的路径中搜索指定的系统命令的位置。</p>
-<p>sh xxx.sh：执行shell命令。这种执行sh文件不需要本身具有权限。</p>
-<p>path/xxx.sh：执行shell命令。sh文件本身需要有权限。(如./xxx.sh其中.表示当前目录)</p>
-</blockquote>
-<h2 id="文件解压缩">文件解压缩</h2>
-<blockquote>
-<p>zip -r 压缩后路径加名字 需要压缩的文件：压缩，如zip -r a.zip a.txt。这个命令需要yum install zip</p>
-<p>unzip -d 解压缩到的路径 解压缩的包：解压缩，如unzip -d . a.zip。这个命令需要yum install unzip。</p>
-<p>tar -cvf 压缩后路径加名字 需要压缩的文件：压缩，如tar -cvf a.txt。</p>
-<p>tar -zcvf 压缩后路径加名字 需要压缩的文件：压缩，如tar -zcvf a.txt。压缩后占的空间更少</p>
-<p>tar -xvf 解压缩到的路径 解压缩的包：解压缩，如tar -xvf a.txt。</p>
-<p>tar -zxvf 解压缩到的路径 解压缩的包：压缩，如tar -zxvf a.txt。</p>
-<p>tar的参数：c：表示create，即压缩，z：约等于zip，即打包后空间会更小，v：压缩后展示压缩包中文件名字。f：表示结束。x：extract，即解压缩。</p>
-<p>b：表示查看压缩包内容。其中c、x、b同时只能存在一个。</p>
-</blockquote>
-<h2 id="文件传输">文件传输</h2>
-<blockquote>
-<p>scp 目录加文件名 用户名@IP地址:目录加文件名：将文件传输利用网络传输到另一个服务器。如scp ./a.txt root@10.0.2.6:~/b.txt</p>
-</blockquote>
-<h2 id="进程管理命令">进程管理命令</h2>
-<blockquote>
-<p>top ：查看当前系统使用情况。</p>
-<p>ps：查看进程情况。</p>
-<p>ps aux：查看所有正在执行的进程。经常和grep配合使用。如ps aux | grep "top"</p>
-<p>lsof -i:port ：根据端口号查看进程。需要yum install lsof</p>
-<p>kill 进程号：杀死进程。</p>
-<p>kill -9 进程号：强制杀死进程。</p>
-<p>service xxx start：启动服务。</p>
-<p>service xxxx stop：关闭服务。</p>
-</blockquote>
-<h2 id="权限管理命令">权限管理命令</h2>
-<blockquote>
-<p>chmod xxx aaa：设置aaa的权限为xxx。第一个x为拥有者权限，第二个x为用户组权限，第三个x为其他组权限。如chmod 777 a.txt：表示将a.txt的权限均设为可读、可写、可执行。</p>
-</blockquote>
-<h2 id="软件安装命令">软件安装命令</h2>
-<blockquote>
-<p>yum install xxxx：安装xxxx</p>
-<p>yum install ifconfig -y：安装时自动同意。</p>
-</blockquote>
-<h2 id="安全相关命令">安全相关命令</h2>
-<blockquote>
-<p>systemctl disable firewalld ：关闭防火墙。</p>
-</blockquote>
-<h2 id="关机命令">关机命令</h2>
-<blockquote>
-<p>shutdown：关机</p>
-<p>reboot：重启</p>
-<p>poweroff：关机</p>
-<p>halt：进入系统停止的模式，屏幕可能保留一些信息，取决于电源管理模式。</p>
-<p>systemctl suspend：休眠</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>操作系统</category>
-      </categories>
-      <tags>
-        <tag>Linux指令</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Dubbo简单介绍</title>
-    <url>/2021/02/20/codeAnalyse/Dubbo/</url>
-    <content><![CDATA[<h1 id="dubbo">Dubbo</h1>
-<h2 id="rmi-和-rpc">RMI 和 RPC</h2>
-<blockquote>
-<p>RMI：远程方法调用，是java自带的API可以实现的，依赖JVM。客户端将要调用的方法和参数打包成辅助对象，通过网络socket，发送给服务端辅助对象，服务端接收后进行解包，找到真正被调用的方法，执行这个方法将执行结果，依次返回。服务端辅助对象进行打包，然后客户端辅助对象进行解包，结果返回给真正的调用者。</p>
-<p>IPC：进程间通信。进程是计算机系统资源分配的最小单位，每个进程都是资源隔离的。</p>
-<p>LPC：本地过程调用。</p>
-<p>RPC：远程过程调用。</p>
-</blockquote>
-<h2 id="常用rpc框架">常用RPC框架</h2>
-<h3 id="dubbo-1">Dubbo</h3>
-<blockquote>
-<p>阿里开发，基于Spring和Netty，是当前使用最广泛的RPC框架。</p>
-</blockquote>
-<h3 id="brpc">BRPC</h3>
-<blockquote>
-<p>百度开发，"baidu-rpc"，支持多种协议，性能优良。</p>
-</blockquote>
-<h3 id="grpc">GRPC</h3>
-<blockquote>
-<p>谷歌开发，基于Netty，服务于TensorFlow的底层通信。</p>
-</blockquote>
-<h3 id="thrift">Thrift</h3>
-<blockquote>
-<p>Facebook开发。</p>
-</blockquote>
-<h2 id="注册中心---zookeeper">注册中心 - Zookeeper</h2>
-]]></content>
-      <categories>
-        <category>框架入门</category>
-      </categories>
-      <tags>
-        <tag>并发</tag>
-        <tag>Dubbo</tag>
-        <tag>分布式</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SpringBoot原理分析</title>
-    <url>/2021/02/20/codeAnalyse/SpringBoot%E5%8E%9F%E7%90%86/</url>
-    <content><![CDATA[<h1 id="springboot原理">SpringBoot原理</h1>
-<h2 id="springbootapplication"><span class="citation" data-cites="SpringBootApplication">@SpringBootApplication</span></h2>
-<blockquote>
-<p>本质上是</p>
-<p><span class="citation" data-cites="SpringBootConfiguration">@SpringBootConfiguration</span>：实际是@Configuration</p>
-<p><span class="citation" data-cites="EnableAutoConfiguration">@EnableAutoConfiguration</span>：由@AutoConfigurationPackage、<span class="citation" data-cites="Import">@Import</span>({AutoConfigurationImportSelector.class})组成。</p>
-<p><span class="citation" data-cites="ComponentScan">@ComponentScan</span>：启用自动扫描，默认扫描所在类的同级类和同级目录下的所有类。</p>
-<p>即这个注解实现了注册配置类、启用自动配置、启用自动扫描。</p>
-</blockquote>
-<h2 id="springapplication.runtestapplication.classargs的实际流程">SpringApplication.run(TestApplication.class,args)的实际流程</h2>
-<blockquote>
-<p>利用传入的类创建一个SpringApplication实例执行了run方法。</p>
-<h3 id="具体创建实例的流程">具体创建实例的流程：</h3>
-</blockquote>
-<blockquote>
-<figure>
-<img src="/2021/02/20/codeAnalyse/SpringBoot%E5%8E%9F%E7%90%86/SpringBootAplication初始化过程.png" alt="SpringBootAplication初始化过程"><figcaption aria-hidden="true">SpringBootAplication初始化过程</figcaption>
-</figure>
-<p>倒数第四行加载了web应用的配置，具体流程是使用默认的类加载器去查找当前是否使用了对应的类。结果可以得出NONE、SERVLET、REACTIVE。</p>
-<p>倒数三行之前都是加载主配置。</p>
-<p>倒数第三、二行分别是创建初始化器和监听器。创建的流程均为先获取到类加载器，然后查找当前项目中所使用到的初始化器、监听器类名，再利用类名创建类实例，最后将这些实例按优先级排序即可。</p>
-<p>创建类实例的方法即为通过反射调用类的构造方法创建。它们都使用了getSpringFactoriesInstances方法。这个方法是先通过读取META-INF/spring.factories文件内容来获取配置，并将配置放入map中。实际中会读取到项目所有jar包中的META-INF/spring.factories。然后利用传入的类名进行匹配找到所需的初始化器/监听器。</p>
-<p>按优先级排序，Spring则是通过继承OrderComparator(实现了Comparator接口的类来完成的)，这里利用了模板方法模式，通过完成了findOrder方法，通过比较注解的优先级的方式来findOrder，若未设定优先级则设为最低优先级LOWEST_PRECEDENCE这个值为Integer.MAX_VALUE。</p>
-<ul>
-<li>（1）先判断有没有实现PriorityOrdered，实现PriorityOrdered比没实现的有高优先级</li>
-<li>（2）第一步如果比较不出来，判断有没有实现Ordered，如果实现了，取实现方法的int值比较</li>
-<li>前两步都是OrderComparator的默认实现。</li>
-<li>（3）如果没有实现Ordered，判断有没有org.springframework.core.annotation.Order注解， 有注解，取注解上的order值，进行比较</li>
-<li>（4）如果没有Order注解，判断有没有javax.annotation.Priority注解，取注解上的值比较</li>
-<li>若以上都没找到则spring会返回null</li>
-<li>（5）OrderComparator接收到null，返回Integer.MAX_VALUE即LOWEST_PRECEDENCE，值越大优先级越低</li>
-</ul>
-<p>最后一行找到主程序类是通过获取当前程序运行栈，通过找到栈中执行main方法的类，得到主程序类名。</p>
-</blockquote>
-<h3 id="创建实例后执行run方法的流程">创建实例后执行run方法的流程</h3>
-<blockquote>
-
-</blockquote>
-<h2 id="自动配置原理">自动配置原理</h2>
-<blockquote>
-<p><span class="citation" data-cites="EnableAutoConfiguration">@EnableAutoConfiguration</span> = <span class="citation" data-cites="AutoConfigurationPackage">@AutoConfigurationPackage</span> + <span class="citation" data-cites="Import">@Import</span>({AutoConfigurationImportSelector.class})</p>
-<p><span class="citation" data-cites="AutoConfigurationPackage">@AutoConfigurationPackage</span> = <span class="citation" data-cites="Import">@Import</span>({Registrar.class})</p>
-<p>故@EnableAutoConfiguration实际上相当于引入了AutoConfigurationImportSelector和Registrar。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>源码分析</category>
-      </categories>
-      <tags>
-        <tag>Springboot</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>http基本知识及改进</title>
     <url>/2021/02/20/codeAnalyse/http%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86%E5%8F%8A%E6%94%B9%E8%BF%9B/</url>
     <content><![CDATA[<h1 id="http基本知识及改进">http基本知识及改进</h1>
@@ -2724,6 +3197,100 @@
       </categories>
       <tags>
         <tag>网络</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SpringBoot原理分析</title>
+    <url>/2021/02/20/codeAnalyse/SpringBoot%E5%8E%9F%E7%90%86/</url>
+    <content><![CDATA[<h1 id="springboot原理">SpringBoot原理</h1>
+<h2 id="springbootapplication"><span class="citation" data-cites="SpringBootApplication">@SpringBootApplication</span></h2>
+<blockquote>
+<p>本质上是</p>
+<p><span class="citation" data-cites="SpringBootConfiguration">@SpringBootConfiguration</span>：实际是@Configuration</p>
+<p><span class="citation" data-cites="EnableAutoConfiguration">@EnableAutoConfiguration</span>：由@AutoConfigurationPackage、<span class="citation" data-cites="Import">@Import</span>({AutoConfigurationImportSelector.class})组成。</p>
+<p><span class="citation" data-cites="ComponentScan">@ComponentScan</span>：启用自动扫描，默认扫描所在类的同级类和同级目录下的所有类。</p>
+<p>即这个注解实现了注册配置类、启用自动配置、启用自动扫描。</p>
+</blockquote>
+<h2 id="springapplication.runtestapplication.classargs的实际流程">SpringApplication.run(TestApplication.class,args)的实际流程</h2>
+<blockquote>
+<p>利用传入的类创建一个SpringApplication实例执行了run方法。</p>
+<h3 id="具体创建实例的流程">具体创建实例的流程：</h3>
+</blockquote>
+<blockquote>
+<figure>
+<img src="/2021/02/20/codeAnalyse/SpringBoot%E5%8E%9F%E7%90%86/SpringBootAplication初始化过程.png" alt="SpringBootAplication初始化过程"><figcaption aria-hidden="true">SpringBootAplication初始化过程</figcaption>
+</figure>
+<p>倒数第四行加载了web应用的配置，具体流程是使用默认的类加载器去查找当前是否使用了对应的类。结果可以得出NONE、SERVLET、REACTIVE。</p>
+<p>倒数三行之前都是加载主配置。</p>
+<p>倒数第三、二行分别是创建初始化器和监听器。创建的流程均为先获取到类加载器，然后查找当前项目中所使用到的初始化器、监听器类名，再利用类名创建类实例，最后将这些实例按优先级排序即可。</p>
+<p>创建类实例的方法即为通过反射调用类的构造方法创建。它们都使用了getSpringFactoriesInstances方法。这个方法是先通过读取META-INF/spring.factories文件内容来获取配置，并将配置放入map中。实际中会读取到项目所有jar包中的META-INF/spring.factories。然后利用传入的类名进行匹配找到所需的初始化器/监听器。</p>
+<p>按优先级排序，Spring则是通过继承OrderComparator(实现了Comparator接口的类来完成的)，这里利用了模板方法模式，通过完成了findOrder方法，通过比较注解的优先级的方式来findOrder，若未设定优先级则设为最低优先级LOWEST_PRECEDENCE这个值为Integer.MAX_VALUE。</p>
+<ul>
+<li>（1）先判断有没有实现PriorityOrdered，实现PriorityOrdered比没实现的有高优先级</li>
+<li>（2）第一步如果比较不出来，判断有没有实现Ordered，如果实现了，取实现方法的int值比较</li>
+<li>前两步都是OrderComparator的默认实现。</li>
+<li>（3）如果没有实现Ordered，判断有没有org.springframework.core.annotation.Order注解， 有注解，取注解上的order值，进行比较</li>
+<li>（4）如果没有Order注解，判断有没有javax.annotation.Priority注解，取注解上的值比较</li>
+<li>若以上都没找到则spring会返回null</li>
+<li>（5）OrderComparator接收到null，返回Integer.MAX_VALUE即LOWEST_PRECEDENCE，值越大优先级越低</li>
+</ul>
+<p>最后一行找到主程序类是通过获取当前程序运行栈，通过找到栈中执行main方法的类，得到主程序类名。</p>
+</blockquote>
+<h3 id="创建实例后执行run方法的流程">创建实例后执行run方法的流程</h3>
+<blockquote>
+
+</blockquote>
+<h2 id="自动配置原理">自动配置原理</h2>
+<blockquote>
+<p><span class="citation" data-cites="EnableAutoConfiguration">@EnableAutoConfiguration</span> = <span class="citation" data-cites="AutoConfigurationPackage">@AutoConfigurationPackage</span> + <span class="citation" data-cites="Import">@Import</span>({AutoConfigurationImportSelector.class})</p>
+<p><span class="citation" data-cites="AutoConfigurationPackage">@AutoConfigurationPackage</span> = <span class="citation" data-cites="Import">@Import</span>({Registrar.class})</p>
+<p>故@EnableAutoConfiguration实际上相当于引入了AutoConfigurationImportSelector和Registrar。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>源码分析</category>
+      </categories>
+      <tags>
+        <tag>Springboot</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Dubbo简单介绍</title>
+    <url>/2021/02/20/codeAnalyse/Dubbo/</url>
+    <content><![CDATA[<h1 id="dubbo">Dubbo</h1>
+<h2 id="rmi-和-rpc">RMI 和 RPC</h2>
+<blockquote>
+<p>RMI：远程方法调用，是java自带的API可以实现的，依赖JVM。客户端将要调用的方法和参数打包成辅助对象，通过网络socket，发送给服务端辅助对象，服务端接收后进行解包，找到真正被调用的方法，执行这个方法将执行结果，依次返回。服务端辅助对象进行打包，然后客户端辅助对象进行解包，结果返回给真正的调用者。</p>
+<p>IPC：进程间通信。进程是计算机系统资源分配的最小单位，每个进程都是资源隔离的。</p>
+<p>LPC：本地过程调用。</p>
+<p>RPC：远程过程调用。</p>
+</blockquote>
+<h2 id="常用rpc框架">常用RPC框架</h2>
+<h3 id="dubbo-1">Dubbo</h3>
+<blockquote>
+<p>阿里开发，基于Spring和Netty，是当前使用最广泛的RPC框架。</p>
+</blockquote>
+<h3 id="brpc">BRPC</h3>
+<blockquote>
+<p>百度开发，"baidu-rpc"，支持多种协议，性能优良。</p>
+</blockquote>
+<h3 id="grpc">GRPC</h3>
+<blockquote>
+<p>谷歌开发，基于Netty，服务于TensorFlow的底层通信。</p>
+</blockquote>
+<h3 id="thrift">Thrift</h3>
+<blockquote>
+<p>Facebook开发。</p>
+</blockquote>
+<h2 id="注册中心---zookeeper">注册中心 - Zookeeper</h2>
+]]></content>
+      <categories>
+        <category>框架入门</category>
+      </categories>
+      <tags>
+        <tag>并发</tag>
+        <tag>分布式</tag>
+        <tag>Dubbo</tag>
       </tags>
   </entry>
   <entry>
@@ -2979,9 +3546,9 @@
         <category>源码分析</category>
       </categories>
       <tags>
+        <tag>数据库</tag>
         <tag>Mybatis</tag>
         <tag>orm</tag>
-        <tag>数据库</tag>
       </tags>
   </entry>
   <entry>
@@ -3313,171 +3880,6 @@
       </tags>
   </entry>
   <entry>
-    <title>SpringBoot常用配置</title>
-    <url>/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/</url>
-    <content><![CDATA[<h1 id="springboot常用配置">SpringBoot常用配置</h1>
-<h2 id="选择不同配置">选择不同配置</h2>
-<blockquote>
-<p>也可以通过在类中使用@Profile("xx")来表示这个类只有在xx为active的情况下才可使用。</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/springboot多配置文件设置启用.png" alt="springboot多配置文件设置启用"><figcaption aria-hidden="true">springboot多配置文件设置启用</figcaption>
-</figure>
-</blockquote>
-<h2 id="自动加载配置文件的内容">自动加载配置文件的内容</h2>
-<blockquote>
-<p><span class="citation" data-cites="Value">@Value</span></p>
-<p><span class="citation" data-cites="ConfigurationProperties">@ConfigurationProperties</span>(prefix = "spring.datasource.druid.write") 使用该注解需要引入且要启用@EnableConfigurationProperties(使用前面一个注解的类.class)</p>
-<p><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;&#x2F;groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-configuration-processor&lt;&#x2F;artifactId&gt;</span><br><span class="line">    &lt;optional&gt;true&lt;&#x2F;optional&gt;</span><br><span class="line">&lt;&#x2F;dependency&gt;</span><br></pre></td></tr></table></figure></p>
-<p><span class="citation" data-cites="PropertySource">@PropertySource</span></p>
-</blockquote>
-<h2 id="配置文件的加载顺序下覆盖上">配置文件的加载顺序(下覆盖上)</h2>
-<blockquote>
-<ol type="1">
-<li>Application properties packaged inside your jar (application.properties and YAML variants).</li>
-<li>Profile-specific application properties packaged inside your jar (application-{profile}.properties and YAML variants).</li>
-<li>Application properties outside of your packaged jar (application.properties and YAML variants)</li>
-<li>Profile-specific application properties outside of your packaged jar (application-{profile}.properties and YAML variants).</li>
-</ol>
-</blockquote>
-<h2 id="自动加载的-application.properties-的加载顺序下覆盖上">自动加载的 application.properties 的加载顺序(下覆盖上)</h2>
-<blockquote>
-<ol type="1">
-<li><p>The classpath root</p></li>
-<li><p>The classpath /config package</p></li>
-<li><p>The current directory</p></li>
-<li><p>The /config subdirectory in the current directory</p></li>
-<li><p>Immediate child directories of the /config subdirectory</p></li>
-</ol>
-<p>4、5的差别就是如果config目录的根目录里有application.properties，则会将config子目录的application.properties覆盖。</p>
-<p>而classpath中springboot不会自动扫描config子目录中的目录。</p>
-<p>可以通过修改spring.config.name来修改默认配置文件名。</p>
-<p>修改spring.config.location 可以修改springboot获取配置文件的位置。</p>
-<p>修改spring.config.additional-location可以在springboot默认获取配置文件的位置的基础上补充一些获取配置文件的位置。optional: 前缀</p>
-</blockquote>
-<h2 id="可以使用来获取外部目录classpath中不能使用">可以使用*来获取外部目录，classpath中不能使用*</h2>
-<h2 id="可以使用---在.pro配置文件中划分逻辑页">可以使用#---在.pro配置文件中划分逻辑页</h2>
-<h2 id="使用---在.yml配置文件划分逻辑页">使用---在.yml配置文件划分逻辑页</h2>
-<h2 id="在多个配置文件中均存在同一个list的值则只会去最高优先级的list值">在多个配置文件中均存在同一个list的值，则只会去最高优先级的list值</h2>
-<h2 id="在多个配置文件中均存在同一个map的值则使用互补配置的方式构造map">在多个配置文件中均存在同一个Map的值，则使用互补配置的方式构造Map</h2>
-<h2 id="spring自动注入的注解">spring自动注入的注解</h2>
-<blockquote>
-<p><span class="citation" data-cites="Component">@Component</span>("name")将一个类生成一个Bean实例并用spring管理。<span class="citation" data-cites="Controller">@Controller</span>、<span class="citation" data-cites="Repository">@Repository</span>、<span class="citation" data-cites="Service都是类似的功能">@Service都是类似的功能</span>。这些注解要放在类上。</p>
-<p><span class="citation" data-cites="Bean">@Bean</span>("name")将一个方法返回的对象实例用spring管理。该注解放在方法上。</p>
-<p><span class="citation" data-cites="Autowired">@Autowired</span> 自动注入。该注解可以放在构造器方法、方法、参数、属性、注解上。</p>
-<p><span class="citation" data-cites="Primary">@Primary</span> 写在类上或方法上。为了消除自动装配的歧义性，如spring管理了两个都实现了同一父类的类，则存在@Primary 的类会被最先调用。</p>
-<p><span class="citation" data-cites="Qualifier">@Qualifier</span>("name")写在变量、方法、参数、类上、注解上，可以根据传入的name按名字查找spring管理的类。</p>
-</blockquote>
-<h2 id="spring监听器">Spring监听器</h2>
-<blockquote>
-<p>使用过程:</p>
-<p>​ 自定义事件，继承org.springframework.context.ApplicationEvent类。</p>
-<p>​ 自定义事件监听器，实现org.springframework.context.ApplicationListener接口。</p>
-<p>​ 在spring容器中发布事件。</p>
-<p>实现监听的方式：</p>
-<p>​ 自定义类实现ApplicationListener，在主函数中装载监听。</p>
-<p>​ 自定义类实现ApplicationListener，在接口上加上@Component注解</p>
-<p>​ 自定义类不实现接口，在对应方法上标明@EventListener注解。</p>
-<p>​ 自定义类实现ApplicationListener，在application.properties中配置context.listener.classes</p>
-</blockquote>
-<h2 id="spring内置容器的配置">Spring内置容器的配置</h2>
-<blockquote>
-<p>修改配置：</p>
-<ol type="1">
-<li><p>可以在application.properties中按server.xxx:的方式修改</p></li>
-<li><p>创建一个配置类通过编写public WebServerFactoryCustomizer<ConfigurableWebServerFactory> customizer()方法来设置。</ConfigurableWebServerFactory></p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/内嵌服务器配置修改.png" alt="内嵌服务器配置修改"><figcaption aria-hidden="true">内嵌服务器配置修改</figcaption>
-</figure></li>
-</ol>
-<p>更换容器：</p>
-<p>​ 通过先将start内的容器依赖去除然后导入新依赖即可。</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/修改内嵌容器.png" alt="修改内嵌容器"><figcaption aria-hidden="true">修改内嵌容器</figcaption>
-</figure>
-</blockquote>
-<h2 id="过滤器和拦截器">过滤器和拦截器</h2>
-<blockquote>
-<p>过滤器：在进入servlet前过滤。</p>
-<p>实现方式：</p>
-<p>​ 创建类实现接口javax.servlet.Filter，加上@Component，然后使用一个如下的配置类注入spring容器。</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/filterConfig.png" alt="filterConfig"><figcaption aria-hidden="true">filterConfig</figcaption>
-</figure>
-<p>​ 创建类实现接口javax.servlet.Filter，加上@WebFilter，然后在主启动类中加上@ServletComponentScan注解。</p>
-<p>拦截器：拦截方法。</p>
-<p>​ 创建类实现HandlerInterceptor接口，然后创建配置类实现WebMvcConfigurer接口，配置类如下。</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/interceptorConfig.png" alt="interceptorConfig"><figcaption aria-hidden="true">interceptorConfig</figcaption>
-</figure>
-</blockquote>
-<h2 id="错误及异常处理">错误及异常处理</h2>
-<h3 id="数值校验">数值校验</h3>
-<blockquote>
-<p>在参数前加入@Valid/<span class="citation" data-cites="Validated注解">@Validated注解</span>，然后跟上BindingResult对象即可获取错误时的错误信息。如图</p>
-<p>利用配置文件ValidationMessages.properties中设置发生错误的提示信息。在bean的注解属性中通过{key}获取属性。</p>
-</blockquote>
-<h3 id="错误页指定">错误页指定</h3>
-<blockquote>
-<p>用到了再查</p>
-</blockquote>
-<h3 id="全局异常处理">全局异常处理</h3>
-<blockquote>
-<p>实现一个异常处理类并加上@ControllerAdvice注解。如图</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/全局异常处理.png" alt="全局异常处理"><figcaption aria-hidden="true">全局异常处理</figcaption>
-</figure>
-</blockquote>
-<h2 id="日志">日志</h2>
-<h3 id="日志文件输出">日志文件输出</h3>
-<blockquote>
-<p>在application中添加logging.file.path = xxx 默认日志名为spring.log</p>
-<p>或添加logging.file.name = xxxx 默认输出路径为项目当前路径。</p>
-<p>二者不能同时使用。</p>
-</blockquote>
-<h3 id="日志级别控制">日志级别控制</h3>
-<blockquote>
-<p>日志级别有TRACE、DEBUG、INFO、WARN、ERROR、FATAL、OFF。</p>
-<p>logging.level.包名 = xxx级别</p>
-<p>logging.level.root = 设置全局日志级别</p>
-</blockquote>
-<h2 id="文档生成">文档生成</h2>
-<h3 id="swaggle">swaggle</h3>
-<blockquote>
-<figure class="highlight"><table><tr><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;io.springfox&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;springfox-swagger2&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.9.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line">		</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;io.springfox&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;springfox-swagger-ui&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.9.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableSwagger2</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SwaggerConfig</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Docket <span class="title">api</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Docket(DocumentationType.SWAGGER_2).select()</span><br><span class="line">                .apis(RequestHandlerSelectors.any())</span><br><span class="line">                .paths(PathSelectors.any())</span><br><span class="line">                .build();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>访问http://localhost:8080/v2/api-docs拿到api的json</p>
-<p>访问http://localhost:8080/swagger-ui.html获取页面</p>
-</blockquote>
-<h2 id="监控">监控</h2>
-<blockquote>
-<p>本质上是通过log收集信息，然后利用信息分析。</p>
-</blockquote>
-<h2 id="缓存">缓存</h2>
-<blockquote>
-<p><span class="citation" data-cites="Cacheable">@Cacheable</span>(value = "xx", key = "zz", condition = "yyy")</p>
-<p>​ value 表示缓存名</p>
-<p>​ key为缓存键，需要用SPEL写</p>
-<p>​ condition为缓存触发的条件，需要用SPEL写</p>
-<p>​ 缓存值为对应方法的返回值</p>
-<p><span class="citation" data-cites="CacheEvict">@CacheEvict</span>(beforeInvocation = true表示在方法触发前就移除了缓存) 移除缓存</p>
-<p><span class="citation" data-cites="CachePut">@CachePut</span> 添加缓存</p>
-</blockquote>
-<h2 id="微服务">微服务</h2>
-<blockquote>
-<p>注册中心</p>
-<p>服务提供者</p>
-<p>服务追踪</p>
-<p>服务治理</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>框架入门</category>
-      </categories>
-      <tags>
-        <tag>Springboot</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>数据库连接池</title>
     <url>/2021/02/20/codeAnalyse/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E6%B1%A0/</url>
     <content><![CDATA[<h1 id="数据库连接池">数据库连接池</h1>
@@ -3519,6 +3921,67 @@
       </categories>
       <tags>
         <tag>数据库</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>物理层</title>
+    <url>/2021/02/20/computerNetwork/%E7%AC%AC2%E7%AB%A0-%E7%89%A9%E7%90%86%E5%B1%82/</url>
+    <content><![CDATA[<h1 id="物理层">物理层</h1>
+<h2 id="物理层的基本概念">物理层的基本概念</h2>
+<blockquote>
+<p>尼奎斯特定理 $ C = 2Blog_2V $ 。C为最大数据速率，B为带宽频率，V为离散等级。</p>
+<p>香农定理<span class="math inline">\(C = B log_2(1+S/N)\)</span> 。S/N是信噪比，<span class="math inline">\(10log_{10}S/N\)</span>为分贝，B为带宽频率，C为最大数据速率。</p>
+</blockquote>
+<h3 id="物理层的主要任务">物理层的主要任务</h3>
+<p>物理层解决如何在连接各种计算机的传输媒体上传输数据比特流。</p>
+<p>确定与传输媒体的接口的一些特性:</p>
+<blockquote>
+<p>机械特性:如接口形状、大小、引线数目</p>
+<p>电气特性:如规定电压范围</p>
+<p>功能特性:如规定-5V表示0</p>
+<p>过程特性/规程特性:规定建立连接时各个相关部件的工作步骤</p>
+</blockquote>
+<h2 id="数据通信的基础知识">数据通信的基础知识</h2>
+<blockquote>
+<p>单向通信/单工通信 ---------只能有一个方向的通信而没有反方向的交互，如电台</p>
+<p>半双工通信---------通信双方都可以发送消息，但不能双方同时发送。如对讲机</p>
+<p>全双工通信--------通信的双方-可以同时发送和接收消息。如电话</p>
+<p>数据比特流传输距离较短,用解调器变为模拟信号后传输距离会加长。</p>
+<p>数据--------传送消息的实体</p>
+<p>信号--------数据的电气/电磁表现</p>
+<p>​ 模拟信号--------连续</p>
+<p>​ 数字信号---------离散</p>
+<p>码元----------在使用时间域的波形表示数字信号时，代表不同离散数值的基本波形</p>
+<p>信号调制方法:调幅、调频、调相</p>
+</blockquote>
+<h2 id="物理层下的传输媒体">物理层下的传输媒体</h2>
+<h3 id="导向传输媒体">导向传输媒体</h3>
+<blockquote>
+<p><span class="math display">\[
+常用传输频率10^4-------- 10^{16}
+\]</span></p>
+<p>双绞线:</p>
+<p>​ 屏蔽双绞线STP</p>
+<p>​ 无屏蔽双绞线UTP</p>
+<p>同轴电缆:</p>
+<p>​ 50Ω同轴电缆用于数字传输，基带同轴电缆</p>
+<p>​ 75Ω同轴电缆用于模拟传输，宽带同轴电缆</p>
+</blockquote>
+<h2 id="信道复用技术">信道复用技术</h2>
+<blockquote>
+<p>频分复用:每个用户使用不同的频率传递。</p>
+<p>时分复用:将单位时间划分为若干个时间片，每个用户使用对应的时间片传递。 统计时分复用在发送数据时在数据中添加标记，接收方根据标记判定谁接收并将标记去除。</p>
+<p>波分复用:每个用户使用不同的波长传递。</p>
+<p>码分复用:自己的码片乘积为1，同他人码片乘积为0，传输的信号为原数据同对应码片的乘积，总的传输信号为各个设备传输的信号之和，接收者只要将总信号同自己的码片相乘即可得到需要接收的值。</p>
+<p>码分复用的缺点:设备数变多后码片需要越多</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>计算机网络</category>
+      </categories>
+      <tags>
+        <tag>网络</tag>
       </tags>
   </entry>
   <entry>
@@ -3698,64 +4161,168 @@
       </tags>
   </entry>
   <entry>
-    <title>物理层</title>
-    <url>/2021/02/20/computerNetwork/%E7%AC%AC2%E7%AB%A0-%E7%89%A9%E7%90%86%E5%B1%82/</url>
-    <content><![CDATA[<h1 id="物理层">物理层</h1>
-<h2 id="物理层的基本概念">物理层的基本概念</h2>
+    <title>SpringBoot常用配置</title>
+    <url>/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/</url>
+    <content><![CDATA[<h1 id="springboot常用配置">SpringBoot常用配置</h1>
+<h2 id="选择不同配置">选择不同配置</h2>
 <blockquote>
-<p>尼奎斯特定理 $ C = 2Blog_2V $ 。C为最大数据速率，B为带宽频率，V为离散等级。</p>
-<p>香农定理<span class="math inline">\(C = B log_2(1+S/N)\)</span> 。S/N是信噪比，<span class="math inline">\(10log_{10}S/N\)</span>为分贝，B为带宽频率，C为最大数据速率。</p>
+<p>也可以通过在类中使用@Profile("xx")来表示这个类只有在xx为active的情况下才可使用。</p>
+<figure>
+<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/springboot多配置文件设置启用.png" alt="springboot多配置文件设置启用"><figcaption aria-hidden="true">springboot多配置文件设置启用</figcaption>
+</figure>
 </blockquote>
-<h3 id="物理层的主要任务">物理层的主要任务</h3>
-<p>物理层解决如何在连接各种计算机的传输媒体上传输数据比特流。</p>
-<p>确定与传输媒体的接口的一些特性:</p>
+<h2 id="自动加载配置文件的内容">自动加载配置文件的内容</h2>
 <blockquote>
-<p>机械特性:如接口形状、大小、引线数目</p>
-<p>电气特性:如规定电压范围</p>
-<p>功能特性:如规定-5V表示0</p>
-<p>过程特性/规程特性:规定建立连接时各个相关部件的工作步骤</p>
+<p><span class="citation" data-cites="Value">@Value</span></p>
+<p><span class="citation" data-cites="ConfigurationProperties">@ConfigurationProperties</span>(prefix = "spring.datasource.druid.write") 使用该注解需要引入且要启用@EnableConfigurationProperties(使用前面一个注解的类.class)</p>
+<p><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;&#x2F;groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-configuration-processor&lt;&#x2F;artifactId&gt;</span><br><span class="line">    &lt;optional&gt;true&lt;&#x2F;optional&gt;</span><br><span class="line">&lt;&#x2F;dependency&gt;</span><br></pre></td></tr></table></figure></p>
+<p><span class="citation" data-cites="PropertySource">@PropertySource</span></p>
 </blockquote>
-<h2 id="数据通信的基础知识">数据通信的基础知识</h2>
+<h2 id="配置文件的加载顺序下覆盖上">配置文件的加载顺序(下覆盖上)</h2>
 <blockquote>
-<p>单向通信/单工通信 ---------只能有一个方向的通信而没有反方向的交互，如电台</p>
-<p>半双工通信---------通信双方都可以发送消息，但不能双方同时发送。如对讲机</p>
-<p>全双工通信--------通信的双方-可以同时发送和接收消息。如电话</p>
-<p>数据比特流传输距离较短,用解调器变为模拟信号后传输距离会加长。</p>
-<p>数据--------传送消息的实体</p>
-<p>信号--------数据的电气/电磁表现</p>
-<p>​ 模拟信号--------连续</p>
-<p>​ 数字信号---------离散</p>
-<p>码元----------在使用时间域的波形表示数字信号时，代表不同离散数值的基本波形</p>
-<p>信号调制方法:调幅、调频、调相</p>
+<ol type="1">
+<li>Application properties packaged inside your jar (application.properties and YAML variants).</li>
+<li>Profile-specific application properties packaged inside your jar (application-{profile}.properties and YAML variants).</li>
+<li>Application properties outside of your packaged jar (application.properties and YAML variants)</li>
+<li>Profile-specific application properties outside of your packaged jar (application-{profile}.properties and YAML variants).</li>
+</ol>
 </blockquote>
-<h2 id="物理层下的传输媒体">物理层下的传输媒体</h2>
-<h3 id="导向传输媒体">导向传输媒体</h3>
+<h2 id="自动加载的-application.properties-的加载顺序下覆盖上">自动加载的 application.properties 的加载顺序(下覆盖上)</h2>
 <blockquote>
-<p><span class="math display">\[
-常用传输频率10^4-------- 10^{16}
-\]</span></p>
-<p>双绞线:</p>
-<p>​ 屏蔽双绞线STP</p>
-<p>​ 无屏蔽双绞线UTP</p>
-<p>同轴电缆:</p>
-<p>​ 50Ω同轴电缆用于数字传输，基带同轴电缆</p>
-<p>​ 75Ω同轴电缆用于模拟传输，宽带同轴电缆</p>
+<ol type="1">
+<li><p>The classpath root</p></li>
+<li><p>The classpath /config package</p></li>
+<li><p>The current directory</p></li>
+<li><p>The /config subdirectory in the current directory</p></li>
+<li><p>Immediate child directories of the /config subdirectory</p></li>
+</ol>
+<p>4、5的差别就是如果config目录的根目录里有application.properties，则会将config子目录的application.properties覆盖。</p>
+<p>而classpath中springboot不会自动扫描config子目录中的目录。</p>
+<p>可以通过修改spring.config.name来修改默认配置文件名。</p>
+<p>修改spring.config.location 可以修改springboot获取配置文件的位置。</p>
+<p>修改spring.config.additional-location可以在springboot默认获取配置文件的位置的基础上补充一些获取配置文件的位置。optional: 前缀</p>
 </blockquote>
-<h2 id="信道复用技术">信道复用技术</h2>
+<h2 id="可以使用来获取外部目录classpath中不能使用">可以使用*来获取外部目录，classpath中不能使用*</h2>
+<h2 id="可以使用---在.pro配置文件中划分逻辑页">可以使用#---在.pro配置文件中划分逻辑页</h2>
+<h2 id="使用---在.yml配置文件划分逻辑页">使用---在.yml配置文件划分逻辑页</h2>
+<h2 id="在多个配置文件中均存在同一个list的值则只会去最高优先级的list值">在多个配置文件中均存在同一个list的值，则只会去最高优先级的list值</h2>
+<h2 id="在多个配置文件中均存在同一个map的值则使用互补配置的方式构造map">在多个配置文件中均存在同一个Map的值，则使用互补配置的方式构造Map</h2>
+<h2 id="spring自动注入的注解">spring自动注入的注解</h2>
 <blockquote>
-<p>频分复用:每个用户使用不同的频率传递。</p>
-<p>时分复用:将单位时间划分为若干个时间片，每个用户使用对应的时间片传递。 统计时分复用在发送数据时在数据中添加标记，接收方根据标记判定谁接收并将标记去除。</p>
-<p>波分复用:每个用户使用不同的波长传递。</p>
-<p>码分复用:自己的码片乘积为1，同他人码片乘积为0，传输的信号为原数据同对应码片的乘积，总的传输信号为各个设备传输的信号之和，接收者只要将总信号同自己的码片相乘即可得到需要接收的值。</p>
-<p>码分复用的缺点:设备数变多后码片需要越多</p>
+<p><span class="citation" data-cites="Component">@Component</span>("name")将一个类生成一个Bean实例并用spring管理。<span class="citation" data-cites="Controller">@Controller</span>、<span class="citation" data-cites="Repository">@Repository</span>、<span class="citation" data-cites="Service都是类似的功能">@Service都是类似的功能</span>。这些注解要放在类上。</p>
+<p><span class="citation" data-cites="Bean">@Bean</span>("name")将一个方法返回的对象实例用spring管理。该注解放在方法上。</p>
+<p><span class="citation" data-cites="Autowired">@Autowired</span> 自动注入。该注解可以放在构造器方法、方法、参数、属性、注解上。</p>
+<p><span class="citation" data-cites="Primary">@Primary</span> 写在类上或方法上。为了消除自动装配的歧义性，如spring管理了两个都实现了同一父类的类，则存在@Primary 的类会被最先调用。</p>
+<p><span class="citation" data-cites="Qualifier">@Qualifier</span>("name")写在变量、方法、参数、类上、注解上，可以根据传入的name按名字查找spring管理的类。</p>
+</blockquote>
+<h2 id="spring监听器">Spring监听器</h2>
+<blockquote>
+<p>使用过程:</p>
+<p>​ 自定义事件，继承org.springframework.context.ApplicationEvent类。</p>
+<p>​ 自定义事件监听器，实现org.springframework.context.ApplicationListener接口。</p>
+<p>​ 在spring容器中发布事件。</p>
+<p>实现监听的方式：</p>
+<p>​ 自定义类实现ApplicationListener，在主函数中装载监听。</p>
+<p>​ 自定义类实现ApplicationListener，在接口上加上@Component注解</p>
+<p>​ 自定义类不实现接口，在对应方法上标明@EventListener注解。</p>
+<p>​ 自定义类实现ApplicationListener，在application.properties中配置context.listener.classes</p>
+</blockquote>
+<h2 id="spring内置容器的配置">Spring内置容器的配置</h2>
+<blockquote>
+<p>修改配置：</p>
+<ol type="1">
+<li><p>可以在application.properties中按server.xxx:的方式修改</p></li>
+<li><p>创建一个配置类通过编写public WebServerFactoryCustomizer<ConfigurableWebServerFactory> customizer()方法来设置。</ConfigurableWebServerFactory></p>
+<figure>
+<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/内嵌服务器配置修改.png" alt="内嵌服务器配置修改"><figcaption aria-hidden="true">内嵌服务器配置修改</figcaption>
+</figure></li>
+</ol>
+<p>更换容器：</p>
+<p>​ 通过先将start内的容器依赖去除然后导入新依赖即可。</p>
+<figure>
+<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/修改内嵌容器.png" alt="修改内嵌容器"><figcaption aria-hidden="true">修改内嵌容器</figcaption>
+</figure>
+</blockquote>
+<h2 id="过滤器和拦截器">过滤器和拦截器</h2>
+<blockquote>
+<p>过滤器：在进入servlet前过滤。</p>
+<p>实现方式：</p>
+<p>​ 创建类实现接口javax.servlet.Filter，加上@Component，然后使用一个如下的配置类注入spring容器。</p>
+<figure>
+<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/filterConfig.png" alt="filterConfig"><figcaption aria-hidden="true">filterConfig</figcaption>
+</figure>
+<p>​ 创建类实现接口javax.servlet.Filter，加上@WebFilter，然后在主启动类中加上@ServletComponentScan注解。</p>
+<p>拦截器：拦截方法。</p>
+<p>​ 创建类实现HandlerInterceptor接口，然后创建配置类实现WebMvcConfigurer接口，配置类如下。</p>
+<figure>
+<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/interceptorConfig.png" alt="interceptorConfig"><figcaption aria-hidden="true">interceptorConfig</figcaption>
+</figure>
+</blockquote>
+<h2 id="错误及异常处理">错误及异常处理</h2>
+<h3 id="数值校验">数值校验</h3>
+<blockquote>
+<p>在参数前加入@Valid/<span class="citation" data-cites="Validated注解">@Validated注解</span>，然后跟上BindingResult对象即可获取错误时的错误信息。如图</p>
+<p>利用配置文件ValidationMessages.properties中设置发生错误的提示信息。在bean的注解属性中通过{key}获取属性。</p>
+</blockquote>
+<h3 id="错误页指定">错误页指定</h3>
+<blockquote>
+<p>用到了再查</p>
+</blockquote>
+<h3 id="全局异常处理">全局异常处理</h3>
+<blockquote>
+<p>实现一个异常处理类并加上@ControllerAdvice注解。如图</p>
+<figure>
+<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/全局异常处理.png" alt="全局异常处理"><figcaption aria-hidden="true">全局异常处理</figcaption>
+</figure>
+</blockquote>
+<h2 id="日志">日志</h2>
+<h3 id="日志文件输出">日志文件输出</h3>
+<blockquote>
+<p>在application中添加logging.file.path = xxx 默认日志名为spring.log</p>
+<p>或添加logging.file.name = xxxx 默认输出路径为项目当前路径。</p>
+<p>二者不能同时使用。</p>
+</blockquote>
+<h3 id="日志级别控制">日志级别控制</h3>
+<blockquote>
+<p>日志级别有TRACE、DEBUG、INFO、WARN、ERROR、FATAL、OFF。</p>
+<p>logging.level.包名 = xxx级别</p>
+<p>logging.level.root = 设置全局日志级别</p>
+</blockquote>
+<h2 id="文档生成">文档生成</h2>
+<h3 id="swaggle">swaggle</h3>
+<blockquote>
+<figure class="highlight"><table><tr><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;io.springfox&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;springfox-swagger2&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.9.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line">		</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;io.springfox&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;springfox-swagger-ui&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.9.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableSwagger2</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SwaggerConfig</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Docket <span class="title">api</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Docket(DocumentationType.SWAGGER_2).select()</span><br><span class="line">                .apis(RequestHandlerSelectors.any())</span><br><span class="line">                .paths(PathSelectors.any())</span><br><span class="line">                .build();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>访问http://localhost:8080/v2/api-docs拿到api的json</p>
+<p>访问http://localhost:8080/swagger-ui.html获取页面</p>
+</blockquote>
+<h2 id="监控">监控</h2>
+<blockquote>
+<p>本质上是通过log收集信息，然后利用信息分析。</p>
+</blockquote>
+<h2 id="缓存">缓存</h2>
+<blockquote>
+<p><span class="citation" data-cites="Cacheable">@Cacheable</span>(value = "xx", key = "zz", condition = "yyy")</p>
+<p>​ value 表示缓存名</p>
+<p>​ key为缓存键，需要用SPEL写</p>
+<p>​ condition为缓存触发的条件，需要用SPEL写</p>
+<p>​ 缓存值为对应方法的返回值</p>
+<p><span class="citation" data-cites="CacheEvict">@CacheEvict</span>(beforeInvocation = true表示在方法触发前就移除了缓存) 移除缓存</p>
+<p><span class="citation" data-cites="CachePut">@CachePut</span> 添加缓存</p>
+</blockquote>
+<h2 id="微服务">微服务</h2>
+<blockquote>
+<p>注册中心</p>
+<p>服务提供者</p>
+<p>服务追踪</p>
+<p>服务治理</p>
 </blockquote>
 ]]></content>
       <categories>
-        <category>基础知识</category>
-        <category>计算机网络</category>
+        <category>框架入门</category>
       </categories>
       <tags>
-        <tag>网络</tag>
+        <tag>Springboot</tag>
       </tags>
   </entry>
   <entry>
@@ -4226,6 +4793,28 @@
       </tags>
   </entry>
   <entry>
+    <title>Restful基本使用</title>
+    <url>/2021/02/20/designPattern/Restful%E9%A3%8E%E6%A0%BC/</url>
+    <content><![CDATA[<h1 id="restful风格">Restful风格</h1>
+<blockquote>
+<p>本质上就是将接口的功能让http的语义来表示。</p>
+<p>查询-&gt;GET</p>
+<p>新增-&gt;POST</p>
+<p>更新-&gt;PUT</p>
+<p>删除-&gt;DELETE</p>
+<p>本质上要做到，看url知道要什么，看http method知道要做什么，看http status code知道哪里有问题。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>代码规范</category>
+        <category>代码风格</category>
+      </categories>
+      <tags>
+        <tag>设计模式</tag>
+        <tag>代码风格</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>常用设计模式介绍</title>
     <url>/2021/02/20/designPattern/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</url>
     <content><![CDATA[<h1 id="设计模式">设计模式</h1>
@@ -4301,28 +4890,6 @@
       </categories>
       <tags>
         <tag>设计模式</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Restful基本使用</title>
-    <url>/2021/02/20/designPattern/Restful%E9%A3%8E%E6%A0%BC/</url>
-    <content><![CDATA[<h1 id="restful风格">Restful风格</h1>
-<blockquote>
-<p>本质上就是将接口的功能让http的语义来表示。</p>
-<p>查询-&gt;GET</p>
-<p>新增-&gt;POST</p>
-<p>更新-&gt;PUT</p>
-<p>删除-&gt;DELETE</p>
-<p>本质上要做到，看url知道要什么，看http method知道要做什么，看http status code知道哪里有问题。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>代码规范</category>
-        <category>代码风格</category>
-      </categories>
-      <tags>
-        <tag>设计模式</tag>
-        <tag>代码风格</tag>
       </tags>
   </entry>
   <entry>
@@ -4661,8 +5228,8 @@
 ]]></content>
       <categories>
         <category>基础知识</category>
-        <category>源码分析</category>
         <category>计算机网络</category>
+        <category>源码分析</category>
       </categories>
       <tags>
         <tag>I/O</tag>
