@@ -358,7 +358,7 @@
 <h2 id="mysql结构">Mysql结构</h2>
 <blockquote>
 <figure>
-<img src="/2021/03/13/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/Mysql%E7%AA%81%E5%87%BB/Users\SmallYe\Desktop\blog\source_posts\面试突击\Mysql突击\Mysql架构.png" alt="Mysql架构"><figcaption aria-hidden="true">Mysql架构</figcaption>
+<img src="/2021/03/13/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/Mysql%E7%AA%81%E5%87%BB/Mysql架构.png" alt="Mysql架构"><figcaption aria-hidden="true">Mysql架构</figcaption>
 </figure>
 <p>最上层是连接器即客户端同Mysql连接的架构，提供连接处理、授权认证、安全等功能。</p>
 <p>第二层是Mysql的服务层，包括Mysql核心服务功能：解析、分析、优化、缓存及内置函数，所有跨存储引擎的功能都在这一层实现：存储过程、触发器、视图等。有分析器、优化器、执行器、查询缓存等组件。</p>
@@ -1073,39 +1073,6 @@
       </tags>
   </entry>
   <entry>
-    <title>算法突击</title>
-    <url>/2021/03/09/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E7%AE%97%E6%B3%95%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/</url>
-    <content><![CDATA[<h1 id="算法突击">算法突击</h1>
-<h2 id="排序算法">排序算法</h2>
-<blockquote>
-<p>快速排序<span class="math inline">\(O(nlogn)\)</span>、冒泡排序<span class="math inline">\(O(n^2)\)</span>、选择排序<span class="math inline">\(O(n^2)\)</span>、插入排序<span class="math inline">\(O(n^2)\)</span>、堆排序<span class="math inline">\(O(nlogn)\)</span>、归并排序<span class="math inline">\(O(nlogn)\)</span>、希尔排序<span class="math inline">\(O(n^{1.3})\)</span></p>
-<p>计数排序<span class="math inline">\(O(n+k)\)</span>、桶排序<span class="math inline">\(O(n+k)\)</span>、基数排序<span class="math inline">\(O(d*(n+r))\)</span></p>
-<p><strong>冒泡排序</strong>：即从小到大依次比较交换。</p>
-<p><strong>选择排序</strong>：即先遍历选出最大/最小。</p>
-<p><strong>插入排序</strong>：即从第1个数开始认为有序，遍历整个数组不断维护其中的有序部分。如a[0]=3，a[1]=1，按从小到大排序的话，遍历到a[1]时会将a[0]和a[1]交换位置。</p>
-<p>希尔排序：</p>
-<p><strong>归并排序</strong>：即先将数据拆分到只剩单个数为止，然后两两排序再合并。</p>
-<p><strong>快速排序</strong>：即先选择一个基准值然后按基准值将数据分为左右两个部分，然后在这两个部分再执行此过程。</p>
-<p><strong>堆排序</strong>：即构建数据构建堆。</p>
-<blockquote>
-<p>非比较排序</p>
-</blockquote>
-<p><strong>计数排序</strong>：构建数据的最大值创建对应大小的数组，然后遍历数据，访问到对应数据在对应数组位置加1，然后最后读取数组即可。</p>
-<p><strong>桶排序</strong>：划分多个范围相同的区间，每个子区间自排序，最后合并。</p>
-<figure>
-<img src="/2021/03/09/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E7%AE%97%E6%B3%95%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/桶排序.png" alt="桶排序"><figcaption aria-hidden="true">桶排序</figcaption>
-</figure>
-<p>基数排序：</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>面试突击</category>
-      </categories>
-      <tags>
-        <tag>算法</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>智力题突击</title>
     <url>/2021/03/09/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E6%99%BA%E5%8A%9B%E9%A2%98%E7%AA%81%E5%87%BB/</url>
     <content><![CDATA[<h1 id="智力题突击">智力题突击</h1>
@@ -1233,6 +1200,39 @@
       </categories>
       <tags>
         <tag>智力题</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>算法突击</title>
+    <url>/2021/03/09/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E7%AE%97%E6%B3%95%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/</url>
+    <content><![CDATA[<h1 id="算法突击">算法突击</h1>
+<h2 id="排序算法">排序算法</h2>
+<blockquote>
+<p>快速排序<span class="math inline">\(O(nlogn)\)</span>、冒泡排序<span class="math inline">\(O(n^2)\)</span>、选择排序<span class="math inline">\(O(n^2)\)</span>、插入排序<span class="math inline">\(O(n^2)\)</span>、堆排序<span class="math inline">\(O(nlogn)\)</span>、归并排序<span class="math inline">\(O(nlogn)\)</span>、希尔排序<span class="math inline">\(O(n^{1.3})\)</span></p>
+<p>计数排序<span class="math inline">\(O(n+k)\)</span>、桶排序<span class="math inline">\(O(n+k)\)</span>、基数排序<span class="math inline">\(O(d*(n+r))\)</span></p>
+<p><strong>冒泡排序</strong>：即从小到大依次比较交换。</p>
+<p><strong>选择排序</strong>：即先遍历选出最大/最小。</p>
+<p><strong>插入排序</strong>：即从第1个数开始认为有序，遍历整个数组不断维护其中的有序部分。如a[0]=3，a[1]=1，按从小到大排序的话，遍历到a[1]时会将a[0]和a[1]交换位置。</p>
+<p>希尔排序：</p>
+<p><strong>归并排序</strong>：即先将数据拆分到只剩单个数为止，然后两两排序再合并。</p>
+<p><strong>快速排序</strong>：即先选择一个基准值然后按基准值将数据分为左右两个部分，然后在这两个部分再执行此过程。</p>
+<p><strong>堆排序</strong>：即构建数据构建堆。</p>
+<blockquote>
+<p>非比较排序</p>
+</blockquote>
+<p><strong>计数排序</strong>：构建数据的最大值创建对应大小的数组，然后遍历数据，访问到对应数据在对应数组位置加1，然后最后读取数组即可。</p>
+<p><strong>桶排序</strong>：划分多个范围相同的区间，每个子区间自排序，最后合并。</p>
+<figure>
+<img src="/2021/03/09/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E7%AE%97%E6%B3%95%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/桶排序.png" alt="桶排序"><figcaption aria-hidden="true">桶排序</figcaption>
+</figure>
+<p>基数排序：</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>面试突击</category>
+      </categories>
+      <tags>
+        <tag>算法</tag>
       </tags>
   </entry>
   <entry>
@@ -1696,6 +1696,26 @@
 <p>18、你觉得怎么实现RPC？</p>
 <p>19、自己的优缺点</p>
 <p>20、反问</p>
+</blockquote>
+<h2 id="腾讯s2线一面">腾讯S2线一面</h2>
+<blockquote>
+<p>1、自我介绍和项目介绍</p>
+<p>2、TCP和UDP的区别</p>
+<p>3、TCP怎么实现可靠性的？</p>
+<p>4、拥塞控制大概是怎么样的？</p>
+<p>5、HTTPS会不会？大致流程</p>
+<p>6、对称加密和非对称加密算法了解吗？</p>
+<p>7、Java HashMap的hash算法及具体扩容逻辑。</p>
+<p>8、为什么hash算法不直接使用取模？</p>
+<p>9、数据库事务隔离级别</p>
+<p>10、可重复读怎么实现的</p>
+<p>11、操作系统进程通信</p>
+<p>12、操作系统IO模型，BIO、NIO、AIO</p>
+<p>13、大概讲一下select、poll、epoll。</p>
+<p>14、IO多路复用复用了什么？</p>
+<p>15、10个有序文件合并。</p>
+<p>16、排序算法及分析</p>
+<p>17、反问</p>
 </blockquote>
 ]]></content>
       <categories>
@@ -2330,392 +2350,8 @@
       </categories>
       <tags>
         <tag>I/O</tag>
-        <tag>操作系统</tag>
         <tag>网络</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Linux介绍及基本指令</title>
-    <url>/2021/02/20/Linux/Linux%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%9F%BA%E6%9C%AC%E6%8C%87%E4%BB%A4/</url>
-    <content><![CDATA[<h1 id="linux介绍及基本指令">Linux介绍及基本指令</h1>
-<h2 id="linux区别">Linux区别</h2>
-<blockquote>
-<p>Ubantu：分为用户版和服务器版。</p>
-<p>​ 用户版，有着良好的用户界面，有强大的软件支持。</p>
-<p>​ 服务器版比较少用。</p>
-<p>Debian：系统十分稳定，内核非常小。</p>
-<p>RedHat：是一个商用的操作系统，性能非常好，软件支持也非常好。</p>
-<p>Centos：基本上相当于RedHat的复刻版本。免费。</p>
-</blockquote>
-<h2 id="根目录下各目录对应的功能">根目录下各目录对应的功能</h2>
-<h2 id="在linux中获取帮助">在linux中获取帮助</h2>
-<blockquote>
-<p>man 命令名：查看命令的操作说明</p>
-<p>命令行 --help：查看命令的语法</p>
-</blockquote>
-<h2 id="linux基本命令">Linux基本命令</h2>
-<blockquote>
-<p>ls：查看当前目录中所有文件及目录</p>
-<p>ll：查看当前目录内所有文件及目录详细信息。详细信息具体查看方式。以drwxr-xr-x为例(第一个字符拆出，然后每三个字符表示一个内容)：</p>
-<p>d：文件类型，目录。rwx：拥有者权限，可读，可写，可执行。r-x：用户组权限，可读，不可写，可执行。r-x：其他组权限，可读，不可写，可执行。</p>
-<p>具体文件类型有：d：路径。<em>-</em>：文件。 l ：连接(快捷方式)。b：表示可按块随机读写的设备。c：设备文件里的串行端口设备，如键盘、设备。</p>
-<p>表示权限的三个字符可以用0~7的数字表示。如rwx为7，r-x为5。</p>
-<p>ls -al：查看所有文件及目录包括隐藏目录。</p>
-<p>pwd：查看当前所在层级</p>
-<p>echo xxx：打印xxx</p>
-<p>date：查看日期</p>
-<p>cal：查看日历</p>
-<p>grep xxx：用于查看包含xxx的对象。</p>
-<p>curl 网址：向对应网址发出http请求。curl -i www.baidu.com ：向百度首页发出请求，会返回响应头。</p>
-<p>history：查看先前输入过的命令。</p>
-<p>df：查看磁盘使用情况。</p>
-</blockquote>
-<h2 id="文件基本命令">文件基本命令</h2>
-<blockquote>
-<p>vi xxx：打开临时记事本，基本可以认为是创建文件。</p>
-<p>mkdir xxx：创建文件夹</p>
-<p>rm -rf xxx：删除目录。</p>
-<p>cp a b ：把a文件复制到b处</p>
-<p>mv a b ：把a文件移动到b处（也可以当做重命名使用）</p>
-<p>tail -number xx：查看文件最后number行内容(可以用于监控日志使用tail -F/-f xxx)-F，-f分别为追踪文件名和追踪文件索引。</p>
-<p>cat xxx：查看文件内容，往往伴随着grep使用如 cat a.txt | grep "a:xxx"。</p>
-<p>less xxx：查看文件一页的内容。</p>
-<p>find xxx：查找文件(可以查找所有文件)。</p>
-<p>whereis xx：查找命令所在目录(只能查找二进制类的文件)。</p>
-<p>which xxx：在PATH变量指定的路径中搜索指定的系统命令的位置。</p>
-<p>sh xxx.sh：执行shell命令。这种执行sh文件不需要本身具有权限。</p>
-<p>path/xxx.sh：执行shell命令。sh文件本身需要有权限。(如./xxx.sh其中.表示当前目录)</p>
-</blockquote>
-<h2 id="文件解压缩">文件解压缩</h2>
-<blockquote>
-<p>zip -r 压缩后路径加名字 需要压缩的文件：压缩，如zip -r a.zip a.txt。这个命令需要yum install zip</p>
-<p>unzip -d 解压缩到的路径 解压缩的包：解压缩，如unzip -d . a.zip。这个命令需要yum install unzip。</p>
-<p>tar -cvf 压缩后路径加名字 需要压缩的文件：压缩，如tar -cvf a.txt。</p>
-<p>tar -zcvf 压缩后路径加名字 需要压缩的文件：压缩，如tar -zcvf a.txt。压缩后占的空间更少</p>
-<p>tar -xvf 解压缩到的路径 解压缩的包：解压缩，如tar -xvf a.txt。</p>
-<p>tar -zxvf 解压缩到的路径 解压缩的包：压缩，如tar -zxvf a.txt。</p>
-<p>tar的参数：c：表示create，即压缩，z：约等于zip，即打包后空间会更小，v：压缩后展示压缩包中文件名字。f：表示结束。x：extract，即解压缩。</p>
-<p>b：表示查看压缩包内容。其中c、x、b同时只能存在一个。</p>
-</blockquote>
-<h2 id="文件传输">文件传输</h2>
-<blockquote>
-<p>scp 目录加文件名 用户名@IP地址:目录加文件名：将文件传输利用网络传输到另一个服务器。如scp ./a.txt root@10.0.2.6:~/b.txt</p>
-</blockquote>
-<h2 id="进程管理命令">进程管理命令</h2>
-<blockquote>
-<p>top ：查看当前系统使用情况。</p>
-<p>ps：查看进程情况。</p>
-<p>ps aux：查看所有正在执行的进程。经常和grep配合使用。如ps aux | grep "top"</p>
-<p>lsof -i:port ：根据端口号查看进程。需要yum install lsof</p>
-<p>kill 进程号：杀死进程。</p>
-<p>kill -9 进程号：强制杀死进程。</p>
-<p>service xxx start：启动服务。</p>
-<p>service xxxx stop：关闭服务。</p>
-</blockquote>
-<h2 id="权限管理命令">权限管理命令</h2>
-<blockquote>
-<p>chmod xxx aaa：设置aaa的权限为xxx。第一个x为拥有者权限，第二个x为用户组权限，第三个x为其他组权限。如chmod 777 a.txt：表示将a.txt的权限均设为可读、可写、可执行。</p>
-</blockquote>
-<h2 id="软件安装命令">软件安装命令</h2>
-<blockquote>
-<p>yum install xxxx：安装xxxx</p>
-<p>yum install ifconfig -y：安装时自动同意。</p>
-</blockquote>
-<h2 id="安全相关命令">安全相关命令</h2>
-<blockquote>
-<p>systemctl disable firewalld ：关闭防火墙。</p>
-</blockquote>
-<h2 id="关机命令">关机命令</h2>
-<blockquote>
-<p>shutdown：关机</p>
-<p>reboot：重启</p>
-<p>poweroff：关机</p>
-<p>halt：进入系统停止的模式，屏幕可能保留一些信息，取决于电源管理模式。</p>
-<p>systemctl suspend：休眠</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>操作系统</category>
-      </categories>
-      <tags>
-        <tag>Linux指令</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>1.JAVA内存管理</title>
-    <url>/2021/02/20/JVMKnowledge/1.JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/</url>
-    <content><![CDATA[<h1 id="java内存管理">JAVA内存管理</h1>
-<h2 id="java内存区域">Java内存区域</h2>
-<h3 id="总览">总览</h3>
-<blockquote>
-<p>堆+栈+程序计数器</p>
-<p>堆: 方法区 + 堆</p>
-<p>栈: 虚拟机栈 + 本地方法栈</p>
-</blockquote>
-<figure>
-<img src="/2021/02/20/JVMKnowledge/1.JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Java内存区域.png" alt="Java内存区域"><figcaption aria-hidden="true">Java内存区域</figcaption>
-</figure>
-<h3 id="各部分的作用">各部分的作用</h3>
-<h4 id="程序计数器">程序计数器</h4>
-<blockquote>
-<p>是当前线程所执行的字节码的行号指示器。各线程均有一个程序计数器。如果执行的是Java方法，则程序计数器记录的值为正在执行的虚拟机字节码的地址。若执行的是本地方法，则此时程序计数器的值为undefined。该区域没有规定任何OutOfMemoryError情况。</p>
-</blockquote>
-<h4 id="java虚拟机栈">Java虚拟机栈</h4>
-<blockquote>
-<p>生命周期和线程一致，且是线程私有的。当每个方法被执行时，Java虚拟机栈就会创建一个栈帧来保存局部变量表、操作数栈、动态连接、方法出口等信息。每个方法从被调用到执行完毕的过程，对应着一个栈帧在虚拟机栈中入栈到出栈的过程。</p>
-<p>局部变量表用于存储各种Java虚拟机的<strong>基本数据类型</strong>、<strong>对象引用</strong>(reference类型，不等同与对象本身，可以是对象起始地址的引用指针，也可以是指向一个代表对象句柄或其他与此对象有关的位置)和<strong>returnAdress类型</strong>(指向了一条字节码指令的地址)。在虚拟机栈中，这些数据类型都是用变量槽来表示的。其中64位的long和double占两个变量槽，其他的均只占一个变量槽。局部变量表的大小在<strong>编译期间</strong>就已经完成，故方法所需栈帧分配的局部变量表空间是完全确定的，且不会发生改变。这里空间是指变量槽数，不是具体字节/比特数。</p>
-<p>当调用的方法是非static方法时，局部变量表中第0索引的Slot变量槽默认是this关键字指向的对象。</p>
-<p>可能出现的异常：</p>
-<p>​ StackOverflowError：线程请求栈深度超过虚拟机允许的深度。</p>
-<p>​ OutOfMemoryError：当虚拟机栈容量可以动态拓展时，不能申请到足够的内存。</p>
-</blockquote>
-<h4 id="本地方法栈">本地方法栈</h4>
-<blockquote>
-<p>和虚拟机栈类似，虚拟机栈为虚拟机执行Java方法服务，而本地方法栈是为虚拟机使用到的本地方法服务。</p>
-</blockquote>
-<h4 id="java堆">Java堆</h4>
-<blockquote>
-<p>Java堆是虚拟机所管理的内存中最大的一块。它是被所有线程共享的一块内存区域，在虚拟机启动时创建。java堆的唯一目的就是存放对象实例。它也是垃圾收集器管理的内存区域。大部分垃圾收集器都是基于分代收集理论设计的。</p>
-<p>从分配内存的角度看，所有线程共享的Java堆可以划分出多个线程私有的分配缓冲区。</p>
-<p>可能出现的异常：</p>
-<p>​ OutOfMemoryError：Java堆中没有内存完成实例分配，且堆无法再拓展。</p>
-</blockquote>
-<h4 id="方法区">方法区</h4>
-<blockquote>
-<p>HotSpot：JDK8后使用在本地内存中实现的元空间来代替JDK7中永久代还剩余的内容，JDK6之前使用永久代来实现方法区。</p>
-<p>方法区是各个线程共享的内存区域，用于存储已被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等数据。</p>
-<p>这个区域的回收目标主要是针对常量池的回收和对类型的卸载。</p>
-<p>可能出现的异常：</p>
-<p>​ OutOfMemoryError：方法区无法满足新的内存分配需求。</p>
-</blockquote>
-<h5 id="运行时常量池">运行时常量池</h5>
-<blockquote>
-<p>运行时常量池是方法区的一部分。该部分用于存放编译器生成的各种字面量与符号引用即常量池表。</p>
-</blockquote>
-<h4 id="直接内存">直接内存</h4>
-<blockquote>
-<p>直接内存不是虚拟机运行时数据区的一部分，也不是Java虚拟机规范中定义的内存区域。</p>
-<p>如JDK1.4引入的NIO可以使用Native函数分配堆外内存，然后通过一个存储在Java堆里的DirectByteBuffer对象作为这块内存的引用进行操作。</p>
-<p>本机的直接内存的分配不会受到Java堆大小的限制，但是会受到本机总内存大小及处理器寻址空间的限制。</p>
-</blockquote>
-<h2 id="hotspot虚拟机对象相关内容">HotSpot虚拟机对象相关内容</h2>
-<h3 id="对象创建">对象创建</h3>
-<blockquote>
-<p>步骤分为：类加载检查 -&gt; 分配内存 -&gt; 初始化 -&gt; 对象设置 -&gt; 等待执行构造函数</p>
-<p>类加载检查：当Java虚拟机遇到一条字节码new指令时，首先检查这个指令的参数是否可以从常量池地位到一个类的符号引用，并且检查这个符号引用代表的类是否已经被加载、解析、初始化过。若没有执行相应类的类加载过程。</p>
-<p>分配内存：类加载完成后对象所需内存大小可以完全确定，分配内存的方法分为指针碰撞法和空闲列表法。</p>
-<p>​ 指针碰撞法：将Java堆的内存视为绝对规整，使用过的内存在一边，未使用过的内存在另一边，分配内存时只需要将指针朝未使用过的内存那边移动即可。该方法要求垃圾收集器需要有空间压缩整理能力。</p>
-<p>​ 空闲列表法：Java堆的内存中使用过的内存和未使用过的内存交错在一起，需要维护一个列表记录哪些内存块可用。</p>
-<p>分配内存时需要考虑并发问题：即当A利用指针分配内存但还为修改指针位置时，B也使用原来的指针分配内存。解决该问题可以使用CAS加失败重试或把内存操作按照线程划分在不同的空间之中进行，即每个线程在Java堆中预先分配一小块内存，称为TLAB(本地线程分配缓冲)，只有本地缓冲区的内存用完了，分配新缓冲区时才需要同步锁定。</p>
-<p>初始化：虚拟机将分配到的内存空间都初始化为0值。</p>
-<p>对象设置：将对象信息如对象是哪个类的实例、如何找到类的元数据信息、对象的GC分代年龄等存入对象的对象头中。</p>
-<p>等待执行构造函数：虚拟机等到执行了<init>()方法，完成对对象的全部初始化，此时对象才算被完全的构造出来。</init></p>
-</blockquote>
-<h3 id="对象内存布局">对象内存布局</h3>
-<blockquote>
-<p>存储布局划分为三个部分：对象头、实例数据、对齐填充(padding)</p>
-<p>对象头可以分为两类：</p>
-<p>​ 一类存储对象自身的运行时数据，如HashCode、GC分代年龄、锁状态标识、线程持有的锁、偏向线程ID、偏向时间戳等。被称为Mark Word。</p>
-<p>​ 另一类为类型指针，即对象指向它的类型元数据的指针。Java虚拟机通过这个指针来确定该对象是哪个类的实例。若对象为Java数组，对象头中还要一块用于记录数组长度的数据。</p>
-<p>实例数据：即对象真正存储的有效信息，无论是从父类继承还是子类自己定义的字段。存储顺序可以通过(-XX:FieldsAllocationStyle参数)及字段在源码中定义顺序来调整。HotSpot默认分配顺序会将相同宽度的字段分配到一起存放，如longs/doubles。</p>
-<p>padding：即填充部分，无意义，只是用于将数据对齐。</p>
-</blockquote>
-<h3 id="对象访问定位">对象访问定位</h3>
-<blockquote>
-<p>Java程序会通过栈上的reference数据来操作栈上的具体对象。</p>
-<p>主流的访问方式分为句柄和直接指针：</p>
-<p>​ 句柄：Java堆中可能划分出一块内存作为句柄池，reference存储的就是对象的句柄地址，而句柄包含对象实例数据与类型数据各自具体的地址信息。</p>
-<p>​ 直接指针：reference存储的就是对象地址，访问对象本身不需要多一次间接访问。</p>
-<p>​ 两者的优点：句柄访问的优势在于reference存储的是稳定的句柄地址，对象被移动(垃圾回收时对象常常需要被移动)时只需要改变句柄中实例数据指针即可。直接指针的优势在于速度更快，减少了一次指针定位的开销。</p>
-</blockquote>
-<h2 id="触发异常的情况">触发异常的情况</h2>
-<h3 id="java堆内存的outofmemoryerror异常">Java堆内存的OutOfMemoryError异常</h3>
-<blockquote>
-<p>不断创建对象且保证GC Roots到对象之间有可达路径来避免垃圾回收机制清除这些对象。</p>
-</blockquote>
-<h3 id="虚拟机栈和本地方法栈溢出">虚拟机栈和本地方法栈溢出</h3>
-<blockquote>
-<p>-Xss设置栈容量。</p>
-<p>1）如果线程请求的栈深度大于虚拟机所允许的最大深度，将抛出StackOverflowError异常。</p>
-<p>2）如果虚拟机的栈内存允许动态扩展，当扩展栈容量无法申请到足够的内存时，将抛出OutOfMemoryError异常。</p>
-<p>创建太多线程也会导致OutOfMemoryError异常。</p>
-</blockquote>
-<h2 id="方法区和运行时常量池溢出">方法区和运行时常量池溢出</h2>
-<blockquote>
-<p>运行时常量池，从JDK7开始后原本存放到永久代的字符串常量池被移动到Java堆中。</p>
-<p>-XX：PermSize和-XX：MaxPermSize限制永久代大小。</p>
-<p>方法区溢出会在运行时产生大量的类时出现，OutOfMemoryError。</p>
-</blockquote>
-<h3 id="本机直接内存溢出">本机直接内存溢出</h3>
-<blockquote>
-<p>大小默认与Java堆最大值一致。可以通过-XX：MaxDirectMemorySize参数指定。</p>
-<p>直接或间接(NIO)使用了太多是Unsafe::allocateMemory()分配过多的直接内存会触发OutOfMemoryError异常。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>JVM</category>
-      </categories>
-      <tags>
-        <tag>JVM</tag>
-        <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>2.垃圾收集</title>
-    <url>/2021/02/20/JVMKnowledge/2.%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86/</url>
-    <content><![CDATA[<h1 id="垃圾收集">垃圾收集</h1>
-<blockquote>
-<p>垃圾收集的步骤：判断对象是否存活(可回收) -&gt;</p>
-</blockquote>
-<h2 id="判断对象存活">判断对象存活</h2>
-<h3 id="引用计数">引用计数</h3>
-<blockquote>
-<p>在对象中添加一个引用计数器，当一个地方有引用它时计数器值加一；引用失效时，计数器值就减一。计数器为0的对象是不可能再被引用的。</p>
-<p>存在循环引用的问题</p>
-<p>Java中没有使用。</p>
-</blockquote>
-<h3 id="可达性分析算法">可达性分析算法</h3>
-<blockquote>
-<p>基本思路：通过一系列称为GC Roots的根对象作为起始点集，当某个对象到起始点集间没有任何引用链相连时，这个对象就是不可能再被使用的。</p>
-<p>Java中固定可作为GC Roots的对象：</p>
-<p>​ 在虚拟机栈中引用的对象，如各个线程被调用的方法堆栈中使用到的参数、局部变量、临时变量等。</p>
-<p>​ 在方法区类静态属性引用的对象，如Java类引用类型静态变量。</p>
-<p>​ 在本地方法栈中JNI(Native方法)引用的对象。</p>
-<p>​ Java虚拟机内部的引用，如基本数据类型对应的Class对象，一些常驻的异常对象(NullPointExcepiton、OutOfMemoryError）还有系统类加载器。</p>
-<p>​ 所有被同步锁持有的对象。</p>
-<p>​ 反应Java虚拟机内部情况的JM XBean、JVMTI中注册的回调、本地代码缓存等。</p>
-<p>除了固定GC Roots集合外，根据用户选用的垃圾收集器及当前回收的内存区域不同，还可以有其他对象加入。</p>
-<p>被判定为不可达的对象还不会被立即回收。真正回收需要经历至少两个标记过程：</p>
-<p>​ 若对象在进行可达性分析后分析没有和GC Roots相连接的引用链，会被第一次标记。随后进行一次筛选，若这个对象没有覆盖finalize方法或该方法已经被虚拟机调用，则没有必要执行finalize方法。</p>
-<p>​ 若需要执行finalize方法，则会将对象放入F-Queue队列中，然后自动启用线程执行队列中对象的finalize方法。执行后收集器会对队列中对象进行第二次小规模标记，若对象在finalize方法中重新和引用链上的任何一个对象建立关联，第二次标记时它会被移除即将回收的集合。否则，它通常要被回收。</p>
-</blockquote>
-<h2 id="回收方法区">回收方法区</h2>
-<blockquote>
-<p>主要回收废弃的常量和不再使用的类型。</p>
-<p>回收常量要求：当前常量进入了常量池，且当前系统没有任何一个对象的值是该常量。</p>
-<p>回收类型的条件：</p>
-<p>​ 该类所有的实例已经被回收。</p>
-<p>​ 加载该类的类加载器被回收。</p>
-<p>​ 该类对应的java.lang.Class对象没有在任何地方被引用，无法在任何地方通过反射访问该类的方法。</p>
-</blockquote>
-<h2 id="引用的概念">引用的概念</h2>
-<blockquote>
-<p>Java的引用在JDK1.2后分为强引用、软引用、弱引用、虚引用。</p>
-<p>强引用：最传统的引用的概念，只有强引用关系存在，垃圾收集器就永远不回收被引用的对象。</p>
-<p>软引用：描述一些还有用但非必须的对象。只被软引用关联的对象，在系统将要发生内存溢出异常时，会将这些对象列入回收访问进行第二次回收，若回收还没有足够内存，抛出内存溢出异常。</p>
-<p>弱引用：描述非必须的对象，被弱引用关联的对象只能生存到下一次垃圾收集发送为止。</p>
-<p>虚引用：最弱的引用关系。无法通过虚引用来取得一个对象实例，为对象设置虚引用关联的唯一目的只是为了能在这个对象被收集器回收时收到一个系统通知。</p>
-</blockquote>
-<h2 id="垃圾收集算法">垃圾收集算法</h2>
-<blockquote>
-<p>可以分为引用计数式垃圾收集和追踪式垃圾收集。</p>
-<p>Java主流虚拟机中只有追踪式垃圾收集。</p>
-</blockquote>
-<h3 id="分代收集理论">分代收集理论</h3>
-<blockquote>
-<p>弱分代假说：绝大多数对象都是朝生夕灭的。</p>
-<p>强分代假说：熬过越多次垃圾收集过程的对象越难消灭。</p>
-<p>跨代引用假说：跨代引用相对于同代引用来说仅占极少数。</p>
-<p>新生代收集（Minor GC/Young GC）：指目标只是新生代的垃圾收集。</p>
-<p>老年代收集（Major GC/Old GC）：指目标只是老年代的垃圾收集。目前只有CMS收集器会有单独收集老年代的行为。</p>
-<p>混合收集（Mixed GC）：指目标是收集整个新生代以及部分老年代的垃圾收集。目前只有G1收 集器会有这种行为。</p>
-<p>整堆收集（Full GC）：收集整个Java堆和方法区的垃圾收集</p>
-</blockquote>
-<h3 id="标记-清除算法">标记-清除算法</h3>
-<blockquote>
-<p>先标记所有需要回收的对象，标记完成后统一回收掉所有被标记的对象。</p>
-<p>存在的问题：</p>
-<p>​ 若Java堆中包含大量对象，且大部分都是需要被回收的，需要进行大量的标记清除动作。</p>
-<p>​ 内存空间碎片化，标记、清除后会产生大量不连续的内存碎片。</p>
-</blockquote>
-<h3 id="标记-复制">标记-复制</h3>
-<blockquote>
-<p>为了解决标记-清除算法面对大量可回收对象时执行效率低的问题。</p>
-<p>半区复制：将可用内存按容量划分为大小相等的两块，每次只使用其中一块，当一块内存用完了，将还存活着的对象复制到另一块上，然后将已使用过的内存空间一次清理掉。</p>
-<p>Appel式回收：分为1块Eden，两块Survivor，分配时使用1块Eden，1块Survivor。回收时将存活的对象放入另一块Survivor中，清理之前使用的Eden和Survivor。内存只浪费了1块Survivor。</p>
-<p>优点：当多数对象是可回收的情况时，算法复制的对象少，且分配内存时不用考虑有空间碎片的复杂情况，实现简单。</p>
-<p>缺点：浪费了内存空间。</p>
-</blockquote>
-<h3 id="标记-整理算法">标记-整理算法</h3>
-<blockquote>
-<p>一般是针对老年代对象。标记完成后不是直接对可回收对象进行清理，而是让所有存活的对象都想内存空间一端移动，然后直接清理掉边界外的内存。</p>
-<p>缺点：移动过程耗时较长。</p>
-<p>优点：不用考虑内存碎片化问题，降低了内存分配器及内存访问器的复杂度。</p>
-</blockquote>
-<h2 id="hotpot算法细节">Hotpot算法细节</h2>
-<blockquote>
-<p>根节点枚举(使用一个OopMap记录)</p>
-<p>安全点(到达安全点时将引用关系收集到OopMap，主动式中断和抢占式中断)</p>
-<p>安全区域(类似于安全点的扩展)</p>
-<p>记忆集和卡表：</p>
-<p>​ 记忆集：为了解决对象跨代引用问题，建立的从非收集区域指向收集区域的指针集合的抽象数据结构。</p>
-<p>​ 卡表：以卡精度实现的记忆集。每个记录精确到一块内存区域，该区域内有对象含有跨代指针。</p>
-<p>写屏障：为了在机器码的层面将维护卡表的动作放到每个赋值操作之中。赋值操作会在写屏障的覆盖范围中，赋值前部分为写前屏障，赋值后部分为写后屏障，一般来说，都是在写后屏障执行卡表的更新。</p>
-<p>卡表带来的高并发问题：伪共享，由于CPU的缓存系统是缓存行为单位存储的，当多线程修改互相独立的变量时，若这些变量刚好共享同一个缓存行，就会互相影响。为了避免这个问题，简单的解决方案是先检查卡表标记，当卡表元素未被标记时才将其标记变脏。</p>
-<p>并发的可达性分析：扫描过程时垃圾收集器和用户线程存在并发问题，，可用的解决方法有增量更新(插入引用时记录，扫描完成后以记录的再扫描)、原始快照(删除引用时记录，扫描完成时按记录的再扫描)。</p>
-</blockquote>
-<h2 id="经典垃圾收集器">经典垃圾收集器</h2>
-<h3 id="serial收集器">Serial收集器</h3>
-<blockquote>
-<p>单线程、简单高效、是所有收集器里额外内存消耗最小的，但是进行垃圾收集时必须暂停其他所有工作线程。</p>
-<p>新生代采用复制算法暂停所有用户线程，老年代采用标记-整理算法暂停所有用户线程。</p>
-</blockquote>
-<h3 id="parnew收集器">ParNew收集器</h3>
-<blockquote>
-<p>是Serial收集器的多线程并行版本。可以和CMS收集器配合使用。</p>
-<p>新生代采用多线程复制算法暂停所有用户线程，老年代采用标记-整理算法暂停所有用户线程。</p>
-</blockquote>
-<h3 id="parallel-scavenge收集器">Parallel Scavenge收集器</h3>
-<blockquote>
-<p>基于标记-复制算法实现的新生代收集器，也是能够并行收集的多线程收集器。</p>
-<p>而Parallel Scavenge收集器的目标则是达到一个可控制的吞吐量(Throughput)，吞吐量就是处理器用于运行用户代码的时间与处理器总消耗时间的比值。</p>
-<p>-XX：MaxGCPauseMillis：允许的值是一个大于0的毫秒数，收集器将尽力保证内存回收花费的时间不超过用户设定值，会降低吞吐量。</p>
-<p>-XX：GCTimeRatio：值应当是一个大于0小于100的整数，也就是垃圾收集时间占总时间的比率，相当于吞吐量的倒数。</p>
-<p>-XX：+UseAdaptiveSizePolicy：一个开关参数，开启后可以自动调节参数。</p>
-</blockquote>
-<h3 id="serial-old收集器">Serial Old收集器</h3>
-<blockquote>
-<p>是Serial收集器的老年代版本，是一个单线程收集器，使用标记-整理算法。</p>
-</blockquote>
-<h3 id="parrallel-old收集器">Parrallel Old收集器</h3>
-<blockquote>
-<p>是Parallel Scavenge收集器的老年代版本，支持多线程并发收集，基于标记-整理算法。</p>
-</blockquote>
-<h3 id="cms收集器">CMS收集器</h3>
-<blockquote>
-<p>是一种以获取最短回收停顿时间为目标的收集器。它是基于标记-清除算法实现的。其运作过程分为4步：</p>
-<p>​ 初始标记(需要stop the world)</p>
-<p>​ 并发标记</p>
-<p>​ 重新标记(需要stop the world)</p>
-<p>​ 并发清除</p>
-<p>缺点：</p>
-<p>​ CMS收集器对处理器资源非常敏感。会因为占据了一部分线程导致应用程序变慢。CMS默认启动回收线程为(处理器核心数量 + 3 )/4。导致处理器核心&lt;4时占用的性能过多。</p>
-<p>​ CMS处理器无法处理浮动垃圾，可能出现“Concurrent Mode Failure”，从而引发Full GC。因为标记结束后，很可能产生新垃圾，CMS无法在当次收集时处理，只能留到下次。所以CMS需要预留一部分空间给并发收集时程序运行使用，可以通过-XX：CMSInitiatingOccupancyFraction来调节。</p>
-<p>​ 由于CMS是基于标记-清除算法实现的，会产生大量空间碎片。当碎片过多，大对象很难分配，触发Full GC。-XX：+UseCMS-CompactAtFullCollection:开关参数，让CMS触发Full GC时进行碎片整理。</p>
-</blockquote>
-<h3 id="garbage-first收集器">Garbage First收集器</h3>
-<blockquote>
-<p>简称G1，它开创了收集器面向局部收集的设计思路和基于Region的内存布局形式。它是一款主要面向服务端应用的垃圾收集器。</p>
-<p>在G1之前的垃圾收集器垃圾收集的范围要么是整个新生代，要么是整个老年代，要么就是Full GC，G1则是面向堆内存任何部分来组成回收集，衡量标准是哪块内存中存放的垃圾数量最多。</p>
-<p>它开创了基于Region的堆内存布局。相当于将堆内存划分为大小相同的连续独立区域，每个区域按需要划分出空间。Region中还要特殊的Humongous区域，专门用于存储大对象。G1将大小超过一个Region容量一半的对象就判定为大对象。超过整个Region容量的对象会被存放到n个连续的Region中。</p>
-<p>流程：</p>
-<p>​ 初始标记</p>
-<p>​ 并发标记</p>
-<p>​ 最终标记</p>
-<p>​ 筛选回收</p>
-</blockquote>
-<h3 id="低延迟垃圾收集器">低延迟垃圾收集器</h3>
-<blockquote>
-<p>Shenandoah收集器</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>JVM</category>
-      </categories>
-      <tags>
-        <tag>JVM</tag>
-        <tag>Java</tag>
+        <tag>操作系统</tag>
       </tags>
   </entry>
   <entry>
@@ -2771,9 +2407,9 @@
         <category>Java</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>容器</tag>
         <tag>并发</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -2849,8 +2485,8 @@
         <category>Java</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>容器</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -2997,8 +2633,155 @@
         <category>Java</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>并发</tag>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux介绍及基本指令</title>
+    <url>/2021/02/20/Linux/Linux%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%9F%BA%E6%9C%AC%E6%8C%87%E4%BB%A4/</url>
+    <content><![CDATA[<h1 id="linux介绍及基本指令">Linux介绍及基本指令</h1>
+<h2 id="linux区别">Linux区别</h2>
+<blockquote>
+<p>Ubantu：分为用户版和服务器版。</p>
+<p>​ 用户版，有着良好的用户界面，有强大的软件支持。</p>
+<p>​ 服务器版比较少用。</p>
+<p>Debian：系统十分稳定，内核非常小。</p>
+<p>RedHat：是一个商用的操作系统，性能非常好，软件支持也非常好。</p>
+<p>Centos：基本上相当于RedHat的复刻版本。免费。</p>
+</blockquote>
+<h2 id="根目录下各目录对应的功能">根目录下各目录对应的功能</h2>
+<h2 id="在linux中获取帮助">在linux中获取帮助</h2>
+<blockquote>
+<p>man 命令名：查看命令的操作说明</p>
+<p>命令行 --help：查看命令的语法</p>
+</blockquote>
+<h2 id="linux基本命令">Linux基本命令</h2>
+<blockquote>
+<p>ls：查看当前目录中所有文件及目录</p>
+<p>ll：查看当前目录内所有文件及目录详细信息。详细信息具体查看方式。以drwxr-xr-x为例(第一个字符拆出，然后每三个字符表示一个内容)：</p>
+<p>d：文件类型，目录。rwx：拥有者权限，可读，可写，可执行。r-x：用户组权限，可读，不可写，可执行。r-x：其他组权限，可读，不可写，可执行。</p>
+<p>具体文件类型有：d：路径。<em>-</em>：文件。 l ：连接(快捷方式)。b：表示可按块随机读写的设备。c：设备文件里的串行端口设备，如键盘、设备。</p>
+<p>表示权限的三个字符可以用0~7的数字表示。如rwx为7，r-x为5。</p>
+<p>ls -al：查看所有文件及目录包括隐藏目录。</p>
+<p>pwd：查看当前所在层级</p>
+<p>echo xxx：打印xxx</p>
+<p>date：查看日期</p>
+<p>cal：查看日历</p>
+<p>grep xxx：用于查看包含xxx的对象。</p>
+<p>curl 网址：向对应网址发出http请求。curl -i www.baidu.com ：向百度首页发出请求，会返回响应头。</p>
+<p>history：查看先前输入过的命令。</p>
+<p>df：查看磁盘使用情况。</p>
+</blockquote>
+<h2 id="文件基本命令">文件基本命令</h2>
+<blockquote>
+<p>vi xxx：打开临时记事本，基本可以认为是创建文件。</p>
+<p>mkdir xxx：创建文件夹</p>
+<p>rm -rf xxx：删除目录。</p>
+<p>cp a b ：把a文件复制到b处</p>
+<p>mv a b ：把a文件移动到b处（也可以当做重命名使用）</p>
+<p>tail -number xx：查看文件最后number行内容(可以用于监控日志使用tail -F/-f xxx)-F，-f分别为追踪文件名和追踪文件索引。</p>
+<p>cat xxx：查看文件内容，往往伴随着grep使用如 cat a.txt | grep "a:xxx"。</p>
+<p>less xxx：查看文件一页的内容。</p>
+<p>find xxx：查找文件(可以查找所有文件)。</p>
+<p>whereis xx：查找命令所在目录(只能查找二进制类的文件)。</p>
+<p>which xxx：在PATH变量指定的路径中搜索指定的系统命令的位置。</p>
+<p>sh xxx.sh：执行shell命令。这种执行sh文件不需要本身具有权限。</p>
+<p>path/xxx.sh：执行shell命令。sh文件本身需要有权限。(如./xxx.sh其中.表示当前目录)</p>
+</blockquote>
+<h2 id="文件解压缩">文件解压缩</h2>
+<blockquote>
+<p>zip -r 压缩后路径加名字 需要压缩的文件：压缩，如zip -r a.zip a.txt。这个命令需要yum install zip</p>
+<p>unzip -d 解压缩到的路径 解压缩的包：解压缩，如unzip -d . a.zip。这个命令需要yum install unzip。</p>
+<p>tar -cvf 压缩后路径加名字 需要压缩的文件：压缩，如tar -cvf a.txt。</p>
+<p>tar -zcvf 压缩后路径加名字 需要压缩的文件：压缩，如tar -zcvf a.txt。压缩后占的空间更少</p>
+<p>tar -xvf 解压缩到的路径 解压缩的包：解压缩，如tar -xvf a.txt。</p>
+<p>tar -zxvf 解压缩到的路径 解压缩的包：压缩，如tar -zxvf a.txt。</p>
+<p>tar的参数：c：表示create，即压缩，z：约等于zip，即打包后空间会更小，v：压缩后展示压缩包中文件名字。f：表示结束。x：extract，即解压缩。</p>
+<p>b：表示查看压缩包内容。其中c、x、b同时只能存在一个。</p>
+</blockquote>
+<h2 id="文件传输">文件传输</h2>
+<blockquote>
+<p>scp 目录加文件名 用户名@IP地址:目录加文件名：将文件传输利用网络传输到另一个服务器。如scp ./a.txt root@10.0.2.6:~/b.txt</p>
+</blockquote>
+<h2 id="进程管理命令">进程管理命令</h2>
+<blockquote>
+<p>top ：查看当前系统使用情况。</p>
+<p>ps：查看进程情况。</p>
+<p>ps aux：查看所有正在执行的进程。经常和grep配合使用。如ps aux | grep "top"</p>
+<p>lsof -i:port ：根据端口号查看进程。需要yum install lsof</p>
+<p>kill 进程号：杀死进程。</p>
+<p>kill -9 进程号：强制杀死进程。</p>
+<p>service xxx start：启动服务。</p>
+<p>service xxxx stop：关闭服务。</p>
+</blockquote>
+<h2 id="权限管理命令">权限管理命令</h2>
+<blockquote>
+<p>chmod xxx aaa：设置aaa的权限为xxx。第一个x为拥有者权限，第二个x为用户组权限，第三个x为其他组权限。如chmod 777 a.txt：表示将a.txt的权限均设为可读、可写、可执行。</p>
+</blockquote>
+<h2 id="软件安装命令">软件安装命令</h2>
+<blockquote>
+<p>yum install xxxx：安装xxxx</p>
+<p>yum install ifconfig -y：安装时自动同意。</p>
+</blockquote>
+<h2 id="安全相关命令">安全相关命令</h2>
+<blockquote>
+<p>systemctl disable firewalld ：关闭防火墙。</p>
+</blockquote>
+<h2 id="关机命令">关机命令</h2>
+<blockquote>
+<p>shutdown：关机</p>
+<p>reboot：重启</p>
+<p>poweroff：关机</p>
+<p>halt：进入系统停止的模式，屏幕可能保留一些信息，取决于电源管理模式。</p>
+<p>systemctl suspend：休眠</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>操作系统</category>
+      </categories>
+      <tags>
+        <tag>Linux指令</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Dubbo简单介绍</title>
+    <url>/2021/02/20/codeAnalyse/Dubbo/</url>
+    <content><![CDATA[<h1 id="dubbo">Dubbo</h1>
+<h2 id="rmi-和-rpc">RMI 和 RPC</h2>
+<blockquote>
+<p>RMI：远程方法调用，是java自带的API可以实现的，依赖JVM。客户端将要调用的方法和参数打包成辅助对象，通过网络socket，发送给服务端辅助对象，服务端接收后进行解包，找到真正被调用的方法，执行这个方法将执行结果，依次返回。服务端辅助对象进行打包，然后客户端辅助对象进行解包，结果返回给真正的调用者。</p>
+<p>IPC：进程间通信。进程是计算机系统资源分配的最小单位，每个进程都是资源隔离的。</p>
+<p>LPC：本地过程调用。</p>
+<p>RPC：远程过程调用。</p>
+</blockquote>
+<h2 id="常用rpc框架">常用RPC框架</h2>
+<h3 id="dubbo-1">Dubbo</h3>
+<blockquote>
+<p>阿里开发，基于Spring和Netty，是当前使用最广泛的RPC框架。</p>
+</blockquote>
+<h3 id="brpc">BRPC</h3>
+<blockquote>
+<p>百度开发，"baidu-rpc"，支持多种协议，性能优良。</p>
+</blockquote>
+<h3 id="grpc">GRPC</h3>
+<blockquote>
+<p>谷歌开发，基于Netty，服务于TensorFlow的底层通信。</p>
+</blockquote>
+<h3 id="thrift">Thrift</h3>
+<blockquote>
+<p>Facebook开发。</p>
+</blockquote>
+<h2 id="注册中心---zookeeper">注册中心 - Zookeeper</h2>
+]]></content>
+      <categories>
+        <category>框架入门</category>
+      </categories>
+      <tags>
+        <tag>并发</tag>
+        <tag>Dubbo</tag>
+        <tag>分布式</tag>
       </tags>
   </entry>
   <entry>
@@ -3132,8 +2915,63 @@
         <category>Java</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>并发</tag>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SpringBoot原理分析</title>
+    <url>/2021/02/20/codeAnalyse/SpringBoot%E5%8E%9F%E7%90%86/</url>
+    <content><![CDATA[<h1 id="springboot原理">SpringBoot原理</h1>
+<h2 id="springbootapplication"><span class="citation" data-cites="SpringBootApplication">@SpringBootApplication</span></h2>
+<blockquote>
+<p>本质上是</p>
+<p><span class="citation" data-cites="SpringBootConfiguration">@SpringBootConfiguration</span>：实际是@Configuration</p>
+<p><span class="citation" data-cites="EnableAutoConfiguration">@EnableAutoConfiguration</span>：由@AutoConfigurationPackage、<span class="citation" data-cites="Import">@Import</span>({AutoConfigurationImportSelector.class})组成。</p>
+<p><span class="citation" data-cites="ComponentScan">@ComponentScan</span>：启用自动扫描，默认扫描所在类的同级类和同级目录下的所有类。</p>
+<p>即这个注解实现了注册配置类、启用自动配置、启用自动扫描。</p>
+</blockquote>
+<h2 id="springapplication.runtestapplication.classargs的实际流程">SpringApplication.run(TestApplication.class,args)的实际流程</h2>
+<blockquote>
+<p>利用传入的类创建一个SpringApplication实例执行了run方法。</p>
+<h3 id="具体创建实例的流程">具体创建实例的流程：</h3>
+</blockquote>
+<blockquote>
+<figure>
+<img src="/2021/02/20/codeAnalyse/SpringBoot%E5%8E%9F%E7%90%86/SpringBootAplication初始化过程.png" alt="SpringBootAplication初始化过程"><figcaption aria-hidden="true">SpringBootAplication初始化过程</figcaption>
+</figure>
+<p>倒数第四行加载了web应用的配置，具体流程是使用默认的类加载器去查找当前是否使用了对应的类。结果可以得出NONE、SERVLET、REACTIVE。</p>
+<p>倒数三行之前都是加载主配置。</p>
+<p>倒数第三、二行分别是创建初始化器和监听器。创建的流程均为先获取到类加载器，然后查找当前项目中所使用到的初始化器、监听器类名，再利用类名创建类实例，最后将这些实例按优先级排序即可。</p>
+<p>创建类实例的方法即为通过反射调用类的构造方法创建。它们都使用了getSpringFactoriesInstances方法。这个方法是先通过读取META-INF/spring.factories文件内容来获取配置，并将配置放入map中。实际中会读取到项目所有jar包中的META-INF/spring.factories。然后利用传入的类名进行匹配找到所需的初始化器/监听器。</p>
+<p>按优先级排序，Spring则是通过继承OrderComparator(实现了Comparator接口的类来完成的)，这里利用了模板方法模式，通过完成了findOrder方法，通过比较注解的优先级的方式来findOrder，若未设定优先级则设为最低优先级LOWEST_PRECEDENCE这个值为Integer.MAX_VALUE。</p>
+<ul>
+<li>（1）先判断有没有实现PriorityOrdered，实现PriorityOrdered比没实现的有高优先级</li>
+<li>（2）第一步如果比较不出来，判断有没有实现Ordered，如果实现了，取实现方法的int值比较</li>
+<li>前两步都是OrderComparator的默认实现。</li>
+<li>（3）如果没有实现Ordered，判断有没有org.springframework.core.annotation.Order注解， 有注解，取注解上的order值，进行比较</li>
+<li>（4）如果没有Order注解，判断有没有javax.annotation.Priority注解，取注解上的值比较</li>
+<li>若以上都没找到则spring会返回null</li>
+<li>（5）OrderComparator接收到null，返回Integer.MAX_VALUE即LOWEST_PRECEDENCE，值越大优先级越低</li>
+</ul>
+<p>最后一行找到主程序类是通过获取当前程序运行栈，通过找到栈中执行main方法的类，得到主程序类名。</p>
+</blockquote>
+<h3 id="创建实例后执行run方法的流程">创建实例后执行run方法的流程</h3>
+<blockquote>
+
+</blockquote>
+<h2 id="自动配置原理">自动配置原理</h2>
+<blockquote>
+<p><span class="citation" data-cites="EnableAutoConfiguration">@EnableAutoConfiguration</span> = <span class="citation" data-cites="AutoConfigurationPackage">@AutoConfigurationPackage</span> + <span class="citation" data-cites="Import">@Import</span>({AutoConfigurationImportSelector.class})</p>
+<p><span class="citation" data-cites="AutoConfigurationPackage">@AutoConfigurationPackage</span> = <span class="citation" data-cites="Import">@Import</span>({Registrar.class})</p>
+<p>故@EnableAutoConfiguration实际上相当于引入了AutoConfigurationImportSelector和Registrar。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>源码分析</category>
+      </categories>
+      <tags>
+        <tag>Springboot</tag>
       </tags>
   </entry>
   <entry>
@@ -3200,97 +3038,70 @@
       </tags>
   </entry>
   <entry>
-    <title>SpringBoot原理分析</title>
-    <url>/2021/02/20/codeAnalyse/SpringBoot%E5%8E%9F%E7%90%86/</url>
-    <content><![CDATA[<h1 id="springboot原理">SpringBoot原理</h1>
-<h2 id="springbootapplication"><span class="citation" data-cites="SpringBootApplication">@SpringBootApplication</span></h2>
+    <title>Mybatis流程源码分析</title>
+    <url>/2021/02/20/codeAnalyse/mybatis%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h1 id="mybatis流程">Mybatis流程</h1>
+<h2 id="创建sqlsessionfactory的流程">创建SqlSessionFactory的流程</h2>
 <blockquote>
-<p>本质上是</p>
-<p><span class="citation" data-cites="SpringBootConfiguration">@SpringBootConfiguration</span>：实际是@Configuration</p>
-<p><span class="citation" data-cites="EnableAutoConfiguration">@EnableAutoConfiguration</span>：由@AutoConfigurationPackage、<span class="citation" data-cites="Import">@Import</span>({AutoConfigurationImportSelector.class})组成。</p>
-<p><span class="citation" data-cites="ComponentScan">@ComponentScan</span>：启用自动扫描，默认扫描所在类的同级类和同级目录下的所有类。</p>
-<p>即这个注解实现了注册配置类、启用自动配置、启用自动扫描。</p>
+<p>由于创建工厂需要许多配置，mybatis利用了Builder模式。</p>
+<p>先创建SqlSessionFactoryBuilder，调用SqlSessionFactoryBuilder的build方法，本质上就是通过解析xml文件，将文件内容映射到Configuration对象中，然后利用这个对象产生builder创建工厂所需的配置，然后创建出SqlSessionFactory。</p>
+<p>具体则是先将xml的输入流传给SqlSessionFactoryBuilder，然后创建一个XMLConfigBuilder，负责解析xml内容放入configuration对象，解析的过程中会按类别解析，通过调用不同的方法解析xml的不同部分。解析mapper还有专门的XMLMapperBuilder其中对于二级缓存的处理也在这里进行。解析完成后configuration对象会保存全部的配置信息。</p>
 </blockquote>
-<h2 id="springapplication.runtestapplication.classargs的实际流程">SpringApplication.run(TestApplication.class,args)的实际流程</h2>
+<h2 id="利用sqlsessionfactory创建sqlsession的流程">利用SqlSessionFactory创建SqlSession的流程</h2>
 <blockquote>
-<p>利用传入的类创建一个SpringApplication实例执行了run方法。</p>
-<h3 id="具体创建实例的流程">具体创建实例的流程：</h3>
+<p>就是SqlSessionFactory调用openSession，传入ExecutorType、TransactionIsolationLevel、autoCommit三个参数，或让mybatis按默认设置，</p>
+<p>ExecutorType有BatchExecutor、ReuseExecutor、SimpleExecutor、CachingExecutor四种。</p>
+<p>​ BatchExecutor 让update操作变为批处理操作，即让连续的update先累积，等到下一次query操作前再一起执行。是使用List作为批处理存储。对于update操作会复用最近一次的statement。失败了会全部回滚。</p>
+<p>​ ReuseExecutor 复用Statement，利用Map&lt;String, Statement&gt;来判定。</p>
+<p>​ SimpleExecutor 即使用的Statement直接关闭。</p>
+<p>​ CachingExecutor 相当于在前面三个执行者的基础上套了一层缓存机制，让query方法先查看缓存，只有缓存没有时再让三个执行者执行操作。这里的缓存是通过mybatis自己实现的statement对象内部的cache实现的，有些类似hashmap，是利用cache和cachekey获得的结果。</p>
+<p>TransactionIsolationLevel即事物隔离级别。</p>
+<p>​ READ_UNCOMMITTED 读未提交 存在脏读、不可重复读、幻读</p>
+<p>​ READ_COMMITTED 读提交 存在不可重复读、幻读</p>
+<p>​ REPEATABLE_READ 可重复读 存在幻读</p>
+<p>​ SERIALIZABLE 序列化</p>
+<p>autoCommit是否自动提交。</p>
 </blockquote>
+<h2 id="利用sqlsession创建mapper">利用SqlSession创建Mapper</h2>
 <blockquote>
-<figure>
-<img src="/2021/02/20/codeAnalyse/SpringBoot%E5%8E%9F%E7%90%86/SpringBootAplication初始化过程.png" alt="SpringBootAplication初始化过程"><figcaption aria-hidden="true">SpringBootAplication初始化过程</figcaption>
-</figure>
-<p>倒数第四行加载了web应用的配置，具体流程是使用默认的类加载器去查找当前是否使用了对应的类。结果可以得出NONE、SERVLET、REACTIVE。</p>
-<p>倒数三行之前都是加载主配置。</p>
-<p>倒数第三、二行分别是创建初始化器和监听器。创建的流程均为先获取到类加载器，然后查找当前项目中所使用到的初始化器、监听器类名，再利用类名创建类实例，最后将这些实例按优先级排序即可。</p>
-<p>创建类实例的方法即为通过反射调用类的构造方法创建。它们都使用了getSpringFactoriesInstances方法。这个方法是先通过读取META-INF/spring.factories文件内容来获取配置，并将配置放入map中。实际中会读取到项目所有jar包中的META-INF/spring.factories。然后利用传入的类名进行匹配找到所需的初始化器/监听器。</p>
-<p>按优先级排序，Spring则是通过继承OrderComparator(实现了Comparator接口的类来完成的)，这里利用了模板方法模式，通过完成了findOrder方法，通过比较注解的优先级的方式来findOrder，若未设定优先级则设为最低优先级LOWEST_PRECEDENCE这个值为Integer.MAX_VALUE。</p>
-<ul>
-<li>（1）先判断有没有实现PriorityOrdered，实现PriorityOrdered比没实现的有高优先级</li>
-<li>（2）第一步如果比较不出来，判断有没有实现Ordered，如果实现了，取实现方法的int值比较</li>
-<li>前两步都是OrderComparator的默认实现。</li>
-<li>（3）如果没有实现Ordered，判断有没有org.springframework.core.annotation.Order注解， 有注解，取注解上的order值，进行比较</li>
-<li>（4）如果没有Order注解，判断有没有javax.annotation.Priority注解，取注解上的值比较</li>
-<li>若以上都没找到则spring会返回null</li>
-<li>（5）OrderComparator接收到null，返回Integer.MAX_VALUE即LOWEST_PRECEDENCE，值越大优先级越低</li>
-</ul>
-<p>最后一行找到主程序类是通过获取当前程序运行栈，通过找到栈中执行main方法的类，得到主程序类名。</p>
+<p>SqlSession使用getMapper方法，实际上是调用了configuration中的mapperRegistry的getMapper方法，这里使用了动态代理的设计模式。同时这里还使用了工厂方法，根据不同的类名创建对应的代理工厂。</p>
+<p>这个动态代理是JDK代理，它需要使用对应类加载器，对应类接口，对应的InvocationHandler。在mybatis中InvocationHandler是MapperProxy，MapperProxy的重写的invoke函数逻辑是对于Object自带的方法直接调用，对于接口默认的方法直接调用(这个特性是由于JDK8让接口方法可以有默认实现)。对于接口的方法则创建一个MapperMethod对象，该对象使用了缓存机制，利用Map&lt;Method, MapperMethod&gt;缓存方法。</p>
+<p>而MapperMethod的excuse即为代理方法的实现，该类中含有MethodSignature、SqlCommand两个内部类用于实现解析sql及方法，而具体方法实现是根据判断当前sql是增删改查中的哪种再调用sqlSession的方法来实现的。</p>
 </blockquote>
-<h3 id="创建实例后执行run方法的流程">创建实例后执行run方法的流程</h3>
+<h2 id="executor与handler">Executor与Handler</h2>
+<blockquote>
+<p>Executor是通过StatementHandler来执行sql的。StatementHandler先prepare方法配置基础设置，然后使用parameterize来设置statement的参数。若为query操作则StatementHandler会使用ResultSetHandler来处理结果集。</p>
+<p>StatementHandler为抽象interface mybatis基于这个接口实现了抽象类BaseStatementHandler，还实现了路由类RoutingStatementHandler，路由类是用于根据参数创建对应具体类的。而抽象类是作为三个具体类的基础，三个具体类分别为CallableStatementHandler、PreparedStatementHandler、SimpleStatementHandler。</p>
+<p>抽象类提供给三个具体类prepare方法，其中prepare中含有抽象方法instantiateStatement，是由具体子类实现的。(模板方法模式)</p>
+</blockquote>
+<h2 id="mybatis对于数据库操作的整体流程">mybatis对于数据库操作的整体流程</h2>
+<blockquote>
+<p>先使用builder模式，根据输入的xml输入流，利用对应XML解析对象解析，并将结果最终存入Configuration对象，然后利用Configuration对象创建出一个对应的SqlSessionFactory。</p>
+<p>然后需要通过sqlSessionFactory的openSession方法创建一个SqlSession，这里可以设置SqlSession的Executor、TransactionIsolationLevel和autoCommit。Executor代表这个SqlSession采用什么执行器，执行器是对statement对象的处理。具体执行器共有3种：SimpleExecutor 、ReuseExecutor 、BatchExecutor 。同时若启用了缓存cache，则会在执行器外再包装一层CachingExecutor ，相当于对于查询操作提供了二级缓存。这个缓存是位于mybatis的MappedStatement类中。本质上这种缓存就是一个嵌套的哈希结构。Map&lt;Cache, TransactionalCache&gt;，TransactionalCache也是key-value结构。</p>
+<p>而事物隔离即为正常的数据库事物隔离级别。</p>
+<p>创建完SqlSession后，调用SqlSession的getMapper方法获取对应mapper对象。这里使用了动态代理。mybatis是先根据传入的类对象，通过configuration的配置信息中的MapperRegistry类对象找到对应的proxy工厂，利用代理工厂创建对应的代理对象。代理对象的创建使用的是JDK动态代理，即传入需要代理的类加载器、需要代理的接口、以及InvocationHandler。mybatis的handler是先判断方法是否为Object的，然后判断方法是否为接口默认实现的。只有接口未实现的方法才进行特殊处理，处理过程即为根据方法的类型(增删改查)，执行SqlSession的对应方法。</p>
+<p>SqlSession执行对应方法则是利用SqlSession内部的executor执行对应操作的。所以实际上sql操作还是由executor执行的。而executor执行操作需要利用StatementHandler先后执行prepare初始化基本配置和parameterize处理参数。参数的处理利用了ParameterHandler，这个时候typeHandler就会起作用。若为query操作还需要对返回值进行处理，处理时利用了ResultSetHandler，这个时候typeHandler就会起作用。</p>
+</blockquote>
+<h2 id="mybatis的缓存机制">mybatis的缓存机制</h2>
+<blockquote>
+<p>mybatis共有两个缓存机制：一级缓存和二级缓存。</p>
+<p>一级缓存默认开启且无法关闭。</p>
+<p>二级缓存需要配置。</p>
+<p>一级缓存是Executor的基本实现类BaseExecutor中实现的，本质上是个Map&lt;Object, Object&gt;。由于每个SqlSession里都带有一个Executor，故一级缓存是SqlSession层面的。</p>
+<p>二级缓存则需要手动配置，开启后会在具体的Executor之外使用CachingExecutor包装，这里使用了装饰者模式。二级缓存本质上是在namespace层面的缓存。</p>
+</blockquote>
+<h2 id="mybatis是怎么实现和springboot的整合的">mybatis是怎么实现和SpringBoot的整合的？</h2>
 <blockquote>
 
-</blockquote>
-<h2 id="自动配置原理">自动配置原理</h2>
-<blockquote>
-<p><span class="citation" data-cites="EnableAutoConfiguration">@EnableAutoConfiguration</span> = <span class="citation" data-cites="AutoConfigurationPackage">@AutoConfigurationPackage</span> + <span class="citation" data-cites="Import">@Import</span>({AutoConfigurationImportSelector.class})</p>
-<p><span class="citation" data-cites="AutoConfigurationPackage">@AutoConfigurationPackage</span> = <span class="citation" data-cites="Import">@Import</span>({Registrar.class})</p>
-<p>故@EnableAutoConfiguration实际上相当于引入了AutoConfigurationImportSelector和Registrar。</p>
 </blockquote>
 ]]></content>
       <categories>
         <category>源码分析</category>
       </categories>
       <tags>
-        <tag>Springboot</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Dubbo简单介绍</title>
-    <url>/2021/02/20/codeAnalyse/Dubbo/</url>
-    <content><![CDATA[<h1 id="dubbo">Dubbo</h1>
-<h2 id="rmi-和-rpc">RMI 和 RPC</h2>
-<blockquote>
-<p>RMI：远程方法调用，是java自带的API可以实现的，依赖JVM。客户端将要调用的方法和参数打包成辅助对象，通过网络socket，发送给服务端辅助对象，服务端接收后进行解包，找到真正被调用的方法，执行这个方法将执行结果，依次返回。服务端辅助对象进行打包，然后客户端辅助对象进行解包，结果返回给真正的调用者。</p>
-<p>IPC：进程间通信。进程是计算机系统资源分配的最小单位，每个进程都是资源隔离的。</p>
-<p>LPC：本地过程调用。</p>
-<p>RPC：远程过程调用。</p>
-</blockquote>
-<h2 id="常用rpc框架">常用RPC框架</h2>
-<h3 id="dubbo-1">Dubbo</h3>
-<blockquote>
-<p>阿里开发，基于Spring和Netty，是当前使用最广泛的RPC框架。</p>
-</blockquote>
-<h3 id="brpc">BRPC</h3>
-<blockquote>
-<p>百度开发，"baidu-rpc"，支持多种协议，性能优良。</p>
-</blockquote>
-<h3 id="grpc">GRPC</h3>
-<blockquote>
-<p>谷歌开发，基于Netty，服务于TensorFlow的底层通信。</p>
-</blockquote>
-<h3 id="thrift">Thrift</h3>
-<blockquote>
-<p>Facebook开发。</p>
-</blockquote>
-<h2 id="注册中心---zookeeper">注册中心 - Zookeeper</h2>
-]]></content>
-      <categories>
-        <category>框架入门</category>
-      </categories>
-      <tags>
-        <tag>并发</tag>
-        <tag>分布式</tag>
-        <tag>Dubbo</tag>
+        <tag>Mybatis</tag>
+        <tag>orm</tag>
+        <tag>数据库</tag>
       </tags>
   </entry>
   <entry>
@@ -3482,73 +3293,6 @@
         <tag>并发</tag>
         <tag>网络</tag>
         <tag>负载均衡</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Mybatis流程源码分析</title>
-    <url>/2021/02/20/codeAnalyse/mybatis%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h1 id="mybatis流程">Mybatis流程</h1>
-<h2 id="创建sqlsessionfactory的流程">创建SqlSessionFactory的流程</h2>
-<blockquote>
-<p>由于创建工厂需要许多配置，mybatis利用了Builder模式。</p>
-<p>先创建SqlSessionFactoryBuilder，调用SqlSessionFactoryBuilder的build方法，本质上就是通过解析xml文件，将文件内容映射到Configuration对象中，然后利用这个对象产生builder创建工厂所需的配置，然后创建出SqlSessionFactory。</p>
-<p>具体则是先将xml的输入流传给SqlSessionFactoryBuilder，然后创建一个XMLConfigBuilder，负责解析xml内容放入configuration对象，解析的过程中会按类别解析，通过调用不同的方法解析xml的不同部分。解析mapper还有专门的XMLMapperBuilder其中对于二级缓存的处理也在这里进行。解析完成后configuration对象会保存全部的配置信息。</p>
-</blockquote>
-<h2 id="利用sqlsessionfactory创建sqlsession的流程">利用SqlSessionFactory创建SqlSession的流程</h2>
-<blockquote>
-<p>就是SqlSessionFactory调用openSession，传入ExecutorType、TransactionIsolationLevel、autoCommit三个参数，或让mybatis按默认设置，</p>
-<p>ExecutorType有BatchExecutor、ReuseExecutor、SimpleExecutor、CachingExecutor四种。</p>
-<p>​ BatchExecutor 让update操作变为批处理操作，即让连续的update先累积，等到下一次query操作前再一起执行。是使用List作为批处理存储。对于update操作会复用最近一次的statement。失败了会全部回滚。</p>
-<p>​ ReuseExecutor 复用Statement，利用Map&lt;String, Statement&gt;来判定。</p>
-<p>​ SimpleExecutor 即使用的Statement直接关闭。</p>
-<p>​ CachingExecutor 相当于在前面三个执行者的基础上套了一层缓存机制，让query方法先查看缓存，只有缓存没有时再让三个执行者执行操作。这里的缓存是通过mybatis自己实现的statement对象内部的cache实现的，有些类似hashmap，是利用cache和cachekey获得的结果。</p>
-<p>TransactionIsolationLevel即事物隔离级别。</p>
-<p>​ READ_UNCOMMITTED 读未提交 存在脏读、不可重复读、幻读</p>
-<p>​ READ_COMMITTED 读提交 存在不可重复读、幻读</p>
-<p>​ REPEATABLE_READ 可重复读 存在幻读</p>
-<p>​ SERIALIZABLE 序列化</p>
-<p>autoCommit是否自动提交。</p>
-</blockquote>
-<h2 id="利用sqlsession创建mapper">利用SqlSession创建Mapper</h2>
-<blockquote>
-<p>SqlSession使用getMapper方法，实际上是调用了configuration中的mapperRegistry的getMapper方法，这里使用了动态代理的设计模式。同时这里还使用了工厂方法，根据不同的类名创建对应的代理工厂。</p>
-<p>这个动态代理是JDK代理，它需要使用对应类加载器，对应类接口，对应的InvocationHandler。在mybatis中InvocationHandler是MapperProxy，MapperProxy的重写的invoke函数逻辑是对于Object自带的方法直接调用，对于接口默认的方法直接调用(这个特性是由于JDK8让接口方法可以有默认实现)。对于接口的方法则创建一个MapperMethod对象，该对象使用了缓存机制，利用Map&lt;Method, MapperMethod&gt;缓存方法。</p>
-<p>而MapperMethod的excuse即为代理方法的实现，该类中含有MethodSignature、SqlCommand两个内部类用于实现解析sql及方法，而具体方法实现是根据判断当前sql是增删改查中的哪种再调用sqlSession的方法来实现的。</p>
-</blockquote>
-<h2 id="executor与handler">Executor与Handler</h2>
-<blockquote>
-<p>Executor是通过StatementHandler来执行sql的。StatementHandler先prepare方法配置基础设置，然后使用parameterize来设置statement的参数。若为query操作则StatementHandler会使用ResultSetHandler来处理结果集。</p>
-<p>StatementHandler为抽象interface mybatis基于这个接口实现了抽象类BaseStatementHandler，还实现了路由类RoutingStatementHandler，路由类是用于根据参数创建对应具体类的。而抽象类是作为三个具体类的基础，三个具体类分别为CallableStatementHandler、PreparedStatementHandler、SimpleStatementHandler。</p>
-<p>抽象类提供给三个具体类prepare方法，其中prepare中含有抽象方法instantiateStatement，是由具体子类实现的。(模板方法模式)</p>
-</blockquote>
-<h2 id="mybatis对于数据库操作的整体流程">mybatis对于数据库操作的整体流程</h2>
-<blockquote>
-<p>先使用builder模式，根据输入的xml输入流，利用对应XML解析对象解析，并将结果最终存入Configuration对象，然后利用Configuration对象创建出一个对应的SqlSessionFactory。</p>
-<p>然后需要通过sqlSessionFactory的openSession方法创建一个SqlSession，这里可以设置SqlSession的Executor、TransactionIsolationLevel和autoCommit。Executor代表这个SqlSession采用什么执行器，执行器是对statement对象的处理。具体执行器共有3种：SimpleExecutor 、ReuseExecutor 、BatchExecutor 。同时若启用了缓存cache，则会在执行器外再包装一层CachingExecutor ，相当于对于查询操作提供了二级缓存。这个缓存是位于mybatis的MappedStatement类中。本质上这种缓存就是一个嵌套的哈希结构。Map&lt;Cache, TransactionalCache&gt;，TransactionalCache也是key-value结构。</p>
-<p>而事物隔离即为正常的数据库事物隔离级别。</p>
-<p>创建完SqlSession后，调用SqlSession的getMapper方法获取对应mapper对象。这里使用了动态代理。mybatis是先根据传入的类对象，通过configuration的配置信息中的MapperRegistry类对象找到对应的proxy工厂，利用代理工厂创建对应的代理对象。代理对象的创建使用的是JDK动态代理，即传入需要代理的类加载器、需要代理的接口、以及InvocationHandler。mybatis的handler是先判断方法是否为Object的，然后判断方法是否为接口默认实现的。只有接口未实现的方法才进行特殊处理，处理过程即为根据方法的类型(增删改查)，执行SqlSession的对应方法。</p>
-<p>SqlSession执行对应方法则是利用SqlSession内部的executor执行对应操作的。所以实际上sql操作还是由executor执行的。而executor执行操作需要利用StatementHandler先后执行prepare初始化基本配置和parameterize处理参数。参数的处理利用了ParameterHandler，这个时候typeHandler就会起作用。若为query操作还需要对返回值进行处理，处理时利用了ResultSetHandler，这个时候typeHandler就会起作用。</p>
-</blockquote>
-<h2 id="mybatis的缓存机制">mybatis的缓存机制</h2>
-<blockquote>
-<p>mybatis共有两个缓存机制：一级缓存和二级缓存。</p>
-<p>一级缓存默认开启且无法关闭。</p>
-<p>二级缓存需要配置。</p>
-<p>一级缓存是Executor的基本实现类BaseExecutor中实现的，本质上是个Map&lt;Object, Object&gt;。由于每个SqlSession里都带有一个Executor，故一级缓存是SqlSession层面的。</p>
-<p>二级缓存则需要手动配置，开启后会在具体的Executor之外使用CachingExecutor包装，这里使用了装饰者模式。二级缓存本质上是在namespace层面的缓存。</p>
-</blockquote>
-<h2 id="mybatis是怎么实现和springboot的整合的">mybatis是怎么实现和SpringBoot的整合的？</h2>
-<blockquote>
-
-</blockquote>
-]]></content>
-      <categories>
-        <category>源码分析</category>
-      </categories>
-      <tags>
-        <tag>数据库</tag>
-        <tag>Mybatis</tag>
-        <tag>orm</tag>
       </tags>
   </entry>
   <entry>
@@ -3880,6 +3624,171 @@
       </tags>
   </entry>
   <entry>
+    <title>SpringBoot常用配置</title>
+    <url>/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/</url>
+    <content><![CDATA[<h1 id="springboot常用配置">SpringBoot常用配置</h1>
+<h2 id="选择不同配置">选择不同配置</h2>
+<blockquote>
+<p>也可以通过在类中使用@Profile("xx")来表示这个类只有在xx为active的情况下才可使用。</p>
+<figure>
+<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/springboot多配置文件设置启用.png" alt="springboot多配置文件设置启用"><figcaption aria-hidden="true">springboot多配置文件设置启用</figcaption>
+</figure>
+</blockquote>
+<h2 id="自动加载配置文件的内容">自动加载配置文件的内容</h2>
+<blockquote>
+<p><span class="citation" data-cites="Value">@Value</span></p>
+<p><span class="citation" data-cites="ConfigurationProperties">@ConfigurationProperties</span>(prefix = "spring.datasource.druid.write") 使用该注解需要引入且要启用@EnableConfigurationProperties(使用前面一个注解的类.class)</p>
+<p><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;&#x2F;groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-configuration-processor&lt;&#x2F;artifactId&gt;</span><br><span class="line">    &lt;optional&gt;true&lt;&#x2F;optional&gt;</span><br><span class="line">&lt;&#x2F;dependency&gt;</span><br></pre></td></tr></table></figure></p>
+<p><span class="citation" data-cites="PropertySource">@PropertySource</span></p>
+</blockquote>
+<h2 id="配置文件的加载顺序下覆盖上">配置文件的加载顺序(下覆盖上)</h2>
+<blockquote>
+<ol type="1">
+<li>Application properties packaged inside your jar (application.properties and YAML variants).</li>
+<li>Profile-specific application properties packaged inside your jar (application-{profile}.properties and YAML variants).</li>
+<li>Application properties outside of your packaged jar (application.properties and YAML variants)</li>
+<li>Profile-specific application properties outside of your packaged jar (application-{profile}.properties and YAML variants).</li>
+</ol>
+</blockquote>
+<h2 id="自动加载的-application.properties-的加载顺序下覆盖上">自动加载的 application.properties 的加载顺序(下覆盖上)</h2>
+<blockquote>
+<ol type="1">
+<li><p>The classpath root</p></li>
+<li><p>The classpath /config package</p></li>
+<li><p>The current directory</p></li>
+<li><p>The /config subdirectory in the current directory</p></li>
+<li><p>Immediate child directories of the /config subdirectory</p></li>
+</ol>
+<p>4、5的差别就是如果config目录的根目录里有application.properties，则会将config子目录的application.properties覆盖。</p>
+<p>而classpath中springboot不会自动扫描config子目录中的目录。</p>
+<p>可以通过修改spring.config.name来修改默认配置文件名。</p>
+<p>修改spring.config.location 可以修改springboot获取配置文件的位置。</p>
+<p>修改spring.config.additional-location可以在springboot默认获取配置文件的位置的基础上补充一些获取配置文件的位置。optional: 前缀</p>
+</blockquote>
+<h2 id="可以使用来获取外部目录classpath中不能使用">可以使用*来获取外部目录，classpath中不能使用*</h2>
+<h2 id="可以使用---在.pro配置文件中划分逻辑页">可以使用#---在.pro配置文件中划分逻辑页</h2>
+<h2 id="使用---在.yml配置文件划分逻辑页">使用---在.yml配置文件划分逻辑页</h2>
+<h2 id="在多个配置文件中均存在同一个list的值则只会去最高优先级的list值">在多个配置文件中均存在同一个list的值，则只会去最高优先级的list值</h2>
+<h2 id="在多个配置文件中均存在同一个map的值则使用互补配置的方式构造map">在多个配置文件中均存在同一个Map的值，则使用互补配置的方式构造Map</h2>
+<h2 id="spring自动注入的注解">spring自动注入的注解</h2>
+<blockquote>
+<p><span class="citation" data-cites="Component">@Component</span>("name")将一个类生成一个Bean实例并用spring管理。<span class="citation" data-cites="Controller">@Controller</span>、<span class="citation" data-cites="Repository">@Repository</span>、<span class="citation" data-cites="Service都是类似的功能">@Service都是类似的功能</span>。这些注解要放在类上。</p>
+<p><span class="citation" data-cites="Bean">@Bean</span>("name")将一个方法返回的对象实例用spring管理。该注解放在方法上。</p>
+<p><span class="citation" data-cites="Autowired">@Autowired</span> 自动注入。该注解可以放在构造器方法、方法、参数、属性、注解上。</p>
+<p><span class="citation" data-cites="Primary">@Primary</span> 写在类上或方法上。为了消除自动装配的歧义性，如spring管理了两个都实现了同一父类的类，则存在@Primary 的类会被最先调用。</p>
+<p><span class="citation" data-cites="Qualifier">@Qualifier</span>("name")写在变量、方法、参数、类上、注解上，可以根据传入的name按名字查找spring管理的类。</p>
+</blockquote>
+<h2 id="spring监听器">Spring监听器</h2>
+<blockquote>
+<p>使用过程:</p>
+<p>​ 自定义事件，继承org.springframework.context.ApplicationEvent类。</p>
+<p>​ 自定义事件监听器，实现org.springframework.context.ApplicationListener接口。</p>
+<p>​ 在spring容器中发布事件。</p>
+<p>实现监听的方式：</p>
+<p>​ 自定义类实现ApplicationListener，在主函数中装载监听。</p>
+<p>​ 自定义类实现ApplicationListener，在接口上加上@Component注解</p>
+<p>​ 自定义类不实现接口，在对应方法上标明@EventListener注解。</p>
+<p>​ 自定义类实现ApplicationListener，在application.properties中配置context.listener.classes</p>
+</blockquote>
+<h2 id="spring内置容器的配置">Spring内置容器的配置</h2>
+<blockquote>
+<p>修改配置：</p>
+<ol type="1">
+<li><p>可以在application.properties中按server.xxx:的方式修改</p></li>
+<li><p>创建一个配置类通过编写public WebServerFactoryCustomizer<ConfigurableWebServerFactory> customizer()方法来设置。</ConfigurableWebServerFactory></p>
+<figure>
+<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/内嵌服务器配置修改.png" alt="内嵌服务器配置修改"><figcaption aria-hidden="true">内嵌服务器配置修改</figcaption>
+</figure></li>
+</ol>
+<p>更换容器：</p>
+<p>​ 通过先将start内的容器依赖去除然后导入新依赖即可。</p>
+<figure>
+<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/修改内嵌容器.png" alt="修改内嵌容器"><figcaption aria-hidden="true">修改内嵌容器</figcaption>
+</figure>
+</blockquote>
+<h2 id="过滤器和拦截器">过滤器和拦截器</h2>
+<blockquote>
+<p>过滤器：在进入servlet前过滤。</p>
+<p>实现方式：</p>
+<p>​ 创建类实现接口javax.servlet.Filter，加上@Component，然后使用一个如下的配置类注入spring容器。</p>
+<figure>
+<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/filterConfig.png" alt="filterConfig"><figcaption aria-hidden="true">filterConfig</figcaption>
+</figure>
+<p>​ 创建类实现接口javax.servlet.Filter，加上@WebFilter，然后在主启动类中加上@ServletComponentScan注解。</p>
+<p>拦截器：拦截方法。</p>
+<p>​ 创建类实现HandlerInterceptor接口，然后创建配置类实现WebMvcConfigurer接口，配置类如下。</p>
+<figure>
+<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/interceptorConfig.png" alt="interceptorConfig"><figcaption aria-hidden="true">interceptorConfig</figcaption>
+</figure>
+</blockquote>
+<h2 id="错误及异常处理">错误及异常处理</h2>
+<h3 id="数值校验">数值校验</h3>
+<blockquote>
+<p>在参数前加入@Valid/<span class="citation" data-cites="Validated注解">@Validated注解</span>，然后跟上BindingResult对象即可获取错误时的错误信息。如图</p>
+<p>利用配置文件ValidationMessages.properties中设置发生错误的提示信息。在bean的注解属性中通过{key}获取属性。</p>
+</blockquote>
+<h3 id="错误页指定">错误页指定</h3>
+<blockquote>
+<p>用到了再查</p>
+</blockquote>
+<h3 id="全局异常处理">全局异常处理</h3>
+<blockquote>
+<p>实现一个异常处理类并加上@ControllerAdvice注解。如图</p>
+<figure>
+<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/全局异常处理.png" alt="全局异常处理"><figcaption aria-hidden="true">全局异常处理</figcaption>
+</figure>
+</blockquote>
+<h2 id="日志">日志</h2>
+<h3 id="日志文件输出">日志文件输出</h3>
+<blockquote>
+<p>在application中添加logging.file.path = xxx 默认日志名为spring.log</p>
+<p>或添加logging.file.name = xxxx 默认输出路径为项目当前路径。</p>
+<p>二者不能同时使用。</p>
+</blockquote>
+<h3 id="日志级别控制">日志级别控制</h3>
+<blockquote>
+<p>日志级别有TRACE、DEBUG、INFO、WARN、ERROR、FATAL、OFF。</p>
+<p>logging.level.包名 = xxx级别</p>
+<p>logging.level.root = 设置全局日志级别</p>
+</blockquote>
+<h2 id="文档生成">文档生成</h2>
+<h3 id="swaggle">swaggle</h3>
+<blockquote>
+<figure class="highlight"><table><tr><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;io.springfox&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;springfox-swagger2&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.9.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line">		</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;io.springfox&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;springfox-swagger-ui&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.9.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableSwagger2</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SwaggerConfig</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Docket <span class="title">api</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Docket(DocumentationType.SWAGGER_2).select()</span><br><span class="line">                .apis(RequestHandlerSelectors.any())</span><br><span class="line">                .paths(PathSelectors.any())</span><br><span class="line">                .build();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>访问http://localhost:8080/v2/api-docs拿到api的json</p>
+<p>访问http://localhost:8080/swagger-ui.html获取页面</p>
+</blockquote>
+<h2 id="监控">监控</h2>
+<blockquote>
+<p>本质上是通过log收集信息，然后利用信息分析。</p>
+</blockquote>
+<h2 id="缓存">缓存</h2>
+<blockquote>
+<p><span class="citation" data-cites="Cacheable">@Cacheable</span>(value = "xx", key = "zz", condition = "yyy")</p>
+<p>​ value 表示缓存名</p>
+<p>​ key为缓存键，需要用SPEL写</p>
+<p>​ condition为缓存触发的条件，需要用SPEL写</p>
+<p>​ 缓存值为对应方法的返回值</p>
+<p><span class="citation" data-cites="CacheEvict">@CacheEvict</span>(beforeInvocation = true表示在方法触发前就移除了缓存) 移除缓存</p>
+<p><span class="citation" data-cites="CachePut">@CachePut</span> 添加缓存</p>
+</blockquote>
+<h2 id="微服务">微服务</h2>
+<blockquote>
+<p>注册中心</p>
+<p>服务提供者</p>
+<p>服务追踪</p>
+<p>服务治理</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>框架入门</category>
+      </categories>
+      <tags>
+        <tag>Springboot</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>数据库连接池</title>
     <url>/2021/02/20/codeAnalyse/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E6%B1%A0/</url>
     <content><![CDATA[<h1 id="数据库连接池">数据库连接池</h1>
@@ -3924,64 +3833,279 @@
       </tags>
   </entry>
   <entry>
-    <title>物理层</title>
-    <url>/2021/02/20/computerNetwork/%E7%AC%AC2%E7%AB%A0-%E7%89%A9%E7%90%86%E5%B1%82/</url>
-    <content><![CDATA[<h1 id="物理层">物理层</h1>
-<h2 id="物理层的基本概念">物理层的基本概念</h2>
+    <title>2.垃圾收集</title>
+    <url>/2021/02/20/JVMKnowledge/2.%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86/</url>
+    <content><![CDATA[<h1 id="垃圾收集">垃圾收集</h1>
 <blockquote>
-<p>尼奎斯特定理 $ C = 2Blog_2V $ 。C为最大数据速率，B为带宽频率，V为离散等级。</p>
-<p>香农定理<span class="math inline">\(C = B log_2(1+S/N)\)</span> 。S/N是信噪比，<span class="math inline">\(10log_{10}S/N\)</span>为分贝，B为带宽频率，C为最大数据速率。</p>
+<p>垃圾收集的步骤：判断对象是否存活(可回收) -&gt;</p>
 </blockquote>
-<h3 id="物理层的主要任务">物理层的主要任务</h3>
-<p>物理层解决如何在连接各种计算机的传输媒体上传输数据比特流。</p>
-<p>确定与传输媒体的接口的一些特性:</p>
+<h2 id="判断对象存活">判断对象存活</h2>
+<h3 id="引用计数">引用计数</h3>
 <blockquote>
-<p>机械特性:如接口形状、大小、引线数目</p>
-<p>电气特性:如规定电压范围</p>
-<p>功能特性:如规定-5V表示0</p>
-<p>过程特性/规程特性:规定建立连接时各个相关部件的工作步骤</p>
+<p>在对象中添加一个引用计数器，当一个地方有引用它时计数器值加一；引用失效时，计数器值就减一。计数器为0的对象是不可能再被引用的。</p>
+<p>存在循环引用的问题</p>
+<p>Java中没有使用。</p>
 </blockquote>
-<h2 id="数据通信的基础知识">数据通信的基础知识</h2>
+<h3 id="可达性分析算法">可达性分析算法</h3>
 <blockquote>
-<p>单向通信/单工通信 ---------只能有一个方向的通信而没有反方向的交互，如电台</p>
-<p>半双工通信---------通信双方都可以发送消息，但不能双方同时发送。如对讲机</p>
-<p>全双工通信--------通信的双方-可以同时发送和接收消息。如电话</p>
-<p>数据比特流传输距离较短,用解调器变为模拟信号后传输距离会加长。</p>
-<p>数据--------传送消息的实体</p>
-<p>信号--------数据的电气/电磁表现</p>
-<p>​ 模拟信号--------连续</p>
-<p>​ 数字信号---------离散</p>
-<p>码元----------在使用时间域的波形表示数字信号时，代表不同离散数值的基本波形</p>
-<p>信号调制方法:调幅、调频、调相</p>
+<p>基本思路：通过一系列称为GC Roots的根对象作为起始点集，当某个对象到起始点集间没有任何引用链相连时，这个对象就是不可能再被使用的。</p>
+<p>Java中固定可作为GC Roots的对象：</p>
+<p>​ 在虚拟机栈中引用的对象，如各个线程被调用的方法堆栈中使用到的参数、局部变量、临时变量等。</p>
+<p>​ 在方法区类静态属性引用的对象，如Java类引用类型静态变量。</p>
+<p>​ 在本地方法栈中JNI(Native方法)引用的对象。</p>
+<p>​ Java虚拟机内部的引用，如基本数据类型对应的Class对象，一些常驻的异常对象(NullPointExcepiton、OutOfMemoryError）还有系统类加载器。</p>
+<p>​ 所有被同步锁持有的对象。</p>
+<p>​ 反应Java虚拟机内部情况的JM XBean、JVMTI中注册的回调、本地代码缓存等。</p>
+<p>除了固定GC Roots集合外，根据用户选用的垃圾收集器及当前回收的内存区域不同，还可以有其他对象加入。</p>
+<p>被判定为不可达的对象还不会被立即回收。真正回收需要经历至少两个标记过程：</p>
+<p>​ 若对象在进行可达性分析后分析没有和GC Roots相连接的引用链，会被第一次标记。随后进行一次筛选，若这个对象没有覆盖finalize方法或该方法已经被虚拟机调用，则没有必要执行finalize方法。</p>
+<p>​ 若需要执行finalize方法，则会将对象放入F-Queue队列中，然后自动启用线程执行队列中对象的finalize方法。执行后收集器会对队列中对象进行第二次小规模标记，若对象在finalize方法中重新和引用链上的任何一个对象建立关联，第二次标记时它会被移除即将回收的集合。否则，它通常要被回收。</p>
 </blockquote>
-<h2 id="物理层下的传输媒体">物理层下的传输媒体</h2>
-<h3 id="导向传输媒体">导向传输媒体</h3>
+<h2 id="回收方法区">回收方法区</h2>
 <blockquote>
-<p><span class="math display">\[
-常用传输频率10^4-------- 10^{16}
-\]</span></p>
-<p>双绞线:</p>
-<p>​ 屏蔽双绞线STP</p>
-<p>​ 无屏蔽双绞线UTP</p>
-<p>同轴电缆:</p>
-<p>​ 50Ω同轴电缆用于数字传输，基带同轴电缆</p>
-<p>​ 75Ω同轴电缆用于模拟传输，宽带同轴电缆</p>
+<p>主要回收废弃的常量和不再使用的类型。</p>
+<p>回收常量要求：当前常量进入了常量池，且当前系统没有任何一个对象的值是该常量。</p>
+<p>回收类型的条件：</p>
+<p>​ 该类所有的实例已经被回收。</p>
+<p>​ 加载该类的类加载器被回收。</p>
+<p>​ 该类对应的java.lang.Class对象没有在任何地方被引用，无法在任何地方通过反射访问该类的方法。</p>
 </blockquote>
-<h2 id="信道复用技术">信道复用技术</h2>
+<h2 id="引用的概念">引用的概念</h2>
 <blockquote>
-<p>频分复用:每个用户使用不同的频率传递。</p>
-<p>时分复用:将单位时间划分为若干个时间片，每个用户使用对应的时间片传递。 统计时分复用在发送数据时在数据中添加标记，接收方根据标记判定谁接收并将标记去除。</p>
-<p>波分复用:每个用户使用不同的波长传递。</p>
-<p>码分复用:自己的码片乘积为1，同他人码片乘积为0，传输的信号为原数据同对应码片的乘积，总的传输信号为各个设备传输的信号之和，接收者只要将总信号同自己的码片相乘即可得到需要接收的值。</p>
-<p>码分复用的缺点:设备数变多后码片需要越多</p>
+<p>Java的引用在JDK1.2后分为强引用、软引用、弱引用、虚引用。</p>
+<p>强引用：最传统的引用的概念，只有强引用关系存在，垃圾收集器就永远不回收被引用的对象。</p>
+<p>软引用：描述一些还有用但非必须的对象。只被软引用关联的对象，在系统将要发生内存溢出异常时，会将这些对象列入回收访问进行第二次回收，若回收还没有足够内存，抛出内存溢出异常。</p>
+<p>弱引用：描述非必须的对象，被弱引用关联的对象只能生存到下一次垃圾收集发送为止。</p>
+<p>虚引用：最弱的引用关系。无法通过虚引用来取得一个对象实例，为对象设置虚引用关联的唯一目的只是为了能在这个对象被收集器回收时收到一个系统通知。</p>
+</blockquote>
+<h2 id="垃圾收集算法">垃圾收集算法</h2>
+<blockquote>
+<p>可以分为引用计数式垃圾收集和追踪式垃圾收集。</p>
+<p>Java主流虚拟机中只有追踪式垃圾收集。</p>
+</blockquote>
+<h3 id="分代收集理论">分代收集理论</h3>
+<blockquote>
+<p>弱分代假说：绝大多数对象都是朝生夕灭的。</p>
+<p>强分代假说：熬过越多次垃圾收集过程的对象越难消灭。</p>
+<p>跨代引用假说：跨代引用相对于同代引用来说仅占极少数。</p>
+<p>新生代收集（Minor GC/Young GC）：指目标只是新生代的垃圾收集。</p>
+<p>老年代收集（Major GC/Old GC）：指目标只是老年代的垃圾收集。目前只有CMS收集器会有单独收集老年代的行为。</p>
+<p>混合收集（Mixed GC）：指目标是收集整个新生代以及部分老年代的垃圾收集。目前只有G1收 集器会有这种行为。</p>
+<p>整堆收集（Full GC）：收集整个Java堆和方法区的垃圾收集</p>
+</blockquote>
+<h3 id="标记-清除算法">标记-清除算法</h3>
+<blockquote>
+<p>先标记所有需要回收的对象，标记完成后统一回收掉所有被标记的对象。</p>
+<p>存在的问题：</p>
+<p>​ 若Java堆中包含大量对象，且大部分都是需要被回收的，需要进行大量的标记清除动作。</p>
+<p>​ 内存空间碎片化，标记、清除后会产生大量不连续的内存碎片。</p>
+</blockquote>
+<h3 id="标记-复制">标记-复制</h3>
+<blockquote>
+<p>为了解决标记-清除算法面对大量可回收对象时执行效率低的问题。</p>
+<p>半区复制：将可用内存按容量划分为大小相等的两块，每次只使用其中一块，当一块内存用完了，将还存活着的对象复制到另一块上，然后将已使用过的内存空间一次清理掉。</p>
+<p>Appel式回收：分为1块Eden，两块Survivor，分配时使用1块Eden，1块Survivor。回收时将存活的对象放入另一块Survivor中，清理之前使用的Eden和Survivor。内存只浪费了1块Survivor。</p>
+<p>优点：当多数对象是可回收的情况时，算法复制的对象少，且分配内存时不用考虑有空间碎片的复杂情况，实现简单。</p>
+<p>缺点：浪费了内存空间。</p>
+</blockquote>
+<h3 id="标记-整理算法">标记-整理算法</h3>
+<blockquote>
+<p>一般是针对老年代对象。标记完成后不是直接对可回收对象进行清理，而是让所有存活的对象都想内存空间一端移动，然后直接清理掉边界外的内存。</p>
+<p>缺点：移动过程耗时较长。</p>
+<p>优点：不用考虑内存碎片化问题，降低了内存分配器及内存访问器的复杂度。</p>
+</blockquote>
+<h2 id="hotpot算法细节">Hotpot算法细节</h2>
+<blockquote>
+<p>根节点枚举(使用一个OopMap记录)</p>
+<p>安全点(到达安全点时将引用关系收集到OopMap，主动式中断和抢占式中断)</p>
+<p>安全区域(类似于安全点的扩展)</p>
+<p>记忆集和卡表：</p>
+<p>​ 记忆集：为了解决对象跨代引用问题，建立的从非收集区域指向收集区域的指针集合的抽象数据结构。</p>
+<p>​ 卡表：以卡精度实现的记忆集。每个记录精确到一块内存区域，该区域内有对象含有跨代指针。</p>
+<p>写屏障：为了在机器码的层面将维护卡表的动作放到每个赋值操作之中。赋值操作会在写屏障的覆盖范围中，赋值前部分为写前屏障，赋值后部分为写后屏障，一般来说，都是在写后屏障执行卡表的更新。</p>
+<p>卡表带来的高并发问题：伪共享，由于CPU的缓存系统是缓存行为单位存储的，当多线程修改互相独立的变量时，若这些变量刚好共享同一个缓存行，就会互相影响。为了避免这个问题，简单的解决方案是先检查卡表标记，当卡表元素未被标记时才将其标记变脏。</p>
+<p>并发的可达性分析：扫描过程时垃圾收集器和用户线程存在并发问题，，可用的解决方法有增量更新(插入引用时记录，扫描完成后以记录的再扫描)、原始快照(删除引用时记录，扫描完成时按记录的再扫描)。</p>
+</blockquote>
+<h2 id="经典垃圾收集器">经典垃圾收集器</h2>
+<h3 id="serial收集器">Serial收集器</h3>
+<blockquote>
+<p>单线程、简单高效、是所有收集器里额外内存消耗最小的，但是进行垃圾收集时必须暂停其他所有工作线程。</p>
+<p>新生代采用复制算法暂停所有用户线程，老年代采用标记-整理算法暂停所有用户线程。</p>
+</blockquote>
+<h3 id="parnew收集器">ParNew收集器</h3>
+<blockquote>
+<p>是Serial收集器的多线程并行版本。可以和CMS收集器配合使用。</p>
+<p>新生代采用多线程复制算法暂停所有用户线程，老年代采用标记-整理算法暂停所有用户线程。</p>
+</blockquote>
+<h3 id="parallel-scavenge收集器">Parallel Scavenge收集器</h3>
+<blockquote>
+<p>基于标记-复制算法实现的新生代收集器，也是能够并行收集的多线程收集器。</p>
+<p>而Parallel Scavenge收集器的目标则是达到一个可控制的吞吐量(Throughput)，吞吐量就是处理器用于运行用户代码的时间与处理器总消耗时间的比值。</p>
+<p>-XX：MaxGCPauseMillis：允许的值是一个大于0的毫秒数，收集器将尽力保证内存回收花费的时间不超过用户设定值，会降低吞吐量。</p>
+<p>-XX：GCTimeRatio：值应当是一个大于0小于100的整数，也就是垃圾收集时间占总时间的比率，相当于吞吐量的倒数。</p>
+<p>-XX：+UseAdaptiveSizePolicy：一个开关参数，开启后可以自动调节参数。</p>
+</blockquote>
+<h3 id="serial-old收集器">Serial Old收集器</h3>
+<blockquote>
+<p>是Serial收集器的老年代版本，是一个单线程收集器，使用标记-整理算法。</p>
+</blockquote>
+<h3 id="parrallel-old收集器">Parrallel Old收集器</h3>
+<blockquote>
+<p>是Parallel Scavenge收集器的老年代版本，支持多线程并发收集，基于标记-整理算法。</p>
+</blockquote>
+<h3 id="cms收集器">CMS收集器</h3>
+<blockquote>
+<p>是一种以获取最短回收停顿时间为目标的收集器。它是基于标记-清除算法实现的。其运作过程分为4步：</p>
+<p>​ 初始标记(需要stop the world)</p>
+<p>​ 并发标记</p>
+<p>​ 重新标记(需要stop the world)</p>
+<p>​ 并发清除</p>
+<p>缺点：</p>
+<p>​ CMS收集器对处理器资源非常敏感。会因为占据了一部分线程导致应用程序变慢。CMS默认启动回收线程为(处理器核心数量 + 3 )/4。导致处理器核心&lt;4时占用的性能过多。</p>
+<p>​ CMS处理器无法处理浮动垃圾，可能出现“Concurrent Mode Failure”，从而引发Full GC。因为标记结束后，很可能产生新垃圾，CMS无法在当次收集时处理，只能留到下次。所以CMS需要预留一部分空间给并发收集时程序运行使用，可以通过-XX：CMSInitiatingOccupancyFraction来调节。</p>
+<p>​ 由于CMS是基于标记-清除算法实现的，会产生大量空间碎片。当碎片过多，大对象很难分配，触发Full GC。-XX：+UseCMS-CompactAtFullCollection:开关参数，让CMS触发Full GC时进行碎片整理。</p>
+</blockquote>
+<h3 id="garbage-first收集器">Garbage First收集器</h3>
+<blockquote>
+<p>简称G1，它开创了收集器面向局部收集的设计思路和基于Region的内存布局形式。它是一款主要面向服务端应用的垃圾收集器。</p>
+<p>在G1之前的垃圾收集器垃圾收集的范围要么是整个新生代，要么是整个老年代，要么就是Full GC，G1则是面向堆内存任何部分来组成回收集，衡量标准是哪块内存中存放的垃圾数量最多。</p>
+<p>它开创了基于Region的堆内存布局。相当于将堆内存划分为大小相同的连续独立区域，每个区域按需要划分出空间。Region中还要特殊的Humongous区域，专门用于存储大对象。G1将大小超过一个Region容量一半的对象就判定为大对象。超过整个Region容量的对象会被存放到n个连续的Region中。</p>
+<p>流程：</p>
+<p>​ 初始标记</p>
+<p>​ 并发标记</p>
+<p>​ 最终标记</p>
+<p>​ 筛选回收</p>
+</blockquote>
+<h3 id="低延迟垃圾收集器">低延迟垃圾收集器</h3>
+<blockquote>
+<p>Shenandoah收集器</p>
 </blockquote>
 ]]></content>
       <categories>
-        <category>基础知识</category>
-        <category>计算机网络</category>
+        <category>JVM</category>
       </categories>
       <tags>
-        <tag>网络</tag>
+        <tag>Java</tag>
+        <tag>JVM</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>1.JAVA内存管理</title>
+    <url>/2021/02/20/JVMKnowledge/1.JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/</url>
+    <content><![CDATA[<h1 id="java内存管理">JAVA内存管理</h1>
+<h2 id="java内存区域">Java内存区域</h2>
+<h3 id="总览">总览</h3>
+<blockquote>
+<p>堆+栈+程序计数器</p>
+<p>堆: 方法区 + 堆</p>
+<p>栈: 虚拟机栈 + 本地方法栈</p>
+</blockquote>
+<figure>
+<img src="/2021/02/20/JVMKnowledge/1.JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Java内存区域.png" alt="Java内存区域"><figcaption aria-hidden="true">Java内存区域</figcaption>
+</figure>
+<h3 id="各部分的作用">各部分的作用</h3>
+<h4 id="程序计数器">程序计数器</h4>
+<blockquote>
+<p>是当前线程所执行的字节码的行号指示器。各线程均有一个程序计数器。如果执行的是Java方法，则程序计数器记录的值为正在执行的虚拟机字节码的地址。若执行的是本地方法，则此时程序计数器的值为undefined。该区域没有规定任何OutOfMemoryError情况。</p>
+</blockquote>
+<h4 id="java虚拟机栈">Java虚拟机栈</h4>
+<blockquote>
+<p>生命周期和线程一致，且是线程私有的。当每个方法被执行时，Java虚拟机栈就会创建一个栈帧来保存局部变量表、操作数栈、动态连接、方法出口等信息。每个方法从被调用到执行完毕的过程，对应着一个栈帧在虚拟机栈中入栈到出栈的过程。</p>
+<p>局部变量表用于存储各种Java虚拟机的<strong>基本数据类型</strong>、<strong>对象引用</strong>(reference类型，不等同与对象本身，可以是对象起始地址的引用指针，也可以是指向一个代表对象句柄或其他与此对象有关的位置)和<strong>returnAdress类型</strong>(指向了一条字节码指令的地址)。在虚拟机栈中，这些数据类型都是用变量槽来表示的。其中64位的long和double占两个变量槽，其他的均只占一个变量槽。局部变量表的大小在<strong>编译期间</strong>就已经完成，故方法所需栈帧分配的局部变量表空间是完全确定的，且不会发生改变。这里空间是指变量槽数，不是具体字节/比特数。</p>
+<p>当调用的方法是非static方法时，局部变量表中第0索引的Slot变量槽默认是this关键字指向的对象。</p>
+<p>可能出现的异常：</p>
+<p>​ StackOverflowError：线程请求栈深度超过虚拟机允许的深度。</p>
+<p>​ OutOfMemoryError：当虚拟机栈容量可以动态拓展时，不能申请到足够的内存。</p>
+</blockquote>
+<h4 id="本地方法栈">本地方法栈</h4>
+<blockquote>
+<p>和虚拟机栈类似，虚拟机栈为虚拟机执行Java方法服务，而本地方法栈是为虚拟机使用到的本地方法服务。</p>
+</blockquote>
+<h4 id="java堆">Java堆</h4>
+<blockquote>
+<p>Java堆是虚拟机所管理的内存中最大的一块。它是被所有线程共享的一块内存区域，在虚拟机启动时创建。java堆的唯一目的就是存放对象实例。它也是垃圾收集器管理的内存区域。大部分垃圾收集器都是基于分代收集理论设计的。</p>
+<p>从分配内存的角度看，所有线程共享的Java堆可以划分出多个线程私有的分配缓冲区。</p>
+<p>可能出现的异常：</p>
+<p>​ OutOfMemoryError：Java堆中没有内存完成实例分配，且堆无法再拓展。</p>
+</blockquote>
+<h4 id="方法区">方法区</h4>
+<blockquote>
+<p>HotSpot：JDK8后使用在本地内存中实现的元空间来代替JDK7中永久代还剩余的内容，JDK6之前使用永久代来实现方法区。</p>
+<p>方法区是各个线程共享的内存区域，用于存储已被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等数据。</p>
+<p>这个区域的回收目标主要是针对常量池的回收和对类型的卸载。</p>
+<p>可能出现的异常：</p>
+<p>​ OutOfMemoryError：方法区无法满足新的内存分配需求。</p>
+</blockquote>
+<h5 id="运行时常量池">运行时常量池</h5>
+<blockquote>
+<p>运行时常量池是方法区的一部分。该部分用于存放编译器生成的各种字面量与符号引用即常量池表。</p>
+</blockquote>
+<h4 id="直接内存">直接内存</h4>
+<blockquote>
+<p>直接内存不是虚拟机运行时数据区的一部分，也不是Java虚拟机规范中定义的内存区域。</p>
+<p>如JDK1.4引入的NIO可以使用Native函数分配堆外内存，然后通过一个存储在Java堆里的DirectByteBuffer对象作为这块内存的引用进行操作。</p>
+<p>本机的直接内存的分配不会受到Java堆大小的限制，但是会受到本机总内存大小及处理器寻址空间的限制。</p>
+</blockquote>
+<h2 id="hotspot虚拟机对象相关内容">HotSpot虚拟机对象相关内容</h2>
+<h3 id="对象创建">对象创建</h3>
+<blockquote>
+<p>步骤分为：类加载检查 -&gt; 分配内存 -&gt; 初始化 -&gt; 对象设置 -&gt; 等待执行构造函数</p>
+<p>类加载检查：当Java虚拟机遇到一条字节码new指令时，首先检查这个指令的参数是否可以从常量池地位到一个类的符号引用，并且检查这个符号引用代表的类是否已经被加载、解析、初始化过。若没有执行相应类的类加载过程。</p>
+<p>分配内存：类加载完成后对象所需内存大小可以完全确定，分配内存的方法分为指针碰撞法和空闲列表法。</p>
+<p>​ 指针碰撞法：将Java堆的内存视为绝对规整，使用过的内存在一边，未使用过的内存在另一边，分配内存时只需要将指针朝未使用过的内存那边移动即可。该方法要求垃圾收集器需要有空间压缩整理能力。</p>
+<p>​ 空闲列表法：Java堆的内存中使用过的内存和未使用过的内存交错在一起，需要维护一个列表记录哪些内存块可用。</p>
+<p>分配内存时需要考虑并发问题：即当A利用指针分配内存但还为修改指针位置时，B也使用原来的指针分配内存。解决该问题可以使用CAS加失败重试或把内存操作按照线程划分在不同的空间之中进行，即每个线程在Java堆中预先分配一小块内存，称为TLAB(本地线程分配缓冲)，只有本地缓冲区的内存用完了，分配新缓冲区时才需要同步锁定。</p>
+<p>初始化：虚拟机将分配到的内存空间都初始化为0值。</p>
+<p>对象设置：将对象信息如对象是哪个类的实例、如何找到类的元数据信息、对象的GC分代年龄等存入对象的对象头中。</p>
+<p>等待执行构造函数：虚拟机等到执行了<init>()方法，完成对对象的全部初始化，此时对象才算被完全的构造出来。</init></p>
+</blockquote>
+<h3 id="对象内存布局">对象内存布局</h3>
+<blockquote>
+<p>存储布局划分为三个部分：对象头、实例数据、对齐填充(padding)</p>
+<p>对象头可以分为两类：</p>
+<p>​ 一类存储对象自身的运行时数据，如HashCode、GC分代年龄、锁状态标识、线程持有的锁、偏向线程ID、偏向时间戳等。被称为Mark Word。</p>
+<p>​ 另一类为类型指针，即对象指向它的类型元数据的指针。Java虚拟机通过这个指针来确定该对象是哪个类的实例。若对象为Java数组，对象头中还要一块用于记录数组长度的数据。</p>
+<p>实例数据：即对象真正存储的有效信息，无论是从父类继承还是子类自己定义的字段。存储顺序可以通过(-XX:FieldsAllocationStyle参数)及字段在源码中定义顺序来调整。HotSpot默认分配顺序会将相同宽度的字段分配到一起存放，如longs/doubles。</p>
+<p>padding：即填充部分，无意义，只是用于将数据对齐。</p>
+</blockquote>
+<h3 id="对象访问定位">对象访问定位</h3>
+<blockquote>
+<p>Java程序会通过栈上的reference数据来操作栈上的具体对象。</p>
+<p>主流的访问方式分为句柄和直接指针：</p>
+<p>​ 句柄：Java堆中可能划分出一块内存作为句柄池，reference存储的就是对象的句柄地址，而句柄包含对象实例数据与类型数据各自具体的地址信息。</p>
+<p>​ 直接指针：reference存储的就是对象地址，访问对象本身不需要多一次间接访问。</p>
+<p>​ 两者的优点：句柄访问的优势在于reference存储的是稳定的句柄地址，对象被移动(垃圾回收时对象常常需要被移动)时只需要改变句柄中实例数据指针即可。直接指针的优势在于速度更快，减少了一次指针定位的开销。</p>
+</blockquote>
+<h2 id="触发异常的情况">触发异常的情况</h2>
+<h3 id="java堆内存的outofmemoryerror异常">Java堆内存的OutOfMemoryError异常</h3>
+<blockquote>
+<p>不断创建对象且保证GC Roots到对象之间有可达路径来避免垃圾回收机制清除这些对象。</p>
+</blockquote>
+<h3 id="虚拟机栈和本地方法栈溢出">虚拟机栈和本地方法栈溢出</h3>
+<blockquote>
+<p>-Xss设置栈容量。</p>
+<p>1）如果线程请求的栈深度大于虚拟机所允许的最大深度，将抛出StackOverflowError异常。</p>
+<p>2）如果虚拟机的栈内存允许动态扩展，当扩展栈容量无法申请到足够的内存时，将抛出OutOfMemoryError异常。</p>
+<p>创建太多线程也会导致OutOfMemoryError异常。</p>
+</blockquote>
+<h2 id="方法区和运行时常量池溢出">方法区和运行时常量池溢出</h2>
+<blockquote>
+<p>运行时常量池，从JDK7开始后原本存放到永久代的字符串常量池被移动到Java堆中。</p>
+<p>-XX：PermSize和-XX：MaxPermSize限制永久代大小。</p>
+<p>方法区溢出会在运行时产生大量的类时出现，OutOfMemoryError。</p>
+</blockquote>
+<h3 id="本机直接内存溢出">本机直接内存溢出</h3>
+<blockquote>
+<p>大小默认与Java堆最大值一致。可以通过-XX：MaxDirectMemorySize参数指定。</p>
+<p>直接或间接(NIO)使用了太多是Unsafe::allocateMemory()分配过多的直接内存会触发OutOfMemoryError异常。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>JVM</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>JVM</tag>
       </tags>
   </entry>
   <entry>
@@ -4158,171 +4282,6 @@
       </categories>
       <tags>
         <tag>网络</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SpringBoot常用配置</title>
-    <url>/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/</url>
-    <content><![CDATA[<h1 id="springboot常用配置">SpringBoot常用配置</h1>
-<h2 id="选择不同配置">选择不同配置</h2>
-<blockquote>
-<p>也可以通过在类中使用@Profile("xx")来表示这个类只有在xx为active的情况下才可使用。</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/springboot多配置文件设置启用.png" alt="springboot多配置文件设置启用"><figcaption aria-hidden="true">springboot多配置文件设置启用</figcaption>
-</figure>
-</blockquote>
-<h2 id="自动加载配置文件的内容">自动加载配置文件的内容</h2>
-<blockquote>
-<p><span class="citation" data-cites="Value">@Value</span></p>
-<p><span class="citation" data-cites="ConfigurationProperties">@ConfigurationProperties</span>(prefix = "spring.datasource.druid.write") 使用该注解需要引入且要启用@EnableConfigurationProperties(使用前面一个注解的类.class)</p>
-<p><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;&#x2F;groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-configuration-processor&lt;&#x2F;artifactId&gt;</span><br><span class="line">    &lt;optional&gt;true&lt;&#x2F;optional&gt;</span><br><span class="line">&lt;&#x2F;dependency&gt;</span><br></pre></td></tr></table></figure></p>
-<p><span class="citation" data-cites="PropertySource">@PropertySource</span></p>
-</blockquote>
-<h2 id="配置文件的加载顺序下覆盖上">配置文件的加载顺序(下覆盖上)</h2>
-<blockquote>
-<ol type="1">
-<li>Application properties packaged inside your jar (application.properties and YAML variants).</li>
-<li>Profile-specific application properties packaged inside your jar (application-{profile}.properties and YAML variants).</li>
-<li>Application properties outside of your packaged jar (application.properties and YAML variants)</li>
-<li>Profile-specific application properties outside of your packaged jar (application-{profile}.properties and YAML variants).</li>
-</ol>
-</blockquote>
-<h2 id="自动加载的-application.properties-的加载顺序下覆盖上">自动加载的 application.properties 的加载顺序(下覆盖上)</h2>
-<blockquote>
-<ol type="1">
-<li><p>The classpath root</p></li>
-<li><p>The classpath /config package</p></li>
-<li><p>The current directory</p></li>
-<li><p>The /config subdirectory in the current directory</p></li>
-<li><p>Immediate child directories of the /config subdirectory</p></li>
-</ol>
-<p>4、5的差别就是如果config目录的根目录里有application.properties，则会将config子目录的application.properties覆盖。</p>
-<p>而classpath中springboot不会自动扫描config子目录中的目录。</p>
-<p>可以通过修改spring.config.name来修改默认配置文件名。</p>
-<p>修改spring.config.location 可以修改springboot获取配置文件的位置。</p>
-<p>修改spring.config.additional-location可以在springboot默认获取配置文件的位置的基础上补充一些获取配置文件的位置。optional: 前缀</p>
-</blockquote>
-<h2 id="可以使用来获取外部目录classpath中不能使用">可以使用*来获取外部目录，classpath中不能使用*</h2>
-<h2 id="可以使用---在.pro配置文件中划分逻辑页">可以使用#---在.pro配置文件中划分逻辑页</h2>
-<h2 id="使用---在.yml配置文件划分逻辑页">使用---在.yml配置文件划分逻辑页</h2>
-<h2 id="在多个配置文件中均存在同一个list的值则只会去最高优先级的list值">在多个配置文件中均存在同一个list的值，则只会去最高优先级的list值</h2>
-<h2 id="在多个配置文件中均存在同一个map的值则使用互补配置的方式构造map">在多个配置文件中均存在同一个Map的值，则使用互补配置的方式构造Map</h2>
-<h2 id="spring自动注入的注解">spring自动注入的注解</h2>
-<blockquote>
-<p><span class="citation" data-cites="Component">@Component</span>("name")将一个类生成一个Bean实例并用spring管理。<span class="citation" data-cites="Controller">@Controller</span>、<span class="citation" data-cites="Repository">@Repository</span>、<span class="citation" data-cites="Service都是类似的功能">@Service都是类似的功能</span>。这些注解要放在类上。</p>
-<p><span class="citation" data-cites="Bean">@Bean</span>("name")将一个方法返回的对象实例用spring管理。该注解放在方法上。</p>
-<p><span class="citation" data-cites="Autowired">@Autowired</span> 自动注入。该注解可以放在构造器方法、方法、参数、属性、注解上。</p>
-<p><span class="citation" data-cites="Primary">@Primary</span> 写在类上或方法上。为了消除自动装配的歧义性，如spring管理了两个都实现了同一父类的类，则存在@Primary 的类会被最先调用。</p>
-<p><span class="citation" data-cites="Qualifier">@Qualifier</span>("name")写在变量、方法、参数、类上、注解上，可以根据传入的name按名字查找spring管理的类。</p>
-</blockquote>
-<h2 id="spring监听器">Spring监听器</h2>
-<blockquote>
-<p>使用过程:</p>
-<p>​ 自定义事件，继承org.springframework.context.ApplicationEvent类。</p>
-<p>​ 自定义事件监听器，实现org.springframework.context.ApplicationListener接口。</p>
-<p>​ 在spring容器中发布事件。</p>
-<p>实现监听的方式：</p>
-<p>​ 自定义类实现ApplicationListener，在主函数中装载监听。</p>
-<p>​ 自定义类实现ApplicationListener，在接口上加上@Component注解</p>
-<p>​ 自定义类不实现接口，在对应方法上标明@EventListener注解。</p>
-<p>​ 自定义类实现ApplicationListener，在application.properties中配置context.listener.classes</p>
-</blockquote>
-<h2 id="spring内置容器的配置">Spring内置容器的配置</h2>
-<blockquote>
-<p>修改配置：</p>
-<ol type="1">
-<li><p>可以在application.properties中按server.xxx:的方式修改</p></li>
-<li><p>创建一个配置类通过编写public WebServerFactoryCustomizer<ConfigurableWebServerFactory> customizer()方法来设置。</ConfigurableWebServerFactory></p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/内嵌服务器配置修改.png" alt="内嵌服务器配置修改"><figcaption aria-hidden="true">内嵌服务器配置修改</figcaption>
-</figure></li>
-</ol>
-<p>更换容器：</p>
-<p>​ 通过先将start内的容器依赖去除然后导入新依赖即可。</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/修改内嵌容器.png" alt="修改内嵌容器"><figcaption aria-hidden="true">修改内嵌容器</figcaption>
-</figure>
-</blockquote>
-<h2 id="过滤器和拦截器">过滤器和拦截器</h2>
-<blockquote>
-<p>过滤器：在进入servlet前过滤。</p>
-<p>实现方式：</p>
-<p>​ 创建类实现接口javax.servlet.Filter，加上@Component，然后使用一个如下的配置类注入spring容器。</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/filterConfig.png" alt="filterConfig"><figcaption aria-hidden="true">filterConfig</figcaption>
-</figure>
-<p>​ 创建类实现接口javax.servlet.Filter，加上@WebFilter，然后在主启动类中加上@ServletComponentScan注解。</p>
-<p>拦截器：拦截方法。</p>
-<p>​ 创建类实现HandlerInterceptor接口，然后创建配置类实现WebMvcConfigurer接口，配置类如下。</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/interceptorConfig.png" alt="interceptorConfig"><figcaption aria-hidden="true">interceptorConfig</figcaption>
-</figure>
-</blockquote>
-<h2 id="错误及异常处理">错误及异常处理</h2>
-<h3 id="数值校验">数值校验</h3>
-<blockquote>
-<p>在参数前加入@Valid/<span class="citation" data-cites="Validated注解">@Validated注解</span>，然后跟上BindingResult对象即可获取错误时的错误信息。如图</p>
-<p>利用配置文件ValidationMessages.properties中设置发生错误的提示信息。在bean的注解属性中通过{key}获取属性。</p>
-</blockquote>
-<h3 id="错误页指定">错误页指定</h3>
-<blockquote>
-<p>用到了再查</p>
-</blockquote>
-<h3 id="全局异常处理">全局异常处理</h3>
-<blockquote>
-<p>实现一个异常处理类并加上@ControllerAdvice注解。如图</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/全局异常处理.png" alt="全局异常处理"><figcaption aria-hidden="true">全局异常处理</figcaption>
-</figure>
-</blockquote>
-<h2 id="日志">日志</h2>
-<h3 id="日志文件输出">日志文件输出</h3>
-<blockquote>
-<p>在application中添加logging.file.path = xxx 默认日志名为spring.log</p>
-<p>或添加logging.file.name = xxxx 默认输出路径为项目当前路径。</p>
-<p>二者不能同时使用。</p>
-</blockquote>
-<h3 id="日志级别控制">日志级别控制</h3>
-<blockquote>
-<p>日志级别有TRACE、DEBUG、INFO、WARN、ERROR、FATAL、OFF。</p>
-<p>logging.level.包名 = xxx级别</p>
-<p>logging.level.root = 设置全局日志级别</p>
-</blockquote>
-<h2 id="文档生成">文档生成</h2>
-<h3 id="swaggle">swaggle</h3>
-<blockquote>
-<figure class="highlight"><table><tr><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;io.springfox&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;springfox-swagger2&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.9.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line">		</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;io.springfox&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;springfox-swagger-ui&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.9.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableSwagger2</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SwaggerConfig</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Docket <span class="title">api</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Docket(DocumentationType.SWAGGER_2).select()</span><br><span class="line">                .apis(RequestHandlerSelectors.any())</span><br><span class="line">                .paths(PathSelectors.any())</span><br><span class="line">                .build();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>访问http://localhost:8080/v2/api-docs拿到api的json</p>
-<p>访问http://localhost:8080/swagger-ui.html获取页面</p>
-</blockquote>
-<h2 id="监控">监控</h2>
-<blockquote>
-<p>本质上是通过log收集信息，然后利用信息分析。</p>
-</blockquote>
-<h2 id="缓存">缓存</h2>
-<blockquote>
-<p><span class="citation" data-cites="Cacheable">@Cacheable</span>(value = "xx", key = "zz", condition = "yyy")</p>
-<p>​ value 表示缓存名</p>
-<p>​ key为缓存键，需要用SPEL写</p>
-<p>​ condition为缓存触发的条件，需要用SPEL写</p>
-<p>​ 缓存值为对应方法的返回值</p>
-<p><span class="citation" data-cites="CacheEvict">@CacheEvict</span>(beforeInvocation = true表示在方法触发前就移除了缓存) 移除缓存</p>
-<p><span class="citation" data-cites="CachePut">@CachePut</span> 添加缓存</p>
-</blockquote>
-<h2 id="微服务">微服务</h2>
-<blockquote>
-<p>注册中心</p>
-<p>服务提供者</p>
-<p>服务追踪</p>
-<p>服务治理</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>框架入门</category>
-      </categories>
-      <tags>
-        <tag>Springboot</tag>
       </tags>
   </entry>
   <entry>
@@ -4524,6 +4483,67 @@
       </tags>
   </entry>
   <entry>
+    <title>物理层</title>
+    <url>/2021/02/20/computerNetwork/%E7%AC%AC2%E7%AB%A0-%E7%89%A9%E7%90%86%E5%B1%82/</url>
+    <content><![CDATA[<h1 id="物理层">物理层</h1>
+<h2 id="物理层的基本概念">物理层的基本概念</h2>
+<blockquote>
+<p>尼奎斯特定理 $ C = 2Blog_2V $ 。C为最大数据速率，B为带宽频率，V为离散等级。</p>
+<p>香农定理<span class="math inline">\(C = B log_2(1+S/N)\)</span> 。S/N是信噪比，<span class="math inline">\(10log_{10}S/N\)</span>为分贝，B为带宽频率，C为最大数据速率。</p>
+</blockquote>
+<h3 id="物理层的主要任务">物理层的主要任务</h3>
+<p>物理层解决如何在连接各种计算机的传输媒体上传输数据比特流。</p>
+<p>确定与传输媒体的接口的一些特性:</p>
+<blockquote>
+<p>机械特性:如接口形状、大小、引线数目</p>
+<p>电气特性:如规定电压范围</p>
+<p>功能特性:如规定-5V表示0</p>
+<p>过程特性/规程特性:规定建立连接时各个相关部件的工作步骤</p>
+</blockquote>
+<h2 id="数据通信的基础知识">数据通信的基础知识</h2>
+<blockquote>
+<p>单向通信/单工通信 ---------只能有一个方向的通信而没有反方向的交互，如电台</p>
+<p>半双工通信---------通信双方都可以发送消息，但不能双方同时发送。如对讲机</p>
+<p>全双工通信--------通信的双方-可以同时发送和接收消息。如电话</p>
+<p>数据比特流传输距离较短,用解调器变为模拟信号后传输距离会加长。</p>
+<p>数据--------传送消息的实体</p>
+<p>信号--------数据的电气/电磁表现</p>
+<p>​ 模拟信号--------连续</p>
+<p>​ 数字信号---------离散</p>
+<p>码元----------在使用时间域的波形表示数字信号时，代表不同离散数值的基本波形</p>
+<p>信号调制方法:调幅、调频、调相</p>
+</blockquote>
+<h2 id="物理层下的传输媒体">物理层下的传输媒体</h2>
+<h3 id="导向传输媒体">导向传输媒体</h3>
+<blockquote>
+<p><span class="math display">\[
+常用传输频率10^4-------- 10^{16}
+\]</span></p>
+<p>双绞线:</p>
+<p>​ 屏蔽双绞线STP</p>
+<p>​ 无屏蔽双绞线UTP</p>
+<p>同轴电缆:</p>
+<p>​ 50Ω同轴电缆用于数字传输，基带同轴电缆</p>
+<p>​ 75Ω同轴电缆用于模拟传输，宽带同轴电缆</p>
+</blockquote>
+<h2 id="信道复用技术">信道复用技术</h2>
+<blockquote>
+<p>频分复用:每个用户使用不同的频率传递。</p>
+<p>时分复用:将单位时间划分为若干个时间片，每个用户使用对应的时间片传递。 统计时分复用在发送数据时在数据中添加标记，接收方根据标记判定谁接收并将标记去除。</p>
+<p>波分复用:每个用户使用不同的波长传递。</p>
+<p>码分复用:自己的码片乘积为1，同他人码片乘积为0，传输的信号为原数据同对应码片的乘积，总的传输信号为各个设备传输的信号之和，接收者只要将总信号同自己的码片相乘即可得到需要接收的值。</p>
+<p>码分复用的缺点:设备数变多后码片需要越多</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>计算机网络</category>
+      </categories>
+      <tags>
+        <tag>网络</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>网络层</title>
     <url>/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/</url>
     <content><![CDATA[<h1 id="网络层">网络层</h1>
@@ -4712,26 +4732,6 @@
       </tags>
   </entry>
   <entry>
-    <title>应用层</title>
-    <url>/2021/02/20/computerNetwork/%E7%AC%AC6%E7%AB%A0-%E5%BA%94%E7%94%A8%E5%B1%82/</url>
-    <content><![CDATA[<h2 id="使用tcp">使用TCP</h2>
-<blockquote>
-<p>HTTP、FTP、Telnet、SMTP</p>
-</blockquote>
-<h2 id="使用udp">使用UDP</h2>
-<blockquote>
-<p>流媒体、DNS、网络电话、电话会议</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>计算机网络</category>
-      </categories>
-      <tags>
-        <tag>网络</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>传输层</title>
     <url>/2021/02/20/computerNetwork/%E7%AC%AC5%E7%AB%A0-%E4%BC%A0%E8%BE%93%E5%B1%82/</url>
     <content><![CDATA[<h1 id="传输层">传输层</h1>
@@ -4783,6 +4783,26 @@
 <p>​ 避免网络拥塞</p>
 </blockquote>
 <h3 id="tcp如何">TCP如何</h3>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>计算机网络</category>
+      </categories>
+      <tags>
+        <tag>网络</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>应用层</title>
+    <url>/2021/02/20/computerNetwork/%E7%AC%AC6%E7%AB%A0-%E5%BA%94%E7%94%A8%E5%B1%82/</url>
+    <content><![CDATA[<h2 id="使用tcp">使用TCP</h2>
+<blockquote>
+<p>HTTP、FTP、Telnet、SMTP</p>
+</blockquote>
+<h2 id="使用udp">使用UDP</h2>
+<blockquote>
+<p>流媒体、DNS、网络电话、电话会议</p>
+</blockquote>
 ]]></content>
       <categories>
         <category>基础知识</category>
@@ -5228,8 +5248,8 @@
 ]]></content>
       <categories>
         <category>基础知识</category>
-        <category>计算机网络</category>
         <category>源码分析</category>
+        <category>计算机网络</category>
       </categories>
       <tags>
         <tag>I/O</tag>

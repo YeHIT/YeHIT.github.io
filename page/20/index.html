@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/Linux/Linux%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%9F%BA%E6%9C%AC%E6%8C%87%E4%BB%A4/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/JavaBasicKnowledge/ConcurrentHashMap/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/Linux/Linux%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%9F%BA%E6%9C%AC%E6%8C%87%E4%BB%A4/" class="post-title-link" itemprop="url">Linux介绍及基本指令</a>
+          <a href="/2021/02/20/JavaBasicKnowledge/ConcurrentHashMap/" class="post-title-link" itemprop="url">ConcurrentHashMap分析</a>
         </h2>
 
         <div class="post-meta-container">
@@ -288,7 +288,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:19:26" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:00:15" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -300,7 +300,7 @@
         </span>
           ，
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
         </span>
     </span>
 
@@ -312,14 +312,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>2k</span>
+      <span>5.4k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
+      <span>5 分钟</span>
     </span>
 </div>
 
@@ -330,101 +330,49 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="linux介绍及基本指令">Linux介绍及基本指令</h1>
-<h2 id="linux区别">Linux区别</h2>
+          <h1 id="concurrenthashmap">ConcurrentHashMap</h1>
+<h2 id="初始化">初始化</h2>
 <blockquote>
-<p>Ubantu：分为用户版和服务器版。</p>
-<p>​ 用户版，有着良好的用户界面，有强大的软件支持。</p>
-<p>​ 服务器版比较少用。</p>
-<p>Debian：系统十分稳定，内核非常小。</p>
-<p>RedHat：是一个商用的操作系统，性能非常好，软件支持也非常好。</p>
-<p>Centos：基本上相当于RedHat的复刻版本。免费。</p>
+<p>无参构造</p>
+<p>带初始容量的构造</p>
+<p>带初始容量和负载因子的构造</p>
+<p>带初始容量和负载因子及并发级别的构造：并发级别会规定初始化时最少需要的大小</p>
+<p>传入Map的构造</p>
 </blockquote>
-<h2 id="根目录下各目录对应的功能">根目录下各目录对应的功能</h2>
-<h2 id="在linux中获取帮助">在linux中获取帮助</h2>
+<h2 id="put操作">Put操作</h2>
 <blockquote>
-<p>man 命令名：查看命令的操作说明</p>
-<p>命令行 --help：查看命令的语法</p>
+<p>先计算key的hash值，然后判断当前是否存在table，若不存在table则调用initTable方法，这里使用了线程相关及CAS</p>
+<p>若存在table判断则判断当前桶位是否为null，为null则创建新结点插入，这里使用CAS锁(会有ABA问题)</p>
+<p>然后判断当前结点hash值是否为MOVE，(本质上就是判断当前结点是否为ForwardingNode)，若为MOVE则帮助扩容(此时已经有线程在执行扩容操作了)。</p>
+<p>若不是则进行插入操作，此时使用synchronized(f)将当前结点锁住，然后再次判断当前结点f是否为需要插入的位置。</p>
+<p>插入完成后判断bitcount是否超过TREEIFY_THRESHOLD，若超过则树化。</p>
+<p>最后让集合的大小加一，使用了同步方法。</p>
 </blockquote>
-<h2 id="linux基本命令">Linux基本命令</h2>
+<h2 id="inittable">initTable</h2>
 <blockquote>
-<p>ls：查看当前目录中所有文件及目录</p>
-<p>ll：查看当前目录内所有文件及目录详细信息。详细信息具体查看方式。以drwxr-xr-x为例(第一个字符拆出，然后每三个字符表示一个内容)：</p>
-<p>d：文件类型，目录。rwx：拥有者权限，可读，可写，可执行。r-x：用户组权限，可读，不可写，可执行。r-x：其他组权限，可读，不可写，可执行。</p>
-<p>具体文件类型有：d：路径。<em>-</em>：文件。 l ：连接(快捷方式)。b：表示可按块随机读写的设备。c：设备文件里的串行端口设备，如键盘、设备。</p>
-<p>表示权限的三个字符可以用0~7的数字表示。如rwx为7，r-x为5。</p>
-<p>ls -al：查看所有文件及目录包括隐藏目录。</p>
-<p>pwd：查看当前所在层级</p>
-<p>echo xxx：打印xxx</p>
-<p>date：查看日期</p>
-<p>cal：查看日历</p>
-<p>grep xxx：用于查看包含xxx的对象。</p>
-<p>curl 网址：向对应网址发出http请求。curl -i www.baidu.com ：向百度首页发出请求，会返回响应头。</p>
-<p>history：查看先前输入过的命令。</p>
-<p>df：查看磁盘使用情况。</p>
+<p>sizeCtl为-1时表示在初始化</p>
+<p>当table为空或table长度为0时无限循环，判断此时sizeCtl是否小于0，(当一个线程抢夺成功后会让sizeCtl值为-1，其他线程抢占失败后会进入Thread.yield())，抢夺成功的线程则会判断当前sc值是否大于0，若大于0说明初始化时传入了初始容量，使用该容量创建数组，然后将sc值改为当前容量的0.75。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> ((tab = table) == <span class="keyword">null</span> || tab.length == <span class="number">0</span>) &#123;</span><br><span class="line"> <span class="keyword">if</span> ((sc = sizeCtl) &lt; <span class="number">0</span>)</span><br><span class="line">     Thread.yield(); <span class="comment">// lost initialization race; just spin</span></span><br><span class="line"> <span class="keyword">else</span> <span class="keyword">if</span> (U.compareAndSwapInt(<span class="keyword">this</span>, SIZECTL, sc, -<span class="number">1</span>)) &#123;</span><br><span class="line">     <span class="keyword">try</span> &#123;</span><br><span class="line">         <span class="keyword">if</span> ((tab = table) == <span class="keyword">null</span> || tab.length == <span class="number">0</span>) &#123;</span><br><span class="line">             <span class="keyword">int</span> n = (sc &gt; <span class="number">0</span>) ? sc : DEFAULT_CAPACITY;</span><br><span class="line">             <span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">             Node&lt;K,V&gt;[] nt = (Node&lt;K,V&gt;[])<span class="keyword">new</span> Node&lt;?,?&gt;[n];</span><br><span class="line">             table = tab = nt;</span><br><span class="line">             sc = n - (n &gt;&gt;&gt; <span class="number">2</span>);</span><br><span class="line">         &#125;</span><br><span class="line">     &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">         sizeCtl = sc;</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="keyword">break</span>;</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="扩容">扩容</h2>
 </blockquote>
-<h2 id="文件基本命令">文件基本命令</h2>
 <blockquote>
-<p>vi xxx：打开临时记事本，基本可以认为是创建文件。</p>
-<p>mkdir xxx：创建文件夹</p>
-<p>rm -rf xxx：删除目录。</p>
-<p>cp a b ：把a文件复制到b处</p>
-<p>mv a b ：把a文件移动到b处（也可以当做重命名使用）</p>
-<p>tail -number xx：查看文件最后number行内容(可以用于监控日志使用tail -F/-f xxx)-F，-f分别为追踪文件名和追踪文件索引。</p>
-<p>cat xxx：查看文件内容，往往伴随着grep使用如 cat a.txt | grep "a:xxx"。</p>
-<p>less xxx：查看文件一页的内容。</p>
-<p>find xxx：查找文件(可以查找所有文件)。</p>
-<p>whereis xx：查找命令所在目录(只能查找二进制类的文件)。</p>
-<p>which xxx：在PATH变量指定的路径中搜索指定的系统命令的位置。</p>
-<p>sh xxx.sh：执行shell命令。这种执行sh文件不需要本身具有权限。</p>
-<p>path/xxx.sh：执行shell命令。sh文件本身需要有权限。(如./xxx.sh其中.表示当前目录)</p>
+<p>sizeCtl &lt; 0时表示在扩容</p>
+<p>sizeCtl在扩容时高16位表示扩容标识，低16位表示并行扩容线程数+1。</p>
+<p>计算扩容戳本质上是计算当前table长度的前导0个数再或运算一个1000 0000 0000 0000。目的是让sizeCtl在移位后变为负数。</p>
+<p>帮助扩容：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> Node&lt;K,V&gt;[] helpTransfer(Node&lt;K,V&gt;[] tab, Node&lt;K,V&gt; f) &#123;</span><br><span class="line">Node&lt;K,V&gt;[] nextTab; <span class="keyword">int</span> sc;</span><br><span class="line"><span class="comment">// 当table不为空且当前结点为ForwardingNode且当前结点存在nextTable时</span></span><br><span class="line"><span class="keyword">if</span> (tab != <span class="keyword">null</span> &amp;&amp; (f <span class="keyword">instanceof</span> ForwardingNode) &amp;&amp;</span><br><span class="line">(nextTab = ((ForwardingNode&lt;K,V&gt;)f).nextTable) != <span class="keyword">null</span>) &#123;</span><br><span class="line"><span class="comment">//产生扩容戳</span></span><br><span class="line"><span class="keyword">int</span> rs = resizeStamp(tab.length);</span><br><span class="line"><span class="keyword">while</span> (nextTab == nextTable &amp;&amp; table == tab &amp;&amp;</span><br><span class="line">      (sc = sizeCtl) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">   <span class="keyword">if</span> ((sc &gt;&gt;&gt; RESIZE_STAMP_SHIFT) != rs || sc == rs + <span class="number">1</span> ||</span><br><span class="line">       sc == rs + MAX_RESIZERS || transferIndex &lt;= <span class="number">0</span>)</span><br><span class="line">       <span class="keyword">break</span>;</span><br><span class="line">   <span class="keyword">if</span> (U.compareAndSwapInt(<span class="keyword">this</span>, SIZECTL, sc, sc + <span class="number">1</span>)) &#123;</span><br><span class="line">       transfer(tab, nextTab);</span><br><span class="line">       <span class="keyword">break</span>;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> nextTab;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> table;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>具体的扩容方法：</p>
+<p>先利用CPU数和当前table大小同最小区间间隔进行比较，如果小于最小区间间隔则将间隔设置为MIN_TRANSFER_STRIDE即16。</p>
+<p>具体扩容则是每个线程抢夺table的一个区间区间大小为设置的区间间隔大小，如[nextIndex - stride，nextIndex - 1]，抢夺区间的操作使用CAS。</p>
+<p>每个线程对于对应区间都会进行依次操作，这里使用synchronized来锁住当前操作的结点。</p>
+<p>处理完成后，最后一个正在进行的线程会判断设置finishing标志，最终完成扩容，并设置sizeCtl为原table的1.5倍，即新table的0.75倍。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">transfer</span><span class="params">(Node&lt;K,V&gt;[] tab, Node&lt;K,V&gt;[] nextTab)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n = tab.length, stride;</span><br><span class="line">    <span class="keyword">if</span> ((stride = (NCPU &gt; <span class="number">1</span>) ? (n &gt;&gt;&gt; <span class="number">3</span>) / NCPU : n) &lt; MIN_TRANSFER_STRIDE)</span><br><span class="line">        stride = MIN_TRANSFER_STRIDE; <span class="comment">// subdivide range</span></span><br><span class="line">    <span class="keyword">if</span> (nextTab == <span class="keyword">null</span>) &#123;            <span class="comment">// initiating</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">            Node&lt;K,V&gt;[] nt = (Node&lt;K,V&gt;[])<span class="keyword">new</span> Node&lt;?,?&gt;[n &lt;&lt; <span class="number">1</span>];</span><br><span class="line">            nextTab = nt;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Throwable ex) &#123;      <span class="comment">// try to cope with OOME</span></span><br><span class="line">            sizeCtl = Integer.MAX_VALUE;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        nextTable = nextTab;</span><br><span class="line">        transferIndex = n;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> nextn = nextTab.length;</span><br><span class="line">    ForwardingNode&lt;K,V&gt; fwd = <span class="keyword">new</span> ForwardingNode&lt;K,V&gt;(nextTab);</span><br><span class="line">    <span class="keyword">boolean</span> advance = <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">boolean</span> finishing = <span class="keyword">false</span>; <span class="comment">// to ensure sweep before committing nextTab</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>, bound = <span class="number">0</span>;;) &#123;</span><br><span class="line">        Node&lt;K,V&gt; f; <span class="keyword">int</span> fh;</span><br><span class="line">        <span class="keyword">while</span> (advance) &#123;</span><br><span class="line">            <span class="keyword">int</span> nextIndex, nextBound;</span><br><span class="line">            <span class="keyword">if</span> (--i &gt;= bound || finishing)</span><br><span class="line">                advance = <span class="keyword">false</span>;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> ((nextIndex = transferIndex) &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">                i = -<span class="number">1</span>;</span><br><span class="line">                advance = <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (U.compareAndSwapInt</span><br><span class="line">                     (<span class="keyword">this</span>, TRANSFERINDEX, nextIndex,</span><br><span class="line">                      nextBound = (nextIndex &gt; stride ?</span><br><span class="line">                                   nextIndex - stride : <span class="number">0</span>))) &#123;</span><br><span class="line">                bound = nextBound;</span><br><span class="line">                i = nextIndex - <span class="number">1</span>;</span><br><span class="line">                advance = <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (i &lt; <span class="number">0</span> || i &gt;= n || i + n &gt;= nextn) &#123;</span><br><span class="line">            <span class="keyword">int</span> sc;</span><br><span class="line">            <span class="keyword">if</span> (finishing) &#123;</span><br><span class="line">                nextTable = <span class="keyword">null</span>;</span><br><span class="line">                table = nextTab;</span><br><span class="line">                sizeCtl = (n &lt;&lt; <span class="number">1</span>) - (n &gt;&gt;&gt; <span class="number">1</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (U.compareAndSwapInt(<span class="keyword">this</span>, SIZECTL, sc = sizeCtl, sc - <span class="number">1</span>)) &#123;</span><br><span class="line">                <span class="keyword">if</span> ((sc - <span class="number">2</span>) != resizeStamp(n) &lt;&lt; RESIZE_STAMP_SHIFT)</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                finishing = advance = <span class="keyword">true</span>;</span><br><span class="line">                i = n; <span class="comment">// recheck before commit</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> ((f = tabAt(tab, i)) == <span class="keyword">null</span>)</span><br><span class="line">            advance = casTabAt(tab, i, <span class="keyword">null</span>, fwd);</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> ((fh = f.hash) == MOVED)</span><br><span class="line">            advance = <span class="keyword">true</span>; <span class="comment">// already processed</span></span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (f) &#123;</span><br><span class="line">                <span class="keyword">if</span> (tabAt(tab, i) == f) &#123;</span><br><span class="line">                    Node&lt;K,V&gt; ln, hn;</span><br><span class="line">                    <span class="keyword">if</span> (fh &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">                        <span class="keyword">int</span> runBit = fh &amp; n;</span><br><span class="line">                        Node&lt;K,V&gt; lastRun = f;</span><br><span class="line">                        <span class="keyword">for</span> (Node&lt;K,V&gt; p = f.next; p != <span class="keyword">null</span>; p = p.next) &#123;</span><br><span class="line">                            <span class="keyword">int</span> b = p.hash &amp; n;</span><br><span class="line">                            <span class="keyword">if</span> (b != runBit) &#123;</span><br><span class="line">                                runBit = b;</span><br><span class="line">                                lastRun = p;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">if</span> (runBit == <span class="number">0</span>) &#123;</span><br><span class="line">                            ln = lastRun;</span><br><span class="line">                            hn = <span class="keyword">null</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">else</span> &#123;</span><br><span class="line">                            hn = lastRun;</span><br><span class="line">                            ln = <span class="keyword">null</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">for</span> (Node&lt;K,V&gt; p = f; p != lastRun; p = p.next) &#123;</span><br><span class="line">                            <span class="keyword">int</span> ph = p.hash; K pk = p.key; V pv = p.val;</span><br><span class="line">                            <span class="keyword">if</span> ((ph &amp; n) == <span class="number">0</span>)</span><br><span class="line">                                ln = <span class="keyword">new</span> Node&lt;K,V&gt;(ph, pk, pv, ln);</span><br><span class="line">                            <span class="keyword">else</span></span><br><span class="line">                                hn = <span class="keyword">new</span> Node&lt;K,V&gt;(ph, pk, pv, hn);</span><br><span class="line">                        &#125;</span><br><span class="line">                        setTabAt(nextTab, i, ln);</span><br><span class="line">                        setTabAt(nextTab, i + n, hn);</span><br><span class="line">                        setTabAt(tab, i, fwd);</span><br><span class="line">                        advance = <span class="keyword">true</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">else</span> <span class="keyword">if</span> (f <span class="keyword">instanceof</span> TreeBin) &#123;</span><br><span class="line">                        TreeBin&lt;K,V&gt; t = (TreeBin&lt;K,V&gt;)f;</span><br><span class="line">                        TreeNode&lt;K,V&gt; lo = <span class="keyword">null</span>, loTail = <span class="keyword">null</span>;</span><br><span class="line">                        TreeNode&lt;K,V&gt; hi = <span class="keyword">null</span>, hiTail = <span class="keyword">null</span>;</span><br><span class="line">                        <span class="keyword">int</span> lc = <span class="number">0</span>, hc = <span class="number">0</span>;</span><br><span class="line">                        <span class="keyword">for</span> (Node&lt;K,V&gt; e = t.first; e != <span class="keyword">null</span>; e = e.next) &#123;</span><br><span class="line">                            <span class="keyword">int</span> h = e.hash;</span><br><span class="line">                            TreeNode&lt;K,V&gt; p = <span class="keyword">new</span> TreeNode&lt;K,V&gt;</span><br><span class="line">                                (h, e.key, e.val, <span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line">                            <span class="keyword">if</span> ((h &amp; n) == <span class="number">0</span>) &#123;</span><br><span class="line">                                <span class="keyword">if</span> ((p.prev = loTail) == <span class="keyword">null</span>)</span><br><span class="line">                                    lo = p;</span><br><span class="line">                                <span class="keyword">else</span></span><br><span class="line">                                    loTail.next = p;</span><br><span class="line">                                loTail = p;</span><br><span class="line">                                ++lc;</span><br><span class="line">                            &#125;</span><br><span class="line">                            <span class="keyword">else</span> &#123;</span><br><span class="line">                                <span class="keyword">if</span> ((p.prev = hiTail) == <span class="keyword">null</span>)</span><br><span class="line">                                    hi = p;</span><br><span class="line">                                <span class="keyword">else</span></span><br><span class="line">                                    hiTail.next = p;</span><br><span class="line">                                hiTail = p;</span><br><span class="line">                                ++hc;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                        ln = (lc &lt;= UNTREEIFY_THRESHOLD) ? untreeify(lo) :</span><br><span class="line">                            (hc != <span class="number">0</span>) ? <span class="keyword">new</span> TreeBin&lt;K,V&gt;(lo) : t;</span><br><span class="line">                        hn = (hc &lt;= UNTREEIFY_THRESHOLD) ? untreeify(hi) :</span><br><span class="line">                            (lc != <span class="number">0</span>) ? <span class="keyword">new</span> TreeBin&lt;K,V&gt;(hi) : t;</span><br><span class="line">                        setTabAt(nextTab, i, ln);</span><br><span class="line">                        setTabAt(nextTab, i + n, hn);</span><br><span class="line">                        setTabAt(tab, i, fwd);</span><br><span class="line">                        advance = <span class="keyword">true</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </blockquote>
-<h2 id="文件解压缩">文件解压缩</h2>
+<h2 id="tips">tips</h2>
 <blockquote>
-<p>zip -r 压缩后路径加名字 需要压缩的文件：压缩，如zip -r a.zip a.txt。这个命令需要yum install zip</p>
-<p>unzip -d 解压缩到的路径 解压缩的包：解压缩，如unzip -d . a.zip。这个命令需要yum install unzip。</p>
-<p>tar -cvf 压缩后路径加名字 需要压缩的文件：压缩，如tar -cvf a.txt。</p>
-<p>tar -zcvf 压缩后路径加名字 需要压缩的文件：压缩，如tar -zcvf a.txt。压缩后占的空间更少</p>
-<p>tar -xvf 解压缩到的路径 解压缩的包：解压缩，如tar -xvf a.txt。</p>
-<p>tar -zxvf 解压缩到的路径 解压缩的包：压缩，如tar -zxvf a.txt。</p>
-<p>tar的参数：c：表示create，即压缩，z：约等于zip，即打包后空间会更小，v：压缩后展示压缩包中文件名字。f：表示结束。x：extract，即解压缩。</p>
-<p>b：表示查看压缩包内容。其中c、x、b同时只能存在一个。</p>
-</blockquote>
-<h2 id="文件传输">文件传输</h2>
-<blockquote>
-<p>scp 目录加文件名 用户名@IP地址:目录加文件名：将文件传输利用网络传输到另一个服务器。如scp ./a.txt root@10.0.2.6:~/b.txt</p>
-</blockquote>
-<h2 id="进程管理命令">进程管理命令</h2>
-<blockquote>
-<p>top ：查看当前系统使用情况。</p>
-<p>ps：查看进程情况。</p>
-<p>ps aux：查看所有正在执行的进程。经常和grep配合使用。如ps aux | grep "top"</p>
-<p>lsof -i:port ：根据端口号查看进程。需要yum install lsof</p>
-<p>kill 进程号：杀死进程。</p>
-<p>kill -9 进程号：强制杀死进程。</p>
-<p>service xxx start：启动服务。</p>
-<p>service xxxx stop：关闭服务。</p>
-</blockquote>
-<h2 id="权限管理命令">权限管理命令</h2>
-<blockquote>
-<p>chmod xxx aaa：设置aaa的权限为xxx。第一个x为拥有者权限，第二个x为用户组权限，第三个x为其他组权限。如chmod 777 a.txt：表示将a.txt的权限均设为可读、可写、可执行。</p>
-</blockquote>
-<h2 id="软件安装命令">软件安装命令</h2>
-<blockquote>
-<p>yum install xxxx：安装xxxx</p>
-<p>yum install ifconfig -y：安装时自动同意。</p>
-</blockquote>
-<h2 id="安全相关命令">安全相关命令</h2>
-<blockquote>
-<p>systemctl disable firewalld ：关闭防火墙。</p>
-</blockquote>
-<h2 id="关机命令">关机命令</h2>
-<blockquote>
-<p>shutdown：关机</p>
-<p>reboot：重启</p>
-<p>poweroff：关机</p>
-<p>halt：进入系统停止的模式，屏幕可能保留一些信息，取决于电源管理模式。</p>
-<p>systemctl suspend：休眠</p>
+<p>最大容量为2^30，默认容量16，默认并发级别16(为了兼容之前的版本)，默认负载因子0.75。最大数字大小Integer.MAX_VALUE - 8。</p>
+<p>树阈值8，链表阈值6。最小树化容量64(只有大于该值时才会树化)</p>
+<p>若key为null，会报空指针异常。</p>
 </blockquote>
 
       
@@ -496,7 +444,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:58</span>
+    <span title="站点阅读时长">1:59</span>
   </span>
 </div>
 <div class="busuanzi-count">
