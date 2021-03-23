@@ -198,7 +198,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">44</span>
+          <span class="site-state-item-count">46</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/01/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%9F%BA%E7%A1%80%E7%AA%81%E5%87%BB/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/03/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%AA%81%E5%87%BB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/01/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%9F%BA%E7%A1%80%E7%AA%81%E5%87%BB/" class="post-title-link" itemprop="url">java基础突击</a>
+          <a href="/2021/03/03/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%AA%81%E5%87%BB/" class="post-title-link" itemprop="url">消息队列突击</a>
         </h2>
 
         <div class="post-meta-container">
@@ -286,16 +286,10 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
+      
 
-      <time title="创建时间：2021-03-01 00:00:00" itemprop="dateCreated datePublished" datetime="2021-03-01T00:00:00+08:00">2021-03-01</time>
+      <time title="创建时间：2021-03-03 00:00:00 / 修改时间：13:28:01" itemprop="dateCreated datePublished" datetime="2021-03-03T00:00:00+08:00">2021-03-03</time>
     </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-16 13:44:40" itemprop="dateModified" datetime="2021-03-16T13:44:40+08:00">2021-03-16</time>
-      </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
@@ -314,14 +308,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>1.9k</span>
+      <span>733</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
+      <span>1 分钟</span>
     </span>
 </div>
 
@@ -332,66 +326,37 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="java基础突击">java基础突击</h1>
-<h2 id="java基本类型">java基本类型</h2>
-<h3 id="stringstringbuffer和stringbuilder">String、StringBuffer和StringBuilder</h3>
+          <h1 id="消息队列突击">消息队列突击</h1>
 <blockquote>
-<p>String：底层是final修饰的char数组。存在不可变特性。</p>
-<p>为什么要不可变：1.复用hashcode避免重复计算。2.字符串是不可变的，才能实现字符串常量池，让同一个字符串可以从常量池中查找，实现资源复用。</p>
-<p>3.因为字符串是不可变的所以它是线程安全的。</p>
-<p>String的equals方法，先判断两个对象是否相等，若不相等再判断对象是否为String实例，若是遍历字符串逐一判断字符是否相等，全部相等则返回相等。</p>
-<p>String计算hashcode：通过h = 31 * h + val[i];计算。</p>
-<p>StringBuffer和StringBuilder都是AbstractStringBuilder的子类，本质都是一样的。</p>
-<p>StringBuffer：线程安全，因为使用synchronized修饰。底层是没有final修饰的char数组，初始化时默认大小是16，通过append方法来添加字符，添加时需要判断当前size是否需要扩容，扩容机制为原char数组长度 * 2 + 2。然后添加时就是利用给定的目的数组和size偏移对数组进行复制。</p>
-<p>StringBuilder：线程不安全。底层也是没有final修饰的char数组，初始化默认大小是16，通过append添加。</p>
+<p>常用的信息队列：rockketMQ、kafka</p>
 </blockquote>
-<h2 id="java容器">java容器</h2>
-<h3 id="arrays.sort怎么排序的">Arrays.sort()怎么排序的？</h3>
+<h2 id="为什么使用消息队列">为什么使用消息队列?</h2>
 <blockquote>
-<p>根据排序对象分为两种：</p>
-<p>​ 对于基本类型，使用DualPivotQuicksort.sort()</p>
-<p>​ 对于数量小于QUICKSORT_THRESHOLD = 286的数组，再进行分类，若小于INSERTION_SORT_THRESHOLD = 47，使用leftmost再选择排序模式，模式分为插入排序和改进的插入排序。</p>
-<p>​ 若大于INSERTION_SORT_THRESHOLD = 47，则使用DualPivotQuicksort双轴快排。</p>
-<p>​ 而对于数量较大的，先判断数组是否为高度结构化，若不是高度结构化则使用DualPivotQuicksort，否则使用归并排序。</p>
-<p>​ 对于实现了Comparable接口的类型，使用ComparableTimSort.sort()。</p>
-<p>​ 对于数量小于MIN_MERGE = 32的数组，使用二分插入排序。</p>
-<p>​ 对于数量大于MIN_MERGE的数组，使用timSort排序(大量优化的归并排序)。</p>
+<p>异步：开发过程中往往会存在后一个步骤需要等待前一个流程执行的操作，如果使用正常流程开发会导致操作线性化占用大量时间。使用消息队列允许前者将自己的结果放入队列中，然后让接下来的流程自己去调用结果执行。</p>
+<p>解耦：此外正常开发流程中还存在如果增加依赖者，需要手动修改代码，使用消息队列的话只需要主体将结果放入队列，依赖者自己去消费队列的信息即可，无须多余操作。</p>
+<p>削峰：遇到大量并发时，如果直接访问数据库往往会导致数据库连接异常。此时选择先将请求放入消息队列中，让对应数据库系统根据自己的承载能力消费即可。</p>
 </blockquote>
-<h3 id="arraylist具体实现">ArrayList具体实现</h3>
+<h2 id="消息队列的消息可靠性">消息队列的消息可靠性</h2>
 <blockquote>
-<p>默认容量10，底层是数组，默认实现的拷贝方式是浅拷贝。</p>
-<p>add方法：</p>
-<p>​ 让size+1，然后判断是否需要扩容，如果初始化时没有参数则让size同默认值比较，否则直接让size和当前数组长度比较，若大于则进行扩容。</p>
-<p>​ 扩容即将旧数组长度扩大1.5倍然后转化为新数组长度，通过newCapacity = oldCapacity + (oldCapacity &gt;&gt; 1);的位运算加速计算。</p>
-<p>​ 若扩容后的值小于size，则让值变为size，若扩容后的值大于数组最大长度，则判断size是否大于数组最大长度，若大于则扩容后的值为Integer.MAX_VALUE，否则为数组最大长度。</p>
+<p>生产者发送消息丢失：</p>
+<p>​ 一种方法是同步执行，然后等待消息发送，若发送失败则事务回滚。</p>
+<p>​ 另一种是异步发送消息，设置回调函数，等待消息队列告知是否发送成功，若不成功则重新发送，失败一定次数后，考虑人工干预。</p>
+<p>MQ本身丢失消息：</p>
+<p>​ 定期存储。多机存储。存储时可以设置只有当n个从机都存储成功了才会告知生产者消息发送成功。</p>
+<p>消费者丢失消息：</p>
+<p>​ 消费者消费消息成功后给生产者发送ack信号。</p>
 </blockquote>
-<h3 id="vector">Vector</h3>
+<h2 id="消息队列不被重复消费">消息队列不被重复消费</h2>
 <blockquote>
-<p>本质上就是将常用的方法使用synchronized锁住，只是扩容机制不同。</p>
-<p>Vector初始化时可以初始化每次扩容的大小，若没有设置该值则每次扩容一倍，否则每次扩容对应大小。</p>
+<p>本质上就是让消费操作重复执行也不影响结果，即幂等性。</p>
+<p>主要看场景，如果消费需要修改数据库，那直接查看数据库中是否有这个数据若存在该数据则不执行插入。</p>
+<p>若使用的是redis，则直接更新redis即可。</p>
+<p>若是其他情况，往往需要维护一个全局唯一的id-消费消息的结构，或者放在redis中，消费者消费时先查询该结构，若没有查询结果则说明消息没有被消费过。</p>
 </blockquote>
-<h3 id="linkedlist">LinkedList</h3>
+<h2 id="消息队列顺序消费">消息队列顺序消费</h2>
 <blockquote>
-<p>底层是链表。</p>
-</blockquote>
-<h3 id="collections.synchronizedlist">Collections.SynchronizedList</h3>
-<blockquote>
-<p>类似Vector，但是可以将不同的List转化为线程安全的List，底层是通过Synchronized(mutex)实现的。</p>
-</blockquote>
-<h3 id="copyonwritearraylist">CopyOnWriteArrayList</h3>
-<blockquote>
-<p>适用于读多写少的场景，因为每次操作需要复制数组。·</p>
-<p>底层使用ReentrantLock在add操作时上锁，add操作结束后释放。正如名字所说，每次添加操作都需要在原数组的基础上复制一个大小增加对应长度的数组进行使用。</p>
-<p>remove时也需要上锁，也是在原数组的基础上复制一个大小减少对应长度的数组进行使用。</p>
-<p>其计算hashcode的方法类似String，也是使用h = 31 * h + 对应对象的hashcode;</p>
-</blockquote>
-<h2 id="基础知识点">基础知识点</h2>
-<h3 id="浅拷贝和深拷贝">浅拷贝和深拷贝</h3>
-<blockquote>
-<p>浅拷贝拷贝对象时如果对象中含有其他对象，则只会拷贝这些对象的引用，如果对其中对象进行修改会相互影响。</p>
-<p>深拷贝即当拷贝对象中含有其他对象时，会创建一个另外的对象，让两个对象互不影响。</p>
-<p>实现深拷贝的方式：</p>
-<p>​ 要被拷贝的类实现clonable接口，并且让这个类中对应对象的类也实现clonable接口，然后重写clone方法，被拷贝对象的clone方法需要将对应对象的clone赋值给该对象。如：this.a = a.clone();</p>
+<p>即生产者生成的消息需要被按序执行。</p>
+<p>解决方案：消息队列中将这些需要按序执行的消息，放入一个队列中，让消费者消费时必须消费整个队列。</p>
 </blockquote>
 
       
@@ -412,7 +377,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/14/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/14/">14</a><span class="page-number current">15</span><a class="page-number" href="/page/16/">16</a><span class="space">&hellip;</span><a class="page-number" href="/page/44/">44</a><a class="extend next" rel="next" href="/page/16/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/14/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/14/">14</a><span class="page-number current">15</span><a class="page-number" href="/page/16/">16</a><span class="space">&hellip;</span><a class="page-number" href="/page/46/">46</a><a class="extend next" rel="next" href="/page/16/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -457,13 +422,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">130k</span>
+    <span title="站点总字数">139k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:59</span>
+    <span title="站点阅读时长">2:07</span>
   </span>
 </div>
 <div class="busuanzi-count">

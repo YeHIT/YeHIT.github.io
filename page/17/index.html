@@ -198,7 +198,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">44</span>
+          <span class="site-state-item-count">46</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/01/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E7%BD%91%E7%BB%9C%E7%AA%81%E5%87%BB/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/01/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%9F%BA%E7%A1%80%E7%AA%81%E5%87%BB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/01/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E7%BD%91%E7%BB%9C%E7%AA%81%E5%87%BB/" class="post-title-link" itemprop="url">网络突击</a>
+          <a href="/2021/03/01/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%9F%BA%E7%A1%80%E7%AA%81%E5%87%BB/" class="post-title-link" itemprop="url">java基础突击</a>
         </h2>
 
         <div class="post-meta-container">
@@ -294,7 +294,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-19 14:50:51" itemprop="dateModified" datetime="2021-03-19T14:50:51+08:00">2021-03-19</time>
+        <time title="修改时间：2021-03-23 12:47:55" itemprop="dateModified" datetime="2021-03-23T12:47:55+08:00">2021-03-23</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -314,14 +314,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>8.4k</span>
+      <span>3.3k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>8 分钟</span>
+      <span>3 分钟</span>
     </span>
 </div>
 
@@ -332,256 +332,97 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="网络突击">网络突击</h1>
-<h2 id="http相关">Http相关</h2>
-<h3 id="概述">概述</h3>
+          <h1 id="java基础突击">java基础突击</h1>
+<h2 id="java基本类型">java基本类型</h2>
+<h3 id="各类型占的位数">各类型占的位数</h3>
 <blockquote>
-<p>HTTP基于TCP/IP通信协议传递数据。</p>
-<p>HTTP就是一个用文本格式描述报文头并用双换行分隔报文头和内容，在TCP基础上实现的请求-响应模式的双向通信协议。</p>
-<p>HTTP是无连接的：每次连接只处理一个请求。服务器处理完客户的请求，并收到客户的应答后，即断开连接。引出Keep-alive</p>
-<p>HTTP是媒体独立的：只要客户端和服务器知道如何处理数据内容，任何数据都可以从HTTP发送。通过content-type指定类型。</p>
-<p>HTTP是无状态的：指协议对于事务的处理没有记忆能力。意味着后续处理如果需要前面的信息必须重传。从而引出的Session。</p>
+<figure>
+<img src="/2021/03/01/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%9F%BA%E7%A1%80%E7%AA%81%E5%87%BB/Users\SmallYe\Desktop\blog\source_posts\面试突击\java基础突击\java基本类型.png" alt="java基本类型"><figcaption aria-hidden="true">java基本类型</figcaption>
+</figure>
+<p>Byte、Short、Integer、Long：默认创建了数值为[-128,127]的相应类型的缓存数据，Character创建了数值在[0,127]范围内的缓存数据。</p>
+<p>Boolean则是自定义两个static的Boolean值为TRUE、FALSE。</p>
 </blockquote>
-<h3 id="http事务-http请求命令-响应码">Http事务 = http请求命令 + 响应码</h3>
+<h3 id="和equals">==和equals</h3>
 <blockquote>
-<p>http事务是http请求的最小处理单元。</p>
-<p>请求报文和响应报文。</p>
+<p>没有覆盖equals方法时，二者相同。</p>
+<p>"=="运算符的两个操作数都是包装器类型的引用，则是比较指向的是否是同一个对象，而如果其中有一个操作数是表达式（即包含算术运算）则比较的是数值（即会触发自动拆箱的过程）</p>
 </blockquote>
-<h4 id="请求报文">请求报文</h4>
+<h3 id="基本类型自动装箱和拆箱">基本类型自动装箱和拆箱</h3>
 <blockquote>
-<p>请求行+请求头+请求体</p>
-<p>请求行内容为：</p>
-<p>​ 请求方法 + 请求的URL地址 + Http协议版本</p>
-<p>​ 请求方法有：</p>
-<p>​ HTTP1.0：GET(请求指定页面信息并返回主体)、POST(向指定资源提交数据)、HEAD(请求指定页面头)</p>
-<p>​ HTTP1.1：OPTIONS(允许客户端查看服务端性能)、PUT(客户端提交数据代替服务端)、DELETE(请求服务端删除指定页面)、TRACE(回显服务端收到的请求) 、CONNECT (HTTP1.1中预留给能够将连接改为管道方式的代理服务)</p>
-<p>请求头内容为属性，用于让服务端获知客户端信息，以下为常见属性：</p>
-<p>​ accept：告知服务端可以接受的文件格式。如application/json</p>
-<p>​ accept-language：浏览器支持的语言</p>
-<p>​ accept-encoding：指定浏览器可以支持的web服务器返回的内容压缩编码类型。</p>
-<p>​ User-Agent：用户代理，用于查看用户是使用什么访问的。</p>
-<p>​ Cookie：HTTP请求发送时会把请求域名下所有的cookie值都发给服务端。</p>
-<p>​ Cache-Control：设置缓存相关。no-cache代表不接受缓存，max-age表示客户端希望接受存在时间不大于该值的资源。</p>
-<p>​ connection：表示是否需要持久连接，keep-alive表示使用持久连接。http1.1默认使用。</p>
-<p>​ host：指定请求的服务器的域名和端口号</p>
-<p>请求体一般是用来传递参数。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">        Integer a = <span class="number">1</span>;</span><br><span class="line">        Integer b = <span class="number">2</span>;</span><br><span class="line">        Integer c = <span class="number">3</span>;</span><br><span class="line">        Integer d = <span class="number">3</span>;</span><br><span class="line">        Integer e = <span class="number">321</span>;</span><br><span class="line">        Integer f = <span class="number">321</span>;</span><br><span class="line">        Long g = <span class="number">3L</span>;</span><br><span class="line">        Long h = <span class="number">2L</span>;</span><br><span class="line">		<span class="comment">//由于c、d都是直接赋值，会调用Integer.valueOf方法，获取缓存，返回true</span></span><br><span class="line">        System.out.println(c==d);</span><br><span class="line">		<span class="comment">//e、f值大于缓存区间了，返回false</span></span><br><span class="line">        System.out.println(e==f);</span><br><span class="line">		<span class="comment">//a+b先自动拆箱然后运算，==比较数值，返回true</span></span><br><span class="line">        System.out.println(c==(a+b));</span><br><span class="line">		<span class="comment">//a+b先自动拆箱然后运算，equals会先自动装箱，然后比较，Integer重写了equals，当传入Integer时，也是比较数值，返回true</span></span><br><span class="line">        System.out.println(c.equals(a+b));</span><br><span class="line">		<span class="comment">//a+b先自动拆箱然后运算，==比较数值，返回true</span></span><br><span class="line">        System.out.println(g==(a+b));</span><br><span class="line">		<span class="comment">//a+b先自动拆箱然后运算，equals会先自动装箱，然后比较，Long重写了equals，当传入Long时，也是比较数值，而此时传入Integer，返回false</span></span><br><span class="line">        System.out.println(g.equals(a+b));</span><br><span class="line">		<span class="comment">//a+b先自动拆箱然后运算，equals会先自动装箱，然后比较，Long重写了equals，当传入Long时，也是比较数值，返回true</span></span><br><span class="line">        System.out.println(g.equals(a+h));</span><br><span class="line">答案：</span><br><span class="line"><span class="keyword">true</span></span><br><span class="line"><span class="keyword">false</span></span><br><span class="line"><span class="keyword">true</span></span><br><span class="line"><span class="keyword">true</span></span><br><span class="line"><span class="keyword">true</span></span><br><span class="line"><span class="keyword">false</span></span><br><span class="line"><span class="keyword">true</span></span><br></pre></td></tr></table></figure>
+<h3 id="java泛型">Java泛型</h3>
 </blockquote>
-<h4 id="响应报文">响应报文</h4>
 <blockquote>
-<p>响应行 + 响应头 + 响应体</p>
-<p>响应行内容为：</p>
-<p>​ HTTP协议版本 + 状态码及描述</p>
-<p>常见状态码：</p>
-<p>​ 1xx：表示服务器收到请求但需要请求者继续操作。</p>
-<p>​ 2xx：成功，操作被成功接收并处理。</p>
-<p>​ 3xx：重定向。</p>
-<p>​ 4xx：客户端错误，请求包含语法错误或无法完成请求。</p>
-<p>​ 5xx：服务器错误。</p>
-<p>​ 具体：</p>
-<p>​ 200 OK：处理成功</p>
-<p>​ 206 Partial Content：断点续传时使用，本质上就是客户端在header上设置一个Content-Range 标识当前传输的位置，服务端根据这个位置来响应。</p>
-<p>​ 301 Moved Permanently：请求的资源已被永久移动到新URI。</p>
-<p>​ 302 Moved Temporarily：资源被临时移动到新URI。</p>
-<p>​ 303 See Other：重定向到另外页面</p>
-<p>​ 304 Not Modified：未修改，服务端不会返回数据。让客户端访问缓存。</p>
-<p>​ 400 Bad Request：客户端请求语法错误。</p>
-<p>​ 401 Unauthorized：请求未经授权。</p>
-<p>​ 403 Forbidden：禁止访问</p>
-<p>​ 404 Not Found：找不到页面</p>
-<p>​ 500 Internal Server Error：服务端出现内部错误。</p>
-<p>​ 502 Bad Gateway：网关错误。</p>
-<p>响应头：</p>
-<p>​ Cache-Control：告知客户端怎么控制缓存。类似请求头。值可以为no-cache，max-age</p>
-<p>​ content-encoding：压缩编码格式。</p>
-<p>​ Content-Type：文件类型</p>
-<p>​ Location：重定向</p>
-<p>​ date：时间</p>
-<p>​ set-cookie：xx=yyy；Max-Age=3600；Version=1；当中Max-Age是用于设置cookie的保存时间。</p>
-<p>响应体就是服务端返回给客户端的信息，如html页面，json之类。</p>
+<p>泛型提供了编译时类型安全检测机制，该机制允许程序员在编译时检测到非法的类型。泛型的本质是参数化类型，也就是说所操作的数据类型被指定为一个参数。</p>
+<p>而泛型在Java中实现是使用伪泛型来实现的，即虽然声明的是ArrayList<String>但是最后实际上会进行类型擦除变为ArrayList。而String被擦除后会变为Object。</String></p>
 </blockquote>
-<h3 id="get和post的区别">GET和POST的区别</h3>
+<h3 id="重写和重载">重写和重载</h3>
 <blockquote>
-<p>本质上除了语义不同之外没有区别，但浏览器实现时区别如下：</p>
-<p>​ get可以被缓存、get请求可以被收藏为书签，post不行。</p>
-<p>​ get的数据url可见，post不会。</p>
-<p>​ get长度有限制、post没有</p>
-<p>​ get请求刷新回退都没有影响、post数据会被重新提交</p>
+<p>重载：方法名相同参数不同</p>
+<p>重写：子类重写父类方法。</p>
+<p>​ 返回值类型、方法名、参数列表必须相同，抛出的异常范围小于等于父类，访问修饰符范围大于等于父类。</p>
+<p>​ 如果父类方法访问修饰符为 private/final/static 则子类就不能重写该方法，但是被 static 修饰的方法能够被再次声明。</p>
+<p>​ 构造方法无法被重写。</p>
 </blockquote>
-<h3 id="cookiesessiontoken">Cookie、Session、Token</h3>
+<h3 id="stringstringbuffer和stringbuilder">String、StringBuffer和StringBuilder</h3>
 <blockquote>
-<p>本质上都是用于存储用户信息的。</p>
-<p>cookie是浏览器层面储存的一种k-v结构数据，当发送请求给服务端时可以把cookie发送给服务端。但是由于cookie是存储在浏览器上的，所以cookie往往不能用来存储用户的私密数据。</p>
-<p>session则是在服务端层面存储用户信息，服务端在使用session时往往会产生一个特殊的sessionId，然后将这个id交给客户端，客户端每次访问服务端时带上这个id即可。但是由于session存储在服务端，所以如果有大量用户时服务端往往会消耗大量资源来存储session，并且如果是多服务端的结构，还需要采用一定操作来保证session的存储。</p>
-<p>token=header密文+payload密文+签名：本质上是将用户第一次发送的用户名+密码的信息进行签名加密然后再发还给用户，而用户浏览器则保存这个信息，在之后的访问过程每次带上这个token供服务端验证。可以防止CSRF(跨站请求伪造)攻击，即在页面中放入一些恶意链接，这些链接会指向如转账之类的功能，由于浏览器发送请求时会默认带上cookie，所以导致请求通过校验被执行。而使用token浏览器就不会默认发送，从而防止csrf攻击。验证时服务端将两个密文解密再签名同自带的签名进行比对判断是否通过认证。此外还可以对payload密文解密来判断token是否过期。</p>
+<p>String：底层是final修饰的char数组。存在不可变特性。</p>
+<p>为什么要不可变：1.复用hashcode避免重复计算。2.字符串是不可变的，才能实现字符串常量池，让同一个字符串可以从常量池中查找，实现资源复用。</p>
+<p>3.因为字符串是不可变的所以它是线程安全的。</p>
+<p>String的equals方法，先判断两个对象是否相等，若不相等再判断对象是否为String实例，若是遍历字符串逐一判断字符是否相等，全部相等则返回相等。</p>
+<p>String计算hashcode：通过h = 31 * h + val[i];计算。</p>
+<p>StringBuffer和StringBuilder都是AbstractStringBuilder的子类，本质都是一样的。</p>
+<p>StringBuffer：线程安全，因为使用synchronized修饰。底层是没有final修饰的char数组，初始化时默认大小是16，通过append方法来添加字符，添加时需要判断当前size是否需要扩容，扩容机制为原char数组长度 * 2 + 2。然后添加时就是利用给定的目的数组和size偏移对数组进行复制。</p>
+<p>StringBuilder：线程不安全。底层也是没有final修饰的char数组，初始化默认大小是16，通过append添加。</p>
 </blockquote>
-<h3 id="http工作流程">HTTP工作流程</h3>
+<h2 id="java容器">java容器</h2>
+<h3 id="arrays.sort怎么排序的">Arrays.sort()怎么排序的？</h3>
 <blockquote>
-<p>DNS域名解析-&gt;TCP三次握手-&gt;发起HTTP请求-&gt;服务器响应HTTP请求-&gt;浏览器解析HTML并请求资源-&gt;浏览器渲染页面</p>
-<p>DNS既用TCP又用UDP，使用53号端口。</p>
-<p>在域名解析时使用UDP。因为解析的数据少，UDP较快。</p>
-<p>而在域名服务器之间执行数据同步时会使用TCP。因为此时数据量大，TCP是可靠连接，保证数据准确性。</p>
-<p>DNS域名解析流程：</p>
-<p>​ 搜索浏览器自身DNS缓存-&gt;搜索操作系统自身DNS缓存-&gt;读取host文件-&gt;向本地DNS服务器发起域名解析请求。</p>
-<p>​ 本地DNS先向根域名服务器-&gt;顶级域名服务器-&gt; 权限域名服务器得到结果返回。</p>
+<p>根据排序对象分为两种：</p>
+<p>​ 对于基本类型，使用DualPivotQuicksort.sort()</p>
+<p>​ 对于数量小于QUICKSORT_THRESHOLD = 286的数组，再进行分类，若小于INSERTION_SORT_THRESHOLD = 47，使用leftmost再选择排序模式，模式分为插入排序和改进的插入排序。</p>
+<p>​ 若大于INSERTION_SORT_THRESHOLD = 47，则使用DualPivotQuicksort双轴快排。</p>
+<p>​ 而对于数量较大的，先判断数组是否为高度结构化，若不是高度结构化则使用DualPivotQuicksort，否则使用归并排序。</p>
+<p>​ 对于实现了Comparable接口的类型，使用ComparableTimSort.sort()。</p>
+<p>​ 对于数量小于MIN_MERGE = 32的数组，使用二分插入排序。</p>
+<p>​ 对于数量大于MIN_MERGE的数组，使用timSort排序(大量优化的归并排序)。</p>
 </blockquote>
-<h3 id="http发展流程">HTTP发展流程</h3>
+<h3 id="arraylist具体实现">ArrayList具体实现</h3>
 <blockquote>
-<p><strong>http0.9</strong>：只支持get，服务端只能返回html格式，参数过程只支持文字。</p>
-<p><strong>http1.0</strong>：增加了post和head，支持发送任何格式的内容，增加了请求头、状态码，权限缓存相关内容。</p>
-<p>缺点：每个TCP只能发送一个请求，发送完毕连接关闭，使用成本高。队头堵塞，即请求大量资源时耗时较长的资源会影响之后的资源处理。</p>
-<p><strong>http1.1</strong>：引入了Connection： keep-alive让连接持久，还加入了如put、delete、connect之类的请求方式。另外引入了管道机制，支持客户端将多个HTTP请求放入一个TCP连接中，管理请求的顺序，一定程度上解决了队头堵塞。</p>
-<p>缺点：keep-alive虽然可以复用部分连接，但是域名分片的情况下还是要建立多个connection。管道机制要求返回结果是按序的，即使后面的处理成功了，但服务端返回时还是需要按客户端请求的顺序响应，即需要等待前面结果完成。协议开销大，协议头里内容过多且基本不变，增加了传输负担。</p>
-<p><strong>http2.0</strong>：基于SPDY。目的是通过支持请求和响应的多路复用来减低延迟。</p>
-<p>​ http1.x是文本协议，而http2.0使用二进制化分帧的方式，将传输的信息分割为更小的帧，并采用二进制编码的方式，首部信息放入Header frame，Request body放入Data frame，这样会对信息进行顺序标识。而且http2.0在每个TCP连接中承载多个双向流通的流，每个流都有一个独一无二的标识，而流就是由二进制帧组成的，二进制帧的头部信息会标识自己属于哪个流。这样使得服务器可以并行传输数据。从而实现了多路复用。</p>
-<p>​ http2.0可以给流设置优先级使得重要请求可以被优先处理。</p>
-<p>​ 此外http2.0还使用了首部压缩技术，对于一条连接使用首部表来维护key-value，若增加新的key-value则加入表尾，避免每次请求都需要携带首部。此外还对首部使用了HPACK算法压缩。</p>
-<p>​ 不仅如此http2.0还支持服务器主动推送，即先请求服务器，服务器不用解析就可以直接将预先设置好的内容推送给客户端。</p>
-<p><strong>http3.0</strong>：基于QUIC协议，底层使用UDP通信。实现了机制：</p>
-<p>​ 虽然http2.0在TCP的基础上实现了多路复用，但由于TCP的机制，每个流在发送时可能被拆成多个包(TCP分段)，举例S1、S2被拆为p1.1、p1.2、p1.2和p2.1、p2.2、p2.3，而发送过程又是乱序发送的，如p1.1、p1.2、p2.1、p1.3、p2.2、p2.3，这样可能导致的问题：假设p1.3一直超时，等待重传，阻塞了S2的信息。而因为http3.0是基于UDP的没有这个问题，所以可以实现真正的多路复用。</p>
-<p>​ 自定义连接机制：TCP连接是用4元组(源IP、源端口、目的IP、目的端口)的形式标注的，其中一个元素改变就需要建立连接，而HTTP3.0基于UDP实现了自己的连接机制，使用64位的随机数来作为ID来标识。且UDP是无连接的，所以当ip或者端口变化的时候，只要ID不变，就不需要重新建立连接。</p>
-<p>​ 自定义重传机制：由于TCP实现超时重传是使用序号机制，而超时的包和重发的包序列号一直，导致无法估计超时的准确时间。QUIC自定义了一个序列号，每次发送包时增加1，同时定义了offset的概念，判断两个包是否相同，这样可以准确估计超时的时间。</p>
+<p>默认容量10，底层是数组，默认实现的拷贝方式是浅拷贝。</p>
+<p>add方法：</p>
+<p>​ 让size+1，然后判断是否需要扩容，如果初始化时没有参数则让size同默认值比较，否则直接让size和当前数组长度比较，若大于则进行扩容。</p>
+<p>​ 扩容即将旧数组长度扩大1.5倍然后转化为新数组长度，通过newCapacity = oldCapacity + (oldCapacity &gt;&gt; 1);的位运算加速计算。</p>
+<p>​ 若扩容后的值小于size，则让值变为size，若扩容后的值大于数组最大长度，则判断size是否大于数组最大长度，若大于则扩容后的值为Integer.MAX_VALUE，否则为数组最大长度。</p>
+<p>​ 扩容具体操作则是使用Arrays.copyOf()，本质上就是System.arraycopy()。属于浅拷贝。</p>
 </blockquote>
-<h3 id="http和https">HTTP和HTTPS</h3>
+<h3 id="vector">Vector</h3>
 <blockquote>
-<p>HTTP是超文本文件传输协议通信使用明文传输，HTTPS则是基于HTTP协议通过SSL(处于TCP/IP协议与各种应用层协议之间)或TLS(前身是SSL)提供加密处理数据、验证对方身份及数据完整性保护。</p>
-<p>HTTPS的特点：</p>
-<p>​ 内容加密：采用混合加密技术，中间者无法直接查看明文内容。</p>
-<p>​ 验证身份：通过证书认证客户端访问的是自己的服务器。</p>
-<p>​ 保护数据完整性：防止传输的内容被中间人冒充或篡改。</p>
-<p>Https流程：</p>
-<p>​ 1.客户端向服务器发送请求，提供如下信息：</p>
-<p>​ 支持的协议版本，如TLS1.0。一个客户端产生的随机数，稍后用于生成“对话秘钥”。支持的加密算法，如RSA。支持的压缩算法。</p>
-<p>​ 2.服务器收到请求后，向客户端做出回应，内容包括：</p>
-<p>​ 确认使用的加密通信协议版本，如TLS1.0。一个服务器生成的随机数，用于生成对话秘钥。确认使用的加密方法。服务器证书。</p>
-<p>​ 3.客户端收到服务器回应后会验证服务器证书。若证书不是可信机构颁布、或证书域名和实际域名不一致、或证书已经过期则会警告访问者。</p>
-<p>​ 4.若证书没有问题，客户端取出证书中的公钥，然后向服务器发送消息：</p>
-<p>​ 一个随机数，用于服务器公钥加密，防止窃听。</p>
-<p>​ 编码改变通知，表示随后的信息都将用双方商定的加密方法和秘钥发送。</p>
-<p>​ 客户端握手结束通知，表示客户端的握手阶段已经结束。这一项同时也是前面发送的所有内容的hash值，用于服务器校验。</p>
-<p>​ 5.服务端回应，当服务端收到客户端的第三个随机数后，计算生成本次会话的会话密钥，然后向客户端发送信息：</p>
-<p>​ 编码改变通知，表示随后的信息将用双方商定的加密方法和密钥发送。</p>
-<p>​ 服务器握手结束通知，表示服务器的握手阶段已经结束。这一项同时也是前面发送的所有内容的hash值，用来供客户端校验。</p>
-<p>证书验证过程：CA机构在签发证书的时候，都会使用自己的私钥对证书进行签名，如果我们使用的是购买的证书，那么很有可能，颁发这个证书的CA机构的公钥已经预置在操作系统中。这样浏览器就可以使用CA机构的公钥对服务器的证书进行验签，验签之后得到的是CA机构使用sha256得到的证书摘要，客户端就会对服务器发送过来的证书使用sha256进行哈希计算得到一份摘要，然后对比之前由CA得出来的摘要，就可以知道这个证书是不是正确的，是否被修改过。</p>
+<p>本质上就是将常用的方法使用synchronized锁住，只是扩容机制不同。</p>
+<p>Vector初始化时可以初始化每次扩容的大小，若没有设置该值则每次扩容一倍，否则每次扩容对应大小。</p>
 </blockquote>
-<h2 id="socket的建立流程">Socket的建立流程</h2>
+<h3 id="linkedlist">LinkedList</h3>
 <blockquote>
-<p>服务端socket创建socket -&gt; bind -&gt; listen -&gt;accept -&gt; read/write -&gt; close</p>
-<p>客户端创建socket -&gt; connect -&gt; read/write -&gt; close</p>
+<p>底层是链表。</p>
 </blockquote>
-<h2 id="tcp和udp">TCP和UDP</h2>
-<h3 id="tcp和udp的区别">TCP和UDP的区别</h3>
+<h3 id="collections.synchronizedlist">Collections.SynchronizedList</h3>
 <blockquote>
-<p>TCP是面向连接的，UDP是无连接的。</p>
-<p>TCP消耗资源较大，UDP消耗资源较少。</p>
-<p>TCP是字节流传输，UDP是数据报传输。</p>
-<p>TCP可靠性高，UDP不保证消息可靠性。</p>
-<p>TCP可以进行流量控制，UDP不具有流量控制的能力。</p>
-<p>TCP适用于对于消息准确性和顺序要求较高的场景，UDP应用于对于通信效率、准确性要求相对较低的场景。</p>
+<p>类似Vector，但是可以将不同的List转化为线程安全的List，底层是通过Synchronized(mutex)，在synchronized块中调用List的通用方法实现的。</p>
 </blockquote>
-<h3 id="tcp是怎么保证可靠性的">TCP是怎么保证可靠性的？</h3>
+<h3 id="copyonwritearraylist">CopyOnWriteArrayList</h3>
 <blockquote>
-<p>1、使用报文里的校验和字段。</p>
-<p>2、使用了序列号机制，即每次发送报文都会附上相应的序列号，而接收到请求的那方会发送ACK对报文进行确认，同时ACK也会附带对应应答的序列号，此时发送方就可以对接收到ACK附带的序列号进行检测。若序列号正确再发送其他的报文，若错误则重发。</p>
-<p>3、超时重传：即报文在发出一定时间内未收到接收方的，发送方就会重传。</p>
-<p>4、三次握手和四次挥手机制。</p>
-<p>5、流量控制：由于接收端处理数据的速度是有限的，为了不让过多的数据让接收端无法处理，tcp报文中有个窗口大小字段，可以让接收端在接收报文，发出ACK信号时附上该值，让发送方及时调整。</p>
-<p>6、拥塞控制：流量控制是发送方接收方之间，而拥塞控制是相对整个网络通信环境的。TCP采用<strong>慢启动、拥塞避免和快恢复、快重传</strong>的方式来降低网络拥塞的可能。此外还有<strong>BIC、CUBIC、BBR拥塞控制</strong>。</p>
-<p>​ <strong>慢启动</strong>：即开始阶段，当在一个RTT时间内，每收到一个确认即让拥塞窗口大小增加1，直到超过了阈值大小。</p>
-<p>​ <strong>拥塞避免</strong>：超过阈值后会当一个RTT时间内，只让拥塞窗口大小增加1。</p>
-<p>​ <strong>慢恢复</strong>：当遇到网络拥塞，即出现丢包时会将拥塞窗口大小直接变为1，让阈值减半，然后进行慢启动过程。</p>
-<p>​ <strong>快重传</strong>：要求接收方，每收到一个失序的报文段就立即发出重复确认。收到连续三个冗余ACK，则重新发送报文段。因为TCP使用累积确认的机制，即接收端受到比期望序号大的报文，会重复发送最近一次确认的报文段的确认信号。一般和快恢复配合使用。</p>
-<p>​ <strong>reno快恢复</strong>：当遇到三个连续重复ack时，让阈值减半，拥塞窗口大小变为阈值，然后将拥塞窗口大小+3，重传丢失的报文段，如果再收到重复ACK则拥塞窗口再+1，直到收到新数据包的ACK，将窗口设置为阈值，进入拥塞避免状态。</p>
-<p>​ <strong>new_reno快恢复</strong>：reno快恢复只会对一个包丢失进行处理，若丢失了许多包导致的三个重复ACK，则会让拥塞窗口大小连续下降。这种算法本质上是当丢失多个包时如果接收到其中一个包，只会发出部分ACK，直到接收到所有丢失的包才发出完整的ACK，此时才结束快恢复状态，进入拥塞避免。</p>
-<p>​ <strong>BIC</strong>：在reno版本的拥塞控制中，进入拥塞避免状态时，每过一个RTT才让拥塞窗口自增1，当RTT很长时，达到最佳拥塞窗口的时间很长。而BIC算法会将发生丢包的那个拥塞窗口大小视为Wmax，降到一半阈值大小的拥塞窗口大小视为Wmin，利用二分法去探寻当前最佳窗口大小。而当十分逼近Wmax时，此时可以认为网络环境变好，需要探寻更大的窗口，这时利用之前二分的反过程来探寻新窗口。显然RTT时间短的连接会更早达到上限，故而该算法是抢占带宽的算法。</p>
-<p>​ <strong>CUBIC</strong>：本质上就是将RTT这个因子从分析过程中抽取出来，通过数学的手段利用数学公式将BIC的过程拟合出来。通过调节公式的参数来调整窗口调整的速度。</p>
-<p>​ <strong>BBR</strong>：将网络拥塞和丢包区分开，因为丢包可能是因为传输错误。而BBR的主要目的是为了在存在一定丢包率的网络链路上拆分利用带宽，以及降低网络链路上buffer占用率，从而降低延迟。原有算法的缺点：使用丢包作为判断发送网络拥塞的条件，使用窗口判断会导致缓冲区膨胀的问题，导致网络延迟和由于缓冲区被占满导致丢包的问题。</p>
-<p>​ BBR通过不考虑丢包来解决第一个问题，通过利用估计带宽和延迟来避免直接，而带宽和延迟不能同时测量，因为带宽大之后延迟变高，延迟低带宽则低。BBR选择交替测量，用一段时间内的带宽极大值和延迟极小值来作为估计值。</p>
-<p>​ BBR算法阶段：startup慢启动阶段 -&gt; Drain排空阶段 -&gt; Probe_BW带宽探测阶段 -&gt; Probe_RTT延迟探测阶段</p>
-<p>​ 慢启动阶段：类似于原本的慢启动，指数增加发送速率，当连续三次发现投递率不再增长，说明管道被填满，进入Drain排空阶段。</p>
-<p>​ 排空阶段：指数降低发送速率，将多发送的buffer排空。</p>
-<p>​ 带宽探测阶段：排空后，进入稳定状态，BBR改变发送速率进行带宽探测，先在一个RTT时间增加发送速率探测最大带宽，若RTT没有变化，减小发送速率排空发送的包，后六个周期使用更新后的估计带宽发送。</p>
-<p>​ 延迟探测阶段：BBR每过10秒，如果估计延迟不变进入延迟探测阶段，BBR在这段时间内发送查看固定为4。</p>
+<p>适用于读多写少的场景，因为每次操作需要复制数组。·</p>
+<p>底层使用ReentrantLock在add操作时上锁，add操作结束后释放。正如名字所说，每次添加操作都需要在原数组的基础上复制一个大小增加对应长度的数组进行使用。</p>
+<p>remove时也需要上锁，也是在原数组的基础上复制一个大小减少对应长度的数组进行使用。</p>
+<p>其计算hashcode的方法类似String，也是使用h = 31 * h + 对应对象的hashcode;</p>
 </blockquote>
-<h3 id="tcp握手与挥手">TCP握手与挥手</h3>
-<h4 id="tcp三次握手">TCP三次握手</h4>
+<h2 id="基础知识点">基础知识点</h2>
+<h3 id="浅拷贝和深拷贝">浅拷贝和深拷贝</h3>
 <blockquote>
-<p>三次握手的流程：</p>
-<table>
-<colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: center;">A</th>
-<th style="text-align: center;">B</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;">A发送SYN信号及A的初始序号x，此时A进入SYN_SEND状态</td>
-<td style="text-align: center;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"></td>
-<td style="text-align: center;">B接收到了A发送的SYN信号与A初始序号x，需要对SYN信号发送ACK应答且应答序号为x+1，同时也向A发出SYN信号和自己的序号y，然后进入SYN_RECV状态</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">A接收到服务端发送的SYN和ACK信号，会发送ACK信号并将序号设为y+1，然后发送给客户端，发送完毕后A进入ESTABLISHED状态，完成三次握手。</td>
-<td style="text-align: center;">B收到ACK也进入ESTABLISHED状态</td>
-</tr>
-</tbody>
-</table>
-<p><strong>为什么不是四次握手，如将B的SYN信号和ACK信号拆开发送</strong>。原因：避免资源浪费。</p>
-<p><strong>为什么B需要等待A的ACK信号？即为什么不是两次握手？</strong>原因：本质上为了避免旧重复连接造成资源浪费的问题，若B发出SYN和ACK信号后直接进入ESTABLISHED状态，假定A、B先前存在连接，然后断开了连接，而此时B在之后的一段时间中收到了A早期发送的SYN信号，若B直接进入ESTABLISHED状态，此时显然A是没有连接需求的，也不会向B发送数据，而B也不知道这一点，这样就会浪费掉连接资源。而使用三次握手，A、B之间存在序列号，若发生之前的情况，B会对A发出信号和自己的ACK序号，此时A收到ACK时就会发现自己当前的序列号不能和B的ACK对应，就会给B发送RESET信号，从而避免资源浪费。并且三次握手也可以双方的序列号被可靠的同步。</p>
-<p>第三次握手时就可以携带数据了。</p>
-<p><strong>SYN攻击</strong>：即随机IP访问服务器发送大量SYN请求。导致服务器的SYN接收队列即未连接队列被占满。</p>
-<p>解决方法：</p>
-<p>​ tcp建立连接时分为syn队列和accept队列，可以启用tcp_syncookies ，当syn队列被占满时，会给客户端将一个cookie值放入序列号字段中，当客户端发送ACK正确时，直接将连接放入accept队列，然后等待accept函数被调用。</p>
-</blockquote>
-<h4 id="tcp四次挥手">TCP四次挥手</h4>
-<blockquote>
-<p>四次挥手的流程：</p>
-<table>
-<colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: center;">A</th>
-<th style="text-align: center;">B</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;">A发送FIN信号及自己的序列号给B，然后进入FIN_WAIT1状态</td>
-<td style="text-align: center;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"></td>
-<td style="text-align: center;">B接收到了A发送的FIN信号会向A发送ACK，然后进入CLOSE_WAIT状态</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">客户端收到ACK信号进入FIN_WAIT2状态</td>
-<td style="text-align: center;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"></td>
-<td style="text-align: center;">一段时间后，服务端发送完数据，就会给客户端发送FIN报文，此时服务端进入LAST_ACK状态</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">当客户端接收到FIN信号时发送ACK信号给服务端，此时客户端会进入TIME_WAIT状态。若超过2MSL没有收到回复则客户端关闭连接进入CLOSED状态。</td>
-<td style="text-align: center;">当服务端接收到ACK信号时会关闭连接进入CLOSED状态</td>
-</tr>
-</tbody>
-</table>
-<p><strong>为什么断开连接需要四次挥手？</strong></p>
-<p>​ 因为TCP连接是全双工的，所以必须保证每个方向都单独进行关闭。当客户端想关闭自己这方的连接时，服务端可能还需要发送消息，故客户端只能先发送FIN，然后等待服务端完成了自己操作后发出FIN才完成一个连接两个方向的关闭。</p>
-<p><strong>为什么客户端发送ACK信号后还需要等待2MSL长度的时间？</strong></p>
-<p>​ 主要有两个原因：</p>
-<p>​ 1、如果ACK信号在传输过程中丢失了，客户端可以等待服务端重新发送FIN报文，此时再发送ACK报文来保证连接被正常关闭。</p>
-<p>​ 2、2MSL时间是网络TCP生存时间的两倍，设置这个时间是为了给服务器足够的超时重传时间，也让客户端可以等待网络中在之前连接中发出的包全部消失。</p>
+<p>浅拷贝拷贝对象时如果对象中含有其他对象，则只会拷贝这些对象的引用，如果对其中对象进行修改会相互影响。</p>
+<p>深拷贝即当拷贝对象中含有其他对象时，会创建一个另外的对象，让两个对象互不影响。</p>
+<p>实现深拷贝的方式：</p>
+<p>​ 要被拷贝的类实现clonable接口，并且让这个类中对应对象的类也实现clonable接口，然后重写clone方法，被拷贝对象的clone方法需要将对应对象的clone赋值给该对象。如：this.a = a.clone();</p>
 </blockquote>
 
       
@@ -602,7 +443,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/16/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><span class="page-number current">17</span><a class="page-number" href="/page/18/">18</a><span class="space">&hellip;</span><a class="page-number" href="/page/44/">44</a><a class="extend next" rel="next" href="/page/18/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/16/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><span class="page-number current">17</span><a class="page-number" href="/page/18/">18</a><span class="space">&hellip;</span><a class="page-number" href="/page/46/">46</a><a class="extend next" rel="next" href="/page/18/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -647,13 +488,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">130k</span>
+    <span title="站点总字数">139k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:59</span>
+    <span title="站点阅读时长">2:07</span>
   </span>
 </div>
 <div class="busuanzi-count">

@@ -198,7 +198,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">44</span>
+          <span class="site-state-item-count">46</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/JVMKnowledge/2.%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/codeAnalyse/nginx%E4%BA%86%E8%A7%A3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/JVMKnowledge/2.%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86/" class="post-title-link" itemprop="url">2.垃圾收集</a>
+          <a href="/2021/02/20/codeAnalyse/nginx%E4%BA%86%E8%A7%A3/" class="post-title-link" itemprop="url">Nginx了解</a>
         </h2>
 
         <div class="post-meta-container">
@@ -288,7 +288,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：15:58:55" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:13:13" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -296,7 +296,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/JVM/" itemprop="url" rel="index"><span itemprop="name">JVM</span></a>
+          <a href="/categories/%E6%A1%86%E6%9E%B6%E5%85%A5%E9%97%A8/" itemprop="url" rel="index"><span itemprop="name">框架入门</span></a>
         </span>
     </span>
 
@@ -308,14 +308,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>4k</span>
+      <span>6k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>4 分钟</span>
+      <span>5 分钟</span>
     </span>
 </div>
 
@@ -326,150 +326,183 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="垃圾收集">垃圾收集</h1>
+          <h1 id="nginx">Nginx</h1>
+<h2 id="概述">概述</h2>
 <blockquote>
-<p>垃圾收集的步骤：判断对象是否存活(可回收) -&gt;</p>
+<p>Nginx是高性能的http和反向代理服务器，也是一个IMAP/SMTP/POP3等邮件代理服务器。</p>
+<p>正向代理和反向代理</p>
+<p>正向代理：客户端client通过设置，使用代理服务器proxy去访问远程服务器server。客户端知道代理存在。</p>
+<p>​ | client - proxy | - server</p>
+<p>使用场景：</p>
+<p>​ 可以访问原来无法访问的资源。</p>
+<p>​ 做缓存使用，加快访问速度。</p>
+<p>​ 对客户端授权或记录访问信息。</p>
+<p>反向代理：服务器通过代理服务接收连接请求，再转发给内部网络的服务器，将结果返回给客户端。客户端不知道代理存在。</p>
+<p>​ client - | proxy - server |</p>
+<p>使用场景：</p>
+<p>​ 保证内网安全，阻止web攻击。</p>
+<p>​ 负载均衡。</p>
 </blockquote>
-<h2 id="判断对象存活">判断对象存活</h2>
-<h3 id="引用计数">引用计数</h3>
+<h2 id="nginx命令">Nginx命令</h2>
 <blockquote>
-<p>在对象中添加一个引用计数器，当一个地方有引用它时计数器值加一；引用失效时，计数器值就减一。计数器为0的对象是不可能再被引用的。</p>
-<p>存在循环引用的问题</p>
-<p>Java中没有使用。</p>
+<p>启动命令./Nginx</p>
+<p>杀死进程 kill SIGNAL pid</p>
+<p>​ kill -9 pid 强制停止</p>
+<p>​ kill -TERM pid 快速停止</p>
+<p>​ kill -QUIT pid 平缓停止</p>
+<p>查看版本 ./Nginx -V</p>
+<p>信号处理 ./Nginx -s SIGNAL(stop、quit、reopen、reload)</p>
+<p>​ 关闭 ./Nginx -s stop</p>
+<p>​ 重加载 ./Nginx -s reload</p>
+<p>​ 平缓停止 ./Nginx -s quit</p>
+<p>​ 快速停止 ./Nginx -s stop</p>
 </blockquote>
-<h3 id="可达性分析算法">可达性分析算法</h3>
+<h2 id="nginx配置">Nginx配置</h2>
+<h3 id="全局块">全局块</h3>
 <blockquote>
-<p>基本思路：通过一系列称为GC Roots的根对象作为起始点集，当某个对象到起始点集间没有任何引用链相连时，这个对象就是不可能再被使用的。</p>
-<p>Java中固定可作为GC Roots的对象：</p>
-<p>​ 在虚拟机栈中引用的对象，如各个线程被调用的方法堆栈中使用到的参数、局部变量、临时变量等。</p>
-<p>​ 在方法区类静态属性引用的对象，如Java类引用类型静态变量。</p>
-<p>​ 在本地方法栈中JNI(Native方法)引用的对象。</p>
-<p>​ Java虚拟机内部的引用，如基本数据类型对应的Class对象，一些常驻的异常对象(NullPointExcepiton、OutOfMemoryError）还有系统类加载器。</p>
-<p>​ 所有被同步锁持有的对象。</p>
-<p>​ 反应Java虚拟机内部情况的JM XBean、JVMTI中注册的回调、本地代码缓存等。</p>
-<p>除了固定GC Roots集合外，根据用户选用的垃圾收集器及当前回收的内存区域不同，还可以有其他对象加入。</p>
-<p>被判定为不可达的对象还不会被立即回收。真正回收需要经历至少两个标记过程：</p>
-<p>​ 若对象在进行可达性分析后分析没有和GC Roots相连接的引用链，会被第一次标记。随后进行一次筛选，若这个对象没有覆盖finalize方法或该方法已经被虚拟机调用，则没有必要执行finalize方法。</p>
-<p>​ 若需要执行finalize方法，则会将对象放入F-Queue队列中，然后自动启用线程执行队列中对象的finalize方法。执行后收集器会对队列中对象进行第二次小规模标记，若对象在finalize方法中重新和引用链上的任何一个对象建立关联，第二次标记时它会被移除即将回收的集合。否则，它通常要被回收。</p>
+<p>全局块：指定运行时的用户组、进程id存放位置、日志存放位置、worker process数量等。</p>
+<p>#user nobody ：配置用户或用户组</p>
+<p>#worker_processes 1 ：运行启动的进程数</p>
+<p>#error_log logs/error.log 级别 ：日志路径及级别设置</p>
+<p>#pid logs/nginx.pid 进程id的文件地址</p>
 </blockquote>
-<h2 id="回收方法区">回收方法区</h2>
+<h3 id="events块">events块</h3>
 <blockquote>
-<p>主要回收废弃的常量和不再使用的类型。</p>
-<p>回收常量要求：当前常量进入了常量池，且当前系统没有任何一个对象的值是该常量。</p>
-<p>回收类型的条件：</p>
-<p>​ 该类所有的实例已经被回收。</p>
-<p>​ 加载该类的类加载器被回收。</p>
-<p>​ 该类对应的java.lang.Class对象没有在任何地方被引用，无法在任何地方通过反射访问该类的方法。</p>
+<p>events块：影响Nginx服务器和用户网络连接配置，如每个进程最大连接数、选择哪种事件驱动模型、是否序列化events块：影响Nginx服务器和用户网络连接配置，如每个进程最大连接数、选择哪种事件驱动模型、是否序列化。</p>
+<p>events{</p>
+<p>​ #worker_connections 1024：每个进程的最大连接数</p>
+<p>}</p>
 </blockquote>
-<h2 id="引用的概念">引用的概念</h2>
+<h3 id="http块">http块</h3>
 <blockquote>
-<p>Java的引用在JDK1.2后分为强引用、软引用、弱引用、虚引用。</p>
-<p>强引用：最传统的引用的概念，只有强引用关系存在，垃圾收集器就永远不回收被引用的对象。</p>
-<p>软引用：描述一些还有用但非必须的对象。只被软引用关联的对象，在系统将要发生内存溢出异常时，会将这些对象列入回收访问进行第二次回收，若回收还没有足够内存，抛出内存溢出异常。</p>
-<p>弱引用：描述非必须的对象，被弱引用关联的对象只能生存到下一次垃圾收集发送为止。</p>
-<p>虚引用：最弱的引用关系。无法通过虚引用来取得一个对象实例，为对象设置虚引用关联的唯一目的只是为了能在这个对象被收集器回收时收到一个系统通知。</p>
+<p>http块：配置代理、缓存、日志等绝大部分功能的地方。可以嵌套多个server块，而不同的server可以对应不同的域名(虚拟主机)。</p>
+<p>虚拟主机：同一台Nginx服务器，可以支持多个网站的运行，每个虚拟主机之间都互相独立，具有完整功能。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 相对路径</span><br><span class="line">			root html;</span><br><span class="line">			# 默认跳转的首页地址</span><br><span class="line">			index index.html index.htm;</span><br><span class="line"></span><br><span class="line">		&#125;	</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>日志配置：可以获取用户地址信息、跳转来源、终端、url访问量等。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#log_format main &#x27;$remote_addr - $remote_user [$time_local] &quot;$request&quot; &#x27;</span><br><span class="line">#                  &#x27;$status $body_bytes_sent &quot;$http_referer&quot; &#x27;</span><br><span class="line">#                  &#x27;&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;&#x27;;</span><br><span class="line"></span><br><span class="line">#access_log logs/access.log main;</span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>remote_addr</td>
+<td>客户端的ip地址</td>
+</tr>
+<tr class="even">
+<td>remote_user</td>
+<td>客户端的用户名称</td>
+</tr>
+<tr class="odd">
+<td>time_local</td>
+<td>访问时间和时区</td>
+</tr>
+<tr class="even">
+<td>request</td>
+<td>请求方法</td>
+</tr>
+<tr class="odd">
+<td>status</td>
+<td>响应状态码 如：200</td>
+</tr>
+<tr class="even">
+<td>body_bytes_sent</td>
+<td>主体内容字节数 如：612</td>
+</tr>
+<tr class="odd">
+<td>http_referer</td>
+<td>记录是从哪个链接访问过来的</td>
+</tr>
+<tr class="even">
+<td>http_user_agent</td>
+<td>用户使用的代理（浏览器）</td>
+</tr>
+<tr class="odd">
+<td>http_x_forwarded_for</td>
+<td>通过代理服务器来记录客户端的ip地址</td>
+</tr>
+</tbody>
+</table>
 </blockquote>
-<h2 id="垃圾收集算法">垃圾收集算法</h2>
+<h3 id="反向代理配置">反向代理配置</h3>
 <blockquote>
-<p>可以分为引用计数式垃圾收集和追踪式垃圾收集。</p>
-<p>Java主流虚拟机中只有追踪式垃圾收集。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 相对路径</span><br><span class="line">			root html;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://127.0.0.1:8080</span><br><span class="line">			# 默认跳转的首页地址</span><br><span class="line">			index index.html index.htm;</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>代理多个tomcat服务器，通过路径来映射</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location ~ path1 &#123;</span><br><span class="line">			# 相对路径</span><br><span class="line">			root html;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://127.0.0.1:8080</span><br><span class="line">			# 默认跳转的首页地址</span><br><span class="line">			index index.html index.htm;</span><br><span class="line">        &#125;	</span><br><span class="line">		location ~ path2 &#123;</span><br><span class="line">			# 相对路径</span><br><span class="line">			root html;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://127.0.0.1:8081</span><br><span class="line">			# 默认跳转的首页地址</span><br><span class="line">			index index.html index.htm;</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="负载均衡">负载均衡</h3>
 </blockquote>
-<h3 id="分代收集理论">分代收集理论</h3>
 <blockquote>
-<p>弱分代假说：绝大多数对象都是朝生夕灭的。</p>
-<p>强分代假说：熬过越多次垃圾收集过程的对象越难消灭。</p>
-<p>跨代引用假说：跨代引用相对于同代引用来说仅占极少数。</p>
-<p>新生代收集（Minor GC/Young GC）：指目标只是新生代的垃圾收集。</p>
-<p>老年代收集（Major GC/Old GC）：指目标只是老年代的垃圾收集。目前只有CMS收集器会有单独收集老年代的行为。</p>
-<p>混合收集（Mixed GC）：指目标是收集整个新生代以及部分老年代的垃圾收集。目前只有G1收 集器会有这种行为。</p>
-<p>整堆收集（Full GC）：收集整个Java堆和方法区的垃圾收集</p>
+<p>早期使用DNS(域名解析系统)做负载，具体来说就是给客户端解析不同的ip地址，让流量直接到达服务器。</p>
+<p>优点： 1） 通过健康检查，避免单点故障 2） 当发现节点故障时，从集群中移除，保证应用的高可用</p>
+<p>四层负载均衡，在OSI模型的传输层，主要是转发。 七层负载均衡，在OSI模型的应用层，主要是代理。</p>
+<p>负载均衡器可以处理HTTP/HTTPS/TCP/UDP等的请求。</p>
+<p>负载均衡的调度算法：</p>
+<p>​ 轮询。</p>
+<p>​ 最小连接：优先选择连接数最少的服务器，适用于会话时间较长的业务处理。</p>
+<p>​ IP映射，根据请求的ip地址进行散列，让同一ip下的请求都映射到同一服务器上，可以解决session问题。</p>
+<p>Nginx设置默认轮询算法</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080;</span><br><span class="line">		server 192.168.1.20:8081;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>设置权重的情况，默认权重是1。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080 weight = 1;</span><br><span class="line">		server 192.168.1.20:8081 weight = 2;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>根据ip地址固定server处理，使用ip_hash。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080 weight = 1;</span><br><span class="line">		server 192.168.1.20:8081 weight = 2;</span><br><span class="line">		ip_hash;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </blockquote>
-<h3 id="标记-清除算法">标记-清除算法</h3>
+<h3 id="动静分离">动静分离</h3>
 <blockquote>
-<p>先标记所有需要回收的对象，标记完成后统一回收掉所有被标记的对象。</p>
-<p>存在的问题：</p>
-<p>​ 若Java堆中包含大量对象，且大部分都是需要被回收的，需要进行大量的标记清除动作。</p>
-<p>​ 内存空间碎片化，标记、清除后会产生大量不连续的内存碎片。</p>
+<p>将静态资源和动态资源分开。</p>
+<p>静态资源直接查找Nginx的静态资源地址。</p>
+<p>动态资源请求通过反向代理映射到tomcat路径下的资源。</p>
+<p>实现方式：</p>
+<p>​ 单独把静态文件放在独立的服务器及独立的域名下(推荐)。</p>
+<p>​ 将动态资源和静态资源混合在一起，通过Nginx分开。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080 weight = 1;</span><br><span class="line">		server 192.168.1.20:8081 weight = 2;</span><br><span class="line">		ip_hash;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 访问动态资源</span><br><span class="line">		location ~ .*.jsp$ &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">		# 访问静态资源</span><br><span class="line">		location ~ .*\.(gif|jpg|css)$ &#123;</span><br><span class="line">			root /usr/local/nginx/image;</span><br><span class="line">			// 缓存时间</span><br><span class="line">			expires 3d;</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="location块的匹配规则">location块的匹配规则</h3>
 </blockquote>
-<h3 id="标记-复制">标记-复制</h3>
 <blockquote>
-<p>为了解决标记-清除算法面对大量可回收对象时执行效率低的问题。</p>
-<p>半区复制：将可用内存按容量划分为大小相等的两块，每次只使用其中一块，当一块内存用完了，将还存活着的对象复制到另一块上，然后将已使用过的内存空间一次清理掉。</p>
-<p>Appel式回收：分为1块Eden，两块Survivor，分配时使用1块Eden，1块Survivor。回收时将存活的对象放入另一块Survivor中，清理之前使用的Eden和Survivor。内存只浪费了1块Survivor。</p>
-<p>优点：当多数对象是可回收的情况时，算法复制的对象少，且分配内存时不用考虑有空间碎片的复杂情况，实现简单。</p>
-<p>缺点：浪费了内存空间。</p>
+<p>匹配规则：</p>
+<p>​ location = /uri 精确匹配</p>
+<p>​ location ^~ /uri 前缀匹配，顺序在正则之前</p>
+<p>​ location ~ pattern 区分大小写的正则匹配</p>
+<p>​ location ~* pattern 不区分大小写的正则匹配</p>
+<p>​ location /uri 前缀匹配，顺序在正则之后(两种前缀匹配不能同时出现)</p>
+<p>​ location / 通用匹配，接收未匹配到其他location的请求。</p>
+<p>匹配顺序：</p>
+<p>​ 首先会进行精确匹配，然后会进行前缀匹配，具体顺序按指令长度从长到短的顺序依次匹配。</p>
+<p>​ 使用正则匹配时，是按照配置文件的顺序依次匹配的。如果不希望前缀匹配后进行正则匹配，那么使用^~。</p>
 </blockquote>
-<h3 id="标记-整理算法">标记-整理算法</h3>
+<h3 id="url重写">URL重写</h3>
 <blockquote>
-<p>一般是针对老年代对象。标记完成后不是直接对可回收对象进行清理，而是让所有存活的对象都想内存空间一端移动，然后直接清理掉边界外的内存。</p>
-<p>缺点：移动过程耗时较长。</p>
-<p>优点：不用考虑内存碎片化问题，降低了内存分配器及内存访问器的复杂度。</p>
+<p>即对URL的规范化处理。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080 weight = 1;</span><br><span class="line">		server 192.168.1.20:8081 weight = 2;</span><br><span class="line">		ip_hash;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		</span><br><span class="line">		# 重写URL</span><br><span class="line">		rewrite ^/(.*) http://www.xxxx.com/xxx;</span><br><span class="line"></span><br><span class="line">		# 访问动态资源</span><br><span class="line">		location ~ .*.jsp$ &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">		# 访问静态资源</span><br><span class="line">		location ~ .*\.(gif|jpg|css)$ &#123;</span><br><span class="line">			root /usr/local/nginx/image;</span><br><span class="line">			// 缓存时间</span><br><span class="line">			expires 3d;</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="nginx安装">Nginx安装</h2>
 </blockquote>
-<h2 id="hotpot算法细节">Hotpot算法细节</h2>
 <blockquote>
-<p>根节点枚举(使用一个OopMap记录)</p>
-<p>安全点(到达安全点时将引用关系收集到OopMap，主动式中断和抢占式中断)</p>
-<p>安全区域(类似于安全点的扩展)</p>
-<p>记忆集和卡表：</p>
-<p>​ 记忆集：为了解决对象跨代引用问题，建立的从非收集区域指向收集区域的指针集合的抽象数据结构。</p>
-<p>​ 卡表：以卡精度实现的记忆集。每个记录精确到一块内存区域，该区域内有对象含有跨代指针。</p>
-<p>写屏障：为了在机器码的层面将维护卡表的动作放到每个赋值操作之中。赋值操作会在写屏障的覆盖范围中，赋值前部分为写前屏障，赋值后部分为写后屏障，一般来说，都是在写后屏障执行卡表的更新。</p>
-<p>卡表带来的高并发问题：伪共享，由于CPU的缓存系统是缓存行为单位存储的，当多线程修改互相独立的变量时，若这些变量刚好共享同一个缓存行，就会互相影响。为了避免这个问题，简单的解决方案是先检查卡表标记，当卡表元素未被标记时才将其标记变脏。</p>
-<p>并发的可达性分析：扫描过程时垃圾收集器和用户线程存在并发问题，，可用的解决方法有增量更新(插入引用时记录，扫描完成后以记录的再扫描)、原始快照(删除引用时记录，扫描完成时按记录的再扫描)。</p>
-</blockquote>
-<h2 id="经典垃圾收集器">经典垃圾收集器</h2>
-<h3 id="serial收集器">Serial收集器</h3>
-<blockquote>
-<p>单线程、简单高效、是所有收集器里额外内存消耗最小的，但是进行垃圾收集时必须暂停其他所有工作线程。</p>
-<p>新生代采用复制算法暂停所有用户线程，老年代采用标记-整理算法暂停所有用户线程。</p>
-</blockquote>
-<h3 id="parnew收集器">ParNew收集器</h3>
-<blockquote>
-<p>是Serial收集器的多线程并行版本。可以和CMS收集器配合使用。</p>
-<p>新生代采用多线程复制算法暂停所有用户线程，老年代采用标记-整理算法暂停所有用户线程。</p>
-</blockquote>
-<h3 id="parallel-scavenge收集器">Parallel Scavenge收集器</h3>
-<blockquote>
-<p>基于标记-复制算法实现的新生代收集器，也是能够并行收集的多线程收集器。</p>
-<p>而Parallel Scavenge收集器的目标则是达到一个可控制的吞吐量(Throughput)，吞吐量就是处理器用于运行用户代码的时间与处理器总消耗时间的比值。</p>
-<p>-XX：MaxGCPauseMillis：允许的值是一个大于0的毫秒数，收集器将尽力保证内存回收花费的时间不超过用户设定值，会降低吞吐量。</p>
-<p>-XX：GCTimeRatio：值应当是一个大于0小于100的整数，也就是垃圾收集时间占总时间的比率，相当于吞吐量的倒数。</p>
-<p>-XX：+UseAdaptiveSizePolicy：一个开关参数，开启后可以自动调节参数。</p>
-</blockquote>
-<h3 id="serial-old收集器">Serial Old收集器</h3>
-<blockquote>
-<p>是Serial收集器的老年代版本，是一个单线程收集器，使用标记-整理算法。</p>
-</blockquote>
-<h3 id="parrallel-old收集器">Parrallel Old收集器</h3>
-<blockquote>
-<p>是Parallel Scavenge收集器的老年代版本，支持多线程并发收集，基于标记-整理算法。</p>
-</blockquote>
-<h3 id="cms收集器">CMS收集器</h3>
-<blockquote>
-<p>是一种以获取最短回收停顿时间为目标的收集器。它是基于标记-清除算法实现的。其运作过程分为4步：</p>
-<p>​ 初始标记(需要stop the world)</p>
-<p>​ 并发标记</p>
-<p>​ 重新标记(需要stop the world)</p>
-<p>​ 并发清除</p>
-<p>缺点：</p>
-<p>​ CMS收集器对处理器资源非常敏感。会因为占据了一部分线程导致应用程序变慢。CMS默认启动回收线程为(处理器核心数量 + 3 )/4。导致处理器核心&lt;4时占用的性能过多。</p>
-<p>​ CMS处理器无法处理浮动垃圾，可能出现“Concurrent Mode Failure”，从而引发Full GC。因为标记结束后，很可能产生新垃圾，CMS无法在当次收集时处理，只能留到下次。所以CMS需要预留一部分空间给并发收集时程序运行使用，可以通过-XX：CMSInitiatingOccupancyFraction来调节。</p>
-<p>​ 由于CMS是基于标记-清除算法实现的，会产生大量空间碎片。当碎片过多，大对象很难分配，触发Full GC。-XX：+UseCMS-CompactAtFullCollection:开关参数，让CMS触发Full GC时进行碎片整理。</p>
-</blockquote>
-<h3 id="garbage-first收集器">Garbage First收集器</h3>
-<blockquote>
-<p>简称G1，它开创了收集器面向局部收集的设计思路和基于Region的内存布局形式。它是一款主要面向服务端应用的垃圾收集器。</p>
-<p>在G1之前的垃圾收集器垃圾收集的范围要么是整个新生代，要么是整个老年代，要么就是Full GC，G1则是面向堆内存任何部分来组成回收集，衡量标准是哪块内存中存放的垃圾数量最多。</p>
-<p>它开创了基于Region的堆内存布局。相当于将堆内存划分为大小相同的连续独立区域，每个区域按需要划分出空间。Region中还要特殊的Humongous区域，专门用于存储大对象。G1将大小超过一个Region容量一半的对象就判定为大对象。超过整个Region容量的对象会被存放到n个连续的Region中。</p>
-<p>流程：</p>
-<p>​ 初始标记</p>
-<p>​ 并发标记</p>
-<p>​ 最终标记</p>
-<p>​ 筛选回收</p>
-</blockquote>
-<h3 id="低延迟垃圾收集器">低延迟垃圾收集器</h3>
-<blockquote>
-<p>Shenandoah收集器</p>
+<p>在各官网下载相关组件 nginx openssl zlib pcre 等等</p>
+<p>以openssl为例 1） 通过rz上传压缩包 2） 通过tar -xvf *.tar.gz 进行解压缩 3）cd openssl-1.1.1d 进行配置检查以及编译 ./config 执行配置检查 make &amp; make install 进行编译和安装</p>
+<p>​ 如上过程，适用于zlib和pcre ​ 注意： 对于 pcre而言， 执行检查命令为 ./configure 4) 安装nginx过程中 执行配置检查</p>
+<pre><code>./configure --sbin-path=/usr/local/nginx/nginx \
+--conf-path=/usr/local/nginx/nginx.conf \
+--pid-path=/usr/local/nginx/nginx.pid \
+--with-http_ssl_module \
+--with-pcre=/usr/local/src/pcre-8.44 \
+--with-zlib=/usr/local/src/zlib-1.2.11 \
+--with-openssl=/usr/local/src/openssl-1.1.1d</code></pre>
+<ol start="5" type="1">
+<li>仍然执行 make 以及 make install<br>
+</li>
+<li>nginx安装成功 ./nginx验证</li>
+</ol>
+<p>注意事项：nginx服务器，需要虚拟机开放80端口的访问 防火墙配置 （同样适用于开放8080 8081端口） firewall-cmd --list-all 查看当前配置 firewall-cmd --add-service=http --permanent 开放http访问 firewall-cmd --add-port=80/tcp --permanent 开放80端口 firewall-cmd --reload 重启防火墙保存</p>
+<p>jdk的安装 1） 解压缩 -- 拷贝目录到 /usr/local/java 2) 更改环境变量 vim /etc/profile</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">export JAVA_HOME=/usr/local/java</span><br><span class="line">export JAVA_BIN=$JAVA_HOME/bin</span><br><span class="line">export PATH=$PATH:$JAVA_HOME/bin</span><br><span class="line">export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar</span><br><span class="line">export PATH=$JAVA_HOME/bin:$JRE_HOME/bin:$PATH</span><br></pre></td></tr></table></figure>
+<ol start="3" type="1">
+<li>让环境变量生效 source /etc/profile</li>
+<li>验证版本 java -version</li>
+</ol>
+<p>tomcat的安装 1） 解压缩 -- 拷贝目录到 /usr/local/tomcat 2) 执行启动 ./startup.sh</p>
 </blockquote>
 
       
@@ -490,7 +523,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/33/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/33/">33</a><span class="page-number current">34</span><a class="page-number" href="/page/35/">35</a><span class="space">&hellip;</span><a class="page-number" href="/page/44/">44</a><a class="extend next" rel="next" href="/page/35/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/33/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/33/">33</a><span class="page-number current">34</span><a class="page-number" href="/page/35/">35</a><span class="space">&hellip;</span><a class="page-number" href="/page/46/">46</a><a class="extend next" rel="next" href="/page/35/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -535,13 +568,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">130k</span>
+    <span title="站点总字数">139k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:59</span>
+    <span title="站点阅读时长">2:07</span>
   </span>
 </div>
 <div class="busuanzi-count">

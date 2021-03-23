@@ -198,7 +198,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">44</span>
+          <span class="site-state-item-count">46</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%AA%81%E5%87%BB/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%AA%81%E5%87%BB/" class="post-title-link" itemprop="url">操作系统突击</a>
+          <a href="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/" class="post-title-link" itemprop="url">java并发突击</a>
         </h2>
 
         <div class="post-meta-container">
@@ -294,7 +294,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-17 13:56:09" itemprop="dateModified" datetime="2021-03-17T13:56:09+08:00">2021-03-17</time>
+        <time title="修改时间：2021-03-23 14:07:32" itemprop="dateModified" datetime="2021-03-23T14:07:32+08:00">2021-03-23</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -314,14 +314,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>1.4k</span>
+      <span>6k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>5 分钟</span>
     </span>
 </div>
 
@@ -332,65 +332,136 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="操作系统突击">操作系统突击</h1>
-<h2 id="进程线程和协程">进程、线程和协程</h2>
+          <h1 id="java并发突击">Java并发突击</h1>
+<figure>
+<img src="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/Users\SmallYe\Desktop\blog\source_posts\面试突击\java并发突击\CPU术语.png" alt="CPU术语"><figcaption aria-hidden="true">CPU术语</figcaption>
+</figure>
+<h2 id="volatile实现原理">Volatile实现原理</h2>
 <blockquote>
-<p>进程是操作系统资源分配和调度的基本单位。每个进程有着自己的独立内存空间，不同进程之间使用进程间通信来通信。操作系统是以进程为单位分配系统资源(如CPU时间片、内存等资源)，进程是资源分配的最小单位。</p>
-<p>进程间通信的方法：</p>
-<p>​ 管道：一种半双工的通信方式，数据只能单向流动，且只能在具有亲缘关系的进程间调用。</p>
-<p>​ 消息队列：即将消息使用链表的形式存放在内核中并由消息队列标识符标识。</p>
-<p>​ 信号量：本质上是一种计数器，可以用于控制多个进程对共享资源的访问。</p>
-<p>​ 共享内存：映射一段能被其他进程所访问的内存，这个共享内存由一个进程创建，但由多个进程共享。它是最快的IPC方式，针对其他进程间通信效率低而设计的。</p>
-<p>​ 信号：一种事件通知机制，进程可以通过发送信号给另一个进程，另一个进程则会根据收到的信号执行对应的处理方。</p>
-<p>​ socket：</p>
-<p>线程是依附于进程，是<strong>操作系统调度的最小单位</strong>。</p>
-<p>线程间通信的方法：</p>
-<p>​ 锁机制。</p>
-<p>​ 信号量机制。</p>
-<p>​ 信号机制。</p>
-<p>​ voliate变量。</p>
-<p>协程：不被操作系统内核所管理，完全是有程序所控制。</p>
+<p>当字段被声明为volatile时，Java线程内存模型确保所有线程看到这个变量的值是一致的。</p>
+<p>本质上是通过编译后在指令后添加<strong>lock指令</strong>。lock指令的作用是：</p>
+<p>​ 将当前处理器缓存行的数据写回系统内存。</p>
+<p>​ 这个写回内存的操作会使在其他CPU里缓存了该内存地址的数据无效。</p>
 </blockquote>
-<h2 id="上下文切换过程">上下文切换过程</h2>
+<h2 id="synchronized实现原理">Synchronized实现原理</h2>
 <blockquote>
-<p>用户态到内核态什么时候切换？</p>
-<p>​ 中断、系统调用、发生异常。</p>
-<p>用户态内核态切换过程主要需要保存用户态的寄存器，返回时会切换回用户态。</p>
-<p>进程上下文切换发生的场景：</p>
-<p>​ 1.运行中的进程执行完终止了，CPU 会释放出来，新的基础进程就可以被调度到CPU上运行了。</p>
-<p>​ 2. 运行中的进程时间片用完，进程被挂起</p>
-<p>​ 3.运行中的进程资源不足，进程被挂起</p>
-<p>​ 4.运行中的进程执行Sleep方法主动挂起</p>
-<p>​ 5.新进程优先级更高，运行中的进程被挂起</p>
-<p>​ 6.发生硬件中断，运行中的进程会被中断挂起，转而执行内核中的中断服务程序。</p>
-<p>进程是由内核来管理和调度的，进程的切换只能发生在内核态。进程上下文包括虚拟内存、栈、全局变量等用户空间资源，还包括内核堆栈、寄存器等内核空间的状态。切换时需要保存的信息更多，而加入另一个进程的上下文时，也需要加载这个进程的虚拟内存和用户栈。</p>
-<p>线程是操作系统调度的最小单位。同时线程会共享父进程的虚拟内存和全局变量等资源，因此父进程的资源加上线上自己的私有数据就叫做线程的上下文。</p>
-<p>线程上下文切换：</p>
-<p>​ 当线程属于同一个进程时，全局变量、虚拟内存不需要切换，只需要切换私有数据和寄存器等不共享的数据。</p>
-<p>​ 当线程属于不同进程时，同进程切换。</p>
+<p>synchronized实现同步的基础：Java中的每个对象都可以作为锁。</p>
+<p>对于普通同步方法，锁住当前实例对象。</p>
+<p>对于静态同步方法，锁住当前类Class对象。</p>
+<p>对于同步方法块，锁住的是synchronized括号内配置的对象。</p>
+<p>JVM规范中指出Synchronized实现的原理是<strong>基于进入和退出Moniter对象来实现方法同步和代码块同步</strong>，即在编译后将monitorenter指令插入到同步代码块后，将monitorexit插入到方法结束处和异常处。JVM保证每个monitorenter和monitorexit配对。</p>
 </blockquote>
-<h2 id="调度算法">调度算法</h2>
+<h4 id="synchronized锁优化及实质">Synchronized锁优化及实质</h4>
 <blockquote>
-<p><strong>先来先服务调度算法FCFS</strong>、<strong>短作业（进程）优先调度算法SJF（非抢占）</strong>、<strong>基于时间片的轮转调度算法RR</strong>、<strong>多级反馈队列算法FB</strong></p>
+<p>synchronized用的锁是存在Java对象头中的。若对象是数组类型，虚拟机使用3个字宽存储对象头，非数组类型用2字宽存储对象头。</p>
+<figure>
+<img src="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/Users\SmallYe\Desktop\blog\source_posts\面试突击\java并发突击\Java对象头.png" alt="Java对象头"><figcaption aria-hidden="true">Java对象头</figcaption>
+</figure>
+<p>Mark Word里默认存储对象的HashCode、分代年龄和锁标记位。</p>
+<figure>
+<img src="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/Users\SmallYe\Desktop\blog\source_posts\面试突击\java并发突击\MarkWord变化.png" alt="MarkWord变化"><figcaption aria-hidden="true">MarkWord变化</figcaption>
+</figure>
+<p>JDK1.6为了减少获得锁和释放锁带来的性能消耗，引入了“偏向锁”和“轻量级锁”，在JDK6后锁共4中状态依次为：<strong>无锁状态、偏向锁状态、轻量级锁状态和重量级锁状态</strong>。这几个状态会随竞争情况逐渐升级，锁可以升级但不能降级。</p>
+<p><strong>偏向锁</strong>：</p>
 </blockquote>
-<h2 id="死锁的四个条件">死锁的四个条件</h2>
+<h2 id="线程创建的方式">线程创建的方式</h2>
 <blockquote>
-<p><strong>互斥</strong>：某种资源一次只能运行一个进程访问。</p>
-<p><strong>请求保持</strong>：一个进程占有资源，但还有资源没有满足。</p>
-<p><strong>不可抢占</strong>：不可以去抢夺别人已拥有的资源。</p>
-<p><strong>循环等待</strong>：存在一个进程链，每个进程都占有下一个进程所需的至少一种资源。</p>
+<p>继承thread类，重写run方法</p>
+<p>实现runnable接口，重写run方法。</p>
+<p>实现callable接口，实现call方法</p>
 </blockquote>
-<h2 id="fork是如何创建子进程的">fork是如何创建子进程的？</h2>
+<h2 id="线程池">线程池</h2>
 <blockquote>
-<p>fork会先为新进程创建和父进程值相同的内核栈、进程信息等，然后判断当前用户进程数是否超过数量，对父子进程进行区分，将部分描述符置为0，给进程分配对应的进程id，将进程设置为就绪状态，放入就绪队列，等待CPU调度。</p>
+<p>为什么使用线程池？</p>
+<p>​ 为了避免线程的创建、销毁导致的线程开销，采用线程池管理一定数量的线程达到可复用线程的效果。</p>
+<p>Executors自带的线程池</p>
+<p>​ <strong>newSingleThreadExecutor</strong>：单线程线程池，这个线程池只有一个线程在工作。</p>
+<p>​ <strong>newFixedThreadPool</strong>：固定大小的线程池。每次提交一个任务就创建一个线程，直到线程达到线程池最大大小。超出的线程会在队列中等待。</p>
+<p>​ <strong>newCachedThreadPool</strong>：创建一个可缓存的线程池，当线程池大小超过了处理任务所需要的线程，会回收部分空闲线程，当任务增加时此线程池可以智能添加线程来处理任务。该线程池不会对大小进行限制。</p>
+<p>​ <strong>newScheduledThreadPool</strong>：创建一个大小无限的线程池，支持定时及周期性任务。</p>
+<p>​ <strong>newSingleThreadScheduled</strong>：创建一个只有一个线程的线程池，支持定时及周期性任务。</p>
+<p>​ <strong>newWorkStealingPool</strong>：创建一个拥有多个任务队列的线程池。</p>
+<p>自带线程池的缺点，newSingleThreadExecutor和newFixedThreadPool创建了一个长度Integer.MAX_VALUE的阻塞队列，导致任务过多堆积时耗费大量内存，产生OOM错误。newCachedThreadPool和newScheduledThreadPool创建的线程池最大线程数量为Integer.MAX_VALUE，导致可能创建了大量的线程，消耗资源，甚至造成OOM。</p>
 </blockquote>
-<h2 id="硬中断和软中断">硬中断和软中断</h2>
+<h2 id="自定义线程池">自定义线程池</h2>
 <blockquote>
-<p>硬中断是由硬件产生的，比如，像磁盘，网卡，键盘，时钟等。硬中断可以直接中断CPU。它会引起内核中相关的代码被触发。</p>
-<p>软中断的处理非常像硬中断。然而，它们仅仅是由当前正在运行的进程所产生的。一般而言软中断是I/O请求。</p>
-<p>二者的区别：</p>
-<p>​ 软中断是由运行的进程发出的，它会中断进程正在执行的代码，然后将请求发给内核。</p>
-<p>​ 硬中断是由硬件产生的，它会中断CPU正在执行的代码。</p>
+<p>自己创建线程池new ThreadPoolExecutor()可以传递参数：</p>
+<p>​ corePoolSize：核心线程数量，即线程池会保持的线程数</p>
+<p>​ maximumPoolSize：最大线程数量，即线程池</p>
+<p>​ keepAliveTime：空闲线程最大存活时间</p>
+<p>​ TimeUnit：时间单位</p>
+<p>​ BlockingQueue：阻塞队列</p>
+<p>​ ThreadFactory：线程工厂</p>
+<p>​ RejectedExecutionHandler：拒绝策略</p>
+</blockquote>
+<h3 id="线程池执行execute的流程">线程池执行execute的流程</h3>
+<blockquote>
+<p>线程池状态有：RUNNING、SHUTDOWN、STOP、TIDYING、TERMINATED</p>
+<p>内部存在BlockingQueue即阻塞队列，阻塞队列是通过ReentrantLock实现的，其内部维护了一把锁。本质上就是在入队、出队等操作之前通过内部的锁上锁，操作结束后释放锁来完成的。</p>
+<p>而操作时，入队、出队操作分为阻塞和非阻塞，阻塞操作如：当队列为空时若从阻塞队列中获取元素，则会被阻塞一定时间，再获取。这也是阻塞队列名字的来源。</p>
+<p>当当前线程数少于核心线程数时会新增worker线程，以核心线程数为准。</p>
+<p>若任务可以成功入队，则将任务入队，同时检测当前线程池状态，若为不是RUNNING状态则将任务移出队列且执行拒绝策略，若是RUNNING状态，且可用线程数为0则增加线程，以最大线程数为准。</p>
+<p>若入队失败，则尝试创建新的worker，以最大线程数为准，若创建失败执行拒绝策略。</p>
+</blockquote>
+<h3 id="线程池拒绝策略">线程池拒绝策略</h3>
+<blockquote>
+<p>AbortPolicy：丢弃任务并抛出异常。</p>
+<p>CallerRunsPolicy：判断当前线程池是否关闭，若未关闭则直接调用线程的run方法。</p>
+<p>DiscardOldestPolicy：丢弃队列最前的任务，然后重新使用线程池执行被拒绝的任务。</p>
+<p>DiscardPolicy：丢弃任务，什么也不做。</p>
+<p>NewThreadRunsPolicy：创建一个线程去执行被丢弃的任务</p>
+</blockquote>
+<h2 id="juc">JUC</h2>
+<h3 id="threadlocal">ThreadLocal</h3>
+<blockquote>
+<p>线程本地变量，创建一个线程独立的变量。</p>
+<p>底层实现的原理：本质上是一个线程中存在一个ThreadLocalMap，用于存储ThreadLocal，该map的key为创建的ThreadLocal对象，而非Thread本身。</p>
+<p>而<strong>内部存储k-v则是通过继承弱引用的Entry来实现的。</strong></p>
+<p>get和set本质上也是hashmap类似的哈希计算获取对应数组位置存入，但是hashmap使用拉链法解决哈希冲突，ThreadLocal使用线性探测法解决。也存在扩容操作，一次扩容2倍。</p>
+<p>而为什么ThreadLocal中<strong>Entry继承了弱引用WeakReference</strong>？</p>
+<p>​ 因为若Entry也是强引用时，当外部线程不想使用该ThreadLocal时，即使停止引用，由于线程内部Entry是强引用且引用了ThreadLocal，那么ThreadLocal也不会被自动GC。而设置为弱引用，当外部线程不想使用时，GC可以在一次回收时将其回收，而ThreadLocalMap也设计了当发现key为null时清空value的操作。</p>
+<p>为什么会内存泄漏？</p>
+<p>​ 本质上是因为ThreadLocal和线程存活时间基本相同，而使用过程虽然使用弱引用，但是即使经过GC回收，还是会剩下key为null，value不为null的Entry存在于Map中。虽然ThreadLocal在执行操作时也会进行检测当前Entry key为null的位置，将其清除，但是这必须要通过我们主动调用，若没有调用则会一直存在。因此ThreadLocal对象使用结束后需要调用remove方法，使其从map中被移除，避免内存泄漏。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(T value)</span> </span>&#123;</span><br><span class="line">Thread t = Thread.currentThread();</span><br><span class="line">ThreadLocalMap map = getMap(t);</span><br><span class="line"><span class="keyword">if</span> (map != <span class="keyword">null</span>)</span><br><span class="line">  map.set(<span class="keyword">this</span>, value);</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">  createMap(t, value);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> T <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">Thread t = Thread.currentThread();</span><br><span class="line">ThreadLocalMap map = getMap(t);</span><br><span class="line"><span class="keyword">if</span> (map != <span class="keyword">null</span>) &#123;</span><br><span class="line">  ThreadLocalMap.Entry e = map.getEntry(<span class="keyword">this</span>);</span><br><span class="line">  <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">      <span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">      T result = (T)e.value;</span><br><span class="line">      <span class="keyword">return</span> result;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> setInitialValue();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="abstractqueuedsynchronizeraqs">AbstractQueuedSynchronizer(AQS)</h3>
+</blockquote>
+<blockquote>
+<p>AQS继承了AOS(AbstractOwnableSynchronizer)，AOS本质上就实现了对排他线程的保存。</p>
+<p>内部通过state作为是否上锁的判断，当state为0时说明没有线程抢占到锁。可重入锁就是通过不断改变state实现的可重入。</p>
+<p>内部维护了一个waitStatus，共有SIGNAL(-1表示表示后继结点需要unparking)、CANCELLED(1,表示该线程已经取消竞争)、CONDITION(-2节点正在等待)、PROPAGATE(表示头结点将唤醒的动作传播下去)、0(默认)的状态。</p>
+<p>AQS中head结点没有使用，只起到标记的作用。</p>
+<p>本质上只有两个方法acquire和release。如果是共享锁使用acquireShared和releaseShared</p>
+<p>acquire如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">acquire</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!tryAcquire(arg) &amp;&amp;</span><br><span class="line">        acquireQueued(addWaiter(Node.EXCLUSIVE), arg))</span><br><span class="line">        selfInterrupt();</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">acquireQueued</span><span class="params">(<span class="keyword">final</span> Node node, <span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">boolean</span> failed = <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">boolean</span> interrupted = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">            <span class="keyword">final</span> Node p = node.predecessor();</span><br><span class="line">            <span class="keyword">if</span> (p == head &amp;&amp; tryAcquire(arg)) &#123;</span><br><span class="line">                setHead(node);</span><br><span class="line">                p.next = <span class="keyword">null</span>; <span class="comment">// help GC</span></span><br><span class="line">                failed = <span class="keyword">false</span>;</span><br><span class="line">                <span class="keyword">return</span> interrupted;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (shouldParkAfterFailedAcquire(p, node) &amp;&amp;</span><br><span class="line">                parkAndCheckInterrupt())</span><br><span class="line">                interrupted = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (failed)</span><br><span class="line">            cancelAcquire(node);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>先尝试获取资源，这里tryAcquire是由子类实现的。</p>
+<p>如果没有成功获取则addWaiter，将线程放入等待队列的尾部，标记为独占模式。</p>
+<p>acquireQueued当当前结点的前一个结点是头结点时会尝试抢占若抢占成功，头结点改为当前结点。抢占失败则将前驱结点的状态设为SIGNAL。</p>
+<p>最后将线程挂起。</p>
+<p>release：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">release</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (tryRelease(arg)) &#123;</span><br><span class="line">        Node h = head;</span><br><span class="line">        <span class="keyword">if</span> (h != <span class="keyword">null</span> &amp;&amp; h.waitStatus != <span class="number">0</span>)</span><br><span class="line">            unparkSuccessor(h);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>先调用子类的tryRelease方法释放状态，当完全释放后，判断当前头结点waitStatus是否不为0，不为0则找出离头结点最近的且不为取消状态的结点进行unpark。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">acquireShared</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (tryAcquireShared(arg) &lt; <span class="number">0</span>)</span><br><span class="line">        doAcquireShared(arg);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">doAcquireShared</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> Node node = addWaiter(Node.SHARED);</span><br><span class="line">    <span class="keyword">boolean</span> failed = <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">boolean</span> interrupted = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">            <span class="keyword">final</span> Node p = node.predecessor();</span><br><span class="line">            <span class="keyword">if</span> (p == head) &#123;</span><br><span class="line">                <span class="keyword">int</span> r = tryAcquireShared(arg);</span><br><span class="line">                <span class="keyword">if</span> (r &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">                    setHeadAndPropagate(node, r);</span><br><span class="line">                    p.next = <span class="keyword">null</span>; <span class="comment">// help GC</span></span><br><span class="line">                    <span class="keyword">if</span> (interrupted)</span><br><span class="line">                        selfInterrupt();</span><br><span class="line">                    failed = <span class="keyword">false</span>;</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (shouldParkAfterFailedAcquire(p, node) &amp;&amp;</span><br><span class="line">                parkAndCheckInterrupt())</span><br><span class="line">                interrupted = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (failed)</span><br><span class="line">            cancelAcquire(node);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>共享锁的话本质上就是将资源数目增多，每次抢占资源时会判断当前资源数目是否大于0，大于0则使用CAS抢占。抢占失败后执行doAcquireShared，类似独占锁的过程。先创建一个SHARABLE节点作为头结点，然后判断当前结点是否为头结点，若是头结点则进行抢占，抢占成功则根据当前资源数来决定是否还要进行抢占。抢占失败则将前驱结点设置的状态设置为SIGNAL。</p>
+</blockquote>
+<h3 id="reentrantlock">ReentrantLock</h3>
+<blockquote>
+<p>可重入锁本质上是针对一个线程的，当一个线程抢占成功锁之后，若线程内部还有进行锁操作，那么会将锁的state值增加，释放时则将该值减少，直到减少到0时又可以被重新抢占。</p>
+<p>释放锁过程也是先判断逐步释放。判断当前释放锁之后锁状态是否为0，若为0则通过unpark方法唤醒队列中的后继线程。</p>
+<p>java实现的锁的方式分为公平锁和非公平锁。</p>
+<p>公平锁和非公平锁的队列都是基于ReentrantLock内部维护的Sync本质是个AQS。</p>
+<p>公平锁的公平性体现在每次重新抢占时会先判断队列中是否存在等待线程，若存在则让队列的线程先抢夺。</p>
+<p>非公平锁非公平体现在每次抢占时不会判断队列中是否存在等待线程，直接进行抢占。</p>
+</blockquote>
+<h2 id="synchronized和lock的区别">Synchronized和Lock的区别</h2>
+<blockquote>
+<p>加锁、解锁：</p>
+<p>​ synchronized：自动加锁解锁。</p>
+<p>​ lock：需要手动加锁、解锁。</p>
+<p>性能上：</p>
+<p>​ synchronized：没有优化前是悲观锁设计思想。性能差</p>
+<p>​ lock：主要是乐观锁设置思想，如reentrantLock主要通过CAS操作抢夺锁。性能好</p>
+<p>用法上：</p>
+<p>​ 基本没区别，但是lock可以实现公平锁。</p>
 </blockquote>
 
       
@@ -411,7 +482,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/10/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><span class="space">&hellip;</span><a class="page-number" href="/page/44/">44</a><a class="extend next" rel="next" href="/page/12/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/10/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><span class="space">&hellip;</span><a class="page-number" href="/page/46/">46</a><a class="extend next" rel="next" href="/page/12/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -456,13 +527,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">130k</span>
+    <span title="站点总字数">139k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:59</span>
+    <span title="站点阅读时长">2:07</span>
   </span>
 </div>
 <div class="busuanzi-count">
