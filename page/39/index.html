@@ -198,7 +198,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">46</span>
+          <span class="site-state-item-count">47</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/computerNetwork/%E7%AC%AC3%E7%AB%A0-%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/codeAnalyse/mybatis%E6%B5%81%E7%A8%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/computerNetwork/%E7%AC%AC3%E7%AB%A0-%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82/" class="post-title-link" itemprop="url">数据链路层</a>
+          <a href="/2021/02/20/codeAnalyse/mybatis%E6%B5%81%E7%A8%8B/" class="post-title-link" itemprop="url">Mybatis流程源码分析</a>
         </h2>
 
         <div class="post-meta-container">
@@ -288,7 +288,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:06:32" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:15:02" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -296,11 +296,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
-        </span>
-          ，
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
+          <a href="/categories/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">源码分析</span></a>
         </span>
     </span>
 
@@ -330,191 +326,59 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="数据链路层">数据链路层</h1>
-<h2 id="数据链路层基本概念">数据链路层基本概念</h2>
+          <h1 id="mybatis流程">Mybatis流程</h1>
+<h2 id="创建sqlsessionfactory的流程">创建SqlSessionFactory的流程</h2>
 <blockquote>
-<p>数据链路层的需要解决的问题:</p>
-<p>​ 向网络层提供一个定义良好的服务接口。</p>
-<p>​ 处理传输错误。</p>
-<p>​ 调节数据流，保证慢速的接收方不会被快速的发送方淹没。</p>
-<p>使用的信道类型:点对点信道、广播信道</p>
-<p>链路:一条点到点的物理线路段，中间没有任何其他的点。</p>
-<p>数据链路:除物理线路外，还要有通信协议来控制数据的传输，而实现这些协议的硬件和软件加入到链路上就构成了数据链路。</p>
-<p>最常用的方法就是使用适配器(即网卡)来实现这些协议的硬件和软件，一般的适配器都包括了数据链路层和物理层这两层的功能。</p>
+<p>由于创建工厂需要许多配置，mybatis利用了Builder模式。</p>
+<p>先创建SqlSessionFactoryBuilder，调用SqlSessionFactoryBuilder的build方法，本质上就是通过解析xml文件，将文件内容映射到Configuration对象中，然后利用这个对象产生builder创建工厂所需的配置，然后创建出SqlSessionFactory。</p>
+<p>具体则是先将xml的输入流传给SqlSessionFactoryBuilder，然后创建一个XMLConfigBuilder，负责解析xml内容放入configuration对象，解析的过程中会按类别解析，通过调用不同的方法解析xml的不同部分。解析mapper还有专门的XMLMapperBuilder其中对于二级缓存的处理也在这里进行。解析完成后configuration对象会保存全部的配置信息。</p>
 </blockquote>
-<h2 id="帧">帧</h2>
+<h2 id="利用sqlsessionfactory创建sqlsession的流程">利用SqlSessionFactory创建SqlSession的流程</h2>
 <blockquote>
-<p>数据链路层传送的是帧</p>
+<p>就是SqlSessionFactory调用openSession，传入ExecutorType、TransactionIsolationLevel、autoCommit三个参数，或让mybatis按默认设置，</p>
+<p>ExecutorType有BatchExecutor、ReuseExecutor、SimpleExecutor、CachingExecutor四种。</p>
+<p>​ BatchExecutor 让update操作变为批处理操作，即让连续的update先累积，等到下一次query操作前再一起执行。是使用List作为批处理存储。对于update操作会复用最近一次的statement。失败了会全部回滚。</p>
+<p>​ ReuseExecutor 复用Statement，利用Map&lt;String, Statement&gt;来判定。</p>
+<p>​ SimpleExecutor 即使用的Statement直接关闭。</p>
+<p>​ CachingExecutor 相当于在前面三个执行者的基础上套了一层缓存机制，让query方法先查看缓存，只有缓存没有时再让三个执行者执行操作。这里的缓存是通过mybatis自己实现的statement对象内部的cache实现的，有些类似hashmap，是利用cache和cachekey获得的结果。</p>
+<p>TransactionIsolationLevel即事物隔离级别。</p>
+<p>​ READ_UNCOMMITTED 读未提交 存在脏读、不可重复读、幻读</p>
+<p>​ READ_COMMITTED 读提交 存在不可重复读、幻读</p>
+<p>​ REPEATABLE_READ 可重复读 存在幻读</p>
+<p>​ SERIALIZABLE 序列化</p>
+<p>autoCommit是否自动提交。</p>
 </blockquote>
-<h2 id="数据链路层的三个基本问题">数据链路层的三个基本问题</h2>
-<h3 id="封装成帧">封装成帧</h3>
+<h2 id="利用sqlsession创建mapper">利用SqlSession创建Mapper</h2>
 <blockquote>
-<p>就是在一段数据的前后分别添加首部(SOH)和尾部(EOT)。即形成帧首部+帧的数据部分+帧尾部的结构，帧首部和尾部的重要作用就是帧定界。其中帧的数据部分一般不能超过1500(最大传输单元MTU)。为什么最大一般为1500？这是网络带宽和传输效率的统一决定的，MTU太大导致传输时间过长，MTU过小会导致传输效率不高(因为帧的头尾需要占14 + 4个字节)。</p>
-<p>接收方会判断收到的帧是否含有头尾部分，若无此部分则会丢弃该数据帧。</p>
+<p>SqlSession使用getMapper方法，实际上是调用了configuration中的mapperRegistry的getMapper方法，这里使用了动态代理的设计模式。同时这里还使用了工厂方法，根据不同的类名创建对应的代理工厂。</p>
+<p>这个动态代理是JDK代理，它需要使用对应类加载器，对应类接口，对应的InvocationHandler。在mybatis中InvocationHandler是MapperProxy，MapperProxy的重写的invoke函数逻辑是对于Object自带的方法直接调用，对于接口默认的方法直接调用(这个特性是由于JDK8让接口方法可以有默认实现)。对于接口的方法则创建一个MapperMethod对象，该对象使用了缓存机制，利用Map&lt;Method, MapperMethod&gt;缓存方法。</p>
+<p>而MapperMethod的excuse即为代理方法的实现，该类中含有MethodSignature、SqlCommand两个内部类用于实现解析sql及方法，而具体方法实现是根据判断当前sql是增删改查中的哪种再调用sqlSession的方法来实现的。</p>
 </blockquote>
-<h3 id="透明传输只知道数据但不知道数据是如何传输的">透明传输(只知道数据但不知道数据是如何传输的)</h3>
+<h2 id="executor与handler">Executor与Handler</h2>
 <blockquote>
-<p>帧的头尾是使用ASCII码的可打印字符集之外的字符组成，若传输的数据不是仅由ASCII码的可打印字符组成时会导致帧的数据部分中可能出现帧尾，会导致接收方提前判断帧结束，且丢弃部分数据。</p>
-<p>解决方法:发送端的数据链路层会在数据出现SOH与EOT的前面插入一个字符“ESC"用于转义，若转义字符中也出现在数据中则应该在转义字符前插入一个转义字符，接收端在将数据传送给网络层时会删除其中用于转义的字符。</p>
+<p>Executor是通过StatementHandler来执行sql的。StatementHandler先prepare方法配置基础设置，然后使用parameterize来设置statement的参数。若为query操作则StatementHandler会使用ResultSetHandler来处理结果集。</p>
+<p>StatementHandler为抽象interface mybatis基于这个接口实现了抽象类BaseStatementHandler，还实现了路由类RoutingStatementHandler，路由类是用于根据参数创建对应具体类的。而抽象类是作为三个具体类的基础，三个具体类分别为CallableStatementHandler、PreparedStatementHandler、SimpleStatementHandler。</p>
+<p>抽象类提供给三个具体类prepare方法，其中prepare中含有抽象方法instantiateStatement，是由具体子类实现的。(模板方法模式)</p>
 </blockquote>
-<h2 id="差错控制">差错控制</h2>
+<h2 id="mybatis对于数据库操作的整体流程">mybatis对于数据库操作的整体流程</h2>
 <blockquote>
-<p>比特差错:1可能变为0,0可能变为1。</p>
-<p>误码率:传输错误的比特占所传输比特总数的比率称为误码率。</p>
-<p>循环冗余检验(CRC)可以做到无差错接收。检验到有差错的帧就丢弃。CRC是一种无比特差错，而不是无传输差错的检测机制。</p>
-<p>可靠传输还需要确认和重传机制</p>
+<p>先使用builder模式，根据输入的xml输入流，利用对应XML解析对象解析，并将结果最终存入Configuration对象，然后利用Configuration对象创建出一个对应的SqlSessionFactory。</p>
+<p>然后需要通过sqlSessionFactory的openSession方法创建一个SqlSession，这里可以设置SqlSession的Executor、TransactionIsolationLevel和autoCommit。Executor代表这个SqlSession采用什么执行器，执行器是对statement对象的处理。具体执行器共有3种：SimpleExecutor 、ReuseExecutor 、BatchExecutor 。同时若启用了缓存cache，则会在执行器外再包装一层CachingExecutor ，相当于对于查询操作提供了二级缓存。这个缓存是位于mybatis的MappedStatement类中。本质上这种缓存就是一个嵌套的哈希结构。Map&lt;Cache, TransactionalCache&gt;，TransactionalCache也是key-value结构。</p>
+<p>而事物隔离即为正常的数据库事物隔离级别。</p>
+<p>创建完SqlSession后，调用SqlSession的getMapper方法获取对应mapper对象。这里使用了动态代理。mybatis是先根据传入的类对象，通过configuration的配置信息中的MapperRegistry类对象找到对应的proxy工厂，利用代理工厂创建对应的代理对象。代理对象的创建使用的是JDK动态代理，即传入需要代理的类加载器、需要代理的接口、以及InvocationHandler。mybatis的handler是先判断方法是否为Object的，然后判断方法是否为接口默认实现的。只有接口未实现的方法才进行特殊处理，处理过程即为根据方法的类型(增删改查)，执行SqlSession的对应方法。</p>
+<p>SqlSession执行对应方法则是利用SqlSession内部的executor执行对应操作的。所以实际上sql操作还是由executor执行的。而executor执行操作需要利用StatementHandler先后执行prepare初始化基本配置和parameterize处理参数。参数的处理利用了ParameterHandler，这个时候typeHandler就会起作用。若为query操作还需要对返回值进行处理，处理时利用了ResultSetHandler，这个时候typeHandler就会起作用。</p>
 </blockquote>
-<h2 id="点到点的数据通信">点到点的数据通信</h2>
+<h2 id="mybatis的缓存机制">mybatis的缓存机制</h2>
 <blockquote>
-<p>PPP协议是全世界使用最多的数据链路层协议</p>
-<p>PPP协议的组成部分(由顶到底)</p>
-<p>​ NCP网络控制协议</p>
-<p>​ LCP链路控制协议</p>
-<p>​ 类似于HDLC高级数据链路控制协议，但PPP面向字节而不是面向比特</p>
-<p>PPP协议应该满足的要求:</p>
-<p>​ 简单、封装成帧、支持多种网络层协议、多种类型链路、差错检测、检测连接状态、最大传送单元、网络层地址协商、数据压缩协商</p>
-<p>PPP协议不需要满足的要求:</p>
-<p>​ 纠错、流量控制、序号、多点线路、半双工或单工链路</p>
-<p>PPP协议的帧格式:</p>
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: center;">F(7E)</th>
-<th style="text-align: center;">A(FF)</th>
-<th style="text-align: center;">C(03)</th>
-<th style="text-align: center;">协议</th>
-<th style="text-align: center;">消息部分(IP数据报)</th>
-<th style="text-align: center;">FCS</th>
-<th style="text-align: center;">F(7E)</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;">一个字节</td>
-<td style="text-align: center;">一个字节且为固定值</td>
-<td style="text-align: center;">一个字节且为固定值</td>
-<td style="text-align: center;">用于表示消息字段中是什么类型的消息</td>
-<td style="text-align: center;">不超过1500</td>
-<td style="text-align: center;">两个字节</td>
-<td style="text-align: center;">一个字节</td>
-</tr>
-</tbody>
-</table>
-<p>实现透明传输的方式:</p>
-<p>​ 如果是字节传递数据时可以通过插入转义字符并在转义字符0x7D后的一个字符用0x20异或来实现透明传输。</p>
-<p>​ 如果采用同步通信，比特流传递数据时，通过零比特填充法，连续5个1在其中插入0。</p>
-<p>不使用序号和确认机制的原因</p>
-<p>​ 在数据链路层出现的差错的概率不大时使用比较简单的PPP协议较为合理。</p>
-<p>​ 在因特网环境下，PPP的信息字段放入的数据是IP数据报。数据链路层的可靠传输并不能够保证网络层的传输也是可靠的。</p>
-<p>​ 帧检验序列FCS字段可保证无差错接受。</p>
+<p>mybatis共有两个缓存机制：一级缓存和二级缓存。</p>
+<p>一级缓存默认开启且无法关闭。</p>
+<p>二级缓存需要配置。</p>
+<p>一级缓存是Executor的基本实现类BaseExecutor中实现的，本质上是个Map&lt;Object, Object&gt;。由于每个SqlSession里都带有一个Executor，故一级缓存是SqlSession层面的。</p>
+<p>二级缓存则需要手动配置，开启后会在具体的Executor之外使用CachingExecutor包装，这里使用了装饰者模式。二级缓存本质上是在namespace层面的缓存。</p>
 </blockquote>
-<h2 id="使用广播信道的数据链路层">使用广播信道的数据链路层</h2>
-<h3 id="局域网的拓扑">局域网的拓扑</h3>
+<h2 id="mybatis是怎么实现和springboot的整合的">mybatis是怎么实现和SpringBoot的整合的？</h2>
 <blockquote>
-<p>星型网、总线网、环形网、树型网</p>
-</blockquote>
-<h3 id="局域网的特点与优点">局域网的特点与优点</h3>
-<blockquote>
-<p>主要特点:网络为一个单位所拥有且地理位置和站点数目均有限。</p>
-<p>主要优点:具有广播功能，从一个站点可以很方便地访问全网。局域网的主机可以共享连接在局域网上的各种硬件和软件资源。</p>
-<p>便于系统的拓展和逐渐演变，各设备的位置可以灵活调整和改变。</p>
-<p>提高了系统的可靠性、可用性和生存性。</p>
-</blockquote>
-<h3 id="以太网通信使用的协议-----csmacd协议">以太网通信使用的协议-----CSMA/CD协议</h3>
-<blockquote>
-<p>CSMA/CD协议特点:</p>
-<p>多点接入:表示许多计算机以多点接入的方式连接在一根总线上。</p>
-<p>载波监听:是指每个站在发送数据之前先要检测总线上是否有其他计算机在发送数据，如果有则暂时不发送数据，避免发生碰撞。</p>
-<p>​ 通过总线上的电压摆动来判断当前总线上是否存在多个计算机同时发送数据的情况</p>
-<p>争用期:最先发送数据帧的站，在发送数据帧后至多经过2t(两倍的端到端时延)即可知道发送的数据帧是否遭受了碰撞。</p>
-<p>最短有效帧长:争用期(2t)内可发送的总字节数------64字节。</p>
-<p>发生碰撞怎么解决:</p>
-<p>​ 推迟一个随机时间再发送，其中基本退避时间为2t，参数k = min(当前重传次数，10)，倍数为r = 1到2^k - 1，重传时延即为r倍的基本退避时间，若重传次数超过16次，则丢弃该帧并向高层报告。</p>
-</blockquote>
-<h2 id="以太网的其他信息">以太网的其他信息</h2>
-<blockquote>
-<p>两个标准:DIX Ethernet V2、802.3标准</p>
-<p>以太网和数据链路层的两个子层:</p>
-<p>​ 逻辑链路控制子层LLC</p>
-<p>​ 媒体接入控制子层MAC</p>
-<p>以太网提供的访问是不可靠的交付，接收到有差错的数据帧就丢弃，其他什么也不做</p>
-<p>使用集线器的以太网在逻辑上仍是一个总线网，各个工作站使用的还是CSMA/CD协议，集线器工作在物理层。</p>
-</blockquote>
-<h2 id="信道利用率计算">信道利用率计算</h2>
-<blockquote>
-<p>争用期长度为2t，帧长为L(bit)，数据发送速率为C(b/s)，帧的发送时间为L/C=T0 (s)</p>
-<p>信道利用率的参数a = t/T0，故帧长不能太短(为了增大T0)，以太网连线不能太长(为了减小t)。无碰撞的理想情况下，极限信道利用率为</p>
-<p><span class="math display">\[S_{max} = T_0 / (T_0 + t) = 1 /(1+a)\]</span></p>
-</blockquote>
-<h2 id="mac地址">MAC地址</h2>
-<blockquote>
-<p>硬件地址又称为物理地址，或MAC地址</p>
-<p>MAC帧格式(MAC层)</p>
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: center;">目的地址</th>
-<th style="text-align: center;">源地址</th>
-<th style="text-align: center;">类型</th>
-<th style="text-align: center;">数据</th>
-<th style="text-align: center;">FCS</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;">6个字节</td>
-<td style="text-align: center;">6个字节</td>
-<td style="text-align: center;">2个字节</td>
-<td style="text-align: center;">46~1500</td>
-<td style="text-align: center;">4个字节</td>
-</tr>
-</tbody>
-</table>
-<p>​ 帧检验序列FCS字段可保证无差错接受。</p>
-<p>传到物理层会在前端插入8个字节表示帧开始。</p>
-<p>无效的MAC帧:</p>
-<p>​ 帧长度不为整数个字节。</p>
-<p>​ 用收到的帧检验序列FCS查出有差错。</p>
-<p>​ 数据字段的长度不在46~1500字节之间。</p>
-<p>​ 有效的MAC帧长度不在64~1518字节之间。</p>
-<p>​ 无效的MAC会直接丢弃，以太网不负责重传。</p>
-<p>帧间最小间隔为9.6us，相当于96bit的发送时间，目的是为了使刚刚收到数据帧的站接受缓存来得及清理，做好接收下一帧的准备。</p>
-</blockquote>
-<h2 id="使用网桥拓展以太网">使用网桥拓展以太网</h2>
-<blockquote>
-<p>优点:过滤通信量、扩大物理范围、提高了可靠性、可互连不同的物理层、不同MAC子层和不同速率的局域网。</p>
-<p>缺点:存储转发增加了时延、MAC子层并没有流量控制功能、具有不同MAC子层的网段桥接在一起时时延更大、网桥只适合于用户数不太多和通信量不太大的局域网，否则有时会因传播过多的广播信息产生网络拥塞。</p>
-<p>记录的原理:A发出的帧送到网桥，网桥可以记录下哪个接口对应于A，将A的地址放入转发表中，对于不在转发表中的地址采用广播手段进行信息传输，对于在转发表中的地址，则根据记录的地址发送。</p>
-</blockquote>
-<h2 id="以太网的不同类型">以太网的不同类型</h2>
-<blockquote>
-<p>速率达到/超过100Mb/s的以太网叫高速以太网</p>
-<p>100BASE-T以太网(快速以太网)</p>
-<p>​ 在双绞线上传送100Mb/s基带信号的星型拓扑以太网，仍使用IEEE 802.3的CSMA/CD协议(半双工时)。</p>
-<p>​ 可以在全双工的方式下工作且无冲突发生，不使用CSMA/CD协议，MAC帧格式仍是802.3标准规定的。最短帧长不变，但最大电缆长度减小到100m，帧间时间间隔变为0.96us。</p>
-<p>吉比特以太网</p>
-<p>​ 允许在1Gb/s下全双工和半双工两种方式工作。使用802.3协议规定的帧格式，在半双工方式下使用CSMA/CD,兼容10BASE-T和100BASE-T</p>
-</blockquote>
-<h2 id="滑动窗口协议">滑动窗口协议</h2>
-<blockquote>
-<p>一位滑动窗口协议 停----等式</p>
-<p>回退N协议</p>
-<p>选择重传协议</p>
-</blockquote>
-<h2 id="mac层各协议">MAC层各协议</h2>
-<blockquote>
-<p>ALOHA：想发就发，冲突后随机时间发。</p>
-<p>分槽ALOHA：时间槽开始时发，冲突后随机时间发。</p>
-<p>1坚持CSMA：监听到空闲一定发，信道忙则一直监听到空闲为止。冲突后随机时间重复此过程。</p>
-<p>非坚持CSMA：监听到空闲一定发，信道忙则随机时间再监听。冲突后随机时间重复此过程。</p>
-<p>p坚持CSMA：监听到空闲p概率发，信道忙则下一个时间槽再监听，1-p概率下一个时间槽再发送。</p>
-<p>CSMA/CD：空闲则直接发送，若忙则等待到通道空闲。检测到冲突终止传输，随机等待一段时间后重新开始监听。则带冲突检测。802.3中使用1坚持-二进制后退的CSMA/CD。</p>
-<p>CSMA/CA：空闲时等待一定时间发送，先发送帧，然后接收方会给发送方发送一个确认帧。若发送方没有收到确认帧或遇到冲突则二进制回退再发送。</p>
-</blockquote>
-<h2 id="无线局域网协议">无线局域网协议</h2>
-<blockquote>
-<p>存在问题：隐藏终端和暴露终端。</p>
-<p>发送方先发送RTS(Request to send)，接收方收到RTS回应CTS(Clear to send)。</p>
+
 </blockquote>
 
       
@@ -535,7 +399,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/38/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/38/">38</a><span class="page-number current">39</span><a class="page-number" href="/page/40/">40</a><span class="space">&hellip;</span><a class="page-number" href="/page/46/">46</a><a class="extend next" rel="next" href="/page/40/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/38/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/38/">38</a><span class="page-number current">39</span><a class="page-number" href="/page/40/">40</a><span class="space">&hellip;</span><a class="page-number" href="/page/47/">47</a><a class="extend next" rel="next" href="/page/40/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -580,13 +444,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">139k</span>
+    <span title="站点总字数">140k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:07</span>
+    <span title="站点阅读时长">2:08</span>
   </span>
 </div>
 <div class="busuanzi-count">

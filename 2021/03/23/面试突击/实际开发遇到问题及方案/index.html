@@ -22,30 +22,33 @@
     var NexT = window.NexT || {};
     var CONFIG = {"hostname":"49.234.221.130","root":"/","images":"/images","scheme":"Pisces","version":"8.2.1","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
   </script>
-<meta name="description" content="Ye的个人技术记录博客">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Yesomething">
-<meta property="og:url" content="http://49.234.221.130/page/5/index.html">
+<meta name="description" content="实际开发遇到问题及方案 什么是内存泄漏，怎么确定内存泄漏  简单来说内存泄漏就是使用了内存空间后，在不使用的情况下没有及时的释放对应空间。 在Java中虽然存在GC机制，但有时也有产生内存泄漏的现象。 ​ 如：使用ThreadLocal、使用静态集合类引用数据、使用单例模式创建的对象引用的过多对象。 Java确定内存泄漏的方式： ​ 如果内存泄漏了一般来说会频繁触发GC，可以先使用l">
+<meta property="og:type" content="article">
+<meta property="og:title" content="实际开发遇到问题及方案">
+<meta property="og:url" content="http://49.234.221.130/2021/03/23/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E5%AE%9E%E9%99%85%E5%BC%80%E5%8F%91%E9%81%87%E5%88%B0%E9%97%AE%E9%A2%98%E5%8F%8A%E6%96%B9%E6%A1%88/index.html">
 <meta property="og:site_name" content="Yesomething">
-<meta property="og:description" content="Ye的个人技术记录博客">
+<meta property="og:description" content="实际开发遇到问题及方案 什么是内存泄漏，怎么确定内存泄漏  简单来说内存泄漏就是使用了内存空间后，在不使用的情况下没有及时的释放对应空间。 在Java中虽然存在GC机制，但有时也有产生内存泄漏的现象。 ​ 如：使用ThreadLocal、使用静态集合类引用数据、使用单例模式创建的对象引用的过多对象。 Java确定内存泄漏的方式： ​ 如果内存泄漏了一般来说会频繁触发GC，可以先使用l">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-03-22T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-03-23T11:49:51.970Z">
 <meta property="article:author" content="Ye">
+<meta property="article:tag" content="小知识">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://49.234.221.130/page/5/">
+<link rel="canonical" href="http://49.234.221.130/2021/03/23/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E5%AE%9E%E9%99%85%E5%BC%80%E5%8F%91%E9%81%87%E5%88%B0%E9%97%AE%E9%A2%98%E5%8F%8A%E6%96%B9%E6%A1%88/">
 
 
 <script class="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
-<title>Yesomething</title>
+<title>实际开发遇到问题及方案 | Yesomething</title>
   
 
 
@@ -170,7 +173,7 @@
 
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -183,6 +186,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E9%99%85%E5%BC%80%E5%8F%91%E9%81%87%E5%88%B0%E9%97%AE%E9%A2%98%E5%8F%8A%E6%96%B9%E6%A1%88"><span class="nav-number">1.</span> <span class="nav-text">实际开发遇到问题及方案</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%80%8E%E4%B9%88%E7%A1%AE%E5%AE%9A%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F"><span class="nav-number">1.1.</span> <span class="nav-text">什么是内存泄漏，怎么确定内存泄漏</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -253,17 +257,18 @@
 </noscript>
 
 
-    <div class="main-inner index posts-expand">
+    <div class="main-inner post posts-expand">
 
-    
+
+  
 
 
 <div class="post-block">
   
   
 
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/18/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1%E7%AA%81%E5%87%BB/">
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/23/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E5%AE%9E%E9%99%85%E5%BC%80%E5%8F%91%E9%81%87%E5%88%B0%E9%97%AE%E9%A2%98%E5%8F%8A%E6%96%B9%E6%A1%88/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -275,9 +280,9 @@
       <meta itemprop="name" content="Yesomething">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/18/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1%E7%AA%81%E5%87%BB/" class="post-title-link" itemprop="url">系统设计突击</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          实际开发遇到问题及方案
+        </h1>
 
         <div class="post-meta-container">
           <div class="post-meta">
@@ -286,16 +291,10 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
+      
 
-      <time title="创建时间：2021-03-18 00:00:00" itemprop="dateCreated datePublished" datetime="2021-03-18T00:00:00+08:00">2021-03-18</time>
+      <time title="创建时间：2021-03-23 00:00:00 / 修改时间：19:49:51" itemprop="dateCreated datePublished" datetime="2021-03-23T00:00:00+08:00">2021-03-23</time>
     </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-19 16:42:34" itemprop="dateModified" datetime="2021-03-19T16:42:34+08:00">2021-03-19</time>
-      </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
@@ -307,6 +306,13 @@
     </span>
 
   
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
       </div>
       <div class="post-meta">
     <span class="post-meta-item" title="本文字数">
@@ -314,7 +320,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>827</span>
+      <span>346</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -332,66 +338,20 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="系统设计突击">系统设计突击</h1>
-<h2 id="如何设计微博关注功能即feed流设计">如何设计微博关注功能？即Feed流设计</h2>
+        <h1 id="实际开发遇到问题及方案">实际开发遇到问题及方案</h1>
+<h2 id="什么是内存泄漏怎么确定内存泄漏">什么是内存泄漏，怎么确定内存泄漏</h2>
 <blockquote>
-<p>该问题主要看产品类型，具体分类如下：</p>
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: left;">类型</th>
-<th style="text-align: left;">关注关系</th>
-<th style="text-align: left;">是否有大V</th>
-<th style="text-align: left;">时效性</th>
-<th style="text-align: left;">排序</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">微博类</td>
-<td style="text-align: left;">单向</td>
-<td style="text-align: left;">有</td>
-<td style="text-align: left;">秒~分</td>
-<td style="text-align: left;">时间</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">抖音类</td>
-<td style="text-align: left;">单向/无</td>
-<td style="text-align: left;">有</td>
-<td style="text-align: left;">秒~分</td>
-<td style="text-align: left;">推荐</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">朋友圈类</td>
-<td style="text-align: left;">双向</td>
-<td style="text-align: left;">无</td>
-<td style="text-align: left;">秒</td>
-<td style="text-align: left;">时间</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">私信类</td>
-<td style="text-align: left;">双向</td>
-<td style="text-align: left;">无</td>
-<td style="text-align: left;">秒</td>
-<td style="text-align: left;">时间</td>
-</tr>
-</tbody>
-</table>
-<p>微博关注功能的主要难点在于，一个用户的粉丝数可能十分巨大，导致消息如何推送是一个问题。</p>
-<p>常见的设计方法：</p>
-<p>​ 首先将数据库分为，存储库和关系库。</p>
-<p>​ 存储库需要可靠存储用户的消息，不能丢失。需要能够支持读取某个人分布的所有消息。支持数据永久存储。</p>
-<p>​ 技术选型主要考虑关系型数据库Mysql或Nosql。其中Nosql水平拓展能力较高，方便在数据量巨大时的使用。</p>
-<p>​ 存储的信息往往可以是userID和messageID。</p>
-<p>​ 关系库则是用于存储用户之间的关系的。</p>
-<p><strong>数据的同步方式即用户怎么接收推送的？</strong></p>
-<p>​ 1.推模式(写扩散)：发送者发送一个消息后，立即将消息推送给发送者，此时发送者不一定在线，需要将消息同步到一个同步库中。一条消息要发送给多个粉丝所以需要复制多份，要求数据库支持大量写请求。用户上线时只需要读取自己的数据库，找到消息即可。</p>
-<p>​ 2.拉模式(读扩散)：这是一种拉的方式，即发送者发送消息后，数据只写入自己对应的数据库，然后用户上线时直接从自己的数据库中读取，此时消息的写入操作仅一次，消息的读取操作次数最多会达到最大粉丝数。因此这种设计要求数据库要有极强的读能力。但是这种设计存在一个问题，即每个用户需要记录自己上次读到了关注者的哪条消息，若关注者数量大，则需要占用大量空间存储该数据。</p>
-<p>​ 3.推拉结合模式：推模式在单向关系中因为存在大V，一天消息写扩散可能几百万次。而这些用户可能一大半都是僵尸用户，永远不会上线。存在资源浪费。而拉模式需要记录上次读取消息的位置，架构比较复杂。因此往往设计为普通用户使用推模式，大V使用拉模式，这样平衡架构复杂性和资源使用。</p>
-<p><strong>其他具体功能设计见https://developer.aliyun.com/article/706808</strong></p>
+<p>简单来说内存泄漏就是使用了内存空间后，在不使用的情况下没有及时的释放对应空间。</p>
+<p>在Java中虽然存在GC机制，但有时也有产生内存泄漏的现象。</p>
+<p>​ 如：使用ThreadLocal、使用静态集合类引用数据、使用单例模式创建的对象引用的过多对象。</p>
+<p>Java确定内存泄漏的方式：</p>
+<p>​ 如果内存泄漏了一般来说会频繁触发GC，可以先使用linux的top指令查看当前java进程具体情况，如果频繁GC往往会导致CPU使用率异常。</p>
+<p>​ 如果确认异常，再通过jmap指令生成dump文件，用于之后查看。</p>
+<p>​ 通过jstat查看当前虚拟机情况，主要观察GC频率。</p>
+<p>​ 使用jhat或者其他可视化工具分析dump文件，找到对应内存使用巨大的类。</p>
+<p>​ 找到类后，分析具体代码解决问题即可。</p>
 </blockquote>
 
-      
     </div>
 
     
@@ -399,8 +359,56 @@
     
 
     <footer class="post-footer">
-        <div class="post-eof"></div>
-      
+          <div class="reward-container">
+  <div>这次一定!</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    投币
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Ye 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Ye 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Ye
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="http://49.234.221.130/2021/03/23/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E5%AE%9E%E9%99%85%E5%BC%80%E5%8F%91%E9%81%87%E5%88%B0%E9%97%AE%E9%A2%98%E5%8F%8A%E6%96%B9%E6%A1%88/" title="实际开发遇到问题及方案">http://49.234.221.130/2021/03/23/面试突击/实际开发遇到问题及方案/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E5%B0%8F%E7%9F%A5%E8%AF%86/" rel="tag"># 小知识</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/03/21/JVMKnowledge/3.%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7/" rel="prev" title="3.常用工具">
+                  <i class="fa fa-chevron-left"></i> 3.常用工具
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
     </footer>
   </article>
 </div>
@@ -408,9 +416,7 @@
 
 
 
-  <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/47/">47</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
-  </nav>
+
 
 
 <script>
