@@ -1703,150 +1703,6 @@
       </tags>
   </entry>
   <entry>
-    <title>java并发突击</title>
-    <url>/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/</url>
-    <content><![CDATA[<h1 id="java并发突击">Java并发突击</h1>
-<figure>
-<img src="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/Users\SmallYe\Desktop\blog\source_posts\面试突击\java并发突击\CPU术语.png" alt="CPU术语"><figcaption aria-hidden="true">CPU术语</figcaption>
-</figure>
-<h2 id="volatile实现原理">Volatile实现原理</h2>
-<blockquote>
-<p>当字段被声明为volatile时，Java线程内存模型确保所有线程看到这个变量的值是一致的。</p>
-<p>本质上是通过编译后在指令后添加<strong>lock指令</strong>。lock指令的作用是：</p>
-<p>​ 将当前处理器缓存行的数据写回系统内存。</p>
-<p>​ 这个写回内存的操作会使在其他CPU里缓存了该内存地址的数据无效。</p>
-</blockquote>
-<h2 id="synchronized实现原理">Synchronized实现原理</h2>
-<blockquote>
-<p>synchronized实现同步的基础：Java中的每个对象都可以作为锁。</p>
-<p>对于普通同步方法，锁住当前实例对象。</p>
-<p>对于静态同步方法，锁住当前类Class对象。</p>
-<p>对于同步方法块，锁住的是synchronized括号内配置的对象。</p>
-<p>JVM规范中指出Synchronized实现的原理是<strong>基于进入和退出Moniter对象来实现方法同步和代码块同步</strong>，即在编译后将monitorenter指令插入到同步代码块后，将monitorexit插入到方法结束处和异常处。JVM保证每个monitorenter和monitorexit配对。</p>
-<p>Synchronized锁住类实例时，只会锁定访问该类实例带有synchronized修饰的非静态方法的线程，不会锁定普通方法。</p>
-<p>而Synchronized锁住类时，只会锁定访问该类对应带有synchronized修饰的静态方法的线程，而不会锁定普通方法及普通的静态方法。</p>
-</blockquote>
-<h4 id="synchronized锁优化及实质">Synchronized锁优化及实质</h4>
-<blockquote>
-<p>synchronized用的锁是存在Java对象头中的。若对象是数组类型，虚拟机使用3个字宽存储对象头，非数组类型用2字宽存储对象头。</p>
-<figure>
-<img src="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/Users\SmallYe\Desktop\blog\source_posts\面试突击\java并发突击\Java对象头.png" alt="Java对象头"><figcaption aria-hidden="true">Java对象头</figcaption>
-</figure>
-<p>Mark Word里默认存储对象的HashCode、分代年龄和锁标记位。</p>
-<figure>
-<img src="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/Users\SmallYe\Desktop\blog\source_posts\面试突击\java并发突击\MarkWord变化.png" alt="MarkWord变化"><figcaption aria-hidden="true">MarkWord变化</figcaption>
-</figure>
-<p>JDK1.6为了减少获得锁和释放锁带来的性能消耗，引入了“偏向锁”和“轻量级锁”，在JDK6后锁共4中状态依次为：<strong>无锁状态、偏向锁状态、轻量级锁状态和重量级锁状态</strong>。这几个状态会随竞争情况逐渐升级，锁可以升级但不能降级。</p>
-<p><strong>偏向锁</strong>：</p>
-</blockquote>
-<h2 id="线程创建的方式">线程创建的方式</h2>
-<blockquote>
-<p>继承thread类，重写run方法</p>
-<p>实现runnable接口，重写run方法。</p>
-<p>实现callable接口，实现call方法</p>
-</blockquote>
-<h2 id="线程池">线程池</h2>
-<blockquote>
-<p>为什么使用线程池？</p>
-<p>​ 为了避免线程的创建、销毁导致的线程开销，采用线程池管理一定数量的线程达到可复用线程的效果。</p>
-<p>Executors自带的线程池</p>
-<p>​ <strong>newSingleThreadExecutor</strong>：单线程线程池，这个线程池只有一个线程在工作。</p>
-<p>​ <strong>newFixedThreadPool</strong>：固定大小的线程池。每次提交一个任务就创建一个线程，直到线程达到线程池最大大小。超出的线程会在队列中等待。</p>
-<p>​ <strong>newCachedThreadPool</strong>：创建一个可缓存的线程池，当线程池大小超过了处理任务所需要的线程，会回收部分空闲线程，当任务增加时此线程池可以智能添加线程来处理任务。该线程池不会对大小进行限制。</p>
-<p>​ <strong>newScheduledThreadPool</strong>：创建一个大小无限的线程池，支持定时及周期性任务。</p>
-<p>​ <strong>newSingleThreadScheduled</strong>：创建一个只有一个线程的线程池，支持定时及周期性任务。</p>
-<p>​ <strong>newWorkStealingPool</strong>：创建一个拥有多个任务队列的线程池。</p>
-<p>自带线程池的缺点，newSingleThreadExecutor和newFixedThreadPool创建了一个长度Integer.MAX_VALUE的阻塞队列，导致任务过多堆积时耗费大量内存，产生OOM错误。newCachedThreadPool和newScheduledThreadPool创建的线程池最大线程数量为Integer.MAX_VALUE，导致可能创建了大量的线程，消耗资源，甚至造成OOM。</p>
-</blockquote>
-<h2 id="自定义线程池">自定义线程池</h2>
-<blockquote>
-<p>自己创建线程池new ThreadPoolExecutor()可以传递参数：</p>
-<p>​ corePoolSize：核心线程数量，即线程池会保持的线程数</p>
-<p>​ maximumPoolSize：最大线程数量，即线程池</p>
-<p>​ keepAliveTime：空闲线程最大存活时间</p>
-<p>​ TimeUnit：时间单位</p>
-<p>​ BlockingQueue：阻塞队列</p>
-<p>​ ThreadFactory：线程工厂</p>
-<p>​ RejectedExecutionHandler：拒绝策略</p>
-</blockquote>
-<h3 id="线程池执行execute的流程">线程池执行execute的流程</h3>
-<blockquote>
-<p>线程池状态有：RUNNING、SHUTDOWN、STOP、TIDYING、TERMINATED</p>
-<p>内部存在BlockingQueue即阻塞队列，阻塞队列是通过ReentrantLock实现的，其内部维护了一把锁。本质上就是在入队、出队等操作之前通过内部的锁上锁，操作结束后释放锁来完成的。</p>
-<p>而操作时，入队、出队操作分为阻塞和非阻塞，阻塞操作如：当队列为空时若从阻塞队列中获取元素，则会被阻塞一定时间，再获取。这也是阻塞队列名字的来源。</p>
-<p>当当前线程数少于核心线程数时会新增worker线程，以核心线程数为准。</p>
-<p>若任务可以成功入队，则将任务入队，同时检测当前线程池状态，若为不是RUNNING状态则将任务移出队列且执行拒绝策略，若是RUNNING状态，且可用线程数为0则增加线程，以最大线程数为准。</p>
-<p>若入队失败，则尝试创建新的worker，以最大线程数为准，若创建失败执行拒绝策略。</p>
-</blockquote>
-<h3 id="线程池拒绝策略">线程池拒绝策略</h3>
-<blockquote>
-<p>AbortPolicy：丢弃任务并抛出异常。</p>
-<p>CallerRunsPolicy：判断当前线程池是否关闭，若未关闭则直接调用线程的run方法。</p>
-<p>DiscardOldestPolicy：丢弃队列最前的任务，然后重新使用线程池执行被拒绝的任务。</p>
-<p>DiscardPolicy：丢弃任务，什么也不做。</p>
-<p>NewThreadRunsPolicy：创建一个线程去执行被丢弃的任务</p>
-</blockquote>
-<h2 id="juc">JUC</h2>
-<h3 id="threadlocal">ThreadLocal</h3>
-<blockquote>
-<p>线程本地变量，创建一个线程独立的变量。</p>
-<p>底层实现的原理：本质上是一个线程中存在一个ThreadLocalMap，用于存储ThreadLocal，该map的key为创建的ThreadLocal对象，而非Thread本身。</p>
-<p>而<strong>内部存储k-v则是通过继承弱引用的Entry来实现的。</strong></p>
-<p>get和set本质上也是hashmap类似的哈希计算获取对应数组位置存入，但是hashmap使用拉链法解决哈希冲突，ThreadLocal使用线性探测法解决。也存在扩容操作，一次扩容2倍。</p>
-<p>而为什么ThreadLocal中<strong>Entry继承了弱引用WeakReference</strong>？</p>
-<p>​ 因为若Entry也是强引用时，当外部线程不想使用该ThreadLocal时，即使停止引用，由于线程内部Entry是强引用且引用了ThreadLocal，那么ThreadLocal也不会被自动GC。而设置为弱引用，当外部线程不想使用时，GC可以在一次回收时将其回收，而ThreadLocalMap也设计了当发现key为null时清空value的操作。</p>
-<p>为什么会内存泄漏？</p>
-<p>​ 本质上是因为ThreadLocal和线程存活时间基本相同，而使用过程虽然使用弱引用，但是即使经过GC回收，还是会剩下key为null，value不为null的Entry存在于Map中。虽然ThreadLocal在执行操作时也会进行检测当前Entry key为null的位置，将其清除，但是这必须要通过我们主动调用，若没有调用则会一直存在。因此ThreadLocal对象使用结束后需要调用remove方法，使其从map中被移除，避免内存泄漏。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(T value)</span> </span>&#123;</span><br><span class="line">Thread t = Thread.currentThread();</span><br><span class="line">ThreadLocalMap map = getMap(t);</span><br><span class="line"><span class="keyword">if</span> (map != <span class="keyword">null</span>)</span><br><span class="line">  map.set(<span class="keyword">this</span>, value);</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">  createMap(t, value);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> T <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">Thread t = Thread.currentThread();</span><br><span class="line">ThreadLocalMap map = getMap(t);</span><br><span class="line"><span class="keyword">if</span> (map != <span class="keyword">null</span>) &#123;</span><br><span class="line">  ThreadLocalMap.Entry e = map.getEntry(<span class="keyword">this</span>);</span><br><span class="line">  <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">      <span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">      T result = (T)e.value;</span><br><span class="line">      <span class="keyword">return</span> result;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> setInitialValue();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="abstractqueuedsynchronizeraqs">AbstractQueuedSynchronizer(AQS)</h3>
-</blockquote>
-<blockquote>
-<p>AQS继承了AOS(AbstractOwnableSynchronizer)，AOS本质上就实现了对排他线程的保存。</p>
-<p>内部通过state作为是否上锁的判断，当state为0时说明没有线程抢占到锁。可重入锁就是通过不断改变state实现的可重入。</p>
-<p>内部维护了一个waitStatus，共有SIGNAL(-1表示表示后继结点需要unparking)、CANCELLED(1,表示该线程已经取消竞争)、CONDITION(-2节点正在等待)、PROPAGATE(表示头结点将唤醒的动作传播下去)、0(默认)的状态。</p>
-<p>AQS中head结点没有使用，只起到标记的作用。</p>
-<p>本质上只有两个方法acquire和release。如果是共享锁使用acquireShared和releaseShared</p>
-<p>acquire如下：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">acquire</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!tryAcquire(arg) &amp;&amp;</span><br><span class="line">        acquireQueued(addWaiter(Node.EXCLUSIVE), arg))</span><br><span class="line">        selfInterrupt();</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">acquireQueued</span><span class="params">(<span class="keyword">final</span> Node node, <span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">boolean</span> failed = <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">boolean</span> interrupted = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">            <span class="keyword">final</span> Node p = node.predecessor();</span><br><span class="line">            <span class="keyword">if</span> (p == head &amp;&amp; tryAcquire(arg)) &#123;</span><br><span class="line">                setHead(node);</span><br><span class="line">                p.next = <span class="keyword">null</span>; <span class="comment">// help GC</span></span><br><span class="line">                failed = <span class="keyword">false</span>;</span><br><span class="line">                <span class="keyword">return</span> interrupted;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (shouldParkAfterFailedAcquire(p, node) &amp;&amp;</span><br><span class="line">                parkAndCheckInterrupt())</span><br><span class="line">                interrupted = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (failed)</span><br><span class="line">            cancelAcquire(node);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>先尝试获取资源，这里tryAcquire是由子类实现的。</p>
-<p>如果没有成功获取则addWaiter，将线程放入等待队列的尾部，标记为独占模式。</p>
-<p>acquireQueued当当前结点的前一个结点是头结点时会尝试抢占若抢占成功，头结点改为当前结点。抢占失败则将前驱结点的状态设为SIGNAL。</p>
-<p>最后将线程挂起。</p>
-<p>release：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">release</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (tryRelease(arg)) &#123;</span><br><span class="line">        Node h = head;</span><br><span class="line">        <span class="keyword">if</span> (h != <span class="keyword">null</span> &amp;&amp; h.waitStatus != <span class="number">0</span>)</span><br><span class="line">            unparkSuccessor(h);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>先调用子类的tryRelease方法释放状态，当完全释放后，判断当前头结点waitStatus是否不为0，不为0则找出离头结点最近的且不为取消状态的结点进行unpark。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">acquireShared</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (tryAcquireShared(arg) &lt; <span class="number">0</span>)</span><br><span class="line">        doAcquireShared(arg);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">doAcquireShared</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> Node node = addWaiter(Node.SHARED);</span><br><span class="line">    <span class="keyword">boolean</span> failed = <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">boolean</span> interrupted = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">            <span class="keyword">final</span> Node p = node.predecessor();</span><br><span class="line">            <span class="keyword">if</span> (p == head) &#123;</span><br><span class="line">                <span class="keyword">int</span> r = tryAcquireShared(arg);</span><br><span class="line">                <span class="keyword">if</span> (r &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">                    setHeadAndPropagate(node, r);</span><br><span class="line">                    p.next = <span class="keyword">null</span>; <span class="comment">// help GC</span></span><br><span class="line">                    <span class="keyword">if</span> (interrupted)</span><br><span class="line">                        selfInterrupt();</span><br><span class="line">                    failed = <span class="keyword">false</span>;</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (shouldParkAfterFailedAcquire(p, node) &amp;&amp;</span><br><span class="line">                parkAndCheckInterrupt())</span><br><span class="line">                interrupted = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (failed)</span><br><span class="line">            cancelAcquire(node);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>共享锁的话本质上就是将资源数目增多，每次抢占资源时会判断当前资源数目是否大于0，大于0则使用CAS抢占。抢占失败后执行doAcquireShared，类似独占锁的过程。先创建一个SHARABLE节点作为头结点，然后判断当前结点是否为头结点，若是头结点则进行抢占，抢占成功则根据当前资源数来决定是否还要进行抢占。抢占失败则将前驱结点设置的状态设置为SIGNAL。</p>
-</blockquote>
-<h3 id="reentrantlock">ReentrantLock</h3>
-<blockquote>
-<p>可重入锁本质上是针对一个线程的，当一个线程抢占成功锁之后，若线程内部还有进行锁操作，那么会将锁的state值增加，释放时则将该值减少，直到减少到0时又可以被重新抢占。</p>
-<p>释放锁过程也是先判断逐步释放。判断当前释放锁之后锁状态是否为0，若为0则通过unpark方法唤醒队列中的后继线程。</p>
-<p>java实现的锁的方式分为公平锁和非公平锁。</p>
-<p>公平锁和非公平锁的队列都是基于ReentrantLock内部维护的Sync本质是个AQS。</p>
-<p>公平锁的公平性体现在每次重新抢占时会先判断队列中是否存在等待线程，若存在则让队列的线程先抢夺。</p>
-<p>非公平锁非公平体现在每次抢占时不会判断队列中是否存在等待线程，直接进行抢占。</p>
-</blockquote>
-<h2 id="synchronized和lock的区别">Synchronized和Lock的区别</h2>
-<blockquote>
-<p>加锁、解锁：</p>
-<p>​ synchronized：自动加锁解锁。</p>
-<p>​ lock：需要手动加锁、解锁。</p>
-<p>性能上：</p>
-<p>​ synchronized：没有优化前是悲观锁设计思想。性能差</p>
-<p>​ lock：主要是乐观锁设置思想，如reentrantLock主要通过CAS操作抢夺锁。性能好</p>
-<p>用法上：</p>
-<p>​ 基本没区别，但是lock可以实现公平锁。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>面试突击</category>
-      </categories>
-      <tags>
-        <tag>并发</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>redis突击</title>
     <url>/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/redis%E7%AA%81%E5%87%BB/</url>
     <content><![CDATA[<h1 id="redis突击">redis突击</h1>
@@ -2059,6 +1915,150 @@
       </categories>
       <tags>
         <tag>redis</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>java并发突击</title>
+    <url>/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/</url>
+    <content><![CDATA[<h1 id="java并发突击">Java并发突击</h1>
+<figure>
+<img src="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/Users\SmallYe\Desktop\blog\source_posts\面试突击\java并发突击\CPU术语.png" alt="CPU术语"><figcaption aria-hidden="true">CPU术语</figcaption>
+</figure>
+<h2 id="volatile实现原理">Volatile实现原理</h2>
+<blockquote>
+<p>当字段被声明为volatile时，Java线程内存模型确保所有线程看到这个变量的值是一致的。</p>
+<p>本质上是通过编译后在指令后添加<strong>lock指令</strong>。lock指令的作用是：</p>
+<p>​ 将当前处理器缓存行的数据写回系统内存。</p>
+<p>​ 这个写回内存的操作会使在其他CPU里缓存了该内存地址的数据无效。</p>
+</blockquote>
+<h2 id="synchronized实现原理">Synchronized实现原理</h2>
+<blockquote>
+<p>synchronized实现同步的基础：Java中的每个对象都可以作为锁。</p>
+<p>对于普通同步方法，锁住当前实例对象。</p>
+<p>对于静态同步方法，锁住当前类Class对象。</p>
+<p>对于同步方法块，锁住的是synchronized括号内配置的对象。</p>
+<p>JVM规范中指出Synchronized实现的原理是<strong>基于进入和退出Moniter对象来实现方法同步和代码块同步</strong>，即在编译后将monitorenter指令插入到同步代码块后，将monitorexit插入到方法结束处和异常处。JVM保证每个monitorenter和monitorexit配对。</p>
+<p>Synchronized锁住类实例时，只会锁定访问该类实例带有synchronized修饰的非静态方法的线程，不会锁定普通方法。</p>
+<p>而Synchronized锁住类时，只会锁定访问该类对应带有synchronized修饰的静态方法的线程，而不会锁定普通方法及普通的静态方法。</p>
+</blockquote>
+<h4 id="synchronized锁优化及实质">Synchronized锁优化及实质</h4>
+<blockquote>
+<p>synchronized用的锁是存在Java对象头中的。若对象是数组类型，虚拟机使用3个字宽存储对象头，非数组类型用2字宽存储对象头。</p>
+<figure>
+<img src="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/Users\SmallYe\Desktop\blog\source_posts\面试突击\java并发突击\Java对象头.png" alt="Java对象头"><figcaption aria-hidden="true">Java对象头</figcaption>
+</figure>
+<p>Mark Word里默认存储对象的HashCode、分代年龄和锁标记位。</p>
+<figure>
+<img src="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/Users\SmallYe\Desktop\blog\source_posts\面试突击\java并发突击\MarkWord变化.png" alt="MarkWord变化"><figcaption aria-hidden="true">MarkWord变化</figcaption>
+</figure>
+<p>JDK1.6为了减少获得锁和释放锁带来的性能消耗，引入了“偏向锁”和“轻量级锁”，在JDK6后锁共4中状态依次为：<strong>无锁状态、偏向锁状态、轻量级锁状态和重量级锁状态</strong>。这几个状态会随竞争情况逐渐升级，锁可以升级但不能降级。</p>
+<p><strong>偏向锁</strong>：</p>
+</blockquote>
+<h2 id="线程创建的方式">线程创建的方式</h2>
+<blockquote>
+<p>继承thread类，重写run方法</p>
+<p>实现runnable接口，重写run方法。</p>
+<p>实现callable接口，实现call方法</p>
+</blockquote>
+<h2 id="线程池">线程池</h2>
+<blockquote>
+<p>为什么使用线程池？</p>
+<p>​ 为了避免线程的创建、销毁导致的线程开销，采用线程池管理一定数量的线程达到可复用线程的效果。</p>
+<p>Executors自带的线程池</p>
+<p>​ <strong>newSingleThreadExecutor</strong>：单线程线程池，这个线程池只有一个线程在工作。</p>
+<p>​ <strong>newFixedThreadPool</strong>：固定大小的线程池。每次提交一个任务就创建一个线程，直到线程达到线程池最大大小。超出的线程会在队列中等待。</p>
+<p>​ <strong>newCachedThreadPool</strong>：创建一个可缓存的线程池，当线程池大小超过了处理任务所需要的线程，会回收部分空闲线程，当任务增加时此线程池可以智能添加线程来处理任务。该线程池不会对大小进行限制。</p>
+<p>​ <strong>newScheduledThreadPool</strong>：创建一个大小无限的线程池，支持定时及周期性任务。</p>
+<p>​ <strong>newSingleThreadScheduled</strong>：创建一个只有一个线程的线程池，支持定时及周期性任务。</p>
+<p>​ <strong>newWorkStealingPool</strong>：创建一个拥有多个任务队列的线程池。</p>
+<p>自带线程池的缺点，newSingleThreadExecutor和newFixedThreadPool创建了一个长度Integer.MAX_VALUE的阻塞队列，导致任务过多堆积时耗费大量内存，产生OOM错误。newCachedThreadPool和newScheduledThreadPool创建的线程池最大线程数量为Integer.MAX_VALUE，导致可能创建了大量的线程，消耗资源，甚至造成OOM。</p>
+</blockquote>
+<h2 id="自定义线程池">自定义线程池</h2>
+<blockquote>
+<p>自己创建线程池new ThreadPoolExecutor()可以传递参数：</p>
+<p>​ corePoolSize：核心线程数量，即线程池会保持的线程数</p>
+<p>​ maximumPoolSize：最大线程数量，即线程池</p>
+<p>​ keepAliveTime：空闲线程最大存活时间</p>
+<p>​ TimeUnit：时间单位</p>
+<p>​ BlockingQueue：阻塞队列</p>
+<p>​ ThreadFactory：线程工厂</p>
+<p>​ RejectedExecutionHandler：拒绝策略</p>
+</blockquote>
+<h3 id="线程池执行execute的流程">线程池执行execute的流程</h3>
+<blockquote>
+<p>线程池状态有：RUNNING、SHUTDOWN、STOP、TIDYING、TERMINATED</p>
+<p>内部存在BlockingQueue即阻塞队列，阻塞队列是通过ReentrantLock实现的，其内部维护了一把锁。本质上就是在入队、出队等操作之前通过内部的锁上锁，操作结束后释放锁来完成的。</p>
+<p>而操作时，入队、出队操作分为阻塞和非阻塞，阻塞操作如：当队列为空时若从阻塞队列中获取元素，则会被阻塞一定时间，再获取。这也是阻塞队列名字的来源。</p>
+<p>当当前线程数少于核心线程数时会新增worker线程，以核心线程数为准。</p>
+<p>若任务可以成功入队，则将任务入队，同时检测当前线程池状态，若为不是RUNNING状态则将任务移出队列且执行拒绝策略，若是RUNNING状态，且可用线程数为0则增加线程，以最大线程数为准。</p>
+<p>若入队失败，则尝试创建新的worker，以最大线程数为准，若创建失败执行拒绝策略。</p>
+</blockquote>
+<h3 id="线程池拒绝策略">线程池拒绝策略</h3>
+<blockquote>
+<p>AbortPolicy：丢弃任务并抛出异常。</p>
+<p>CallerRunsPolicy：判断当前线程池是否关闭，若未关闭则直接调用线程的run方法。</p>
+<p>DiscardOldestPolicy：丢弃队列最前的任务，然后重新使用线程池执行被拒绝的任务。</p>
+<p>DiscardPolicy：丢弃任务，什么也不做。</p>
+<p>NewThreadRunsPolicy：创建一个线程去执行被丢弃的任务</p>
+</blockquote>
+<h2 id="juc">JUC</h2>
+<h3 id="threadlocal">ThreadLocal</h3>
+<blockquote>
+<p>线程本地变量，创建一个线程独立的变量。</p>
+<p>底层实现的原理：本质上是一个线程中存在一个ThreadLocalMap，用于存储ThreadLocal，该map的key为创建的ThreadLocal对象，而非Thread本身。</p>
+<p>而<strong>内部存储k-v则是通过继承弱引用的Entry来实现的。</strong></p>
+<p>get和set本质上也是hashmap类似的哈希计算获取对应数组位置存入，但是hashmap使用拉链法解决哈希冲突，ThreadLocal使用线性探测法解决。也存在扩容操作，一次扩容2倍。</p>
+<p>而为什么ThreadLocal中<strong>Entry继承了弱引用WeakReference</strong>？</p>
+<p>​ 因为若Entry也是强引用时，当外部线程不想使用该ThreadLocal时，即使停止引用，由于线程内部Entry是强引用且引用了ThreadLocal，那么ThreadLocal也不会被自动GC。而设置为弱引用，当外部线程不想使用时，GC可以在一次回收时将其回收，而ThreadLocalMap也设计了当发现key为null时清空value的操作。</p>
+<p>为什么会内存泄漏？</p>
+<p>​ 本质上是因为ThreadLocal和线程存活时间基本相同，而使用过程虽然使用弱引用，但是即使经过GC回收，还是会剩下key为null，value不为null的Entry存在于Map中。虽然ThreadLocal在执行操作时也会进行检测当前Entry key为null的位置，将其清除，但是这必须要通过我们主动调用，若没有调用则会一直存在。因此ThreadLocal对象使用结束后需要调用remove方法，使其从map中被移除，避免内存泄漏。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(T value)</span> </span>&#123;</span><br><span class="line">Thread t = Thread.currentThread();</span><br><span class="line">ThreadLocalMap map = getMap(t);</span><br><span class="line"><span class="keyword">if</span> (map != <span class="keyword">null</span>)</span><br><span class="line">  map.set(<span class="keyword">this</span>, value);</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">  createMap(t, value);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> T <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">Thread t = Thread.currentThread();</span><br><span class="line">ThreadLocalMap map = getMap(t);</span><br><span class="line"><span class="keyword">if</span> (map != <span class="keyword">null</span>) &#123;</span><br><span class="line">  ThreadLocalMap.Entry e = map.getEntry(<span class="keyword">this</span>);</span><br><span class="line">  <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">      <span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">      T result = (T)e.value;</span><br><span class="line">      <span class="keyword">return</span> result;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> setInitialValue();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="abstractqueuedsynchronizeraqs">AbstractQueuedSynchronizer(AQS)</h3>
+</blockquote>
+<blockquote>
+<p>AQS继承了AOS(AbstractOwnableSynchronizer)，AOS本质上就实现了对排他线程的保存。</p>
+<p>内部通过state作为是否上锁的判断，当state为0时说明没有线程抢占到锁。可重入锁就是通过不断改变state实现的可重入。</p>
+<p>内部维护了一个waitStatus，共有SIGNAL(-1表示表示后继结点需要unparking)、CANCELLED(1,表示该线程已经取消竞争)、CONDITION(-2节点正在等待)、PROPAGATE(表示头结点将唤醒的动作传播下去)、0(默认)的状态。</p>
+<p>AQS中head结点没有使用，只起到标记的作用。</p>
+<p>本质上只有两个方法acquire和release。如果是共享锁使用acquireShared和releaseShared</p>
+<p>acquire如下：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">acquire</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!tryAcquire(arg) &amp;&amp;</span><br><span class="line">        acquireQueued(addWaiter(Node.EXCLUSIVE), arg))</span><br><span class="line">        selfInterrupt();</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">acquireQueued</span><span class="params">(<span class="keyword">final</span> Node node, <span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">boolean</span> failed = <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">boolean</span> interrupted = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">            <span class="keyword">final</span> Node p = node.predecessor();</span><br><span class="line">            <span class="keyword">if</span> (p == head &amp;&amp; tryAcquire(arg)) &#123;</span><br><span class="line">                setHead(node);</span><br><span class="line">                p.next = <span class="keyword">null</span>; <span class="comment">// help GC</span></span><br><span class="line">                failed = <span class="keyword">false</span>;</span><br><span class="line">                <span class="keyword">return</span> interrupted;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (shouldParkAfterFailedAcquire(p, node) &amp;&amp;</span><br><span class="line">                parkAndCheckInterrupt())</span><br><span class="line">                interrupted = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (failed)</span><br><span class="line">            cancelAcquire(node);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>先尝试获取资源，这里tryAcquire是由子类实现的。</p>
+<p>如果没有成功获取则addWaiter，将线程放入等待队列的尾部，标记为独占模式。</p>
+<p>acquireQueued当当前结点的前一个结点是头结点时会尝试抢占若抢占成功，头结点改为当前结点。抢占失败则将前驱结点的状态设为SIGNAL。</p>
+<p>最后将线程挂起。</p>
+<p>release：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">release</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (tryRelease(arg)) &#123;</span><br><span class="line">        Node h = head;</span><br><span class="line">        <span class="keyword">if</span> (h != <span class="keyword">null</span> &amp;&amp; h.waitStatus != <span class="number">0</span>)</span><br><span class="line">            unparkSuccessor(h);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>先调用子类的tryRelease方法释放状态，当完全释放后，判断当前头结点waitStatus是否不为0，不为0则找出离头结点最近的且不为取消状态的结点进行unpark。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">acquireShared</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (tryAcquireShared(arg) &lt; <span class="number">0</span>)</span><br><span class="line">        doAcquireShared(arg);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">doAcquireShared</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> Node node = addWaiter(Node.SHARED);</span><br><span class="line">    <span class="keyword">boolean</span> failed = <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">boolean</span> interrupted = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">            <span class="keyword">final</span> Node p = node.predecessor();</span><br><span class="line">            <span class="keyword">if</span> (p == head) &#123;</span><br><span class="line">                <span class="keyword">int</span> r = tryAcquireShared(arg);</span><br><span class="line">                <span class="keyword">if</span> (r &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">                    setHeadAndPropagate(node, r);</span><br><span class="line">                    p.next = <span class="keyword">null</span>; <span class="comment">// help GC</span></span><br><span class="line">                    <span class="keyword">if</span> (interrupted)</span><br><span class="line">                        selfInterrupt();</span><br><span class="line">                    failed = <span class="keyword">false</span>;</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (shouldParkAfterFailedAcquire(p, node) &amp;&amp;</span><br><span class="line">                parkAndCheckInterrupt())</span><br><span class="line">                interrupted = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (failed)</span><br><span class="line">            cancelAcquire(node);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>共享锁的话本质上就是将资源数目增多，每次抢占资源时会判断当前资源数目是否大于0，大于0则使用CAS抢占。抢占失败后执行doAcquireShared，类似独占锁的过程。先创建一个SHARABLE节点作为头结点，然后判断当前结点是否为头结点，若是头结点则进行抢占，抢占成功则根据当前资源数来决定是否还要进行抢占。抢占失败则将前驱结点设置的状态设置为SIGNAL。</p>
+</blockquote>
+<h3 id="reentrantlock">ReentrantLock</h3>
+<blockquote>
+<p>可重入锁本质上是针对一个线程的，当一个线程抢占成功锁之后，若线程内部还有进行锁操作，那么会将锁的state值增加，释放时则将该值减少，直到减少到0时又可以被重新抢占。</p>
+<p>释放锁过程也是先判断逐步释放。判断当前释放锁之后锁状态是否为0，若为0则通过unpark方法唤醒队列中的后继线程。</p>
+<p>java实现的锁的方式分为公平锁和非公平锁。</p>
+<p>公平锁和非公平锁的队列都是基于ReentrantLock内部维护的Sync本质是个AQS。</p>
+<p>公平锁的公平性体现在每次重新抢占时会先判断队列中是否存在等待线程，若存在则让队列的线程先抢夺。</p>
+<p>非公平锁非公平体现在每次抢占时不会判断队列中是否存在等待线程，直接进行抢占。</p>
+</blockquote>
+<h2 id="synchronized和lock的区别">Synchronized和Lock的区别</h2>
+<blockquote>
+<p>加锁、解锁：</p>
+<p>​ synchronized：自动加锁解锁。</p>
+<p>​ lock：需要手动加锁、解锁。</p>
+<p>性能上：</p>
+<p>​ synchronized：没有优化前是悲观锁设计思想。性能差</p>
+<p>​ lock：主要是乐观锁设置思想，如reentrantLock主要通过CAS操作抢夺锁。性能好</p>
+<p>用法上：</p>
+<p>​ 基本没区别，但是lock可以实现公平锁。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>面试突击</category>
+      </categories>
+      <tags>
+        <tag>并发</tag>
       </tags>
   </entry>
   <entry>
@@ -3042,6 +3042,114 @@
       </tags>
   </entry>
   <entry>
+    <title>Linux介绍及基本指令</title>
+    <url>/2021/02/20/Linux/Linux%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%9F%BA%E6%9C%AC%E6%8C%87%E4%BB%A4/</url>
+    <content><![CDATA[<h1 id="linux介绍及基本指令">Linux介绍及基本指令</h1>
+<h2 id="linux区别">Linux区别</h2>
+<blockquote>
+<p>Ubantu：分为用户版和服务器版。</p>
+<p>​ 用户版，有着良好的用户界面，有强大的软件支持。</p>
+<p>​ 服务器版比较少用。</p>
+<p>Debian：系统十分稳定，内核非常小。</p>
+<p>RedHat：是一个商用的操作系统，性能非常好，软件支持也非常好。</p>
+<p>Centos：基本上相当于RedHat的复刻版本。免费。</p>
+</blockquote>
+<h2 id="根目录下各目录对应的功能">根目录下各目录对应的功能</h2>
+<h2 id="在linux中获取帮助">在linux中获取帮助</h2>
+<blockquote>
+<p>man 命令名：查看命令的操作说明</p>
+<p>命令行 --help：查看命令的语法</p>
+</blockquote>
+<h2 id="linux基本命令">Linux基本命令</h2>
+<blockquote>
+<p>ls：查看当前目录中所有文件及目录</p>
+<p>ll：查看当前目录内所有文件及目录详细信息。详细信息具体查看方式。以drwxr-xr-x为例(第一个字符拆出，然后每三个字符表示一个内容)：</p>
+<p>d：文件类型，目录。rwx：拥有者权限，可读，可写，可执行。r-x：用户组权限，可读，不可写，可执行。r-x：其他组权限，可读，不可写，可执行。</p>
+<p>具体文件类型有：d：路径。<em>-</em>：文件。 l ：连接(快捷方式)。b：表示可按块随机读写的设备。c：设备文件里的串行端口设备，如键盘、设备。</p>
+<p>表示权限的三个字符可以用0~7的数字表示。如rwx为7，r-x为5。</p>
+<p>ls -al：查看所有文件及目录包括隐藏目录。</p>
+<p>pwd：查看当前所在层级</p>
+<p>echo xxx：打印xxx</p>
+<p>date：查看日期</p>
+<p>cal：查看日历</p>
+<p>grep xxx：用于查看包含xxx的对象。</p>
+<p>curl 网址：向对应网址发出http请求。curl -i www.baidu.com ：向百度首页发出请求，会返回响应头。</p>
+<p>history：查看先前输入过的命令。</p>
+<p>df：查看磁盘使用情况。</p>
+</blockquote>
+<h2 id="文件基本命令">文件基本命令</h2>
+<blockquote>
+<p>vi xxx：打开临时记事本，基本可以认为是创建文件。</p>
+<p>mkdir xxx：创建文件夹</p>
+<p>rm -rf xxx：删除目录。</p>
+<p>cp a b ：把a文件复制到b处</p>
+<p>mv a b ：把a文件移动到b处（也可以当做重命名使用）</p>
+<p>tail -number xx：查看文件最后number行内容(可以用于监控日志使用tail -F/-f xxx)-F，-f分别为追踪文件名和追踪文件索引。</p>
+<p>cat xxx：查看文件内容，往往伴随着grep使用如 cat a.txt | grep "a:xxx"。</p>
+<p>less xxx：查看文件一页的内容。</p>
+<p>find xxx：查找文件(可以查找所有文件)。</p>
+<p>whereis xx：查找命令所在目录(只能查找二进制类的文件)。</p>
+<p>which xxx：在PATH变量指定的路径中搜索指定的系统命令的位置。</p>
+<p>sh xxx.sh：执行shell命令。这种执行sh文件不需要本身具有权限。</p>
+<p>path/xxx.sh：执行shell命令。sh文件本身需要有权限。(如./xxx.sh其中.表示当前目录)</p>
+</blockquote>
+<h2 id="文件解压缩">文件解压缩</h2>
+<blockquote>
+<p>zip -r 压缩后路径加名字 需要压缩的文件：压缩，如zip -r a.zip a.txt。这个命令需要yum install zip</p>
+<p>unzip -d 解压缩到的路径 解压缩的包：解压缩，如unzip -d . a.zip。这个命令需要yum install unzip。</p>
+<p>tar -cvf 压缩后路径加名字 需要压缩的文件：压缩，如tar -cvf a.txt。</p>
+<p>tar -zcvf 压缩后路径加名字 需要压缩的文件：压缩，如tar -zcvf a.txt。压缩后占的空间更少</p>
+<p>tar -xvf 解压缩到的路径 解压缩的包：解压缩，如tar -xvf a.txt。</p>
+<p>tar -zxvf 解压缩到的路径 解压缩的包：压缩，如tar -zxvf a.txt。</p>
+<p>tar的参数：c：表示create，即压缩，z：约等于zip，即打包后空间会更小，v：压缩后展示压缩包中文件名字。f：表示结束。x：extract，即解压缩。</p>
+<p>b：表示查看压缩包内容。其中c、x、b同时只能存在一个。</p>
+</blockquote>
+<h2 id="文件传输">文件传输</h2>
+<blockquote>
+<p>scp 目录加文件名 用户名@IP地址:目录加文件名：将文件传输利用网络传输到另一个服务器。如scp ./a.txt root@10.0.2.6:~/b.txt</p>
+</blockquote>
+<h2 id="进程管理命令">进程管理命令</h2>
+<blockquote>
+<p>top ：查看当前系统使用情况。</p>
+<p>ps：查看进程情况。</p>
+<p>ps aux：查看所有正在执行的进程。经常和grep配合使用。如ps aux | grep "top"</p>
+<p>lsof -i:port ：根据端口号查看进程。需要yum install lsof</p>
+<p>kill 进程号：杀死进程。</p>
+<p>kill -9 进程号：强制杀死进程。</p>
+<p>service xxx start：启动服务。</p>
+<p>service xxxx stop：关闭服务。</p>
+</blockquote>
+<h2 id="权限管理命令">权限管理命令</h2>
+<blockquote>
+<p>chmod xxx aaa：设置aaa的权限为xxx。第一个x为拥有者权限，第二个x为用户组权限，第三个x为其他组权限。如chmod 777 a.txt：表示将a.txt的权限均设为可读、可写、可执行。</p>
+</blockquote>
+<h2 id="软件安装命令">软件安装命令</h2>
+<blockquote>
+<p>yum install xxxx：安装xxxx</p>
+<p>yum install ifconfig -y：安装时自动同意。</p>
+</blockquote>
+<h2 id="安全相关命令">安全相关命令</h2>
+<blockquote>
+<p>systemctl disable firewalld ：关闭防火墙。</p>
+</blockquote>
+<h2 id="关机命令">关机命令</h2>
+<blockquote>
+<p>shutdown：关机</p>
+<p>reboot：重启</p>
+<p>poweroff：关机</p>
+<p>halt：进入系统停止的模式，屏幕可能保留一些信息，取决于电源管理模式。</p>
+<p>systemctl suspend：休眠</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>操作系统</category>
+      </categories>
+      <tags>
+        <tag>Linux指令</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>2.垃圾收集</title>
     <url>/2021/02/20/JVMKnowledge/2.%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86/</url>
     <content><![CDATA[<h1 id="垃圾收集">垃圾收集</h1>
@@ -3444,6 +3552,83 @@
       </tags>
   </entry>
   <entry>
+    <title>多线程相关</title>
+    <url>/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/</url>
+    <content><![CDATA[<h1 id="多线程">多线程</h1>
+<h2 id="进程和线程">进程和线程</h2>
+<blockquote>
+<p>进程是执行程序的一次执行过程，是一个动态的概念。是系统资源分配的单位。</p>
+<p>通常一个进程中包含多个线程，一个进程至少含一个线程。线程是CPU调度和执行的单位。</p>
+</blockquote>
+<h3 id="java创建线程的方式">JAVA创建线程的方式</h3>
+<blockquote>
+<ol type="1">
+<li>继承Thread类，重写run方法。调用是使用start方法调用，若使用run方法调用则变为单线程。</li>
+<li>实现runnable接口，重写run方法，执行线程需丢入runnable接口实现类，调用start方法。(避免使用继承)</li>
+<li>实现callable接口，需要返回值类型，重写call方法，需要抛出异常。(可以返回结果，可以抛出异常)<img src="/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/实现callable.png" alt="实现callable"></li>
+</ol>
+</blockquote>
+<h2 id="java线程的状态">Java线程的状态</h2>
+<blockquote>
+<p>NEW、RUNNABLE、BLOCKED、WAITING、TIMED_WAITING、TERMINATED</p>
+<p>NEW：线程还没有启动。</p>
+<p>RUNNABLE：线程已经在jvm中运行了，但可能还在等待操作系统的处理器之类的资源。</p>
+<p>BLOCKED：线程等待monitor lock。</p>
+<p>WAITING：正在等待另一个线程执行的状态。</p>
+<p>TIMED_WAITING：有着指定特定等待时间等待另一个线程执行的状态。</p>
+<p>TERMINATED：线程终止，线程已经结束执行。</p>
+<p>线程分为用户线程和守护线程(Daemon)，虚拟机必须确保用户线程执行完毕，虚拟机不用等待守护线程执行完毕。可以通过调用线程的setDaemon(true)，将某个线程变为守护线程</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>并发</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Dubbo简单介绍</title>
+    <url>/2021/02/20/codeAnalyse/Dubbo/</url>
+    <content><![CDATA[<h1 id="dubbo">Dubbo</h1>
+<h2 id="rmi-和-rpc">RMI 和 RPC</h2>
+<blockquote>
+<p>RMI：远程方法调用，是java自带的API可以实现的，依赖JVM。客户端将要调用的方法和参数打包成辅助对象，通过网络socket，发送给服务端辅助对象，服务端接收后进行解包，找到真正被调用的方法，执行这个方法将执行结果，依次返回。服务端辅助对象进行打包，然后客户端辅助对象进行解包，结果返回给真正的调用者。</p>
+<p>IPC：进程间通信。进程是计算机系统资源分配的最小单位，每个进程都是资源隔离的。</p>
+<p>LPC：本地过程调用。</p>
+<p>RPC：远程过程调用。</p>
+</blockquote>
+<h2 id="常用rpc框架">常用RPC框架</h2>
+<h3 id="dubbo-1">Dubbo</h3>
+<blockquote>
+<p>阿里开发，基于Spring和Netty，是当前使用最广泛的RPC框架。</p>
+</blockquote>
+<h3 id="brpc">BRPC</h3>
+<blockquote>
+<p>百度开发，"baidu-rpc"，支持多种协议，性能优良。</p>
+</blockquote>
+<h3 id="grpc">GRPC</h3>
+<blockquote>
+<p>谷歌开发，基于Netty，服务于TensorFlow的底层通信。</p>
+</blockquote>
+<h3 id="thrift">Thrift</h3>
+<blockquote>
+<p>Facebook开发。</p>
+</blockquote>
+<h2 id="注册中心---zookeeper">注册中心 - Zookeeper</h2>
+]]></content>
+      <categories>
+        <category>框架入门</category>
+      </categories>
+      <tags>
+        <tag>并发</tag>
+        <tag>Dubbo</tag>
+        <tag>分布式</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>并发相关内容</title>
     <url>/2021/02/20/JavaBasicKnowledge/%E5%B9%B6%E5%8F%91%E7%9B%B8%E5%85%B3/</url>
     <content><![CDATA[<h1 id="并发相关">并发相关</h1>
@@ -3577,191 +3762,6 @@
       <tags>
         <tag>Java</tag>
         <tag>并发</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>多线程相关</title>
-    <url>/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/</url>
-    <content><![CDATA[<h1 id="多线程">多线程</h1>
-<h2 id="进程和线程">进程和线程</h2>
-<blockquote>
-<p>进程是执行程序的一次执行过程，是一个动态的概念。是系统资源分配的单位。</p>
-<p>通常一个进程中包含多个线程，一个进程至少含一个线程。线程是CPU调度和执行的单位。</p>
-</blockquote>
-<h3 id="java创建线程的方式">JAVA创建线程的方式</h3>
-<blockquote>
-<ol type="1">
-<li>继承Thread类，重写run方法。调用是使用start方法调用，若使用run方法调用则变为单线程。</li>
-<li>实现runnable接口，重写run方法，执行线程需丢入runnable接口实现类，调用start方法。(避免使用继承)</li>
-<li>实现callable接口，需要返回值类型，重写call方法，需要抛出异常。(可以返回结果，可以抛出异常)<img src="/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/实现callable.png" alt="实现callable"></li>
-</ol>
-</blockquote>
-<h2 id="java线程的状态">Java线程的状态</h2>
-<blockquote>
-<p>NEW、RUNNABLE、BLOCKED、WAITING、TIMED_WAITING、TERMINATED</p>
-<p>NEW：线程还没有启动。</p>
-<p>RUNNABLE：线程已经在jvm中运行了，但可能还在等待操作系统的处理器之类的资源。</p>
-<p>BLOCKED：线程等待monitor lock。</p>
-<p>WAITING：正在等待另一个线程执行的状态。</p>
-<p>TIMED_WAITING：有着指定特定等待时间等待另一个线程执行的状态。</p>
-<p>TERMINATED：线程终止，线程已经结束执行。</p>
-<p>线程分为用户线程和守护线程(Daemon)，虚拟机必须确保用户线程执行完毕，虚拟机不用等待守护线程执行完毕。可以通过调用线程的setDaemon(true)，将某个线程变为守护线程</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-        <tag>并发</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Linux介绍及基本指令</title>
-    <url>/2021/02/20/Linux/Linux%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%9F%BA%E6%9C%AC%E6%8C%87%E4%BB%A4/</url>
-    <content><![CDATA[<h1 id="linux介绍及基本指令">Linux介绍及基本指令</h1>
-<h2 id="linux区别">Linux区别</h2>
-<blockquote>
-<p>Ubantu：分为用户版和服务器版。</p>
-<p>​ 用户版，有着良好的用户界面，有强大的软件支持。</p>
-<p>​ 服务器版比较少用。</p>
-<p>Debian：系统十分稳定，内核非常小。</p>
-<p>RedHat：是一个商用的操作系统，性能非常好，软件支持也非常好。</p>
-<p>Centos：基本上相当于RedHat的复刻版本。免费。</p>
-</blockquote>
-<h2 id="根目录下各目录对应的功能">根目录下各目录对应的功能</h2>
-<h2 id="在linux中获取帮助">在linux中获取帮助</h2>
-<blockquote>
-<p>man 命令名：查看命令的操作说明</p>
-<p>命令行 --help：查看命令的语法</p>
-</blockquote>
-<h2 id="linux基本命令">Linux基本命令</h2>
-<blockquote>
-<p>ls：查看当前目录中所有文件及目录</p>
-<p>ll：查看当前目录内所有文件及目录详细信息。详细信息具体查看方式。以drwxr-xr-x为例(第一个字符拆出，然后每三个字符表示一个内容)：</p>
-<p>d：文件类型，目录。rwx：拥有者权限，可读，可写，可执行。r-x：用户组权限，可读，不可写，可执行。r-x：其他组权限，可读，不可写，可执行。</p>
-<p>具体文件类型有：d：路径。<em>-</em>：文件。 l ：连接(快捷方式)。b：表示可按块随机读写的设备。c：设备文件里的串行端口设备，如键盘、设备。</p>
-<p>表示权限的三个字符可以用0~7的数字表示。如rwx为7，r-x为5。</p>
-<p>ls -al：查看所有文件及目录包括隐藏目录。</p>
-<p>pwd：查看当前所在层级</p>
-<p>echo xxx：打印xxx</p>
-<p>date：查看日期</p>
-<p>cal：查看日历</p>
-<p>grep xxx：用于查看包含xxx的对象。</p>
-<p>curl 网址：向对应网址发出http请求。curl -i www.baidu.com ：向百度首页发出请求，会返回响应头。</p>
-<p>history：查看先前输入过的命令。</p>
-<p>df：查看磁盘使用情况。</p>
-</blockquote>
-<h2 id="文件基本命令">文件基本命令</h2>
-<blockquote>
-<p>vi xxx：打开临时记事本，基本可以认为是创建文件。</p>
-<p>mkdir xxx：创建文件夹</p>
-<p>rm -rf xxx：删除目录。</p>
-<p>cp a b ：把a文件复制到b处</p>
-<p>mv a b ：把a文件移动到b处（也可以当做重命名使用）</p>
-<p>tail -number xx：查看文件最后number行内容(可以用于监控日志使用tail -F/-f xxx)-F，-f分别为追踪文件名和追踪文件索引。</p>
-<p>cat xxx：查看文件内容，往往伴随着grep使用如 cat a.txt | grep "a:xxx"。</p>
-<p>less xxx：查看文件一页的内容。</p>
-<p>find xxx：查找文件(可以查找所有文件)。</p>
-<p>whereis xx：查找命令所在目录(只能查找二进制类的文件)。</p>
-<p>which xxx：在PATH变量指定的路径中搜索指定的系统命令的位置。</p>
-<p>sh xxx.sh：执行shell命令。这种执行sh文件不需要本身具有权限。</p>
-<p>path/xxx.sh：执行shell命令。sh文件本身需要有权限。(如./xxx.sh其中.表示当前目录)</p>
-</blockquote>
-<h2 id="文件解压缩">文件解压缩</h2>
-<blockquote>
-<p>zip -r 压缩后路径加名字 需要压缩的文件：压缩，如zip -r a.zip a.txt。这个命令需要yum install zip</p>
-<p>unzip -d 解压缩到的路径 解压缩的包：解压缩，如unzip -d . a.zip。这个命令需要yum install unzip。</p>
-<p>tar -cvf 压缩后路径加名字 需要压缩的文件：压缩，如tar -cvf a.txt。</p>
-<p>tar -zcvf 压缩后路径加名字 需要压缩的文件：压缩，如tar -zcvf a.txt。压缩后占的空间更少</p>
-<p>tar -xvf 解压缩到的路径 解压缩的包：解压缩，如tar -xvf a.txt。</p>
-<p>tar -zxvf 解压缩到的路径 解压缩的包：压缩，如tar -zxvf a.txt。</p>
-<p>tar的参数：c：表示create，即压缩，z：约等于zip，即打包后空间会更小，v：压缩后展示压缩包中文件名字。f：表示结束。x：extract，即解压缩。</p>
-<p>b：表示查看压缩包内容。其中c、x、b同时只能存在一个。</p>
-</blockquote>
-<h2 id="文件传输">文件传输</h2>
-<blockquote>
-<p>scp 目录加文件名 用户名@IP地址:目录加文件名：将文件传输利用网络传输到另一个服务器。如scp ./a.txt root@10.0.2.6:~/b.txt</p>
-</blockquote>
-<h2 id="进程管理命令">进程管理命令</h2>
-<blockquote>
-<p>top ：查看当前系统使用情况。</p>
-<p>ps：查看进程情况。</p>
-<p>ps aux：查看所有正在执行的进程。经常和grep配合使用。如ps aux | grep "top"</p>
-<p>lsof -i:port ：根据端口号查看进程。需要yum install lsof</p>
-<p>kill 进程号：杀死进程。</p>
-<p>kill -9 进程号：强制杀死进程。</p>
-<p>service xxx start：启动服务。</p>
-<p>service xxxx stop：关闭服务。</p>
-</blockquote>
-<h2 id="权限管理命令">权限管理命令</h2>
-<blockquote>
-<p>chmod xxx aaa：设置aaa的权限为xxx。第一个x为拥有者权限，第二个x为用户组权限，第三个x为其他组权限。如chmod 777 a.txt：表示将a.txt的权限均设为可读、可写、可执行。</p>
-</blockquote>
-<h2 id="软件安装命令">软件安装命令</h2>
-<blockquote>
-<p>yum install xxxx：安装xxxx</p>
-<p>yum install ifconfig -y：安装时自动同意。</p>
-</blockquote>
-<h2 id="安全相关命令">安全相关命令</h2>
-<blockquote>
-<p>systemctl disable firewalld ：关闭防火墙。</p>
-</blockquote>
-<h2 id="关机命令">关机命令</h2>
-<blockquote>
-<p>shutdown：关机</p>
-<p>reboot：重启</p>
-<p>poweroff：关机</p>
-<p>halt：进入系统停止的模式，屏幕可能保留一些信息，取决于电源管理模式。</p>
-<p>systemctl suspend：休眠</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>操作系统</category>
-      </categories>
-      <tags>
-        <tag>Linux指令</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Dubbo简单介绍</title>
-    <url>/2021/02/20/codeAnalyse/Dubbo/</url>
-    <content><![CDATA[<h1 id="dubbo">Dubbo</h1>
-<h2 id="rmi-和-rpc">RMI 和 RPC</h2>
-<blockquote>
-<p>RMI：远程方法调用，是java自带的API可以实现的，依赖JVM。客户端将要调用的方法和参数打包成辅助对象，通过网络socket，发送给服务端辅助对象，服务端接收后进行解包，找到真正被调用的方法，执行这个方法将执行结果，依次返回。服务端辅助对象进行打包，然后客户端辅助对象进行解包，结果返回给真正的调用者。</p>
-<p>IPC：进程间通信。进程是计算机系统资源分配的最小单位，每个进程都是资源隔离的。</p>
-<p>LPC：本地过程调用。</p>
-<p>RPC：远程过程调用。</p>
-</blockquote>
-<h2 id="常用rpc框架">常用RPC框架</h2>
-<h3 id="dubbo-1">Dubbo</h3>
-<blockquote>
-<p>阿里开发，基于Spring和Netty，是当前使用最广泛的RPC框架。</p>
-</blockquote>
-<h3 id="brpc">BRPC</h3>
-<blockquote>
-<p>百度开发，"baidu-rpc"，支持多种协议，性能优良。</p>
-</blockquote>
-<h3 id="grpc">GRPC</h3>
-<blockquote>
-<p>谷歌开发，基于Netty，服务于TensorFlow的底层通信。</p>
-</blockquote>
-<h3 id="thrift">Thrift</h3>
-<blockquote>
-<p>Facebook开发。</p>
-</blockquote>
-<h2 id="注册中心---zookeeper">注册中心 - Zookeeper</h2>
-]]></content>
-      <categories>
-        <category>框架入门</category>
-      </categories>
-      <tags>
-        <tag>并发</tag>
-        <tag>Dubbo</tag>
-        <tag>分布式</tag>
       </tags>
   </entry>
   <entry>
