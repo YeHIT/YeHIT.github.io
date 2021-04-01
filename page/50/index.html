@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/designPattern/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/designPattern/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">常用设计模式介绍</a>
+          <a href="/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" class="post-title-link" itemprop="url">多线程相关</a>
         </h2>
 
         <div class="post-meta-container">
@@ -288,7 +288,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：17:13:04" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：17:12:35" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -296,11 +296,11 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83/" itemprop="url" rel="index"><span itemprop="name">代码规范</span></a>
+          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
         </span>
           ，
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
         </span>
     </span>
 
@@ -312,7 +312,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>804</span>
+      <span>573</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -330,71 +330,30 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="设计模式">设计模式</h1>
-<h2 id="策略模式">策略模式</h2>
+          <h1 id="多线程">多线程</h1>
+<h2 id="进程和线程">进程和线程</h2>
 <blockquote>
-<p>将行为抽象，通过子类实现不同的行为来将某个对象的行为从父类抽取出，通过组合的方式来消除耦合。</p>
+<p>进程是执行程序的一次执行过程，是一个动态的概念。是系统资源分配的单位。</p>
+<p>通常一个进程中包含多个线程，一个进程至少含一个线程。线程是CPU调度和执行的单位。</p>
 </blockquote>
-<h2 id="命令模式">命令模式</h2>
+<h3 id="java创建线程的方式">JAVA创建线程的方式</h3>
 <blockquote>
-<p>也是将行为抽象，但是目的是将行为和行为执行者二者解耦，通过将行为和行为执行者组合的方式，加上控制器控制，来便于拓展。</p>
+<ol type="1">
+<li>继承Thread类，重写run方法。调用是使用start方法调用，若使用run方法调用则变为单线程。</li>
+<li>实现runnable接口，重写run方法，执行线程需丢入runnable接口实现类，调用start方法。(避免使用继承)</li>
+<li>实现callable接口，需要返回值类型，重写call方法，需要抛出异常。(可以返回结果，可以抛出异常)<img src="/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/实现callable.png" alt="实现callable"></li>
+</ol>
 </blockquote>
-<h2 id="工厂模式">工厂模式</h2>
+<h2 id="java线程的状态">Java线程的状态</h2>
 <blockquote>
-<p>简单工厂即在类中直接添加工厂对象，在工厂对象中直接创建实例。</p>
-<p>工厂模式：将工厂的创建实例方法抽象化，通过子类继承并重写对应方法的方式完成。</p>
-<p>抽象工厂模式：将一系列创建实例的方法抽象化，形成接口，子类实现该接口，有点类似工厂模式。</p>
-</blockquote>
-<h2 id="单例模式">单例模式</h2>
-<blockquote>
-<p>即让一个类只能有一个对象实例。</p>
-<p>double check方式实现比较好。</p>
-<figure>
-<img src="/2021/02/20/designPattern/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/单例模式.png" alt="单例模式"><figcaption aria-hidden="true">单例模式</figcaption>
-</figure>
-</blockquote>
-<h2 id="装饰者模式">装饰者模式</h2>
-<blockquote>
-<p>子类继承分类时，不是将父类的方法直接重写，而是在父类方法的基础上添加自己的功能。</p>
-</blockquote>
-<h2 id="观察者模式">观察者模式</h2>
-<blockquote>
-<p>分为主题(observable)和观察者(observer)两个模块，根主题是一种接口/类，提供添加观察者、移除观察者、通知观察者等方法，观察者则需要实现一个接口表示它为观察者，通常要实现update方法。主题的数据改变时可以通知观察者，数据可以有主题直接推送给观察者和观察者向主题拉取数据两个方式。</p>
-</blockquote>
-<h2 id="适配器模式">适配器模式</h2>
-<blockquote>
-<p>将一个类的接口转换成另一个接口，让本来不兼容的类可以合作无间。</p>
-</blockquote>
-<h2 id="外观模式">外观模式</h2>
-<blockquote>
-<p>将多个接口简化为一个接口</p>
-</blockquote>
-<h2 id="模板方法模式">模板方法模式</h2>
-<blockquote>
-<p>将算法分抽象为许多步骤，将统一的流程由父类实现，子类实现具体的不同部分。</p>
-</blockquote>
-<h2 id="迭代器模式">迭代器模式</h2>
-<blockquote>
-<p>给不同集合一种相同的遍历方法。</p>
-</blockquote>
-<h2 id="组合模式">组合模式</h2>
-<blockquote>
-<p>通过一致的方式处理个别对象及对象的组合，如对树和树的叶子节点采用统一的抽象方式。</p>
-</blockquote>
-<h2 id="状态模式">状态模式</h2>
-<blockquote>
-<p>状态机，将状态进行抽象，具体的状态类则实现自己具体的行为，状态类自己控制状态的转化。</p>
-</blockquote>
-<h2 id="代理模式">代理模式</h2>
-<blockquote>
-<p>给客户一个某种对象的代理，该代理对象控制对原对象的引用，目的是控制客户对对象的访问。</p>
-<p>动态代理、静态代理、远程代理等。</p>
-<p>静态代理</p>
-<p>动态代理：JDK代理和cglib代理。JDK代理需要被代理类实现接口，而cglib没有这个限制</p>
-</blockquote>
-<h2 id="mvc">MVC</h2>
-<blockquote>
-<p>模型、视图、控制器。</p>
+<p>NEW、RUNNABLE、BLOCKED、WAITING、TIMED_WAITING、TERMINATED</p>
+<p>NEW：线程还没有启动。</p>
+<p>RUNNABLE：线程已经在jvm中运行了，但可能还在等待操作系统的处理器之类的资源。</p>
+<p>BLOCKED：线程等待monitor lock。</p>
+<p>WAITING：正在等待另一个线程执行的状态。</p>
+<p>TIMED_WAITING：有着指定特定等待时间等待另一个线程执行的状态。</p>
+<p>TERMINATED：线程终止，线程已经结束执行。</p>
+<p>线程分为用户线程和守护线程(Daemon)，虚拟机必须确保用户线程执行完毕，虚拟机不用等待守护线程执行完毕。可以通过调用线程的setDaemon(true)，将某个线程变为守护线程</p>
 </blockquote>
 
       
