@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/26/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/%E5%88%86%E5%B8%83%E5%BC%8F%E7%AA%81%E5%87%BB/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/26/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/26/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/%E5%88%86%E5%B8%83%E5%BC%8F%E7%AA%81%E5%87%BB/" class="post-title-link" itemprop="url">分布式基础</a>
+          <a href="/2021/03/26/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80/" class="post-title-link" itemprop="url">分布式基础</a>
         </h2>
 
         <div class="post-meta-container">
@@ -286,10 +286,16 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2021-03-26 00:00:00 / 修改时间：20:53:24" itemprop="dateCreated datePublished" datetime="2021-03-26T00:00:00+08:00">2021-03-26</time>
+      <time title="创建时间：2021-03-26 00:00:00" itemprop="dateCreated datePublished" datetime="2021-03-26T00:00:00+08:00">2021-03-26</time>
     </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-04-01 17:51:23" itemprop="dateModified" datetime="2021-04-01T17:51:23+08:00">2021-04-01</time>
+      </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
@@ -326,7 +332,7 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="分布式突击">分布式突击</h1>
+          <h1 id="分布式基础">分布式基础</h1>
 <h2 id="分布式怎么进行数据切分访问">分布式怎么进行数据切分访问？</h2>
 <blockquote>
 <p>显然分布式服务中，必然存在服务集群，一般而言是怎么访问这些集群的呢？往往使用hash来将用户划分到不同的区域，以简单的hash函数为例：</p>
@@ -334,7 +340,7 @@
 <p><strong>一致性hash算法</strong></p>
 <p>​ 即使用2^32作为取模的数，将整个区域视为一个圆环，先对服务器进行哈希处理，让其发布在圆环的不同位置，然后当有请求到来时，对请求进行哈希处理，此时会发现请求也落在圆环的某个位置，然后沿顺时针查找该位置离哪个服务器最近，即可找到对应提供服务的服务器。此时若需要添加服务器，只需往圆环上添加新位置即可，只需局部调整，无须全部更新。</p>
 <figure>
-<img src="/2021/03/26/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/%E5%88%86%E5%B8%83%E5%BC%8F%E7%AA%81%E5%87%BB/一致性哈希环.png" alt="一致性哈希环"><figcaption aria-hidden="true">一致性哈希环</figcaption>
+<img src="/2021/03/26/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80/一致性哈希环.png" alt="一致性哈希环"><figcaption aria-hidden="true">一致性哈希环</figcaption>
 </figure>
 <p>​ 当然这样有时会导致某些数据累积在同一台服务器上，一致性hash为了解决这个问题引入了虚拟节点机制，即用一个服务器结点计算多次哈希，在每个计算位置放置服务器结点，以保障数据可以比较合理的分布。</p>
 <p>一些分布式集群使用一致性hash(或类似原理)的场景：</p>
@@ -418,7 +424,7 @@
 <p>​ Leader收到数据操作请求时，先产生对应log，然后把log的请求发送给各个Follower。每个follower收到请求后会选择是否听从命令，听从返回true，反对返回false。当超过半数的follower成功写log，leader则开始第二阶段的提交，正式写入数据，然后也给其follower发送请求，当超过半数follower成功写入数据，该请求才正式完成。若这两个步骤其中某个步骤没有超过半数的follower成功执行，则这个事务不成功。</p>
 <p><strong>选主流程</strong>：</p>
 <figure>
-<img src="/2021/03/26/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/%E5%88%86%E5%B8%83%E5%BC%8F%E7%AA%81%E5%87%BB/Users\SmallYe\Desktop\blog\source_posts\面试突击\分布式突击\raft选主.png" alt="raft选主"><figcaption aria-hidden="true">raft选主</figcaption>
+<img src="/2021/03/26/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80/raft选主.png" alt="raft选主"><figcaption aria-hidden="true">raft选主</figcaption>
 </figure>
 <p>初始化时各个结点均为Follower，每个Follower内部维护了一个随机的timer。timer时间到了没有人主动联系时就会变为candidate。</p>
 <p>当出现candidate节点时，candidate节点会发送请求给follower节点，每个follower节点只能投一张票。</p>

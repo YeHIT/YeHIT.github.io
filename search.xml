@@ -258,8 +258,8 @@
   </entry>
   <entry>
     <title>分布式基础</title>
-    <url>/2021/03/26/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/%E5%88%86%E5%B8%83%E5%BC%8F%E7%AA%81%E5%87%BB/</url>
-    <content><![CDATA[<h1 id="分布式突击">分布式突击</h1>
+    <url>/2021/03/26/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80/</url>
+    <content><![CDATA[<h1 id="分布式基础">分布式基础</h1>
 <h2 id="分布式怎么进行数据切分访问">分布式怎么进行数据切分访问？</h2>
 <blockquote>
 <p>显然分布式服务中，必然存在服务集群，一般而言是怎么访问这些集群的呢？往往使用hash来将用户划分到不同的区域，以简单的hash函数为例：</p>
@@ -267,7 +267,7 @@
 <p><strong>一致性hash算法</strong></p>
 <p>​ 即使用2^32作为取模的数，将整个区域视为一个圆环，先对服务器进行哈希处理，让其发布在圆环的不同位置，然后当有请求到来时，对请求进行哈希处理，此时会发现请求也落在圆环的某个位置，然后沿顺时针查找该位置离哪个服务器最近，即可找到对应提供服务的服务器。此时若需要添加服务器，只需往圆环上添加新位置即可，只需局部调整，无须全部更新。</p>
 <figure>
-<img src="/2021/03/26/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/%E5%88%86%E5%B8%83%E5%BC%8F%E7%AA%81%E5%87%BB/一致性哈希环.png" alt="一致性哈希环"><figcaption aria-hidden="true">一致性哈希环</figcaption>
+<img src="/2021/03/26/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80/一致性哈希环.png" alt="一致性哈希环"><figcaption aria-hidden="true">一致性哈希环</figcaption>
 </figure>
 <p>​ 当然这样有时会导致某些数据累积在同一台服务器上，一致性hash为了解决这个问题引入了虚拟节点机制，即用一个服务器结点计算多次哈希，在每个计算位置放置服务器结点，以保障数据可以比较合理的分布。</p>
 <p>一些分布式集群使用一致性hash(或类似原理)的场景：</p>
@@ -351,7 +351,7 @@
 <p>​ Leader收到数据操作请求时，先产生对应log，然后把log的请求发送给各个Follower。每个follower收到请求后会选择是否听从命令，听从返回true，反对返回false。当超过半数的follower成功写log，leader则开始第二阶段的提交，正式写入数据，然后也给其follower发送请求，当超过半数follower成功写入数据，该请求才正式完成。若这两个步骤其中某个步骤没有超过半数的follower成功执行，则这个事务不成功。</p>
 <p><strong>选主流程</strong>：</p>
 <figure>
-<img src="/2021/03/26/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/%E5%88%86%E5%B8%83%E5%BC%8F%E7%AA%81%E5%87%BB/Users\SmallYe\Desktop\blog\source_posts\面试突击\分布式突击\raft选主.png" alt="raft选主"><figcaption aria-hidden="true">raft选主</figcaption>
+<img src="/2021/03/26/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80/raft选主.png" alt="raft选主"><figcaption aria-hidden="true">raft选主</figcaption>
 </figure>
 <p>初始化时各个结点均为Follower，每个Follower内部维护了一个随机的timer。timer时间到了没有人主动联系时就会变为candidate。</p>
 <p>当出现candidate节点时，candidate节点会发送请求给follower节点，每个follower节点只能投一张票。</p>
@@ -2952,125 +2952,6 @@
       </tags>
   </entry>
   <entry>
-    <title>1.JAVA内存管理</title>
-    <url>/2021/02/20/JVMKnowledge/1.JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/</url>
-    <content><![CDATA[<h1 id="java内存管理">JAVA内存管理</h1>
-<h2 id="java内存区域">Java内存区域</h2>
-<h3 id="总览">总览</h3>
-<blockquote>
-<p>堆+栈+程序计数器</p>
-<p>堆: 方法区 + 堆</p>
-<p>栈: 虚拟机栈 + 本地方法栈</p>
-</blockquote>
-<figure>
-<img src="/2021/02/20/JVMKnowledge/1.JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Java内存区域.png" alt="Java内存区域"><figcaption aria-hidden="true">Java内存区域</figcaption>
-</figure>
-<h3 id="各部分的作用">各部分的作用</h3>
-<h4 id="程序计数器">程序计数器</h4>
-<blockquote>
-<p>是当前线程所执行的字节码的行号指示器。各线程均有一个程序计数器。如果执行的是Java方法，则程序计数器记录的值为正在执行的虚拟机字节码的地址。若执行的是本地方法，则此时程序计数器的值为undefined。该区域没有规定任何OutOfMemoryError情况。</p>
-</blockquote>
-<h4 id="java虚拟机栈">Java虚拟机栈</h4>
-<blockquote>
-<p>生命周期和线程一致，且是线程私有的。当每个方法被执行时，Java虚拟机栈就会创建一个栈帧来保存局部变量表、操作数栈、动态连接、方法出口等信息。每个方法从被调用到执行完毕的过程，对应着一个栈帧在虚拟机栈中入栈到出栈的过程。</p>
-<p>局部变量表用于存储各种Java虚拟机的<strong>基本数据类型</strong>、<strong>对象引用</strong>(reference类型，不等同与对象本身，可以是对象起始地址的引用指针，也可以是指向一个代表对象句柄或其他与此对象有关的位置)和<strong>returnAdress类型</strong>(指向了一条字节码指令的地址)。在虚拟机栈中，这些数据类型都是用变量槽来表示的。其中64位的long和double占两个变量槽，其他的均只占一个变量槽。局部变量表的大小在<strong>编译期间</strong>就已经完成，故方法所需栈帧分配的局部变量表空间是完全确定的，且不会发生改变。这里空间是指变量槽数，不是具体字节/比特数。</p>
-<p>当调用的方法是非static方法时，局部变量表中第0索引的Slot变量槽默认是this关键字指向的对象。</p>
-<p>可能出现的异常：</p>
-<p>​ StackOverflowError：线程请求栈深度超过虚拟机允许的深度。</p>
-<p>​ OutOfMemoryError：当虚拟机栈容量可以动态拓展时，不能申请到足够的内存。</p>
-</blockquote>
-<h4 id="本地方法栈">本地方法栈</h4>
-<blockquote>
-<p>和虚拟机栈类似，虚拟机栈为虚拟机执行Java方法服务，而本地方法栈是为虚拟机使用到的本地方法服务。</p>
-</blockquote>
-<h4 id="java堆">Java堆</h4>
-<blockquote>
-<p>Java堆是虚拟机所管理的内存中最大的一块。它是被所有线程共享的一块内存区域，在虚拟机启动时创建。java堆的唯一目的就是存放对象实例。它也是垃圾收集器管理的内存区域。大部分垃圾收集器都是基于分代收集理论设计的。</p>
-<p>从分配内存的角度看，所有线程共享的Java堆可以划分出多个线程私有的分配缓冲区。</p>
-<p>可能出现的异常：</p>
-<p>​ OutOfMemoryError：Java堆中没有内存完成实例分配，且堆无法再拓展。</p>
-</blockquote>
-<h4 id="方法区">方法区</h4>
-<blockquote>
-<p>HotSpot：JDK8后使用在本地内存中实现的元空间来代替JDK7中永久代还剩余的内容，JDK6之前使用永久代来实现方法区。</p>
-<p>方法区是各个线程共享的内存区域，用于存储已被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等数据。</p>
-<p>这个区域的回收目标主要是针对常量池的回收和对类型的卸载。</p>
-<p>可能出现的异常：</p>
-<p>​ OutOfMemoryError：方法区无法满足新的内存分配需求。</p>
-</blockquote>
-<h5 id="运行时常量池">运行时常量池</h5>
-<blockquote>
-<p>运行时常量池是方法区的一部分。该部分用于存放编译器生成的各种字面量与符号引用即常量池表。</p>
-</blockquote>
-<h4 id="直接内存">直接内存</h4>
-<blockquote>
-<p>直接内存不是虚拟机运行时数据区的一部分，也不是Java虚拟机规范中定义的内存区域。</p>
-<p>如JDK1.4引入的NIO可以使用Native函数分配堆外内存，然后通过一个存储在Java堆里的DirectByteBuffer对象作为这块内存的引用进行操作。</p>
-<p>本机的直接内存的分配不会受到Java堆大小的限制，但是会受到本机总内存大小及处理器寻址空间的限制。</p>
-</blockquote>
-<h2 id="hotspot虚拟机对象相关内容">HotSpot虚拟机对象相关内容</h2>
-<h3 id="对象创建">对象创建</h3>
-<blockquote>
-<p>步骤分为：类加载检查 -&gt; 分配内存 -&gt; 初始化 -&gt; 对象设置 -&gt; 等待执行构造函数</p>
-<p>类加载检查：当Java虚拟机遇到一条字节码new指令时，首先检查这个指令的参数是否可以从常量池地位到一个类的符号引用，并且检查这个符号引用代表的类是否已经被加载、解析、初始化过。若没有执行相应类的类加载过程。</p>
-<p>分配内存：类加载完成后对象所需内存大小可以完全确定，分配内存的方法分为指针碰撞法和空闲列表法。</p>
-<p>​ 指针碰撞法：将Java堆的内存视为绝对规整，使用过的内存在一边，未使用过的内存在另一边，分配内存时只需要将指针朝未使用过的内存那边移动即可。该方法要求垃圾收集器需要有空间压缩整理能力。</p>
-<p>​ 空闲列表法：Java堆的内存中使用过的内存和未使用过的内存交错在一起，需要维护一个列表记录哪些内存块可用。</p>
-<p>分配内存时需要考虑并发问题：即当A利用指针分配内存但还为修改指针位置时，B也使用原来的指针分配内存。解决该问题可以使用CAS加失败重试或把内存操作按照线程划分在不同的空间之中进行，即每个线程在Java堆中预先分配一小块内存，称为TLAB(本地线程分配缓冲)，只有本地缓冲区的内存用完了，分配新缓冲区时才需要同步锁定。</p>
-<p>初始化：虚拟机将分配到的内存空间都初始化为0值。</p>
-<p>对象设置：将对象信息如对象是哪个类的实例、如何找到类的元数据信息、对象的GC分代年龄等存入对象的对象头中。</p>
-<p>等待执行构造函数：虚拟机等到执行了<init>()方法，完成对对象的全部初始化，此时对象才算被完全的构造出来。</init></p>
-</blockquote>
-<h3 id="对象内存布局">对象内存布局</h3>
-<blockquote>
-<p>存储布局划分为三个部分：对象头、实例数据、对齐填充(padding)</p>
-<p>对象头可以分为两类：</p>
-<p>​ 一类存储对象自身的运行时数据，如HashCode、GC分代年龄、锁状态标识、线程持有的锁、偏向线程ID、偏向时间戳等。被称为Mark Word。</p>
-<p>​ 另一类为类型指针，即对象指向它的类型元数据的指针。Java虚拟机通过这个指针来确定该对象是哪个类的实例。若对象为Java数组，对象头中还要一块用于记录数组长度的数据。</p>
-<p>实例数据：即对象真正存储的有效信息，无论是从父类继承还是子类自己定义的字段。存储顺序可以通过(-XX:FieldsAllocationStyle参数)及字段在源码中定义顺序来调整。HotSpot默认分配顺序会将相同宽度的字段分配到一起存放，如longs/doubles。</p>
-<p>padding：即填充部分，无意义，只是用于将数据对齐。</p>
-</blockquote>
-<h3 id="对象访问定位">对象访问定位</h3>
-<blockquote>
-<p>Java程序会通过栈上的reference数据来操作栈上的具体对象。</p>
-<p>主流的访问方式分为句柄和直接指针：</p>
-<p>​ 句柄：Java堆中可能划分出一块内存作为句柄池，reference存储的就是对象的句柄地址，而句柄包含对象实例数据与类型数据各自具体的地址信息。</p>
-<p>​ 直接指针：reference存储的就是对象地址，访问对象本身不需要多一次间接访问。</p>
-<p>​ 两者的优点：句柄访问的优势在于reference存储的是稳定的句柄地址，对象被移动(垃圾回收时对象常常需要被移动)时只需要改变句柄中实例数据指针即可。直接指针的优势在于速度更快，减少了一次指针定位的开销。</p>
-</blockquote>
-<h2 id="触发异常的情况">触发异常的情况</h2>
-<h3 id="java堆内存的outofmemoryerror异常">Java堆内存的OutOfMemoryError异常</h3>
-<blockquote>
-<p>不断创建对象且保证GC Roots到对象之间有可达路径来避免垃圾回收机制清除这些对象。</p>
-</blockquote>
-<h3 id="虚拟机栈和本地方法栈溢出">虚拟机栈和本地方法栈溢出</h3>
-<blockquote>
-<p>-Xss设置栈容量。</p>
-<p>1）如果线程请求的栈深度大于虚拟机所允许的最大深度，将抛出StackOverflowError异常。</p>
-<p>2）如果虚拟机的栈内存允许动态扩展，当扩展栈容量无法申请到足够的内存时，将抛出OutOfMemoryError异常。</p>
-<p>创建太多线程也会导致OutOfMemoryError异常。</p>
-</blockquote>
-<h2 id="方法区和运行时常量池溢出">方法区和运行时常量池溢出</h2>
-<blockquote>
-<p>运行时常量池，从JDK7开始后原本存放到永久代的字符串常量池被移动到Java堆中。</p>
-<p>-XX：PermSize和-XX：MaxPermSize限制永久代大小。</p>
-<p>方法区溢出会在运行时产生大量的类时出现，OutOfMemoryError。</p>
-</blockquote>
-<h3 id="本机直接内存溢出">本机直接内存溢出</h3>
-<blockquote>
-<p>大小默认与Java堆最大值一致。可以通过-XX：MaxDirectMemorySize参数指定。</p>
-<p>直接或间接(NIO)使用了太多是Unsafe::allocateMemory()分配过多的直接内存会触发OutOfMemoryError异常。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>JVM</category>
-      </categories>
-      <tags>
-        <tag>JVM</tag>
-        <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>2.垃圾收集</title>
     <url>/2021/02/20/JVMKnowledge/2.%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86/</url>
     <content><![CDATA[<h1 id="垃圾收集">垃圾收集</h1>
@@ -3217,6 +3098,125 @@
 <h3 id="低延迟垃圾收集器">低延迟垃圾收集器</h3>
 <blockquote>
 <p>Shenandoah收集器</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>JVM</category>
+      </categories>
+      <tags>
+        <tag>JVM</tag>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>1.JAVA内存管理</title>
+    <url>/2021/02/20/JVMKnowledge/1.JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/</url>
+    <content><![CDATA[<h1 id="java内存管理">JAVA内存管理</h1>
+<h2 id="java内存区域">Java内存区域</h2>
+<h3 id="总览">总览</h3>
+<blockquote>
+<p>堆+栈+程序计数器</p>
+<p>堆: 方法区 + 堆</p>
+<p>栈: 虚拟机栈 + 本地方法栈</p>
+</blockquote>
+<figure>
+<img src="/2021/02/20/JVMKnowledge/1.JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Java内存区域.png" alt="Java内存区域"><figcaption aria-hidden="true">Java内存区域</figcaption>
+</figure>
+<h3 id="各部分的作用">各部分的作用</h3>
+<h4 id="程序计数器">程序计数器</h4>
+<blockquote>
+<p>是当前线程所执行的字节码的行号指示器。各线程均有一个程序计数器。如果执行的是Java方法，则程序计数器记录的值为正在执行的虚拟机字节码的地址。若执行的是本地方法，则此时程序计数器的值为undefined。该区域没有规定任何OutOfMemoryError情况。</p>
+</blockquote>
+<h4 id="java虚拟机栈">Java虚拟机栈</h4>
+<blockquote>
+<p>生命周期和线程一致，且是线程私有的。当每个方法被执行时，Java虚拟机栈就会创建一个栈帧来保存局部变量表、操作数栈、动态连接、方法出口等信息。每个方法从被调用到执行完毕的过程，对应着一个栈帧在虚拟机栈中入栈到出栈的过程。</p>
+<p>局部变量表用于存储各种Java虚拟机的<strong>基本数据类型</strong>、<strong>对象引用</strong>(reference类型，不等同与对象本身，可以是对象起始地址的引用指针，也可以是指向一个代表对象句柄或其他与此对象有关的位置)和<strong>returnAdress类型</strong>(指向了一条字节码指令的地址)。在虚拟机栈中，这些数据类型都是用变量槽来表示的。其中64位的long和double占两个变量槽，其他的均只占一个变量槽。局部变量表的大小在<strong>编译期间</strong>就已经完成，故方法所需栈帧分配的局部变量表空间是完全确定的，且不会发生改变。这里空间是指变量槽数，不是具体字节/比特数。</p>
+<p>当调用的方法是非static方法时，局部变量表中第0索引的Slot变量槽默认是this关键字指向的对象。</p>
+<p>可能出现的异常：</p>
+<p>​ StackOverflowError：线程请求栈深度超过虚拟机允许的深度。</p>
+<p>​ OutOfMemoryError：当虚拟机栈容量可以动态拓展时，不能申请到足够的内存。</p>
+</blockquote>
+<h4 id="本地方法栈">本地方法栈</h4>
+<blockquote>
+<p>和虚拟机栈类似，虚拟机栈为虚拟机执行Java方法服务，而本地方法栈是为虚拟机使用到的本地方法服务。</p>
+</blockquote>
+<h4 id="java堆">Java堆</h4>
+<blockquote>
+<p>Java堆是虚拟机所管理的内存中最大的一块。它是被所有线程共享的一块内存区域，在虚拟机启动时创建。java堆的唯一目的就是存放对象实例。它也是垃圾收集器管理的内存区域。大部分垃圾收集器都是基于分代收集理论设计的。</p>
+<p>从分配内存的角度看，所有线程共享的Java堆可以划分出多个线程私有的分配缓冲区。</p>
+<p>可能出现的异常：</p>
+<p>​ OutOfMemoryError：Java堆中没有内存完成实例分配，且堆无法再拓展。</p>
+</blockquote>
+<h4 id="方法区">方法区</h4>
+<blockquote>
+<p>HotSpot：JDK8后使用在本地内存中实现的元空间来代替JDK7中永久代还剩余的内容，JDK6之前使用永久代来实现方法区。</p>
+<p>方法区是各个线程共享的内存区域，用于存储已被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等数据。</p>
+<p>这个区域的回收目标主要是针对常量池的回收和对类型的卸载。</p>
+<p>可能出现的异常：</p>
+<p>​ OutOfMemoryError：方法区无法满足新的内存分配需求。</p>
+</blockquote>
+<h5 id="运行时常量池">运行时常量池</h5>
+<blockquote>
+<p>运行时常量池是方法区的一部分。该部分用于存放编译器生成的各种字面量与符号引用即常量池表。</p>
+</blockquote>
+<h4 id="直接内存">直接内存</h4>
+<blockquote>
+<p>直接内存不是虚拟机运行时数据区的一部分，也不是Java虚拟机规范中定义的内存区域。</p>
+<p>如JDK1.4引入的NIO可以使用Native函数分配堆外内存，然后通过一个存储在Java堆里的DirectByteBuffer对象作为这块内存的引用进行操作。</p>
+<p>本机的直接内存的分配不会受到Java堆大小的限制，但是会受到本机总内存大小及处理器寻址空间的限制。</p>
+</blockquote>
+<h2 id="hotspot虚拟机对象相关内容">HotSpot虚拟机对象相关内容</h2>
+<h3 id="对象创建">对象创建</h3>
+<blockquote>
+<p>步骤分为：类加载检查 -&gt; 分配内存 -&gt; 初始化 -&gt; 对象设置 -&gt; 等待执行构造函数</p>
+<p>类加载检查：当Java虚拟机遇到一条字节码new指令时，首先检查这个指令的参数是否可以从常量池地位到一个类的符号引用，并且检查这个符号引用代表的类是否已经被加载、解析、初始化过。若没有执行相应类的类加载过程。</p>
+<p>分配内存：类加载完成后对象所需内存大小可以完全确定，分配内存的方法分为指针碰撞法和空闲列表法。</p>
+<p>​ 指针碰撞法：将Java堆的内存视为绝对规整，使用过的内存在一边，未使用过的内存在另一边，分配内存时只需要将指针朝未使用过的内存那边移动即可。该方法要求垃圾收集器需要有空间压缩整理能力。</p>
+<p>​ 空闲列表法：Java堆的内存中使用过的内存和未使用过的内存交错在一起，需要维护一个列表记录哪些内存块可用。</p>
+<p>分配内存时需要考虑并发问题：即当A利用指针分配内存但还为修改指针位置时，B也使用原来的指针分配内存。解决该问题可以使用CAS加失败重试或把内存操作按照线程划分在不同的空间之中进行，即每个线程在Java堆中预先分配一小块内存，称为TLAB(本地线程分配缓冲)，只有本地缓冲区的内存用完了，分配新缓冲区时才需要同步锁定。</p>
+<p>初始化：虚拟机将分配到的内存空间都初始化为0值。</p>
+<p>对象设置：将对象信息如对象是哪个类的实例、如何找到类的元数据信息、对象的GC分代年龄等存入对象的对象头中。</p>
+<p>等待执行构造函数：虚拟机等到执行了<init>()方法，完成对对象的全部初始化，此时对象才算被完全的构造出来。</init></p>
+</blockquote>
+<h3 id="对象内存布局">对象内存布局</h3>
+<blockquote>
+<p>存储布局划分为三个部分：对象头、实例数据、对齐填充(padding)</p>
+<p>对象头可以分为两类：</p>
+<p>​ 一类存储对象自身的运行时数据，如HashCode、GC分代年龄、锁状态标识、线程持有的锁、偏向线程ID、偏向时间戳等。被称为Mark Word。</p>
+<p>​ 另一类为类型指针，即对象指向它的类型元数据的指针。Java虚拟机通过这个指针来确定该对象是哪个类的实例。若对象为Java数组，对象头中还要一块用于记录数组长度的数据。</p>
+<p>实例数据：即对象真正存储的有效信息，无论是从父类继承还是子类自己定义的字段。存储顺序可以通过(-XX:FieldsAllocationStyle参数)及字段在源码中定义顺序来调整。HotSpot默认分配顺序会将相同宽度的字段分配到一起存放，如longs/doubles。</p>
+<p>padding：即填充部分，无意义，只是用于将数据对齐。</p>
+</blockquote>
+<h3 id="对象访问定位">对象访问定位</h3>
+<blockquote>
+<p>Java程序会通过栈上的reference数据来操作栈上的具体对象。</p>
+<p>主流的访问方式分为句柄和直接指针：</p>
+<p>​ 句柄：Java堆中可能划分出一块内存作为句柄池，reference存储的就是对象的句柄地址，而句柄包含对象实例数据与类型数据各自具体的地址信息。</p>
+<p>​ 直接指针：reference存储的就是对象地址，访问对象本身不需要多一次间接访问。</p>
+<p>​ 两者的优点：句柄访问的优势在于reference存储的是稳定的句柄地址，对象被移动(垃圾回收时对象常常需要被移动)时只需要改变句柄中实例数据指针即可。直接指针的优势在于速度更快，减少了一次指针定位的开销。</p>
+</blockquote>
+<h2 id="触发异常的情况">触发异常的情况</h2>
+<h3 id="java堆内存的outofmemoryerror异常">Java堆内存的OutOfMemoryError异常</h3>
+<blockquote>
+<p>不断创建对象且保证GC Roots到对象之间有可达路径来避免垃圾回收机制清除这些对象。</p>
+</blockquote>
+<h3 id="虚拟机栈和本地方法栈溢出">虚拟机栈和本地方法栈溢出</h3>
+<blockquote>
+<p>-Xss设置栈容量。</p>
+<p>1）如果线程请求的栈深度大于虚拟机所允许的最大深度，将抛出StackOverflowError异常。</p>
+<p>2）如果虚拟机的栈内存允许动态扩展，当扩展栈容量无法申请到足够的内存时，将抛出OutOfMemoryError异常。</p>
+<p>创建太多线程也会导致OutOfMemoryError异常。</p>
+</blockquote>
+<h2 id="方法区和运行时常量池溢出">方法区和运行时常量池溢出</h2>
+<blockquote>
+<p>运行时常量池，从JDK7开始后原本存放到永久代的字符串常量池被移动到Java堆中。</p>
+<p>-XX：PermSize和-XX：MaxPermSize限制永久代大小。</p>
+<p>方法区溢出会在运行时产生大量的类时出现，OutOfMemoryError。</p>
+</blockquote>
+<h3 id="本机直接内存溢出">本机直接内存溢出</h3>
+<blockquote>
+<p>大小默认与Java堆最大值一致。可以通过-XX：MaxDirectMemorySize参数指定。</p>
+<p>直接或间接(NIO)使用了太多是Unsafe::allocateMemory()分配过多的直接内存会触发OutOfMemoryError异常。</p>
 </blockquote>
 ]]></content>
       <categories>
@@ -3473,44 +3473,6 @@
       </tags>
   </entry>
   <entry>
-    <title>多线程相关</title>
-    <url>/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/</url>
-    <content><![CDATA[<h1 id="多线程">多线程</h1>
-<h2 id="进程和线程">进程和线程</h2>
-<blockquote>
-<p>进程是执行程序的一次执行过程，是一个动态的概念。是系统资源分配的单位。</p>
-<p>通常一个进程中包含多个线程，一个进程至少含一个线程。线程是CPU调度和执行的单位。</p>
-</blockquote>
-<h3 id="java创建线程的方式">JAVA创建线程的方式</h3>
-<blockquote>
-<ol type="1">
-<li>继承Thread类，重写run方法。调用是使用start方法调用，若使用run方法调用则变为单线程。</li>
-<li>实现runnable接口，重写run方法，执行线程需丢入runnable接口实现类，调用start方法。(避免使用继承)</li>
-<li>实现callable接口，需要返回值类型，重写call方法，需要抛出异常。(可以返回结果，可以抛出异常)<img src="/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/实现callable.png" alt="实现callable"></li>
-</ol>
-</blockquote>
-<h2 id="java线程的状态">Java线程的状态</h2>
-<blockquote>
-<p>NEW、RUNNABLE、BLOCKED、WAITING、TIMED_WAITING、TERMINATED</p>
-<p>NEW：线程还没有启动。</p>
-<p>RUNNABLE：线程已经在jvm中运行了，但可能还在等待操作系统的处理器之类的资源。</p>
-<p>BLOCKED：线程等待monitor lock。</p>
-<p>WAITING：正在等待另一个线程执行的状态。</p>
-<p>TIMED_WAITING：有着指定特定等待时间等待另一个线程执行的状态。</p>
-<p>TERMINATED：线程终止，线程已经结束执行。</p>
-<p>线程分为用户线程和守护线程(Daemon)，虚拟机必须确保用户线程执行完毕，虚拟机不用等待守护线程执行完毕。可以通过调用线程的setDaemon(true)，将某个线程变为守护线程</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-        <tag>并发</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>并发相关内容</title>
     <url>/2021/02/20/JavaBasicKnowledge/%E5%B9%B6%E5%8F%91%E7%9B%B8%E5%85%B3/</url>
     <content><![CDATA[<h1 id="并发相关">并发相关</h1>
@@ -3635,6 +3597,44 @@
 <blockquote>
 <p>读写锁一般如下使用</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line">ReadWriteLock lock = <span class="keyword">new</span> ReentrantReadWriteLock();</span><br><span class="line">lock.readLock().lock();</span><br><span class="line">lock.writeLock().lock();</span><br></pre></td></tr></table></figure>
+</blockquote>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>并发</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>多线程相关</title>
+    <url>/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/</url>
+    <content><![CDATA[<h1 id="多线程">多线程</h1>
+<h2 id="进程和线程">进程和线程</h2>
+<blockquote>
+<p>进程是执行程序的一次执行过程，是一个动态的概念。是系统资源分配的单位。</p>
+<p>通常一个进程中包含多个线程，一个进程至少含一个线程。线程是CPU调度和执行的单位。</p>
+</blockquote>
+<h3 id="java创建线程的方式">JAVA创建线程的方式</h3>
+<blockquote>
+<ol type="1">
+<li>继承Thread类，重写run方法。调用是使用start方法调用，若使用run方法调用则变为单线程。</li>
+<li>实现runnable接口，重写run方法，执行线程需丢入runnable接口实现类，调用start方法。(避免使用继承)</li>
+<li>实现callable接口，需要返回值类型，重写call方法，需要抛出异常。(可以返回结果，可以抛出异常)<img src="/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/实现callable.png" alt="实现callable"></li>
+</ol>
+</blockquote>
+<h2 id="java线程的状态">Java线程的状态</h2>
+<blockquote>
+<p>NEW、RUNNABLE、BLOCKED、WAITING、TIMED_WAITING、TERMINATED</p>
+<p>NEW：线程还没有启动。</p>
+<p>RUNNABLE：线程已经在jvm中运行了，但可能还在等待操作系统的处理器之类的资源。</p>
+<p>BLOCKED：线程等待monitor lock。</p>
+<p>WAITING：正在等待另一个线程执行的状态。</p>
+<p>TIMED_WAITING：有着指定特定等待时间等待另一个线程执行的状态。</p>
+<p>TERMINATED：线程终止，线程已经结束执行。</p>
+<p>线程分为用户线程和守护线程(Daemon)，虚拟机必须确保用户线程执行完毕，虚拟机不用等待守护线程执行完毕。可以通过调用线程的setDaemon(true)，将某个线程变为守护线程</p>
 </blockquote>
 ]]></content>
       <categories>
@@ -4170,6 +4170,171 @@
       </tags>
   </entry>
   <entry>
+    <title>SpringBoot常用配置</title>
+    <url>/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/</url>
+    <content><![CDATA[<h1 id="springboot常用配置">SpringBoot常用配置</h1>
+<h2 id="选择不同配置">选择不同配置</h2>
+<blockquote>
+<p>也可以通过在类中使用@Profile("xx")来表示这个类只有在xx为active的情况下才可使用。</p>
+<figure>
+<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/springboot多配置文件设置启用.png" alt="springboot多配置文件设置启用"><figcaption aria-hidden="true">springboot多配置文件设置启用</figcaption>
+</figure>
+</blockquote>
+<h2 id="自动加载配置文件的内容">自动加载配置文件的内容</h2>
+<blockquote>
+<p><span class="citation" data-cites="Value">@Value</span></p>
+<p><span class="citation" data-cites="ConfigurationProperties">@ConfigurationProperties</span>(prefix = "spring.datasource.druid.write") 使用该注解需要引入且要启用@EnableConfigurationProperties(使用前面一个注解的类.class)</p>
+<p><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;&#x2F;groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-configuration-processor&lt;&#x2F;artifactId&gt;</span><br><span class="line">    &lt;optional&gt;true&lt;&#x2F;optional&gt;</span><br><span class="line">&lt;&#x2F;dependency&gt;</span><br></pre></td></tr></table></figure></p>
+<p><span class="citation" data-cites="PropertySource">@PropertySource</span></p>
+</blockquote>
+<h2 id="配置文件的加载顺序下覆盖上">配置文件的加载顺序(下覆盖上)</h2>
+<blockquote>
+<ol type="1">
+<li>Application properties packaged inside your jar (application.properties and YAML variants).</li>
+<li>Profile-specific application properties packaged inside your jar (application-{profile}.properties and YAML variants).</li>
+<li>Application properties outside of your packaged jar (application.properties and YAML variants)</li>
+<li>Profile-specific application properties outside of your packaged jar (application-{profile}.properties and YAML variants).</li>
+</ol>
+</blockquote>
+<h2 id="自动加载的-application.properties-的加载顺序下覆盖上">自动加载的 application.properties 的加载顺序(下覆盖上)</h2>
+<blockquote>
+<ol type="1">
+<li><p>The classpath root</p></li>
+<li><p>The classpath /config package</p></li>
+<li><p>The current directory</p></li>
+<li><p>The /config subdirectory in the current directory</p></li>
+<li><p>Immediate child directories of the /config subdirectory</p></li>
+</ol>
+<p>4、5的差别就是如果config目录的根目录里有application.properties，则会将config子目录的application.properties覆盖。</p>
+<p>而classpath中springboot不会自动扫描config子目录中的目录。</p>
+<p>可以通过修改spring.config.name来修改默认配置文件名。</p>
+<p>修改spring.config.location 可以修改springboot获取配置文件的位置。</p>
+<p>修改spring.config.additional-location可以在springboot默认获取配置文件的位置的基础上补充一些获取配置文件的位置。optional: 前缀</p>
+</blockquote>
+<h2 id="可以使用来获取外部目录classpath中不能使用">可以使用*来获取外部目录，classpath中不能使用*</h2>
+<h2 id="可以使用---在.pro配置文件中划分逻辑页">可以使用#---在.pro配置文件中划分逻辑页</h2>
+<h2 id="使用---在.yml配置文件划分逻辑页">使用---在.yml配置文件划分逻辑页</h2>
+<h2 id="在多个配置文件中均存在同一个list的值则只会去最高优先级的list值">在多个配置文件中均存在同一个list的值，则只会去最高优先级的list值</h2>
+<h2 id="在多个配置文件中均存在同一个map的值则使用互补配置的方式构造map">在多个配置文件中均存在同一个Map的值，则使用互补配置的方式构造Map</h2>
+<h2 id="spring自动注入的注解">spring自动注入的注解</h2>
+<blockquote>
+<p><span class="citation" data-cites="Component">@Component</span>("name")将一个类生成一个Bean实例并用spring管理。<span class="citation" data-cites="Controller">@Controller</span>、<span class="citation" data-cites="Repository">@Repository</span>、<span class="citation" data-cites="Service都是类似的功能">@Service都是类似的功能</span>。这些注解要放在类上。</p>
+<p><span class="citation" data-cites="Bean">@Bean</span>("name")将一个方法返回的对象实例用spring管理。该注解放在方法上。</p>
+<p><span class="citation" data-cites="Autowired">@Autowired</span> 自动注入。该注解可以放在构造器方法、方法、参数、属性、注解上。</p>
+<p><span class="citation" data-cites="Primary">@Primary</span> 写在类上或方法上。为了消除自动装配的歧义性，如spring管理了两个都实现了同一父类的类，则存在@Primary 的类会被最先调用。</p>
+<p><span class="citation" data-cites="Qualifier">@Qualifier</span>("name")写在变量、方法、参数、类上、注解上，可以根据传入的name按名字查找spring管理的类。</p>
+</blockquote>
+<h2 id="spring监听器">Spring监听器</h2>
+<blockquote>
+<p>使用过程:</p>
+<p>​ 自定义事件，继承org.springframework.context.ApplicationEvent类。</p>
+<p>​ 自定义事件监听器，实现org.springframework.context.ApplicationListener接口。</p>
+<p>​ 在spring容器中发布事件。</p>
+<p>实现监听的方式：</p>
+<p>​ 自定义类实现ApplicationListener，在主函数中装载监听。</p>
+<p>​ 自定义类实现ApplicationListener，在接口上加上@Component注解</p>
+<p>​ 自定义类不实现接口，在对应方法上标明@EventListener注解。</p>
+<p>​ 自定义类实现ApplicationListener，在application.properties中配置context.listener.classes</p>
+</blockquote>
+<h2 id="spring内置容器的配置">Spring内置容器的配置</h2>
+<blockquote>
+<p>修改配置：</p>
+<ol type="1">
+<li><p>可以在application.properties中按server.xxx:的方式修改</p></li>
+<li><p>创建一个配置类通过编写public WebServerFactoryCustomizer<ConfigurableWebServerFactory> customizer()方法来设置。</ConfigurableWebServerFactory></p>
+<figure>
+<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/内嵌服务器配置修改.png" alt="内嵌服务器配置修改"><figcaption aria-hidden="true">内嵌服务器配置修改</figcaption>
+</figure></li>
+</ol>
+<p>更换容器：</p>
+<p>​ 通过先将start内的容器依赖去除然后导入新依赖即可。</p>
+<figure>
+<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/修改内嵌容器.png" alt="修改内嵌容器"><figcaption aria-hidden="true">修改内嵌容器</figcaption>
+</figure>
+</blockquote>
+<h2 id="过滤器和拦截器">过滤器和拦截器</h2>
+<blockquote>
+<p>过滤器：在进入servlet前过滤。</p>
+<p>实现方式：</p>
+<p>​ 创建类实现接口javax.servlet.Filter，加上@Component，然后使用一个如下的配置类注入spring容器。</p>
+<figure>
+<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/filterConfig.png" alt="filterConfig"><figcaption aria-hidden="true">filterConfig</figcaption>
+</figure>
+<p>​ 创建类实现接口javax.servlet.Filter，加上@WebFilter，然后在主启动类中加上@ServletComponentScan注解。</p>
+<p>拦截器：拦截方法。</p>
+<p>​ 创建类实现HandlerInterceptor接口，然后创建配置类实现WebMvcConfigurer接口，配置类如下。</p>
+<figure>
+<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/interceptorConfig.png" alt="interceptorConfig"><figcaption aria-hidden="true">interceptorConfig</figcaption>
+</figure>
+</blockquote>
+<h2 id="错误及异常处理">错误及异常处理</h2>
+<h3 id="数值校验">数值校验</h3>
+<blockquote>
+<p>在参数前加入@Valid/<span class="citation" data-cites="Validated注解">@Validated注解</span>，然后跟上BindingResult对象即可获取错误时的错误信息。如图</p>
+<p>利用配置文件ValidationMessages.properties中设置发生错误的提示信息。在bean的注解属性中通过{key}获取属性。</p>
+</blockquote>
+<h3 id="错误页指定">错误页指定</h3>
+<blockquote>
+<p>用到了再查</p>
+</blockquote>
+<h3 id="全局异常处理">全局异常处理</h3>
+<blockquote>
+<p>实现一个异常处理类并加上@ControllerAdvice注解。如图</p>
+<figure>
+<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/全局异常处理.png" alt="全局异常处理"><figcaption aria-hidden="true">全局异常处理</figcaption>
+</figure>
+</blockquote>
+<h2 id="日志">日志</h2>
+<h3 id="日志文件输出">日志文件输出</h3>
+<blockquote>
+<p>在application中添加logging.file.path = xxx 默认日志名为spring.log</p>
+<p>或添加logging.file.name = xxxx 默认输出路径为项目当前路径。</p>
+<p>二者不能同时使用。</p>
+</blockquote>
+<h3 id="日志级别控制">日志级别控制</h3>
+<blockquote>
+<p>日志级别有TRACE、DEBUG、INFO、WARN、ERROR、FATAL、OFF。</p>
+<p>logging.level.包名 = xxx级别</p>
+<p>logging.level.root = 设置全局日志级别</p>
+</blockquote>
+<h2 id="文档生成">文档生成</h2>
+<h3 id="swaggle">swaggle</h3>
+<blockquote>
+<figure class="highlight"><table><tr><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;io.springfox&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;springfox-swagger2&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.9.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line">		</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;io.springfox&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;springfox-swagger-ui&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.9.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableSwagger2</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SwaggerConfig</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Docket <span class="title">api</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Docket(DocumentationType.SWAGGER_2).select()</span><br><span class="line">                .apis(RequestHandlerSelectors.any())</span><br><span class="line">                .paths(PathSelectors.any())</span><br><span class="line">                .build();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>访问http://localhost:8080/v2/api-docs拿到api的json</p>
+<p>访问http://localhost:8080/swagger-ui.html获取页面</p>
+</blockquote>
+<h2 id="监控">监控</h2>
+<blockquote>
+<p>本质上是通过log收集信息，然后利用信息分析。</p>
+</blockquote>
+<h2 id="缓存">缓存</h2>
+<blockquote>
+<p><span class="citation" data-cites="Cacheable">@Cacheable</span>(value = "xx", key = "zz", condition = "yyy")</p>
+<p>​ value 表示缓存名</p>
+<p>​ key为缓存键，需要用SPEL写</p>
+<p>​ condition为缓存触发的条件，需要用SPEL写</p>
+<p>​ 缓存值为对应方法的返回值</p>
+<p><span class="citation" data-cites="CacheEvict">@CacheEvict</span>(beforeInvocation = true表示在方法触发前就移除了缓存) 移除缓存</p>
+<p><span class="citation" data-cites="CachePut">@CachePut</span> 添加缓存</p>
+</blockquote>
+<h2 id="微服务">微服务</h2>
+<blockquote>
+<p>注册中心</p>
+<p>服务提供者</p>
+<p>服务追踪</p>
+<p>服务治理</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>框架入门</category>
+      </categories>
+      <tags>
+        <tag>Springboot</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Redis入门</title>
     <url>/2021/02/20/codeAnalyse/redis%E4%BD%BF%E7%94%A8/</url>
     <content><![CDATA[<h1 id="redis使用">Redis使用</h1>
@@ -4498,232 +4663,6 @@
       </tags>
   </entry>
   <entry>
-    <title>SpringBoot常用配置</title>
-    <url>/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/</url>
-    <content><![CDATA[<h1 id="springboot常用配置">SpringBoot常用配置</h1>
-<h2 id="选择不同配置">选择不同配置</h2>
-<blockquote>
-<p>也可以通过在类中使用@Profile("xx")来表示这个类只有在xx为active的情况下才可使用。</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/springboot多配置文件设置启用.png" alt="springboot多配置文件设置启用"><figcaption aria-hidden="true">springboot多配置文件设置启用</figcaption>
-</figure>
-</blockquote>
-<h2 id="自动加载配置文件的内容">自动加载配置文件的内容</h2>
-<blockquote>
-<p><span class="citation" data-cites="Value">@Value</span></p>
-<p><span class="citation" data-cites="ConfigurationProperties">@ConfigurationProperties</span>(prefix = "spring.datasource.druid.write") 使用该注解需要引入且要启用@EnableConfigurationProperties(使用前面一个注解的类.class)</p>
-<p><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;&#x2F;groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-configuration-processor&lt;&#x2F;artifactId&gt;</span><br><span class="line">    &lt;optional&gt;true&lt;&#x2F;optional&gt;</span><br><span class="line">&lt;&#x2F;dependency&gt;</span><br></pre></td></tr></table></figure></p>
-<p><span class="citation" data-cites="PropertySource">@PropertySource</span></p>
-</blockquote>
-<h2 id="配置文件的加载顺序下覆盖上">配置文件的加载顺序(下覆盖上)</h2>
-<blockquote>
-<ol type="1">
-<li>Application properties packaged inside your jar (application.properties and YAML variants).</li>
-<li>Profile-specific application properties packaged inside your jar (application-{profile}.properties and YAML variants).</li>
-<li>Application properties outside of your packaged jar (application.properties and YAML variants)</li>
-<li>Profile-specific application properties outside of your packaged jar (application-{profile}.properties and YAML variants).</li>
-</ol>
-</blockquote>
-<h2 id="自动加载的-application.properties-的加载顺序下覆盖上">自动加载的 application.properties 的加载顺序(下覆盖上)</h2>
-<blockquote>
-<ol type="1">
-<li><p>The classpath root</p></li>
-<li><p>The classpath /config package</p></li>
-<li><p>The current directory</p></li>
-<li><p>The /config subdirectory in the current directory</p></li>
-<li><p>Immediate child directories of the /config subdirectory</p></li>
-</ol>
-<p>4、5的差别就是如果config目录的根目录里有application.properties，则会将config子目录的application.properties覆盖。</p>
-<p>而classpath中springboot不会自动扫描config子目录中的目录。</p>
-<p>可以通过修改spring.config.name来修改默认配置文件名。</p>
-<p>修改spring.config.location 可以修改springboot获取配置文件的位置。</p>
-<p>修改spring.config.additional-location可以在springboot默认获取配置文件的位置的基础上补充一些获取配置文件的位置。optional: 前缀</p>
-</blockquote>
-<h2 id="可以使用来获取外部目录classpath中不能使用">可以使用*来获取外部目录，classpath中不能使用*</h2>
-<h2 id="可以使用---在.pro配置文件中划分逻辑页">可以使用#---在.pro配置文件中划分逻辑页</h2>
-<h2 id="使用---在.yml配置文件划分逻辑页">使用---在.yml配置文件划分逻辑页</h2>
-<h2 id="在多个配置文件中均存在同一个list的值则只会去最高优先级的list值">在多个配置文件中均存在同一个list的值，则只会去最高优先级的list值</h2>
-<h2 id="在多个配置文件中均存在同一个map的值则使用互补配置的方式构造map">在多个配置文件中均存在同一个Map的值，则使用互补配置的方式构造Map</h2>
-<h2 id="spring自动注入的注解">spring自动注入的注解</h2>
-<blockquote>
-<p><span class="citation" data-cites="Component">@Component</span>("name")将一个类生成一个Bean实例并用spring管理。<span class="citation" data-cites="Controller">@Controller</span>、<span class="citation" data-cites="Repository">@Repository</span>、<span class="citation" data-cites="Service都是类似的功能">@Service都是类似的功能</span>。这些注解要放在类上。</p>
-<p><span class="citation" data-cites="Bean">@Bean</span>("name")将一个方法返回的对象实例用spring管理。该注解放在方法上。</p>
-<p><span class="citation" data-cites="Autowired">@Autowired</span> 自动注入。该注解可以放在构造器方法、方法、参数、属性、注解上。</p>
-<p><span class="citation" data-cites="Primary">@Primary</span> 写在类上或方法上。为了消除自动装配的歧义性，如spring管理了两个都实现了同一父类的类，则存在@Primary 的类会被最先调用。</p>
-<p><span class="citation" data-cites="Qualifier">@Qualifier</span>("name")写在变量、方法、参数、类上、注解上，可以根据传入的name按名字查找spring管理的类。</p>
-</blockquote>
-<h2 id="spring监听器">Spring监听器</h2>
-<blockquote>
-<p>使用过程:</p>
-<p>​ 自定义事件，继承org.springframework.context.ApplicationEvent类。</p>
-<p>​ 自定义事件监听器，实现org.springframework.context.ApplicationListener接口。</p>
-<p>​ 在spring容器中发布事件。</p>
-<p>实现监听的方式：</p>
-<p>​ 自定义类实现ApplicationListener，在主函数中装载监听。</p>
-<p>​ 自定义类实现ApplicationListener，在接口上加上@Component注解</p>
-<p>​ 自定义类不实现接口，在对应方法上标明@EventListener注解。</p>
-<p>​ 自定义类实现ApplicationListener，在application.properties中配置context.listener.classes</p>
-</blockquote>
-<h2 id="spring内置容器的配置">Spring内置容器的配置</h2>
-<blockquote>
-<p>修改配置：</p>
-<ol type="1">
-<li><p>可以在application.properties中按server.xxx:的方式修改</p></li>
-<li><p>创建一个配置类通过编写public WebServerFactoryCustomizer<ConfigurableWebServerFactory> customizer()方法来设置。</ConfigurableWebServerFactory></p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/内嵌服务器配置修改.png" alt="内嵌服务器配置修改"><figcaption aria-hidden="true">内嵌服务器配置修改</figcaption>
-</figure></li>
-</ol>
-<p>更换容器：</p>
-<p>​ 通过先将start内的容器依赖去除然后导入新依赖即可。</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/修改内嵌容器.png" alt="修改内嵌容器"><figcaption aria-hidden="true">修改内嵌容器</figcaption>
-</figure>
-</blockquote>
-<h2 id="过滤器和拦截器">过滤器和拦截器</h2>
-<blockquote>
-<p>过滤器：在进入servlet前过滤。</p>
-<p>实现方式：</p>
-<p>​ 创建类实现接口javax.servlet.Filter，加上@Component，然后使用一个如下的配置类注入spring容器。</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/filterConfig.png" alt="filterConfig"><figcaption aria-hidden="true">filterConfig</figcaption>
-</figure>
-<p>​ 创建类实现接口javax.servlet.Filter，加上@WebFilter，然后在主启动类中加上@ServletComponentScan注解。</p>
-<p>拦截器：拦截方法。</p>
-<p>​ 创建类实现HandlerInterceptor接口，然后创建配置类实现WebMvcConfigurer接口，配置类如下。</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/interceptorConfig.png" alt="interceptorConfig"><figcaption aria-hidden="true">interceptorConfig</figcaption>
-</figure>
-</blockquote>
-<h2 id="错误及异常处理">错误及异常处理</h2>
-<h3 id="数值校验">数值校验</h3>
-<blockquote>
-<p>在参数前加入@Valid/<span class="citation" data-cites="Validated注解">@Validated注解</span>，然后跟上BindingResult对象即可获取错误时的错误信息。如图</p>
-<p>利用配置文件ValidationMessages.properties中设置发生错误的提示信息。在bean的注解属性中通过{key}获取属性。</p>
-</blockquote>
-<h3 id="错误页指定">错误页指定</h3>
-<blockquote>
-<p>用到了再查</p>
-</blockquote>
-<h3 id="全局异常处理">全局异常处理</h3>
-<blockquote>
-<p>实现一个异常处理类并加上@ControllerAdvice注解。如图</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/全局异常处理.png" alt="全局异常处理"><figcaption aria-hidden="true">全局异常处理</figcaption>
-</figure>
-</blockquote>
-<h2 id="日志">日志</h2>
-<h3 id="日志文件输出">日志文件输出</h3>
-<blockquote>
-<p>在application中添加logging.file.path = xxx 默认日志名为spring.log</p>
-<p>或添加logging.file.name = xxxx 默认输出路径为项目当前路径。</p>
-<p>二者不能同时使用。</p>
-</blockquote>
-<h3 id="日志级别控制">日志级别控制</h3>
-<blockquote>
-<p>日志级别有TRACE、DEBUG、INFO、WARN、ERROR、FATAL、OFF。</p>
-<p>logging.level.包名 = xxx级别</p>
-<p>logging.level.root = 设置全局日志级别</p>
-</blockquote>
-<h2 id="文档生成">文档生成</h2>
-<h3 id="swaggle">swaggle</h3>
-<blockquote>
-<figure class="highlight"><table><tr><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;io.springfox&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;springfox-swagger2&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.9.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line">		</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;io.springfox&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;springfox-swagger-ui&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.9.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableSwagger2</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SwaggerConfig</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Docket <span class="title">api</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Docket(DocumentationType.SWAGGER_2).select()</span><br><span class="line">                .apis(RequestHandlerSelectors.any())</span><br><span class="line">                .paths(PathSelectors.any())</span><br><span class="line">                .build();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>访问http://localhost:8080/v2/api-docs拿到api的json</p>
-<p>访问http://localhost:8080/swagger-ui.html获取页面</p>
-</blockquote>
-<h2 id="监控">监控</h2>
-<blockquote>
-<p>本质上是通过log收集信息，然后利用信息分析。</p>
-</blockquote>
-<h2 id="缓存">缓存</h2>
-<blockquote>
-<p><span class="citation" data-cites="Cacheable">@Cacheable</span>(value = "xx", key = "zz", condition = "yyy")</p>
-<p>​ value 表示缓存名</p>
-<p>​ key为缓存键，需要用SPEL写</p>
-<p>​ condition为缓存触发的条件，需要用SPEL写</p>
-<p>​ 缓存值为对应方法的返回值</p>
-<p><span class="citation" data-cites="CacheEvict">@CacheEvict</span>(beforeInvocation = true表示在方法触发前就移除了缓存) 移除缓存</p>
-<p><span class="citation" data-cites="CachePut">@CachePut</span> 添加缓存</p>
-</blockquote>
-<h2 id="微服务">微服务</h2>
-<blockquote>
-<p>注册中心</p>
-<p>服务提供者</p>
-<p>服务追踪</p>
-<p>服务治理</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>框架入门</category>
-      </categories>
-      <tags>
-        <tag>Springboot</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>物理层</title>
-    <url>/2021/02/20/computerNetwork/%E7%AC%AC2%E7%AB%A0-%E7%89%A9%E7%90%86%E5%B1%82/</url>
-    <content><![CDATA[<h1 id="物理层">物理层</h1>
-<h2 id="物理层的基本概念">物理层的基本概念</h2>
-<blockquote>
-<p>尼奎斯特定理 $ C = 2Blog_2V $ 。C为最大数据速率，B为带宽频率，V为离散等级。</p>
-<p>香农定理<span class="math inline">\(C = B log_2(1+S/N)\)</span> 。S/N是信噪比，<span class="math inline">\(10log_{10}S/N\)</span>为分贝，B为带宽频率，C为最大数据速率。</p>
-</blockquote>
-<h3 id="物理层的主要任务">物理层的主要任务</h3>
-<p>物理层解决如何在连接各种计算机的传输媒体上传输数据比特流。</p>
-<p>确定与传输媒体的接口的一些特性:</p>
-<blockquote>
-<p>机械特性:如接口形状、大小、引线数目</p>
-<p>电气特性:如规定电压范围</p>
-<p>功能特性:如规定-5V表示0</p>
-<p>过程特性/规程特性:规定建立连接时各个相关部件的工作步骤</p>
-</blockquote>
-<h2 id="数据通信的基础知识">数据通信的基础知识</h2>
-<blockquote>
-<p>单向通信/单工通信 ---------只能有一个方向的通信而没有反方向的交互，如电台</p>
-<p>半双工通信---------通信双方都可以发送消息，但不能双方同时发送。如对讲机</p>
-<p>全双工通信--------通信的双方-可以同时发送和接收消息。如电话</p>
-<p>数据比特流传输距离较短,用解调器变为模拟信号后传输距离会加长。</p>
-<p>数据--------传送消息的实体</p>
-<p>信号--------数据的电气/电磁表现</p>
-<p>​ 模拟信号--------连续</p>
-<p>​ 数字信号---------离散</p>
-<p>码元----------在使用时间域的波形表示数字信号时，代表不同离散数值的基本波形</p>
-<p>信号调制方法:调幅、调频、调相</p>
-</blockquote>
-<h2 id="物理层下的传输媒体">物理层下的传输媒体</h2>
-<h3 id="导向传输媒体">导向传输媒体</h3>
-<blockquote>
-<p><span class="math display">\[
-常用传输频率10^4-------- 10^{16}
-\]</span></p>
-<p>双绞线:</p>
-<p>​ 屏蔽双绞线STP</p>
-<p>​ 无屏蔽双绞线UTP</p>
-<p>同轴电缆:</p>
-<p>​ 50Ω同轴电缆用于数字传输，基带同轴电缆</p>
-<p>​ 75Ω同轴电缆用于模拟传输，宽带同轴电缆</p>
-</blockquote>
-<h2 id="信道复用技术">信道复用技术</h2>
-<blockquote>
-<p>频分复用:每个用户使用不同的频率传递。</p>
-<p>时分复用:将单位时间划分为若干个时间片，每个用户使用对应的时间片传递。 统计时分复用在发送数据时在数据中添加标记，接收方根据标记判定谁接收并将标记去除。</p>
-<p>波分复用:每个用户使用不同的波长传递。</p>
-<p>码分复用:自己的码片乘积为1，同他人码片乘积为0，传输的信号为原数据同对应码片的乘积，总的传输信号为各个设备传输的信号之和，接收者只要将总信号同自己的码片相乘即可得到需要接收的值。</p>
-<p>码分复用的缺点:设备数变多后码片需要越多</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>计算机网络</category>
-      </categories>
-      <tags>
-        <tag>网络</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>概论</title>
     <url>/2021/02/20/computerNetwork/%E7%AC%AC1%E7%AB%A0-%E6%A6%82%E8%AE%BA/</url>
     <content><![CDATA[<h1 id="概论">概论</h1>
@@ -4889,6 +4828,299 @@
 <p>​ 比特同步</p>
 <p>​ 比特编码</p>
 <p>​ RJ45、802.3</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>计算机网络</category>
+      </categories>
+      <tags>
+        <tag>网络</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>数据库连接池</title>
+    <url>/2021/02/20/codeAnalyse/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E6%B1%A0/</url>
+    <content><![CDATA[<h1 id="数据库连接池">数据库连接池</h1>
+<h2 id="常用数据库连接池">常用数据库连接池</h2>
+<h3 id="dbcp">DBCP</h3>
+<h4 id="常用参数">常用参数</h4>
+<blockquote>
+<p>initialSize 初始连接数</p>
+<p>maxActive 最多可容纳活跃连接数</p>
+<p>maxIdle 最大空闲连接数(已创建但未被使用的连接，会被定期回收，回收直到maxIdle数量)</p>
+<p>minIdle 最小空闲连接数</p>
+<p>maxWait 获取连接的最大等待时间</p>
+</blockquote>
+<h3 id="c3p0">C3P0</h3>
+<h4 id="常用参数-1">常用参数</h4>
+<blockquote>
+<p>initialPoolSize 初始连接数</p>
+<p>maxPoolSize 最大连接数</p>
+<p>minPoolSize 最小连接数</p>
+<p>acquireIncrement 当没有空闲连接时，一次性创建新连接的数量</p>
+<p>maxIdleTime 连接的最大空闲时间，即若一直未使用则自动断掉连接。</p>
+</blockquote>
+<h3 id="druid">Druid</h3>
+<h4 id="常用参数-2">常用参数</h4>
+<blockquote>
+<p>initialSize 初始连接数</p>
+<p>maxActive 最多可容纳活跃连接数</p>
+<p>maxIdle 最大空闲连接数(已创建但未被使用的连接，会被定期回收，回收直到maxIdle数量)</p>
+<p>minIdle 最小空闲连接数</p>
+<p>maxWait 获取连接的最大等待时间</p>
+<p>timeBetweenEvictionRunsMillis 间隔多长时间检测是否关闭空闲连接。</p>
+<p>minEvictableIdleTime 控制一个连接在资源池中最小的生存时间</p>
+<p>maxEvictableIdleTime 控制一个连接在资源池中最大的生存时间</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>数据库</category>
+      </categories>
+      <tags>
+        <tag>数据库</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>物理层</title>
+    <url>/2021/02/20/computerNetwork/%E7%AC%AC2%E7%AB%A0-%E7%89%A9%E7%90%86%E5%B1%82/</url>
+    <content><![CDATA[<h1 id="物理层">物理层</h1>
+<h2 id="物理层的基本概念">物理层的基本概念</h2>
+<blockquote>
+<p>尼奎斯特定理 $ C = 2Blog_2V $ 。C为最大数据速率，B为带宽频率，V为离散等级。</p>
+<p>香农定理<span class="math inline">\(C = B log_2(1+S/N)\)</span> 。S/N是信噪比，<span class="math inline">\(10log_{10}S/N\)</span>为分贝，B为带宽频率，C为最大数据速率。</p>
+</blockquote>
+<h3 id="物理层的主要任务">物理层的主要任务</h3>
+<p>物理层解决如何在连接各种计算机的传输媒体上传输数据比特流。</p>
+<p>确定与传输媒体的接口的一些特性:</p>
+<blockquote>
+<p>机械特性:如接口形状、大小、引线数目</p>
+<p>电气特性:如规定电压范围</p>
+<p>功能特性:如规定-5V表示0</p>
+<p>过程特性/规程特性:规定建立连接时各个相关部件的工作步骤</p>
+</blockquote>
+<h2 id="数据通信的基础知识">数据通信的基础知识</h2>
+<blockquote>
+<p>单向通信/单工通信 ---------只能有一个方向的通信而没有反方向的交互，如电台</p>
+<p>半双工通信---------通信双方都可以发送消息，但不能双方同时发送。如对讲机</p>
+<p>全双工通信--------通信的双方-可以同时发送和接收消息。如电话</p>
+<p>数据比特流传输距离较短,用解调器变为模拟信号后传输距离会加长。</p>
+<p>数据--------传送消息的实体</p>
+<p>信号--------数据的电气/电磁表现</p>
+<p>​ 模拟信号--------连续</p>
+<p>​ 数字信号---------离散</p>
+<p>码元----------在使用时间域的波形表示数字信号时，代表不同离散数值的基本波形</p>
+<p>信号调制方法:调幅、调频、调相</p>
+</blockquote>
+<h2 id="物理层下的传输媒体">物理层下的传输媒体</h2>
+<h3 id="导向传输媒体">导向传输媒体</h3>
+<blockquote>
+<p><span class="math display">\[
+常用传输频率10^4-------- 10^{16}
+\]</span></p>
+<p>双绞线:</p>
+<p>​ 屏蔽双绞线STP</p>
+<p>​ 无屏蔽双绞线UTP</p>
+<p>同轴电缆:</p>
+<p>​ 50Ω同轴电缆用于数字传输，基带同轴电缆</p>
+<p>​ 75Ω同轴电缆用于模拟传输，宽带同轴电缆</p>
+</blockquote>
+<h2 id="信道复用技术">信道复用技术</h2>
+<blockquote>
+<p>频分复用:每个用户使用不同的频率传递。</p>
+<p>时分复用:将单位时间划分为若干个时间片，每个用户使用对应的时间片传递。 统计时分复用在发送数据时在数据中添加标记，接收方根据标记判定谁接收并将标记去除。</p>
+<p>波分复用:每个用户使用不同的波长传递。</p>
+<p>码分复用:自己的码片乘积为1，同他人码片乘积为0，传输的信号为原数据同对应码片的乘积，总的传输信号为各个设备传输的信号之和，接收者只要将总信号同自己的码片相乘即可得到需要接收的值。</p>
+<p>码分复用的缺点:设备数变多后码片需要越多</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>计算机网络</category>
+      </categories>
+      <tags>
+        <tag>网络</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>网络层</title>
+    <url>/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/</url>
+    <content><![CDATA[<h1 id="网络层">网络层</h1>
+<h2 id="网络层传输单元为数据报">网络层传输单元为数据报</h2>
+<h2 id="网络层提供的两种服务">网络层提供的两种服务</h2>
+<blockquote>
+<p>网络层关注的是如何将分组从源端沿着网络路劲送达目的端。</p>
+<p>它向运输层通过了虚电路服务和数据报服务。</p>
+<p>计算机通信的过程中可靠交付由端系统负责，而不是网络负责。</p>
+<p>虚电路服务</p>
+<p>​ 通过指定数据的逻辑连接，向端系统保证了数据的按序到达，免去了端系统在顺序控制上的开销。</p>
+<p>​ 逻辑上的连接而非真正建立了一条物理连接。</p>
+<p>数据报服务</p>
+<p>​ 网络层向上提供简单灵活的、<strong>无连接的</strong>、尽最大努力交付的数据报服务。</p>
+<p>​ 优点:传输网络不提供端到端的可靠传输服务，使得网络造价降低，运行方式灵活，适用多种应用。</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">两个服务对比</th>
+<th style="text-align: center;">虚电路服务</th>
+<th style="text-align: center;">数据报服务</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">思路</td>
+<td style="text-align: center;">可靠通信由网络保证</td>
+<td style="text-align: center;">可靠通信由用户主机保证</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">连接的建立</td>
+<td style="text-align: center;">必须有</td>
+<td style="text-align: center;">不需要</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">终点地址</td>
+<td style="text-align: center;">仅在连接建立阶段使用，每个分组使用短的虚电路号</td>
+<td style="text-align: center;">每个分组都要有终点的完整地址</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">分组的转发</td>
+<td style="text-align: center;">属于同一条虚电路的分组均按照同一路由进行转发</td>
+<td style="text-align: center;">每个分组独立选择路由进行转发</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">当结点出故障时</td>
+<td style="text-align: center;">所有通过出故障结点的虚电路均不能工作</td>
+<td style="text-align: center;">出故障的结点可能丢失分组，一些路由可能发生变化</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">分组的顺序</td>
+<td style="text-align: center;">总数按发送顺序到达终点</td>
+<td style="text-align: center;">到达终点时不一定按发送顺序</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">端到端的差错处理和流量控制</td>
+<td style="text-align: center;">可以由网络负责,也可以由用户主机负责</td>
+<td style="text-align: center;">由用户主机负责</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<h2 id="网际协议ip">网际协议IP</h2>
+<h3 id="虚拟互联网">虚拟互联网</h3>
+<blockquote>
+<p>网络互连的设备:</p>
+<p>​ 概念:中间设备又称为中间系统或中继系统</p>
+<p>​ 物理层中继系统:转发器。</p>
+<p>​ 数据链路层中继系统:网桥或桥接器。</p>
+<p>​ 网络层中继系统:路由器。</p>
+<p>​ 网络层以上的中继系统:网关。</p>
+<p>网络层协议:IP协议最主要。与IP协议配套的协议:</p>
+<p>​ ARP地址解析协议。(位于底层)解析MAC地址</p>
+<p>​ RARP逆地址解析协议。(位于底层)</p>
+<p>​ ICMP网际控制报文协议。(位于顶层)报告网络故障</p>
+<p>​ IGMP网际组管理协议。(位于顶层)</p>
+</blockquote>
+<h2 id="ipv4地址组成">IPv4地址组成</h2>
+<blockquote>
+<p>IPv4地址由32位IP组成，其中分为网络ID和主机ID。主机ID不能全为0(全0表示网段)也不能全为1(全1表示广播)</p>
+<p>A类地址:前8位为网络ID，后24位为主机ID。 0xxxxxxx | x....x 1~126 (127的地址用于做循环测试，本机地址)</p>
+<p>B类地址:前16位为网络ID，后8位为主机ID。 10x.....x | x....x 128~191</p>
+<p>C类地址:前24位为网络ID，后8位为主机ID。 110x....x | x...x 192~223</p>
+<p>D类组播使用。 1110| x.....x(多播地址) 224~239</p>
+<p>E类研究使用。 1111| x.....x(保留为今后使用) 240~255</p>
+<p>特殊的几个地址:</p>
+<p>​ 127.0.0.1 本地环回地址</p>
+<p>​ 169.254.0.0 微软在无法自动获取IP时自动分给计算机的IP地址。</p>
+<p>​ 保留的私网地址。</p>
+<ul>
+<li>10.0.0.0 ------ 10.255.255.255</li>
+<li>172.16.0.0 ------ 127.31.255.255</li>
+<li>192.168.0.0 ------- 192.168.255.255</li>
+</ul>
+</blockquote>
+<h2 id="子网掩码的作用">子网掩码的作用</h2>
+<blockquote>
+<p>同IP地址作与运算，得到的结果用于判断两个IP是否位于同一网段，从而判断这两个IP的信息交换是否要通过路由器。</p>
+<p>可以用于屏蔽IP地址的主机ID部分，来凸显IP地址的网络ID部分，借此判断两个IP能否直接信息交换。</p>
+<p>还可以将大的IP网络划分为若干小的网络。(划分子网、等分划分/边长划分)</p>
+<p>超网:通过子网掩码把若干个小网络合并为一个大网络。</p>
+</blockquote>
+<h2 id="ip地址与mac地址">IP地址与MAC地址</h2>
+<blockquote>
+<p>网络层以上使用IP地址，链路层及以下使用MAC地址</p>
+<figure>
+<img src="/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/IP地址和MAC地址.png" alt="IP地址和MAC地址"><figcaption aria-hidden="true">IP地址和MAC地址</figcaption>
+</figure>
+<p>相比于IP数据报，MAC帧增加了</p>
+<p>交换机基于数据帧的MAC地址转发数据帧，路由器基于数据包的IP地址转发数据包。</p>
+<p>数据包在传输过程不变，过网络设备数据帧要用新的物理层地址重新封装。</p>
+<p>MAC地址决定了数据帧下一跳哪个设备接收，而IP地址决定了数据包的起点和终点</p>
+</blockquote>
+<h2 id="协议">协议</h2>
+<blockquote>
+<p>ARP协议:将IP地址转化为物理地址。会使用到广播。</p>
+<p>RARP协议:将物理地址转化为IP地址。</p>
+<p>ARP欺骗。</p>
+</blockquote>
+<h2 id="ip数据报">IP数据报</h2>
+<blockquote>
+<p>IP数据报的首部和数据两部分组成。首部的前一部分是固定，共20字节，是所有IP数据报必须具有的。</p>
+<figure>
+<img src="/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/IP地址.png" alt="IP地址"><figcaption aria-hidden="true">IP地址</figcaption>
+</figure>
+<p>在首部的固定部分的后面是一些可选字段，其长度是可变的。</p>
+<p>各字段</p>
+<p>0-4位版本(表示为IPv4/IPv6) 4-8位首部长度(最小值为固定长度部分共20个字节。可表示最大15个单位，一个单位4个字节，故首部最大60个字节) 8-16区分服务(数据包所需的服务，定义优先级) 16-32总长度(数据包总大小，一般为1500)</p>
+<p>标识(每产生一个数据包就增加1) 标志(判断数据包是否分片) 片偏移(偏移量单位为8个字节)</p>
+<p>TTL生存时间值，指定IP包被路由器丢弃之前允许通过的最大网段数量。</p>
+<p>协议用于指明上层协议是什么，如ICMP、TCP、UDP等。</p>
+<p>首部校验和用于校验数据报是否可用。计算过程:发送端把数据报首部的信息拆成许多单字，然后初始校验和为0，将校验和同这些单字进行反码运算求和，结果取反码即为校验和。接收方重复此过程，若结果为0则保留，不为0则直接丢弃。</p>
+<p>源地址、目的地址即为IP地址。</p>
+<p>可选字段用于支持排错、测量及安全等措施</p>
+</blockquote>
+<h2 id="数据路由">数据路由</h2>
+<blockquote>
+<p>数据路由在不同网段转发数据报。能去能回--------网络畅通。</p>
+<p>负载均衡</p>
+</blockquote>
+<h2 id="icmp协议">ICMP协议</h2>
+<blockquote>
+<p>报文类型:ICMP差错报告报文、ICMP询问报文</p>
+<p>报文前四个字节格式统一共3个字段:类型、代码、检验和，接着的四个字节内容与ICMP的类型有关。</p>
+<p>差错报告报文共五种:终点不可达、源点抑制(发数据报的速度过快)、时间超过、参数问题、改变路由/重定向。</p>
+<p>询问报文有两种:回送请求和回答报文、时间戳请求和回答报文。</p>
+</blockquote>
+<h2 id="动态路由协议">动态路由协议</h2>
+<blockquote>
+<p>RIP最早的动态路由协议，周期性广播，30s广播一次。跳数16次。</p>
+</blockquote>
+<h2 id="ospf协议开放式最短路径优先---动态路由协议">OSPF协议(开放式最短路径优先)---动态路由协议</h2>
+<h2 id="bgp------外部网关协议">BGP ---- 外部网关协议</h2>
+<blockquote>
+<p>不同自治系统的路由器之间交换路由信息的协议</p>
+<p>报文类型：</p>
+<p>OPEN</p>
+<p>UDDATE</p>
+<p>KEEPALIVE</p>
+<p>NOTIFICATION</p>
+<p>ROUTE-REFRESH</p>
+<p>重要属性：</p>
+<p>AS-PATH: 包含前缀通告所经过的AS序列</p>
+<p>NEXT-HOP(下一跳): 开始一个AS-PATH的路由器接口，指向下一跳AS.</p>
+</blockquote>
+<h2 id="nat和pat">NAT和PAT</h2>
+<blockquote>
+
+</blockquote>
+<h2 id="igmp-组播多播">IGMP 组播/多播</h2>
+<h2 id="dhcp">DHCP</h2>
+<blockquote>
+
+</blockquote>
+<h2 id="arp">ARP</h2>
+<blockquote>
+<p>默认网关为网络上的最低地址，如192.32.65.0/24的默认网关为192.32.65.1</p>
 </blockquote>
 ]]></content>
       <categories>
@@ -5098,238 +5330,6 @@
       </tags>
   </entry>
   <entry>
-    <title>网络层</title>
-    <url>/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/</url>
-    <content><![CDATA[<h1 id="网络层">网络层</h1>
-<h2 id="网络层传输单元为数据报">网络层传输单元为数据报</h2>
-<h2 id="网络层提供的两种服务">网络层提供的两种服务</h2>
-<blockquote>
-<p>网络层关注的是如何将分组从源端沿着网络路劲送达目的端。</p>
-<p>它向运输层通过了虚电路服务和数据报服务。</p>
-<p>计算机通信的过程中可靠交付由端系统负责，而不是网络负责。</p>
-<p>虚电路服务</p>
-<p>​ 通过指定数据的逻辑连接，向端系统保证了数据的按序到达，免去了端系统在顺序控制上的开销。</p>
-<p>​ 逻辑上的连接而非真正建立了一条物理连接。</p>
-<p>数据报服务</p>
-<p>​ 网络层向上提供简单灵活的、<strong>无连接的</strong>、尽最大努力交付的数据报服务。</p>
-<p>​ 优点:传输网络不提供端到端的可靠传输服务，使得网络造价降低，运行方式灵活，适用多种应用。</p>
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: center;">两个服务对比</th>
-<th style="text-align: center;">虚电路服务</th>
-<th style="text-align: center;">数据报服务</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;">思路</td>
-<td style="text-align: center;">可靠通信由网络保证</td>
-<td style="text-align: center;">可靠通信由用户主机保证</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">连接的建立</td>
-<td style="text-align: center;">必须有</td>
-<td style="text-align: center;">不需要</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">终点地址</td>
-<td style="text-align: center;">仅在连接建立阶段使用，每个分组使用短的虚电路号</td>
-<td style="text-align: center;">每个分组都要有终点的完整地址</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">分组的转发</td>
-<td style="text-align: center;">属于同一条虚电路的分组均按照同一路由进行转发</td>
-<td style="text-align: center;">每个分组独立选择路由进行转发</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">当结点出故障时</td>
-<td style="text-align: center;">所有通过出故障结点的虚电路均不能工作</td>
-<td style="text-align: center;">出故障的结点可能丢失分组，一些路由可能发生变化</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">分组的顺序</td>
-<td style="text-align: center;">总数按发送顺序到达终点</td>
-<td style="text-align: center;">到达终点时不一定按发送顺序</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">端到端的差错处理和流量控制</td>
-<td style="text-align: center;">可以由网络负责,也可以由用户主机负责</td>
-<td style="text-align: center;">由用户主机负责</td>
-</tr>
-</tbody>
-</table>
-</blockquote>
-<h2 id="网际协议ip">网际协议IP</h2>
-<h3 id="虚拟互联网">虚拟互联网</h3>
-<blockquote>
-<p>网络互连的设备:</p>
-<p>​ 概念:中间设备又称为中间系统或中继系统</p>
-<p>​ 物理层中继系统:转发器。</p>
-<p>​ 数据链路层中继系统:网桥或桥接器。</p>
-<p>​ 网络层中继系统:路由器。</p>
-<p>​ 网络层以上的中继系统:网关。</p>
-<p>网络层协议:IP协议最主要。与IP协议配套的协议:</p>
-<p>​ ARP地址解析协议。(位于底层)解析MAC地址</p>
-<p>​ RARP逆地址解析协议。(位于底层)</p>
-<p>​ ICMP网际控制报文协议。(位于顶层)报告网络故障</p>
-<p>​ IGMP网际组管理协议。(位于顶层)</p>
-</blockquote>
-<h2 id="ipv4地址组成">IPv4地址组成</h2>
-<blockquote>
-<p>IPv4地址由32位IP组成，其中分为网络ID和主机ID。主机ID不能全为0(全0表示网段)也不能全为1(全1表示广播)</p>
-<p>A类地址:前8位为网络ID，后24位为主机ID。 0xxxxxxx | x....x 1~126 (127的地址用于做循环测试，本机地址)</p>
-<p>B类地址:前16位为网络ID，后8位为主机ID。 10x.....x | x....x 128~191</p>
-<p>C类地址:前24位为网络ID，后8位为主机ID。 110x....x | x...x 192~223</p>
-<p>D类组播使用。 1110| x.....x(多播地址) 224~239</p>
-<p>E类研究使用。 1111| x.....x(保留为今后使用) 240~255</p>
-<p>特殊的几个地址:</p>
-<p>​ 127.0.0.1 本地环回地址</p>
-<p>​ 169.254.0.0 微软在无法自动获取IP时自动分给计算机的IP地址。</p>
-<p>​ 保留的私网地址。</p>
-<ul>
-<li>10.0.0.0 ------ 10.255.255.255</li>
-<li>172.16.0.0 ------ 127.31.255.255</li>
-<li>192.168.0.0 ------- 192.168.255.255</li>
-</ul>
-</blockquote>
-<h2 id="子网掩码的作用">子网掩码的作用</h2>
-<blockquote>
-<p>同IP地址作与运算，得到的结果用于判断两个IP是否位于同一网段，从而判断这两个IP的信息交换是否要通过路由器。</p>
-<p>可以用于屏蔽IP地址的主机ID部分，来凸显IP地址的网络ID部分，借此判断两个IP能否直接信息交换。</p>
-<p>还可以将大的IP网络划分为若干小的网络。(划分子网、等分划分/边长划分)</p>
-<p>超网:通过子网掩码把若干个小网络合并为一个大网络。</p>
-</blockquote>
-<h2 id="ip地址与mac地址">IP地址与MAC地址</h2>
-<blockquote>
-<p>网络层以上使用IP地址，链路层及以下使用MAC地址</p>
-<figure>
-<img src="/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/IP地址和MAC地址.png" alt="IP地址和MAC地址"><figcaption aria-hidden="true">IP地址和MAC地址</figcaption>
-</figure>
-<p>相比于IP数据报，MAC帧增加了</p>
-<p>交换机基于数据帧的MAC地址转发数据帧，路由器基于数据包的IP地址转发数据包。</p>
-<p>数据包在传输过程不变，过网络设备数据帧要用新的物理层地址重新封装。</p>
-<p>MAC地址决定了数据帧下一跳哪个设备接收，而IP地址决定了数据包的起点和终点</p>
-</blockquote>
-<h2 id="协议">协议</h2>
-<blockquote>
-<p>ARP协议:将IP地址转化为物理地址。会使用到广播。</p>
-<p>RARP协议:将物理地址转化为IP地址。</p>
-<p>ARP欺骗。</p>
-</blockquote>
-<h2 id="ip数据报">IP数据报</h2>
-<blockquote>
-<p>IP数据报的首部和数据两部分组成。首部的前一部分是固定，共20字节，是所有IP数据报必须具有的。</p>
-<figure>
-<img src="/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/IP地址.png" alt="IP地址"><figcaption aria-hidden="true">IP地址</figcaption>
-</figure>
-<p>在首部的固定部分的后面是一些可选字段，其长度是可变的。</p>
-<p>各字段</p>
-<p>0-4位版本(表示为IPv4/IPv6) 4-8位首部长度(最小值为固定长度部分共20个字节。可表示最大15个单位，一个单位4个字节，故首部最大60个字节) 8-16区分服务(数据包所需的服务，定义优先级) 16-32总长度(数据包总大小，一般为1500)</p>
-<p>标识(每产生一个数据包就增加1) 标志(判断数据包是否分片) 片偏移(偏移量单位为8个字节)</p>
-<p>TTL生存时间值，指定IP包被路由器丢弃之前允许通过的最大网段数量。</p>
-<p>协议用于指明上层协议是什么，如ICMP、TCP、UDP等。</p>
-<p>首部校验和用于校验数据报是否可用。计算过程:发送端把数据报首部的信息拆成许多单字，然后初始校验和为0，将校验和同这些单字进行反码运算求和，结果取反码即为校验和。接收方重复此过程，若结果为0则保留，不为0则直接丢弃。</p>
-<p>源地址、目的地址即为IP地址。</p>
-<p>可选字段用于支持排错、测量及安全等措施</p>
-</blockquote>
-<h2 id="数据路由">数据路由</h2>
-<blockquote>
-<p>数据路由在不同网段转发数据报。能去能回--------网络畅通。</p>
-<p>负载均衡</p>
-</blockquote>
-<h2 id="icmp协议">ICMP协议</h2>
-<blockquote>
-<p>报文类型:ICMP差错报告报文、ICMP询问报文</p>
-<p>报文前四个字节格式统一共3个字段:类型、代码、检验和，接着的四个字节内容与ICMP的类型有关。</p>
-<p>差错报告报文共五种:终点不可达、源点抑制(发数据报的速度过快)、时间超过、参数问题、改变路由/重定向。</p>
-<p>询问报文有两种:回送请求和回答报文、时间戳请求和回答报文。</p>
-</blockquote>
-<h2 id="动态路由协议">动态路由协议</h2>
-<blockquote>
-<p>RIP最早的动态路由协议，周期性广播，30s广播一次。跳数16次。</p>
-</blockquote>
-<h2 id="ospf协议开放式最短路径优先---动态路由协议">OSPF协议(开放式最短路径优先)---动态路由协议</h2>
-<h2 id="bgp------外部网关协议">BGP ---- 外部网关协议</h2>
-<blockquote>
-<p>不同自治系统的路由器之间交换路由信息的协议</p>
-<p>报文类型：</p>
-<p>OPEN</p>
-<p>UDDATE</p>
-<p>KEEPALIVE</p>
-<p>NOTIFICATION</p>
-<p>ROUTE-REFRESH</p>
-<p>重要属性：</p>
-<p>AS-PATH: 包含前缀通告所经过的AS序列</p>
-<p>NEXT-HOP(下一跳): 开始一个AS-PATH的路由器接口，指向下一跳AS.</p>
-</blockquote>
-<h2 id="nat和pat">NAT和PAT</h2>
-<blockquote>
-
-</blockquote>
-<h2 id="igmp-组播多播">IGMP 组播/多播</h2>
-<h2 id="dhcp">DHCP</h2>
-<blockquote>
-
-</blockquote>
-<h2 id="arp">ARP</h2>
-<blockquote>
-<p>默认网关为网络上的最低地址，如192.32.65.0/24的默认网关为192.32.65.1</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>计算机网络</category>
-      </categories>
-      <tags>
-        <tag>网络</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>数据库连接池</title>
-    <url>/2021/02/20/codeAnalyse/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E6%B1%A0/</url>
-    <content><![CDATA[<h1 id="数据库连接池">数据库连接池</h1>
-<h2 id="常用数据库连接池">常用数据库连接池</h2>
-<h3 id="dbcp">DBCP</h3>
-<h4 id="常用参数">常用参数</h4>
-<blockquote>
-<p>initialSize 初始连接数</p>
-<p>maxActive 最多可容纳活跃连接数</p>
-<p>maxIdle 最大空闲连接数(已创建但未被使用的连接，会被定期回收，回收直到maxIdle数量)</p>
-<p>minIdle 最小空闲连接数</p>
-<p>maxWait 获取连接的最大等待时间</p>
-</blockquote>
-<h3 id="c3p0">C3P0</h3>
-<h4 id="常用参数-1">常用参数</h4>
-<blockquote>
-<p>initialPoolSize 初始连接数</p>
-<p>maxPoolSize 最大连接数</p>
-<p>minPoolSize 最小连接数</p>
-<p>acquireIncrement 当没有空闲连接时，一次性创建新连接的数量</p>
-<p>maxIdleTime 连接的最大空闲时间，即若一直未使用则自动断掉连接。</p>
-</blockquote>
-<h3 id="druid">Druid</h3>
-<h4 id="常用参数-2">常用参数</h4>
-<blockquote>
-<p>initialSize 初始连接数</p>
-<p>maxActive 最多可容纳活跃连接数</p>
-<p>maxIdle 最大空闲连接数(已创建但未被使用的连接，会被定期回收，回收直到maxIdle数量)</p>
-<p>minIdle 最小空闲连接数</p>
-<p>maxWait 获取连接的最大等待时间</p>
-<p>timeBetweenEvictionRunsMillis 间隔多长时间检测是否关闭空闲连接。</p>
-<p>minEvictableIdleTime 控制一个连接在资源池中最小的生存时间</p>
-<p>maxEvictableIdleTime 控制一个连接在资源池中最大的生存时间</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>数据库</category>
-      </categories>
-      <tags>
-        <tag>数据库</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>传输层</title>
     <url>/2021/02/20/computerNetwork/%E7%AC%AC5%E7%AB%A0-%E4%BC%A0%E8%BE%93%E5%B1%82/</url>
     <content><![CDATA[<h1 id="传输层">传输层</h1>
@@ -5391,26 +5391,6 @@
       </tags>
   </entry>
   <entry>
-    <title>应用层</title>
-    <url>/2021/02/20/computerNetwork/%E7%AC%AC6%E7%AB%A0-%E5%BA%94%E7%94%A8%E5%B1%82/</url>
-    <content><![CDATA[<h2 id="使用tcp">使用TCP</h2>
-<blockquote>
-<p>HTTP、FTP、Telnet、SMTP</p>
-</blockquote>
-<h2 id="使用udp">使用UDP</h2>
-<blockquote>
-<p>流媒体、DNS、网络电话、电话会议</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>计算机网络</category>
-      </categories>
-      <tags>
-        <tag>网络</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Restful基本使用</title>
     <url>/2021/02/20/designPattern/Restful%E9%A3%8E%E6%A0%BC/</url>
     <content><![CDATA[<h1 id="restful风格">Restful风格</h1>
@@ -5430,6 +5410,26 @@
       <tags>
         <tag>设计模式</tag>
         <tag>代码风格</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>应用层</title>
+    <url>/2021/02/20/computerNetwork/%E7%AC%AC6%E7%AB%A0-%E5%BA%94%E7%94%A8%E5%B1%82/</url>
+    <content><![CDATA[<h2 id="使用tcp">使用TCP</h2>
+<blockquote>
+<p>HTTP、FTP、Telnet、SMTP</p>
+</blockquote>
+<h2 id="使用udp">使用UDP</h2>
+<blockquote>
+<p>流媒体、DNS、网络电话、电话会议</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>计算机网络</category>
+      </categories>
+      <tags>
+        <tag>网络</tag>
       </tags>
   </entry>
   <entry>
