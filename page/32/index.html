@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/JavaBasicKnowledge/%E5%B9%B6%E5%8F%91%E7%9B%B8%E5%85%B3/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/JavaBasicKnowledge/%E5%B9%B6%E5%8F%91%E7%9B%B8%E5%85%B3/" class="post-title-link" itemprop="url">并发相关内容</a>
+          <a href="/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" class="post-title-link" itemprop="url">多线程相关</a>
         </h2>
 
         <div class="post-meta-container">
@@ -286,16 +286,10 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
+      
 
-      <time title="创建时间：2021-02-20 12:26:00" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：17:12:35" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
     </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-23 13:19:40" itemprop="dateModified" datetime="2021-03-23T13:19:40+08:00">2021-03-23</time>
-      </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
@@ -318,14 +312,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>6.9k</span>
+      <span>573</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>6 分钟</span>
+      <span>1 分钟</span>
     </span>
 </div>
 
@@ -336,128 +330,30 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="并发相关">并发相关</h1>
-<h2 id="可见性">可见性</h2>
+          <h1 id="多线程">多线程</h1>
+<h2 id="进程和线程">进程和线程</h2>
 <blockquote>
-<p>由于内存读取速度和CPU处理速度不匹配的问题，所以往往在CPU和内存之间存在缓存机制，而多个线程执行程序时，会先从内存中读取数据放入CPU缓存中，并且在程序执行的过程中往往不会对数据进行及时更改。导致两个线程之间的数据存在不可见的问题。如子线程使用一个boolean变量来循环，此时主线程改变了该变量，但子线程却不一定会退出循环。</p>
-<p>java中使用volatile解决这个问题。</p>
+<p>进程是执行程序的一次执行过程，是一个动态的概念。是系统资源分配的单位。</p>
+<p>通常一个进程中包含多个线程，一个进程至少含一个线程。线程是CPU调度和执行的单位。</p>
 </blockquote>
-<h2 id="原子性">原子性</h2>
+<h3 id="java创建线程的方式">JAVA创建线程的方式</h3>
 <blockquote>
-<p>一系列操作是不可拆分的。</p>
-<p>如count++指令；</p>
-<p>会对应汇编的三条指令：</p>
-<p>​ count值加载到CPU寄存器</p>
-<p>​ 寄存器中+1操作</p>
-<p>​ 结果写入操作</p>
+<ol type="1">
+<li>继承Thread类，重写run方法。调用是使用start方法调用，若使用run方法调用则变为单线程。</li>
+<li>实现runnable接口，重写run方法，执行线程需丢入runnable接口实现类，调用start方法。(避免使用继承)</li>
+<li>实现callable接口，需要返回值类型，重写call方法，需要抛出异常。(可以返回结果，可以抛出异常)<img src="/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/实现callable.png" alt="实现callable"></li>
+</ol>
 </blockquote>
-<h2 id="有序性">有序性</h2>
+<h2 id="java线程的状态">Java线程的状态</h2>
 <blockquote>
-<p>编译时会进行优化。</p>
-<p>int a = 6;</p>
-<p>int b = 10;</p>
-<p>优化时可能顺序交换了，导致问题。如下可能导致操作1和操作2互换位置，操作3和操作4互换位置，从而使得x = y = 0</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">reorder</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        Thread t1 = <span class="keyword">new</span> Thread(()-&gt;&#123;</span><br><span class="line">            a = <span class="number">1</span>; <span class="comment">//操作1</span></span><br><span class="line">            x = b; <span class="comment">//操作2</span></span><br><span class="line">        &#125;);</span><br><span class="line">        Thread t2 = <span class="keyword">new</span> Thread(()-&gt;&#123;</span><br><span class="line">            b = <span class="number">1</span>; <span class="comment">//操作3</span></span><br><span class="line">            y = a; <span class="comment">//操作4</span></span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        t1.start();</span><br><span class="line">        t2.start();</span><br><span class="line">        t1.join();</span><br><span class="line">        t2.join();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(x == <span class="number">0</span> &amp;&amp; y == <span class="number">0</span>)&#123;</span><br><span class="line">            System.out.println(a + <span class="string">&quot;---&quot;</span> + b + <span class="string">&quot;---&quot;</span> + x + <span class="string">&quot;---&quot;</span> + y + <span class="string">&quot;---&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        a = <span class="number">0</span>;</span><br><span class="line">        b = <span class="number">0</span>;</span><br><span class="line">        y = <span class="number">0</span>;</span><br><span class="line">        x = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<h2 id="happens-before原则">happens-before原则</h2>
-</blockquote>
-<blockquote>
-<p>happens-before原则定义如下： 1. 如果一个操作happens-before另一个操作，那么第一个操作的执行结果将对第二个操作可见，而且第一个操作的执行顺序排在第二个操作之前。 2. 两个操作之间存在happens-before关系，并不意味着一定要按照happens-before原则制定的顺序来执行。如果重排序之后的执行结果与按照happens-before关系来执行的结果一致，那么这种重排序并不非法。</p>
-<p>程序次序规则：在一个线程内一段代码的执行结果是有序的。就是还会指令重排，但是随便它怎么排，结果是按照我们代码的顺序生成的不会变！</p>
-<p>管程锁定规则：就是无论是在单线程环境还是多线程环境，对于同一个锁来说，一个线程对这个锁解锁之后，另一个线程获取了这个锁都能看到前一个线程的操作结果！(管程是一种通用的同步原语，synchronized就是管程的实现）</p>
-<p>volatile变量规则：就是如果一个线程先去写一个volatile变量，然后一个线程去读这个变量，那么这个写操作的结果一定对读的这个线程可见。</p>
-<p>线程启动规则：在主线程A执行过程中，启动子线程B，那么线程A在启动子线程B之前对共享变量的修改结果对线程B可见。</p>
-<p>线程终止规则：在主线程A执行过程中，子线程B终止，那么线程B在终止之前对共享变量的修改结果在线程A中可见。</p>
-<p>线程中断规则：对线程interrupt()方法的调用先行发生于被中断线程代码检测到中断事件的发生，可以通过Thread.interrupted()检测到是否发生中断。</p>
-<p>传递规则：这个简单的，就是happens-before原则具有传递性，即A happens-before B ， B happens-before C，那么A happens-before C。</p>
-<p>对象终结规则：这个也简单的，就是一个对象的初始化的完成，也就是构造函数执行的结束一定 happens-before它的finalize()方法。</p>
-</blockquote>
-<h2 id="线程池">线程池</h2>
-<blockquote>
-<p>可缓存线程池 Executors.newCachedThreadPool()</p>
-<p>​ 无上限</p>
-<p>定长线程池 Executors.newFixedThreadPool()</p>
-<p>​ 最大线程数即为设定的线程数</p>
-<p>单线程的线程池 Executors.newSingleThreadExecutor()</p>
-<p>​ 只容许一个线程</p>
-<p>计划任务线程池 Executors.newScheduledThreadPool()</p>
-<p>​ 定时任务。</p>
-<p>自定义线程池 ExecutorService myPool = new ThreadPoolExecutor();</p>
-<p>线程池可以传入callable对象和runnable对象。</p>
-<p>runnable没有返回值和异常，callable可以有返回值也可以抛出异常</p>
-<p>submit方法可以获得future对象，用于获取线程返回值和异常。</p>
-</blockquote>
-<h4 id="底层实现">底层实现</h4>
-<blockquote>
-<p>调用poolExecutor.execute(t1);方法时会执行的逻辑如下</p>
-<p>当当前线程数小于核心线程数数，调用addWorker方法</p>
-<p>addWorker方法主要判断了当前线程池状态，当线程池状态符合条件(处于Runing且数量小于规定数量时)，利用CAS操作判断是否可以添加新线程。</p>
-<p>若成功添加则调用new Worker创建新线程。然后利用ReentrantLock，锁定，并判断当前线程池状态是否为running，同时检查是否已经启动，若为running且未启动，则将worker添加到workers中(本质是个HashSet<Worker>)，更新largestPoolSize，然后启动线程。返回结果。</Worker></p>
-<p>这里启动线程的方法调用的实际上是worker的runWorker方法，该方法会判断(task != null || (task = getTask()) != null)，当当前worker存在任务或任务队列中存在任务时，worker会依次执行beforeExecute，task.run()，afterExecute方法，这个流程会加锁(使用Acquire和Release)</p>
-<p>getTask方法则本质上会使用阻塞队列的take方法，阻塞获取任务，或调用设定了超时时间的poll方法，获取任务。</p>
-<p>当没有可执行任务时，processWorkerExit，从workers中移除worker。</p>
-<p>当当前线程数大于核心线程数，会判断当前线程池状态是否为runnning，且能否成功添加到任务队列中。若成功入队，再次检查当前线程池状态是否符合running，若不是则移除任务。</p>
-<p>若无法入队，且当前线程数大于核心线程数，则尝试addWorker，若还不成功则reject任务，reject方式为自己选择的策略。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(Runnable command)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (command == <span class="keyword">null</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     * Proceed in 3 steps:</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 1. If fewer than corePoolSize threads are running, try to</span></span><br><span class="line"><span class="comment">     * start a new thread with the given command as its first</span></span><br><span class="line"><span class="comment">     * task.  The call to addWorker atomically checks runState and</span></span><br><span class="line"><span class="comment">     * workerCount, and so prevents false alarms that would add</span></span><br><span class="line"><span class="comment">     * threads when it shouldn&#x27;t, by returning false.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 2. If a task can be successfully queued, then we still need</span></span><br><span class="line"><span class="comment">     * to double-check whether we should have added a thread</span></span><br><span class="line"><span class="comment">     * (because existing ones died since last checking) or that</span></span><br><span class="line"><span class="comment">     * the pool shut down since entry into this method. So we</span></span><br><span class="line"><span class="comment">     * recheck state and if necessary roll back the enqueuing if</span></span><br><span class="line"><span class="comment">     * stopped, or start a new thread if there are none.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 3. If we cannot queue task, then we try to add a new</span></span><br><span class="line"><span class="comment">     * thread.  If it fails, we know we are shut down or saturated</span></span><br><span class="line"><span class="comment">     * and so reject the task.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">int</span> c = ctl.get();</span><br><span class="line">    <span class="keyword">if</span> (workerCountOf(c) &lt; corePoolSize) &#123;</span><br><span class="line">        <span class="keyword">if</span> (addWorker(command, <span class="keyword">true</span>))</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        c = ctl.get();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (isRunning(c) &amp;&amp; workQueue.offer(command)) &#123;</span><br><span class="line">        <span class="keyword">int</span> recheck = ctl.get();</span><br><span class="line">        <span class="keyword">if</span> (! isRunning(recheck) &amp;&amp; remove(command))</span><br><span class="line">            reject(command);</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (workerCountOf(recheck) == <span class="number">0</span>)</span><br><span class="line">            addWorker(<span class="keyword">null</span>, <span class="keyword">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (!addWorker(command, <span class="keyword">false</span>))</span><br><span class="line">        reject(command);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="juc工具">juc工具</h2>
-</blockquote>
-<h3 id="countdownlatch">CountDownLatch</h3>
-<blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CountDownLatch cdl = <span class="keyword">new</span> CountDownLatch(<span class="number">4</span>);</span><br></pre></td></tr></table></figure>
-<p>在线程中调用cdl.countdown()</p>
-<p>主线程使用cdl.await()</p>
-<p>只有当cdl变为0时才能触发await后的操作。</p>
-</blockquote>
-<h3 id="cyclicbarrier">CyclicBarrier</h3>
-<blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CyclicBarrier cb = <span class="keyword">new</span> CyclicBarrier(<span class="number">4</span>);</span><br></pre></td></tr></table></figure>
-<p>先设置栅栏大小，然后在线程中调用cb.await()可以同时等待设置大小个数的线程执行完操作再运行。可以重复使用。</p>
-<p>也可以如下初始化，在等待完成时自动执行runnable的run方法。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">CyclicBarrier cb = <span class="keyword">new</span> CyclicBarrier(<span class="number">4</span>, <span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;xxxx&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-</blockquote>
-<h3 id="semaphore">Semaphore</h3>
-<blockquote>
-<p>信号量，通过acquire方法和release实现类似锁的效果。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Semaphore semaphore = <span class="keyword">new</span> Semaphore(<span class="number">4</span>);</span><br><span class="line">semaphore.acquire();</span><br><span class="line">semaphore.release();</span><br></pre></td></tr></table></figure>
-<h3 id="phaser">Phaser</h3>
-</blockquote>
-<blockquote>
-<p>可以随时注册，注销</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Phaser phaser = <span class="keyword">new</span> Phaser(<span class="number">9</span>);</span><br><span class="line"><span class="comment">//执行register后，上限值从9变为10</span></span><br><span class="line">phaser.register();</span><br><span class="line">phaser.arriveAndAwaitAdvance();</span><br><span class="line"><span class="comment">//执行以下方法后，下一轮的上限值从10变为9</span></span><br><span class="line">phaser.arriveAndDeregister();</span><br></pre></td></tr></table></figure>
-<p>当最后一个线程到达10时，线程会同时唤醒并运行。同时触发onAdvance方法，该方法可以通过自己创建一个phaser类继承Phaser，重写onAdvance方法，然后创建phaser时传入自己的类，即可。</p>
-</blockquote>
-<h3 id="exchanger">Exchanger</h3>
-<blockquote>
-<p>线程之间数据交换。需要两个线程都调用此方法，不然会阻塞。只能用于两个线程之间。</p>
-<p>exchanger.exchange("xxxx")；</p>
-<p>Exchanger<String> exchanger 创建时需要使用泛型。</String></p>
-</blockquote>
-<h2 id="forkjoin并行计算框架">ForkJoin并行计算框架</h2>
-<blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        Long time1 = System.currentTimeMillis();</span><br><span class="line">        <span class="comment">// fork 拆解, join 合并</span></span><br><span class="line">        ForkJoinPool forkJoinPool = <span class="keyword">new</span> ForkJoinPool();</span><br><span class="line">        ForkJoinTask&lt;Long&gt; result = forkJoinPool.submit(<span class="keyword">new</span> CountTask(<span class="number">1</span>,<span class="number">100000000</span>));</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            System.out.println(result.get().toString());</span><br><span class="line"></span><br><span class="line">            Long time2 = System.currentTimeMillis();</span><br><span class="line">            System.out.println(time2 - time1);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (ExecutionException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">CountTask</span> <span class="keyword">extends</span> <span class="title">RecursiveTask</span>&lt;<span class="title">Long</span>&gt;</span>&#123;</span><br><span class="line">        <span class="keyword">int</span> start;</span><br><span class="line">        <span class="keyword">int</span> end;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">CountTask</span><span class="params">(<span class="keyword">int</span> start,<span class="keyword">int</span> end)</span></span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.start = start;</span><br><span class="line">            <span class="keyword">this</span>.end = end;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">protected</span> Long <span class="title">compute</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">long</span> sum = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">if</span>(end - start &lt;= <span class="number">2</span>)&#123;</span><br><span class="line">                <span class="comment">// 拆解</span></span><br><span class="line">                <span class="keyword">for</span>(<span class="keyword">int</span> i = start ; i &lt;= end ; i++)&#123;</span><br><span class="line">                    sum += i;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// 拆分</span></span><br><span class="line">                <span class="keyword">int</span> mid = (start + end) / <span class="number">2</span>;</span><br><span class="line">                CountTask leftTask = <span class="keyword">new</span> CountTask(start, mid);</span><br><span class="line">                CountTask rightTask = <span class="keyword">new</span> CountTask(mid + <span class="number">1</span>,end);</span><br><span class="line">                <span class="comment">// 拆分任务</span></span><br><span class="line">                invokeAll(leftTask,rightTask);</span><br><span class="line"><span class="comment">//                leftTask.fork();</span></span><br><span class="line"><span class="comment">//                rightTask.fork();</span></span><br><span class="line">                <span class="comment">//获取结果</span></span><br><span class="line">                <span class="keyword">long</span> leftResult = leftTask.join();</span><br><span class="line">                <span class="keyword">long</span> rightResult = rightTask.join();</span><br><span class="line"><span class="comment">//                System.out.println(leftResult + &quot;----&quot; + rightResult);</span></span><br><span class="line">                sum = leftResult + rightResult;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 拆解任务的阈值,如何定义一个任务是最小任务</span></span><br><span class="line">            <span class="keyword">return</span> sum;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<h2 id="threadlocal">ThreadLocal</h2>
-</blockquote>
-<blockquote>
-<p>线程本地变量，创建一个线程独立的变量。</p>
-<p>底层实现的原理：本质上是一个线程中存在一个ThreadLocalMap，用于存储ThreadLocal，该map的key为创建的ThreadLocal对象，而非Thread本身。</p>
-<p>get和set本质上也是hashmap类似的哈希计算获取对应数组位置，存入。也存在扩容操作，一次扩容2倍。</p>
-<p>ThreadLocal对象使用结束后需要调用remove方法，使其从map中被移除，避免在线程复用时拿到了上次的值。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(T value)</span> </span>&#123;</span><br><span class="line">Thread t = Thread.currentThread();</span><br><span class="line">ThreadLocalMap map = getMap(t);</span><br><span class="line"><span class="keyword">if</span> (map != <span class="keyword">null</span>)</span><br><span class="line">  map.set(<span class="keyword">this</span>, value);</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">  createMap(t, value);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> T <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">Thread t = Thread.currentThread();</span><br><span class="line">ThreadLocalMap map = getMap(t);</span><br><span class="line"><span class="keyword">if</span> (map != <span class="keyword">null</span>) &#123;</span><br><span class="line">  ThreadLocalMap.Entry e = map.getEntry(<span class="keyword">this</span>);</span><br><span class="line">  <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">      <span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">      T result = (T)e.value;</span><br><span class="line">      <span class="keyword">return</span> result;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> setInitialValue();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="synchronized">synchronized</h2>
-</blockquote>
-<blockquote>
-<p>同步普通方法，同步的是this</p>
-<p>同步静态方法，同步的是类</p>
-<p>同步代码块</p>
-</blockquote>
-<h2 id="reentrantlock">ReentrantLock</h2>
-<blockquote>
-<p>可重入锁，即自己加了锁还可以再次加锁，如a.lock(); xxxx; a.lock(); a.unlock(); a.unlock();</p>
-<p>tryLock() 返回是否拿到锁了。</p>
-</blockquote>
-<h2 id="readwritelock">ReadWriteLock</h2>
-<blockquote>
-<p>读写锁一般如下使用</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ReadWriteLock lock = <span class="keyword">new</span> ReentrantReadWriteLock();</span><br><span class="line">lock.readLock().lock();</span><br><span class="line">lock.writeLock().lock();</span><br></pre></td></tr></table></figure>
+<p>NEW、RUNNABLE、BLOCKED、WAITING、TIMED_WAITING、TERMINATED</p>
+<p>NEW：线程还没有启动。</p>
+<p>RUNNABLE：线程已经在jvm中运行了，但可能还在等待操作系统的处理器之类的资源。</p>
+<p>BLOCKED：线程等待monitor lock。</p>
+<p>WAITING：正在等待另一个线程执行的状态。</p>
+<p>TIMED_WAITING：有着指定特定等待时间等待另一个线程执行的状态。</p>
+<p>TERMINATED：线程终止，线程已经结束执行。</p>
+<p>线程分为用户线程和守护线程(Daemon)，虚拟机必须确保用户线程执行完毕，虚拟机不用等待守护线程执行完毕。可以通过调用线程的setDaemon(true)，将某个线程变为守护线程</p>
 </blockquote>
 
       

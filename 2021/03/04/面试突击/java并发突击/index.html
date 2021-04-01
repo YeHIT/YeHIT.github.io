@@ -29,15 +29,15 @@
 <meta property="og:site_name" content="Yesomething">
 <meta property="og:description" content="Java并发突击  CPU术语  Volatile实现原理  当字段被声明为volatile时，Java线程内存模型确保所有线程看到这个变量的值是一致的。 本质上是通过编译后在指令后添加lock指令。lock指令的作用是： ​ 将当前处理器缓存行的数据写回系统内存。 ​ 这个写回内存的操作会使在其他CPU里缓存了该内存地址的数据无效。  Synchronized实现原理">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://49.234.221.130/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/Users/SmallYe/Desktop/blog/source_posts/面试突击/java并发突击/CPU术语.png">
-<meta property="og:image" content="http://49.234.221.130/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/Users/SmallYe/Desktop/blog/source_posts/面试突击/java并发突击/Java对象头.png">
-<meta property="og:image" content="http://49.234.221.130/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/Users/SmallYe/Desktop/blog/source_posts/面试突击/java并发突击/MarkWord变化.png">
+<meta property="og:image" content="http://49.234.221.130/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/CPU术语.png">
+<meta property="og:image" content="http://49.234.221.130/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/Java对象头.png">
+<meta property="og:image" content="http://49.234.221.130/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/MarkWord变化.png">
 <meta property="article:published_time" content="2021-03-03T16:00:00.000Z">
-<meta property="article:modified_time" content="2021-03-24T12:53:45.651Z">
+<meta property="article:modified_time" content="2021-04-01T08:32:24.792Z">
 <meta property="article:author" content="Ye">
 <meta property="article:tag" content="并发">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://49.234.221.130/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/Users/SmallYe/Desktop/blog/source_posts/面试突击/java并发突击/CPU术语.png">
+<meta name="twitter:image" content="http://49.234.221.130/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/CPU术语.png">
 
 
 <link rel="canonical" href="http://49.234.221.130/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/">
@@ -303,7 +303,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-24 20:53:45" itemprop="dateModified" datetime="2021-03-24T20:53:45+08:00">2021-03-24</time>
+        <time title="修改时间：2021-04-01 16:32:24" itemprop="dateModified" datetime="2021-04-01T16:32:24+08:00">2021-04-01</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -350,7 +350,7 @@
     <div class="post-body" itemprop="articleBody">
         <h1 id="java并发突击">Java并发突击</h1>
 <figure>
-<img src="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/Users\SmallYe\Desktop\blog\source_posts\面试突击\java并发突击\CPU术语.png" alt="CPU术语"><figcaption aria-hidden="true">CPU术语</figcaption>
+<img src="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/CPU术语.png" alt="CPU术语"><figcaption aria-hidden="true">CPU术语</figcaption>
 </figure>
 <h2 id="volatile实现原理">Volatile实现原理</h2>
 <blockquote>
@@ -373,11 +373,11 @@
 <blockquote>
 <p>synchronized用的锁是存在Java对象头中的。若对象是数组类型，虚拟机使用3个字宽存储对象头，非数组类型用2字宽存储对象头。</p>
 <figure>
-<img src="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/Users\SmallYe\Desktop\blog\source_posts\面试突击\java并发突击\Java对象头.png" alt="Java对象头"><figcaption aria-hidden="true">Java对象头</figcaption>
+<img src="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/Java对象头.png" alt="Java对象头"><figcaption aria-hidden="true">Java对象头</figcaption>
 </figure>
 <p>Mark Word里默认存储对象的HashCode、分代年龄和锁标记位。</p>
 <figure>
-<img src="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/Users\SmallYe\Desktop\blog\source_posts\面试突击\java并发突击\MarkWord变化.png" alt="MarkWord变化"><figcaption aria-hidden="true">MarkWord变化</figcaption>
+<img src="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/MarkWord变化.png" alt="MarkWord变化"><figcaption aria-hidden="true">MarkWord变化</figcaption>
 </figure>
 <p>JDK1.6为了减少获得锁和释放锁带来的性能消耗，引入了“偏向锁”和“轻量级锁”，在JDK6后锁共4中状态依次为：<strong>无锁状态、偏向锁状态、轻量级锁状态和重量级锁状态</strong>。这几个状态会随竞争情况逐渐升级，锁可以升级但不能降级。</p>
 <p><strong>偏向锁</strong>：</p>
