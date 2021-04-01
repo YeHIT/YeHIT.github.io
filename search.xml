@@ -1,6 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Dubbo引用服务流程</title>
+    <url>/2021/03/31/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo%E5%BC%95%E7%94%A8%E6%9C%8D%E5%8A%A1%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h1 id="dubbo引用服务流程">Dubbo引用服务流程</h1>
+<h2 id="dubbobootstrap的start方法">DubboBootstrap的start()方法</h2>
+<figure>
+<img src="/2021/03/31/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo%E5%BC%95%E7%94%A8%E6%9C%8D%E5%8A%A1%E6%B5%81%E7%A8%8B/start方法流程.png" alt="start方法流程"><figcaption aria-hidden="true">start方法流程</figcaption>
+</figure>
+<blockquote>
+<p>其中有一个referServices方法，作为引用服务的方法，但Dubbo默认是懒加载机制，因此一般来说不是在这里完成服务引用。而是通过使用时再初始化来完成服务引用的。</p>
+<p>具体流程是从ReferenceBean.getObject()方法开始的。</p>
+</blockquote>
+<h2 id="服务引用过程分析">服务引用过程分析</h2>
+<blockquote>
+<p>ReferenceBean.getObject()方法</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> T <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (destroyed) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">&quot;The invoker of ReferenceConfig(&quot;</span> + url + <span class="string">&quot;) has already destroyed!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (ref == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="comment">// 初始化</span></span><br><span class="line">        init();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ref;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 若初始化了则退出</span></span><br><span class="line">    <span class="keyword">if</span> (initialized) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 若bootstrap未初始化则初始化</span></span><br><span class="line">    <span class="keyword">if</span> (bootstrap == <span class="keyword">null</span>) &#123;</span><br><span class="line">        bootstrap = DubboBootstrap.getInstance();</span><br><span class="line">        bootstrap.initialize();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 检查配置</span></span><br><span class="line">    checkAndUpdateSubConfigs();</span><br><span class="line"></span><br><span class="line">    checkStubAndLocal(interfaceClass);</span><br><span class="line">    ConfigValidationUtils.checkMock(interfaceClass, <span class="keyword">this</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 省略大量配置信息代码</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="comment">// 创建代理类主要分析这个方法</span></span><br><span class="line">    ref = createProxy(map);</span><br><span class="line"></span><br><span class="line">    serviceMetadata.setTarget(ref);</span><br><span class="line">    serviceMetadata.addAttribute(PROXY_CLASS_REF, ref);</span><br><span class="line">    ConsumerModel consumerModel = repository.lookupReferredService(serviceMetadata.getServiceKey());</span><br><span class="line">    consumerModel.setProxyObject(ref);</span><br><span class="line">    consumerModel.init(attributes);</span><br><span class="line"></span><br><span class="line">    initialized = <span class="keyword">true</span>;</span><br><span class="line"></span><br><span class="line">    checkInvokerAvailable();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// dispatch a ReferenceConfigInitializedEvent since 2.7.4</span></span><br><span class="line">    dispatch(<span class="keyword">new</span> ReferenceConfigInitializedEvent(<span class="keyword">this</span>, invoker));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="分析referenceconfig.createproxy方法">分析ReferenceConfig.createProxy()方法</h2>
+</blockquote>
+<blockquote>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> T <span class="title">createProxy</span><span class="params">(Map&lt;String, String&gt; map)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 若为本地引用，则通过injvm协议调用refer方法产生对象</span></span><br><span class="line">    <span class="keyword">if</span> (shouldJvmRefer(map)) &#123;</span><br><span class="line">        URL url = <span class="keyword">new</span> URL(LOCAL_PROTOCOL, LOCALHOST_VALUE, <span class="number">0</span>, interfaceClass.getName()).addParameters(map);</span><br><span class="line">        invoker = REF_PROTOCOL.refer(interfaceClass, url);</span><br><span class="line">        <span class="keyword">if</span> (logger.isInfoEnabled()) &#123;</span><br><span class="line">            logger.info(<span class="string">&quot;Using injvm service &quot;</span> + interfaceClass.getName());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        urls.clear();</span><br><span class="line">        <span class="keyword">if</span> (url != <span class="keyword">null</span> &amp;&amp; url.length() &gt; <span class="number">0</span>) &#123; <span class="comment">// user specified URL, could be peer-to-peer address, or register center&#x27;s address.</span></span><br><span class="line">            String[] us = SEMICOLON_SPLIT_PATTERN.split(url);</span><br><span class="line">            <span class="keyword">if</span> (us != <span class="keyword">null</span> &amp;&amp; us.length &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">for</span> (String u : us) &#123;</span><br><span class="line">                    URL url = URL.valueOf(u);</span><br><span class="line">                    <span class="keyword">if</span> (StringUtils.isEmpty(url.getPath())) &#123;</span><br><span class="line">                        url = url.setPath(interfaceName);</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">if</span> (UrlUtils.isRegistry(url)) &#123;</span><br><span class="line">                        urls.add(url.addParameterAndEncoded(REFER_KEY, StringUtils.toQueryString(map)));</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        urls.add(ClusterUtils.mergeUrl(url, map));</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123; <span class="comment">// assemble URL from register center&#x27;s configuration</span></span><br><span class="line">            <span class="comment">// if protocols not injvm checkRegistry</span></span><br><span class="line">            <span class="keyword">if</span> (!LOCAL_PROTOCOL.equalsIgnoreCase(getProtocol())) &#123;</span><br><span class="line">                checkRegistry();</span><br><span class="line">                <span class="comment">//加载注册中心URL</span></span><br><span class="line">                List&lt;URL&gt; us = ConfigValidationUtils.loadRegistries(<span class="keyword">this</span>, <span class="keyword">false</span>);</span><br><span class="line">                <span class="keyword">if</span> (CollectionUtils.isNotEmpty(us)) &#123;</span><br><span class="line">                    <span class="keyword">for</span> (URL u : us) &#123;</span><br><span class="line">                        URL monitorUrl = ConfigValidationUtils.loadMonitor(<span class="keyword">this</span>, u);</span><br><span class="line">                        <span class="keyword">if</span> (monitorUrl != <span class="keyword">null</span>) &#123;</span><br><span class="line">                            map.put(MONITOR_KEY, URL.encode(monitorUrl.toFullString()));</span><br><span class="line">                        &#125;</span><br><span class="line">                        urls.add(u.addParameterAndEncoded(REFER_KEY, StringUtils.toQueryString(map)));</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">// 未配置注册中心抛出异常</span></span><br><span class="line">                <span class="keyword">if</span> (urls.isEmpty()) &#123;</span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">&quot;No such any registry to reference &quot;</span> + interfaceName + <span class="string">&quot; on the consumer &quot;</span> + NetUtils.getLocalHost() + <span class="string">&quot; use dubbo version &quot;</span> + Version.getVersion() + <span class="string">&quot;, please config &lt;dubbo:registry address=\&quot;...\&quot; /&gt; to your spring config.&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">		<span class="comment">// 单个注册中心或服务提供者调用refer方法</span></span><br><span class="line">        <span class="keyword">if</span> (urls.size() == <span class="number">1</span>) &#123;</span><br><span class="line">            invoker = REF_PROTOCOL.refer(interfaceClass, urls.get(<span class="number">0</span>));</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            List&lt;Invoker&lt;?&gt;&gt; invokers = <span class="keyword">new</span> ArrayList&lt;Invoker&lt;?&gt;&gt;();</span><br><span class="line">            URL registryURL = <span class="keyword">null</span>;</span><br><span class="line">            <span class="keyword">for</span> (URL url : urls) &#123;</span><br><span class="line">                invokers.add(REF_PROTOCOL.refer(interfaceClass, url));</span><br><span class="line">                <span class="keyword">if</span> (UrlUtils.isRegistry(url)) &#123;</span><br><span class="line">                    registryURL = url; <span class="comment">// use last registry url</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (registryURL != <span class="keyword">null</span>) &#123; <span class="comment">// registry url is available</span></span><br><span class="line">                <span class="comment">// for multi-subscription scenario, use &#x27;zone-aware&#x27; policy by default</span></span><br><span class="line">                String cluster = registryURL.getParameter(CLUSTER_KEY, ZoneAwareCluster.NAME);</span><br><span class="line">                <span class="comment">// The invoker wrap sequence would be: ZoneAwareClusterInvoker(StaticDirectory) -&gt; FailoverClusterInvoker(RegistryDirectory, routing happens here) -&gt; Invoker</span></span><br><span class="line">                invoker = Cluster.getCluster(cluster, <span class="keyword">false</span>).join(<span class="keyword">new</span> StaticDirectory(registryURL, invokers));</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123; <span class="comment">// not a registry url, must be direct invoke.</span></span><br><span class="line">                String cluster = CollectionUtils.isNotEmpty(invokers)</span><br><span class="line">                        ? (invokers.get(<span class="number">0</span>).getUrl() != <span class="keyword">null</span> ? invokers.get(<span class="number">0</span>).getUrl().getParameter(CLUSTER_KEY, ZoneAwareCluster.NAME) : Cluster.DEFAULT)</span><br><span class="line">                        : Cluster.DEFAULT;</span><br><span class="line">                invoker = Cluster.getCluster(cluster).join(<span class="keyword">new</span> StaticDirectory(invokers));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (logger.isInfoEnabled()) &#123;</span><br><span class="line">        logger.info(<span class="string">&quot;Refer dubbo service &quot;</span> + interfaceClass.getName() + <span class="string">&quot; from url &quot;</span> + invoker.getUrl());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    URL consumerURL = <span class="keyword">new</span> URL(CONSUMER_PROTOCOL, map.remove(REGISTER_IP_KEY), <span class="number">0</span>, map.get(INTERFACE_KEY), map);</span><br><span class="line">    MetadataUtils.publishServiceDefinition(consumerURL);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// create service proxy</span></span><br><span class="line">    <span class="comment">// 创建代理对象</span></span><br><span class="line">    <span class="keyword">return</span> (T) PROXY_FACTORY.getProxy(invoker, ProtocolUtils.isGeneric(generic));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="section"></h2>
+</blockquote>
+]]></content>
+      <categories>
+        <category>分布式</category>
+      </categories>
+      <tags>
+        <tag>Dubbo</tag>
+        <tag>分布式</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Dubbo服务暴露流程</title>
     <url>/2021/03/31/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo%E6%9C%8D%E5%8A%A1%E6%9A%B4%E9%9C%B2%E6%B5%81%E7%A8%8B/</url>
     <content><![CDATA[<h1 id="dubbo服务暴露流程">Dubbo服务暴露流程</h1>
@@ -1703,6 +1735,150 @@
       </tags>
   </entry>
   <entry>
+    <title>java并发突击</title>
+    <url>/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/</url>
+    <content><![CDATA[<h1 id="java并发突击">Java并发突击</h1>
+<figure>
+<img src="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/Users\SmallYe\Desktop\blog\source_posts\面试突击\java并发突击\CPU术语.png" alt="CPU术语"><figcaption aria-hidden="true">CPU术语</figcaption>
+</figure>
+<h2 id="volatile实现原理">Volatile实现原理</h2>
+<blockquote>
+<p>当字段被声明为volatile时，Java线程内存模型确保所有线程看到这个变量的值是一致的。</p>
+<p>本质上是通过编译后在指令后添加<strong>lock指令</strong>。lock指令的作用是：</p>
+<p>​ 将当前处理器缓存行的数据写回系统内存。</p>
+<p>​ 这个写回内存的操作会使在其他CPU里缓存了该内存地址的数据无效。</p>
+</blockquote>
+<h2 id="synchronized实现原理">Synchronized实现原理</h2>
+<blockquote>
+<p>synchronized实现同步的基础：Java中的每个对象都可以作为锁。</p>
+<p>对于普通同步方法，锁住当前实例对象。</p>
+<p>对于静态同步方法，锁住当前类Class对象。</p>
+<p>对于同步方法块，锁住的是synchronized括号内配置的对象。</p>
+<p>JVM规范中指出Synchronized实现的原理是<strong>基于进入和退出Moniter对象来实现方法同步和代码块同步</strong>，即在编译后将monitorenter指令插入到同步代码块后，将monitorexit插入到方法结束处和异常处。JVM保证每个monitorenter和monitorexit配对。</p>
+<p>Synchronized锁住类实例时，只会锁定访问该类实例带有synchronized修饰的非静态方法的线程，不会锁定普通方法。</p>
+<p>而Synchronized锁住类时，只会锁定访问该类对应带有synchronized修饰的静态方法的线程，而不会锁定普通方法及普通的静态方法。</p>
+</blockquote>
+<h4 id="synchronized锁优化及实质">Synchronized锁优化及实质</h4>
+<blockquote>
+<p>synchronized用的锁是存在Java对象头中的。若对象是数组类型，虚拟机使用3个字宽存储对象头，非数组类型用2字宽存储对象头。</p>
+<figure>
+<img src="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/Users\SmallYe\Desktop\blog\source_posts\面试突击\java并发突击\Java对象头.png" alt="Java对象头"><figcaption aria-hidden="true">Java对象头</figcaption>
+</figure>
+<p>Mark Word里默认存储对象的HashCode、分代年龄和锁标记位。</p>
+<figure>
+<img src="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/Users\SmallYe\Desktop\blog\source_posts\面试突击\java并发突击\MarkWord变化.png" alt="MarkWord变化"><figcaption aria-hidden="true">MarkWord变化</figcaption>
+</figure>
+<p>JDK1.6为了减少获得锁和释放锁带来的性能消耗，引入了“偏向锁”和“轻量级锁”，在JDK6后锁共4中状态依次为：<strong>无锁状态、偏向锁状态、轻量级锁状态和重量级锁状态</strong>。这几个状态会随竞争情况逐渐升级，锁可以升级但不能降级。</p>
+<p><strong>偏向锁</strong>：</p>
+</blockquote>
+<h2 id="线程创建的方式">线程创建的方式</h2>
+<blockquote>
+<p>继承thread类，重写run方法</p>
+<p>实现runnable接口，重写run方法。</p>
+<p>实现callable接口，实现call方法</p>
+</blockquote>
+<h2 id="线程池">线程池</h2>
+<blockquote>
+<p>为什么使用线程池？</p>
+<p>​ 为了避免线程的创建、销毁导致的线程开销，采用线程池管理一定数量的线程达到可复用线程的效果。</p>
+<p>Executors自带的线程池</p>
+<p>​ <strong>newSingleThreadExecutor</strong>：单线程线程池，这个线程池只有一个线程在工作。</p>
+<p>​ <strong>newFixedThreadPool</strong>：固定大小的线程池。每次提交一个任务就创建一个线程，直到线程达到线程池最大大小。超出的线程会在队列中等待。</p>
+<p>​ <strong>newCachedThreadPool</strong>：创建一个可缓存的线程池，当线程池大小超过了处理任务所需要的线程，会回收部分空闲线程，当任务增加时此线程池可以智能添加线程来处理任务。该线程池不会对大小进行限制。</p>
+<p>​ <strong>newScheduledThreadPool</strong>：创建一个大小无限的线程池，支持定时及周期性任务。</p>
+<p>​ <strong>newSingleThreadScheduled</strong>：创建一个只有一个线程的线程池，支持定时及周期性任务。</p>
+<p>​ <strong>newWorkStealingPool</strong>：创建一个拥有多个任务队列的线程池。</p>
+<p>自带线程池的缺点，newSingleThreadExecutor和newFixedThreadPool创建了一个长度Integer.MAX_VALUE的阻塞队列，导致任务过多堆积时耗费大量内存，产生OOM错误。newCachedThreadPool和newScheduledThreadPool创建的线程池最大线程数量为Integer.MAX_VALUE，导致可能创建了大量的线程，消耗资源，甚至造成OOM。</p>
+</blockquote>
+<h2 id="自定义线程池">自定义线程池</h2>
+<blockquote>
+<p>自己创建线程池new ThreadPoolExecutor()可以传递参数：</p>
+<p>​ corePoolSize：核心线程数量，即线程池会保持的线程数</p>
+<p>​ maximumPoolSize：最大线程数量，即线程池</p>
+<p>​ keepAliveTime：空闲线程最大存活时间</p>
+<p>​ TimeUnit：时间单位</p>
+<p>​ BlockingQueue：阻塞队列</p>
+<p>​ ThreadFactory：线程工厂</p>
+<p>​ RejectedExecutionHandler：拒绝策略</p>
+</blockquote>
+<h3 id="线程池执行execute的流程">线程池执行execute的流程</h3>
+<blockquote>
+<p>线程池状态有：RUNNING、SHUTDOWN、STOP、TIDYING、TERMINATED</p>
+<p>内部存在BlockingQueue即阻塞队列，阻塞队列是通过ReentrantLock实现的，其内部维护了一把锁。本质上就是在入队、出队等操作之前通过内部的锁上锁，操作结束后释放锁来完成的。</p>
+<p>而操作时，入队、出队操作分为阻塞和非阻塞，阻塞操作如：当队列为空时若从阻塞队列中获取元素，则会被阻塞一定时间，再获取。这也是阻塞队列名字的来源。</p>
+<p>当当前线程数少于核心线程数时会新增worker线程，以核心线程数为准。</p>
+<p>若任务可以成功入队，则将任务入队，同时检测当前线程池状态，若为不是RUNNING状态则将任务移出队列且执行拒绝策略，若是RUNNING状态，且可用线程数为0则增加线程，以最大线程数为准。</p>
+<p>若入队失败，则尝试创建新的worker，以最大线程数为准，若创建失败执行拒绝策略。</p>
+</blockquote>
+<h3 id="线程池拒绝策略">线程池拒绝策略</h3>
+<blockquote>
+<p>AbortPolicy：丢弃任务并抛出异常。</p>
+<p>CallerRunsPolicy：判断当前线程池是否关闭，若未关闭则直接调用线程的run方法。</p>
+<p>DiscardOldestPolicy：丢弃队列最前的任务，然后重新使用线程池执行被拒绝的任务。</p>
+<p>DiscardPolicy：丢弃任务，什么也不做。</p>
+<p>NewThreadRunsPolicy：创建一个线程去执行被丢弃的任务</p>
+</blockquote>
+<h2 id="juc">JUC</h2>
+<h3 id="threadlocal">ThreadLocal</h3>
+<blockquote>
+<p>线程本地变量，创建一个线程独立的变量。</p>
+<p>底层实现的原理：本质上是一个线程中存在一个ThreadLocalMap，用于存储ThreadLocal，该map的key为创建的ThreadLocal对象，而非Thread本身。</p>
+<p>而<strong>内部存储k-v则是通过继承弱引用的Entry来实现的。</strong></p>
+<p>get和set本质上也是hashmap类似的哈希计算获取对应数组位置存入，但是hashmap使用拉链法解决哈希冲突，ThreadLocal使用线性探测法解决。也存在扩容操作，一次扩容2倍。</p>
+<p>而为什么ThreadLocal中<strong>Entry继承了弱引用WeakReference</strong>？</p>
+<p>​ 因为若Entry也是强引用时，当外部线程不想使用该ThreadLocal时，即使停止引用，由于线程内部Entry是强引用且引用了ThreadLocal，那么ThreadLocal也不会被自动GC。而设置为弱引用，当外部线程不想使用时，GC可以在一次回收时将其回收，而ThreadLocalMap也设计了当发现key为null时清空value的操作。</p>
+<p>为什么会内存泄漏？</p>
+<p>​ 本质上是因为ThreadLocal和线程存活时间基本相同，而使用过程虽然使用弱引用，但是即使经过GC回收，还是会剩下key为null，value不为null的Entry存在于Map中。虽然ThreadLocal在执行操作时也会进行检测当前Entry key为null的位置，将其清除，但是这必须要通过我们主动调用，若没有调用则会一直存在。因此ThreadLocal对象使用结束后需要调用remove方法，使其从map中被移除，避免内存泄漏。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(T value)</span> </span>&#123;</span><br><span class="line">Thread t = Thread.currentThread();</span><br><span class="line">ThreadLocalMap map = getMap(t);</span><br><span class="line"><span class="keyword">if</span> (map != <span class="keyword">null</span>)</span><br><span class="line">  map.set(<span class="keyword">this</span>, value);</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">  createMap(t, value);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> T <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">Thread t = Thread.currentThread();</span><br><span class="line">ThreadLocalMap map = getMap(t);</span><br><span class="line"><span class="keyword">if</span> (map != <span class="keyword">null</span>) &#123;</span><br><span class="line">  ThreadLocalMap.Entry e = map.getEntry(<span class="keyword">this</span>);</span><br><span class="line">  <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">      <span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">      T result = (T)e.value;</span><br><span class="line">      <span class="keyword">return</span> result;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> setInitialValue();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="abstractqueuedsynchronizeraqs">AbstractQueuedSynchronizer(AQS)</h3>
+</blockquote>
+<blockquote>
+<p>AQS继承了AOS(AbstractOwnableSynchronizer)，AOS本质上就实现了对排他线程的保存。</p>
+<p>内部通过state作为是否上锁的判断，当state为0时说明没有线程抢占到锁。可重入锁就是通过不断改变state实现的可重入。</p>
+<p>内部维护了一个waitStatus，共有SIGNAL(-1表示表示后继结点需要unparking)、CANCELLED(1,表示该线程已经取消竞争)、CONDITION(-2节点正在等待)、PROPAGATE(表示头结点将唤醒的动作传播下去)、0(默认)的状态。</p>
+<p>AQS中head结点没有使用，只起到标记的作用。</p>
+<p>本质上只有两个方法acquire和release。如果是共享锁使用acquireShared和releaseShared</p>
+<p>acquire如下：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">acquire</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!tryAcquire(arg) &amp;&amp;</span><br><span class="line">        acquireQueued(addWaiter(Node.EXCLUSIVE), arg))</span><br><span class="line">        selfInterrupt();</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">acquireQueued</span><span class="params">(<span class="keyword">final</span> Node node, <span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">boolean</span> failed = <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">boolean</span> interrupted = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">            <span class="keyword">final</span> Node p = node.predecessor();</span><br><span class="line">            <span class="keyword">if</span> (p == head &amp;&amp; tryAcquire(arg)) &#123;</span><br><span class="line">                setHead(node);</span><br><span class="line">                p.next = <span class="keyword">null</span>; <span class="comment">// help GC</span></span><br><span class="line">                failed = <span class="keyword">false</span>;</span><br><span class="line">                <span class="keyword">return</span> interrupted;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (shouldParkAfterFailedAcquire(p, node) &amp;&amp;</span><br><span class="line">                parkAndCheckInterrupt())</span><br><span class="line">                interrupted = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (failed)</span><br><span class="line">            cancelAcquire(node);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>先尝试获取资源，这里tryAcquire是由子类实现的。</p>
+<p>如果没有成功获取则addWaiter，将线程放入等待队列的尾部，标记为独占模式。</p>
+<p>acquireQueued当当前结点的前一个结点是头结点时会尝试抢占若抢占成功，头结点改为当前结点。抢占失败则将前驱结点的状态设为SIGNAL。</p>
+<p>最后将线程挂起。</p>
+<p>release：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">release</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (tryRelease(arg)) &#123;</span><br><span class="line">        Node h = head;</span><br><span class="line">        <span class="keyword">if</span> (h != <span class="keyword">null</span> &amp;&amp; h.waitStatus != <span class="number">0</span>)</span><br><span class="line">            unparkSuccessor(h);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>先调用子类的tryRelease方法释放状态，当完全释放后，判断当前头结点waitStatus是否不为0，不为0则找出离头结点最近的且不为取消状态的结点进行unpark。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">acquireShared</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (tryAcquireShared(arg) &lt; <span class="number">0</span>)</span><br><span class="line">        doAcquireShared(arg);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">doAcquireShared</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> Node node = addWaiter(Node.SHARED);</span><br><span class="line">    <span class="keyword">boolean</span> failed = <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">boolean</span> interrupted = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">            <span class="keyword">final</span> Node p = node.predecessor();</span><br><span class="line">            <span class="keyword">if</span> (p == head) &#123;</span><br><span class="line">                <span class="keyword">int</span> r = tryAcquireShared(arg);</span><br><span class="line">                <span class="keyword">if</span> (r &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">                    setHeadAndPropagate(node, r);</span><br><span class="line">                    p.next = <span class="keyword">null</span>; <span class="comment">// help GC</span></span><br><span class="line">                    <span class="keyword">if</span> (interrupted)</span><br><span class="line">                        selfInterrupt();</span><br><span class="line">                    failed = <span class="keyword">false</span>;</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (shouldParkAfterFailedAcquire(p, node) &amp;&amp;</span><br><span class="line">                parkAndCheckInterrupt())</span><br><span class="line">                interrupted = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (failed)</span><br><span class="line">            cancelAcquire(node);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>共享锁的话本质上就是将资源数目增多，每次抢占资源时会判断当前资源数目是否大于0，大于0则使用CAS抢占。抢占失败后执行doAcquireShared，类似独占锁的过程。先创建一个SHARABLE节点作为头结点，然后判断当前结点是否为头结点，若是头结点则进行抢占，抢占成功则根据当前资源数来决定是否还要进行抢占。抢占失败则将前驱结点设置的状态设置为SIGNAL。</p>
+</blockquote>
+<h3 id="reentrantlock">ReentrantLock</h3>
+<blockquote>
+<p>可重入锁本质上是针对一个线程的，当一个线程抢占成功锁之后，若线程内部还有进行锁操作，那么会将锁的state值增加，释放时则将该值减少，直到减少到0时又可以被重新抢占。</p>
+<p>释放锁过程也是先判断逐步释放。判断当前释放锁之后锁状态是否为0，若为0则通过unpark方法唤醒队列中的后继线程。</p>
+<p>java实现的锁的方式分为公平锁和非公平锁。</p>
+<p>公平锁和非公平锁的队列都是基于ReentrantLock内部维护的Sync本质是个AQS。</p>
+<p>公平锁的公平性体现在每次重新抢占时会先判断队列中是否存在等待线程，若存在则让队列的线程先抢夺。</p>
+<p>非公平锁非公平体现在每次抢占时不会判断队列中是否存在等待线程，直接进行抢占。</p>
+</blockquote>
+<h2 id="synchronized和lock的区别">Synchronized和Lock的区别</h2>
+<blockquote>
+<p>加锁、解锁：</p>
+<p>​ synchronized：自动加锁解锁。</p>
+<p>​ lock：需要手动加锁、解锁。</p>
+<p>性能上：</p>
+<p>​ synchronized：没有优化前是悲观锁设计思想。性能差</p>
+<p>​ lock：主要是乐观锁设置思想，如reentrantLock主要通过CAS操作抢夺锁。性能好</p>
+<p>用法上：</p>
+<p>​ 基本没区别，但是lock可以实现公平锁。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>面试突击</category>
+      </categories>
+      <tags>
+        <tag>并发</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>redis突击</title>
     <url>/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/redis%E7%AA%81%E5%87%BB/</url>
     <content><![CDATA[<h1 id="redis突击">redis突击</h1>
@@ -1915,150 +2091,6 @@
       </categories>
       <tags>
         <tag>redis</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>java并发突击</title>
-    <url>/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/</url>
-    <content><![CDATA[<h1 id="java并发突击">Java并发突击</h1>
-<figure>
-<img src="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/Users\SmallYe\Desktop\blog\source_posts\面试突击\java并发突击\CPU术语.png" alt="CPU术语"><figcaption aria-hidden="true">CPU术语</figcaption>
-</figure>
-<h2 id="volatile实现原理">Volatile实现原理</h2>
-<blockquote>
-<p>当字段被声明为volatile时，Java线程内存模型确保所有线程看到这个变量的值是一致的。</p>
-<p>本质上是通过编译后在指令后添加<strong>lock指令</strong>。lock指令的作用是：</p>
-<p>​ 将当前处理器缓存行的数据写回系统内存。</p>
-<p>​ 这个写回内存的操作会使在其他CPU里缓存了该内存地址的数据无效。</p>
-</blockquote>
-<h2 id="synchronized实现原理">Synchronized实现原理</h2>
-<blockquote>
-<p>synchronized实现同步的基础：Java中的每个对象都可以作为锁。</p>
-<p>对于普通同步方法，锁住当前实例对象。</p>
-<p>对于静态同步方法，锁住当前类Class对象。</p>
-<p>对于同步方法块，锁住的是synchronized括号内配置的对象。</p>
-<p>JVM规范中指出Synchronized实现的原理是<strong>基于进入和退出Moniter对象来实现方法同步和代码块同步</strong>，即在编译后将monitorenter指令插入到同步代码块后，将monitorexit插入到方法结束处和异常处。JVM保证每个monitorenter和monitorexit配对。</p>
-<p>Synchronized锁住类实例时，只会锁定访问该类实例带有synchronized修饰的非静态方法的线程，不会锁定普通方法。</p>
-<p>而Synchronized锁住类时，只会锁定访问该类对应带有synchronized修饰的静态方法的线程，而不会锁定普通方法及普通的静态方法。</p>
-</blockquote>
-<h4 id="synchronized锁优化及实质">Synchronized锁优化及实质</h4>
-<blockquote>
-<p>synchronized用的锁是存在Java对象头中的。若对象是数组类型，虚拟机使用3个字宽存储对象头，非数组类型用2字宽存储对象头。</p>
-<figure>
-<img src="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/Users\SmallYe\Desktop\blog\source_posts\面试突击\java并发突击\Java对象头.png" alt="Java对象头"><figcaption aria-hidden="true">Java对象头</figcaption>
-</figure>
-<p>Mark Word里默认存储对象的HashCode、分代年龄和锁标记位。</p>
-<figure>
-<img src="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%B9%B6%E5%8F%91%E7%AA%81%E5%87%BB/Users\SmallYe\Desktop\blog\source_posts\面试突击\java并发突击\MarkWord变化.png" alt="MarkWord变化"><figcaption aria-hidden="true">MarkWord变化</figcaption>
-</figure>
-<p>JDK1.6为了减少获得锁和释放锁带来的性能消耗，引入了“偏向锁”和“轻量级锁”，在JDK6后锁共4中状态依次为：<strong>无锁状态、偏向锁状态、轻量级锁状态和重量级锁状态</strong>。这几个状态会随竞争情况逐渐升级，锁可以升级但不能降级。</p>
-<p><strong>偏向锁</strong>：</p>
-</blockquote>
-<h2 id="线程创建的方式">线程创建的方式</h2>
-<blockquote>
-<p>继承thread类，重写run方法</p>
-<p>实现runnable接口，重写run方法。</p>
-<p>实现callable接口，实现call方法</p>
-</blockquote>
-<h2 id="线程池">线程池</h2>
-<blockquote>
-<p>为什么使用线程池？</p>
-<p>​ 为了避免线程的创建、销毁导致的线程开销，采用线程池管理一定数量的线程达到可复用线程的效果。</p>
-<p>Executors自带的线程池</p>
-<p>​ <strong>newSingleThreadExecutor</strong>：单线程线程池，这个线程池只有一个线程在工作。</p>
-<p>​ <strong>newFixedThreadPool</strong>：固定大小的线程池。每次提交一个任务就创建一个线程，直到线程达到线程池最大大小。超出的线程会在队列中等待。</p>
-<p>​ <strong>newCachedThreadPool</strong>：创建一个可缓存的线程池，当线程池大小超过了处理任务所需要的线程，会回收部分空闲线程，当任务增加时此线程池可以智能添加线程来处理任务。该线程池不会对大小进行限制。</p>
-<p>​ <strong>newScheduledThreadPool</strong>：创建一个大小无限的线程池，支持定时及周期性任务。</p>
-<p>​ <strong>newSingleThreadScheduled</strong>：创建一个只有一个线程的线程池，支持定时及周期性任务。</p>
-<p>​ <strong>newWorkStealingPool</strong>：创建一个拥有多个任务队列的线程池。</p>
-<p>自带线程池的缺点，newSingleThreadExecutor和newFixedThreadPool创建了一个长度Integer.MAX_VALUE的阻塞队列，导致任务过多堆积时耗费大量内存，产生OOM错误。newCachedThreadPool和newScheduledThreadPool创建的线程池最大线程数量为Integer.MAX_VALUE，导致可能创建了大量的线程，消耗资源，甚至造成OOM。</p>
-</blockquote>
-<h2 id="自定义线程池">自定义线程池</h2>
-<blockquote>
-<p>自己创建线程池new ThreadPoolExecutor()可以传递参数：</p>
-<p>​ corePoolSize：核心线程数量，即线程池会保持的线程数</p>
-<p>​ maximumPoolSize：最大线程数量，即线程池</p>
-<p>​ keepAliveTime：空闲线程最大存活时间</p>
-<p>​ TimeUnit：时间单位</p>
-<p>​ BlockingQueue：阻塞队列</p>
-<p>​ ThreadFactory：线程工厂</p>
-<p>​ RejectedExecutionHandler：拒绝策略</p>
-</blockquote>
-<h3 id="线程池执行execute的流程">线程池执行execute的流程</h3>
-<blockquote>
-<p>线程池状态有：RUNNING、SHUTDOWN、STOP、TIDYING、TERMINATED</p>
-<p>内部存在BlockingQueue即阻塞队列，阻塞队列是通过ReentrantLock实现的，其内部维护了一把锁。本质上就是在入队、出队等操作之前通过内部的锁上锁，操作结束后释放锁来完成的。</p>
-<p>而操作时，入队、出队操作分为阻塞和非阻塞，阻塞操作如：当队列为空时若从阻塞队列中获取元素，则会被阻塞一定时间，再获取。这也是阻塞队列名字的来源。</p>
-<p>当当前线程数少于核心线程数时会新增worker线程，以核心线程数为准。</p>
-<p>若任务可以成功入队，则将任务入队，同时检测当前线程池状态，若为不是RUNNING状态则将任务移出队列且执行拒绝策略，若是RUNNING状态，且可用线程数为0则增加线程，以最大线程数为准。</p>
-<p>若入队失败，则尝试创建新的worker，以最大线程数为准，若创建失败执行拒绝策略。</p>
-</blockquote>
-<h3 id="线程池拒绝策略">线程池拒绝策略</h3>
-<blockquote>
-<p>AbortPolicy：丢弃任务并抛出异常。</p>
-<p>CallerRunsPolicy：判断当前线程池是否关闭，若未关闭则直接调用线程的run方法。</p>
-<p>DiscardOldestPolicy：丢弃队列最前的任务，然后重新使用线程池执行被拒绝的任务。</p>
-<p>DiscardPolicy：丢弃任务，什么也不做。</p>
-<p>NewThreadRunsPolicy：创建一个线程去执行被丢弃的任务</p>
-</blockquote>
-<h2 id="juc">JUC</h2>
-<h3 id="threadlocal">ThreadLocal</h3>
-<blockquote>
-<p>线程本地变量，创建一个线程独立的变量。</p>
-<p>底层实现的原理：本质上是一个线程中存在一个ThreadLocalMap，用于存储ThreadLocal，该map的key为创建的ThreadLocal对象，而非Thread本身。</p>
-<p>而<strong>内部存储k-v则是通过继承弱引用的Entry来实现的。</strong></p>
-<p>get和set本质上也是hashmap类似的哈希计算获取对应数组位置存入，但是hashmap使用拉链法解决哈希冲突，ThreadLocal使用线性探测法解决。也存在扩容操作，一次扩容2倍。</p>
-<p>而为什么ThreadLocal中<strong>Entry继承了弱引用WeakReference</strong>？</p>
-<p>​ 因为若Entry也是强引用时，当外部线程不想使用该ThreadLocal时，即使停止引用，由于线程内部Entry是强引用且引用了ThreadLocal，那么ThreadLocal也不会被自动GC。而设置为弱引用，当外部线程不想使用时，GC可以在一次回收时将其回收，而ThreadLocalMap也设计了当发现key为null时清空value的操作。</p>
-<p>为什么会内存泄漏？</p>
-<p>​ 本质上是因为ThreadLocal和线程存活时间基本相同，而使用过程虽然使用弱引用，但是即使经过GC回收，还是会剩下key为null，value不为null的Entry存在于Map中。虽然ThreadLocal在执行操作时也会进行检测当前Entry key为null的位置，将其清除，但是这必须要通过我们主动调用，若没有调用则会一直存在。因此ThreadLocal对象使用结束后需要调用remove方法，使其从map中被移除，避免内存泄漏。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(T value)</span> </span>&#123;</span><br><span class="line">Thread t = Thread.currentThread();</span><br><span class="line">ThreadLocalMap map = getMap(t);</span><br><span class="line"><span class="keyword">if</span> (map != <span class="keyword">null</span>)</span><br><span class="line">  map.set(<span class="keyword">this</span>, value);</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">  createMap(t, value);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> T <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">Thread t = Thread.currentThread();</span><br><span class="line">ThreadLocalMap map = getMap(t);</span><br><span class="line"><span class="keyword">if</span> (map != <span class="keyword">null</span>) &#123;</span><br><span class="line">  ThreadLocalMap.Entry e = map.getEntry(<span class="keyword">this</span>);</span><br><span class="line">  <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">      <span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">      T result = (T)e.value;</span><br><span class="line">      <span class="keyword">return</span> result;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> setInitialValue();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="abstractqueuedsynchronizeraqs">AbstractQueuedSynchronizer(AQS)</h3>
-</blockquote>
-<blockquote>
-<p>AQS继承了AOS(AbstractOwnableSynchronizer)，AOS本质上就实现了对排他线程的保存。</p>
-<p>内部通过state作为是否上锁的判断，当state为0时说明没有线程抢占到锁。可重入锁就是通过不断改变state实现的可重入。</p>
-<p>内部维护了一个waitStatus，共有SIGNAL(-1表示表示后继结点需要unparking)、CANCELLED(1,表示该线程已经取消竞争)、CONDITION(-2节点正在等待)、PROPAGATE(表示头结点将唤醒的动作传播下去)、0(默认)的状态。</p>
-<p>AQS中head结点没有使用，只起到标记的作用。</p>
-<p>本质上只有两个方法acquire和release。如果是共享锁使用acquireShared和releaseShared</p>
-<p>acquire如下：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">acquire</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!tryAcquire(arg) &amp;&amp;</span><br><span class="line">        acquireQueued(addWaiter(Node.EXCLUSIVE), arg))</span><br><span class="line">        selfInterrupt();</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">acquireQueued</span><span class="params">(<span class="keyword">final</span> Node node, <span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">boolean</span> failed = <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">boolean</span> interrupted = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">            <span class="keyword">final</span> Node p = node.predecessor();</span><br><span class="line">            <span class="keyword">if</span> (p == head &amp;&amp; tryAcquire(arg)) &#123;</span><br><span class="line">                setHead(node);</span><br><span class="line">                p.next = <span class="keyword">null</span>; <span class="comment">// help GC</span></span><br><span class="line">                failed = <span class="keyword">false</span>;</span><br><span class="line">                <span class="keyword">return</span> interrupted;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (shouldParkAfterFailedAcquire(p, node) &amp;&amp;</span><br><span class="line">                parkAndCheckInterrupt())</span><br><span class="line">                interrupted = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (failed)</span><br><span class="line">            cancelAcquire(node);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>先尝试获取资源，这里tryAcquire是由子类实现的。</p>
-<p>如果没有成功获取则addWaiter，将线程放入等待队列的尾部，标记为独占模式。</p>
-<p>acquireQueued当当前结点的前一个结点是头结点时会尝试抢占若抢占成功，头结点改为当前结点。抢占失败则将前驱结点的状态设为SIGNAL。</p>
-<p>最后将线程挂起。</p>
-<p>release：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">release</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (tryRelease(arg)) &#123;</span><br><span class="line">        Node h = head;</span><br><span class="line">        <span class="keyword">if</span> (h != <span class="keyword">null</span> &amp;&amp; h.waitStatus != <span class="number">0</span>)</span><br><span class="line">            unparkSuccessor(h);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>先调用子类的tryRelease方法释放状态，当完全释放后，判断当前头结点waitStatus是否不为0，不为0则找出离头结点最近的且不为取消状态的结点进行unpark。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">acquireShared</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (tryAcquireShared(arg) &lt; <span class="number">0</span>)</span><br><span class="line">        doAcquireShared(arg);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">doAcquireShared</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> Node node = addWaiter(Node.SHARED);</span><br><span class="line">    <span class="keyword">boolean</span> failed = <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">boolean</span> interrupted = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">            <span class="keyword">final</span> Node p = node.predecessor();</span><br><span class="line">            <span class="keyword">if</span> (p == head) &#123;</span><br><span class="line">                <span class="keyword">int</span> r = tryAcquireShared(arg);</span><br><span class="line">                <span class="keyword">if</span> (r &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">                    setHeadAndPropagate(node, r);</span><br><span class="line">                    p.next = <span class="keyword">null</span>; <span class="comment">// help GC</span></span><br><span class="line">                    <span class="keyword">if</span> (interrupted)</span><br><span class="line">                        selfInterrupt();</span><br><span class="line">                    failed = <span class="keyword">false</span>;</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (shouldParkAfterFailedAcquire(p, node) &amp;&amp;</span><br><span class="line">                parkAndCheckInterrupt())</span><br><span class="line">                interrupted = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (failed)</span><br><span class="line">            cancelAcquire(node);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>共享锁的话本质上就是将资源数目增多，每次抢占资源时会判断当前资源数目是否大于0，大于0则使用CAS抢占。抢占失败后执行doAcquireShared，类似独占锁的过程。先创建一个SHARABLE节点作为头结点，然后判断当前结点是否为头结点，若是头结点则进行抢占，抢占成功则根据当前资源数来决定是否还要进行抢占。抢占失败则将前驱结点设置的状态设置为SIGNAL。</p>
-</blockquote>
-<h3 id="reentrantlock">ReentrantLock</h3>
-<blockquote>
-<p>可重入锁本质上是针对一个线程的，当一个线程抢占成功锁之后，若线程内部还有进行锁操作，那么会将锁的state值增加，释放时则将该值减少，直到减少到0时又可以被重新抢占。</p>
-<p>释放锁过程也是先判断逐步释放。判断当前释放锁之后锁状态是否为0，若为0则通过unpark方法唤醒队列中的后继线程。</p>
-<p>java实现的锁的方式分为公平锁和非公平锁。</p>
-<p>公平锁和非公平锁的队列都是基于ReentrantLock内部维护的Sync本质是个AQS。</p>
-<p>公平锁的公平性体现在每次重新抢占时会先判断队列中是否存在等待线程，若存在则让队列的线程先抢夺。</p>
-<p>非公平锁非公平体现在每次抢占时不会判断队列中是否存在等待线程，直接进行抢占。</p>
-</blockquote>
-<h2 id="synchronized和lock的区别">Synchronized和Lock的区别</h2>
-<blockquote>
-<p>加锁、解锁：</p>
-<p>​ synchronized：自动加锁解锁。</p>
-<p>​ lock：需要手动加锁、解锁。</p>
-<p>性能上：</p>
-<p>​ synchronized：没有优化前是悲观锁设计思想。性能差</p>
-<p>​ lock：主要是乐观锁设置思想，如reentrantLock主要通过CAS操作抢夺锁。性能好</p>
-<p>用法上：</p>
-<p>​ 基本没区别，但是lock可以实现公平锁。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>面试突击</category>
-      </categories>
-      <tags>
-        <tag>并发</tag>
       </tags>
   </entry>
   <entry>
@@ -2333,7 +2365,7 @@
 <h3 id="各类型占的位数">各类型占的位数</h3>
 <blockquote>
 <figure>
-<img src="/2021/03/01/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%9F%BA%E7%A1%80%E7%AA%81%E5%87%BB/Users\SmallYe\Desktop\blog\source_posts\面试突击\java基础突击\java基本类型.png" alt="java基本类型"><figcaption aria-hidden="true">java基本类型</figcaption>
+<img src="/2021/03/01/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%9F%BA%E7%A1%80%E7%AA%81%E5%87%BB/java基本类型.png" alt="java基本类型"><figcaption aria-hidden="true">java基本类型</figcaption>
 </figure>
 <p>Byte、Short、Integer、Long：默认创建了数值为[-128,127]的相应类型的缓存数据，Character创建了数值在[0,127]范围内的缓存数据。</p>
 <p>Boolean则是自定义两个static的Boolean值为TRUE、FALSE。</p>
@@ -2440,12 +2472,9 @@
 </blockquote>
 <h2 id="常见标签">常见标签</h2>
 <blockquote>
-<p><resultMap>、<association>、<sql>、<sql>标签里面还有一些如<if>、<trim>之类的用于动态sql。</trim></if></sql></sql></association></resultMap></p>
+<p>&lt;resultMap&gt;、&lt;association&gt;、&lt;sql&gt;、&lt;sql&gt;标签里面还有一些如&lt;if&gt;、&lt;trim&gt;之类的用于动态sql。</p>
 </blockquote>
 <h2 id="mybatis流程">Mybatis流程</h2>
-<blockquote>
-
-</blockquote>
 <h2 id="dao代理">dao代理</h2>
 <blockquote>
 <p>mybatis使用JDK动态代理实现。mapper的方法不能重载，因为Mybatis是使用包名+类+方法名作为key去查找xml的sql执行的。</p>
@@ -3042,114 +3071,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Linux介绍及基本指令</title>
-    <url>/2021/02/20/Linux/Linux%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%9F%BA%E6%9C%AC%E6%8C%87%E4%BB%A4/</url>
-    <content><![CDATA[<h1 id="linux介绍及基本指令">Linux介绍及基本指令</h1>
-<h2 id="linux区别">Linux区别</h2>
-<blockquote>
-<p>Ubantu：分为用户版和服务器版。</p>
-<p>​ 用户版，有着良好的用户界面，有强大的软件支持。</p>
-<p>​ 服务器版比较少用。</p>
-<p>Debian：系统十分稳定，内核非常小。</p>
-<p>RedHat：是一个商用的操作系统，性能非常好，软件支持也非常好。</p>
-<p>Centos：基本上相当于RedHat的复刻版本。免费。</p>
-</blockquote>
-<h2 id="根目录下各目录对应的功能">根目录下各目录对应的功能</h2>
-<h2 id="在linux中获取帮助">在linux中获取帮助</h2>
-<blockquote>
-<p>man 命令名：查看命令的操作说明</p>
-<p>命令行 --help：查看命令的语法</p>
-</blockquote>
-<h2 id="linux基本命令">Linux基本命令</h2>
-<blockquote>
-<p>ls：查看当前目录中所有文件及目录</p>
-<p>ll：查看当前目录内所有文件及目录详细信息。详细信息具体查看方式。以drwxr-xr-x为例(第一个字符拆出，然后每三个字符表示一个内容)：</p>
-<p>d：文件类型，目录。rwx：拥有者权限，可读，可写，可执行。r-x：用户组权限，可读，不可写，可执行。r-x：其他组权限，可读，不可写，可执行。</p>
-<p>具体文件类型有：d：路径。<em>-</em>：文件。 l ：连接(快捷方式)。b：表示可按块随机读写的设备。c：设备文件里的串行端口设备，如键盘、设备。</p>
-<p>表示权限的三个字符可以用0~7的数字表示。如rwx为7，r-x为5。</p>
-<p>ls -al：查看所有文件及目录包括隐藏目录。</p>
-<p>pwd：查看当前所在层级</p>
-<p>echo xxx：打印xxx</p>
-<p>date：查看日期</p>
-<p>cal：查看日历</p>
-<p>grep xxx：用于查看包含xxx的对象。</p>
-<p>curl 网址：向对应网址发出http请求。curl -i www.baidu.com ：向百度首页发出请求，会返回响应头。</p>
-<p>history：查看先前输入过的命令。</p>
-<p>df：查看磁盘使用情况。</p>
-</blockquote>
-<h2 id="文件基本命令">文件基本命令</h2>
-<blockquote>
-<p>vi xxx：打开临时记事本，基本可以认为是创建文件。</p>
-<p>mkdir xxx：创建文件夹</p>
-<p>rm -rf xxx：删除目录。</p>
-<p>cp a b ：把a文件复制到b处</p>
-<p>mv a b ：把a文件移动到b处（也可以当做重命名使用）</p>
-<p>tail -number xx：查看文件最后number行内容(可以用于监控日志使用tail -F/-f xxx)-F，-f分别为追踪文件名和追踪文件索引。</p>
-<p>cat xxx：查看文件内容，往往伴随着grep使用如 cat a.txt | grep "a:xxx"。</p>
-<p>less xxx：查看文件一页的内容。</p>
-<p>find xxx：查找文件(可以查找所有文件)。</p>
-<p>whereis xx：查找命令所在目录(只能查找二进制类的文件)。</p>
-<p>which xxx：在PATH变量指定的路径中搜索指定的系统命令的位置。</p>
-<p>sh xxx.sh：执行shell命令。这种执行sh文件不需要本身具有权限。</p>
-<p>path/xxx.sh：执行shell命令。sh文件本身需要有权限。(如./xxx.sh其中.表示当前目录)</p>
-</blockquote>
-<h2 id="文件解压缩">文件解压缩</h2>
-<blockquote>
-<p>zip -r 压缩后路径加名字 需要压缩的文件：压缩，如zip -r a.zip a.txt。这个命令需要yum install zip</p>
-<p>unzip -d 解压缩到的路径 解压缩的包：解压缩，如unzip -d . a.zip。这个命令需要yum install unzip。</p>
-<p>tar -cvf 压缩后路径加名字 需要压缩的文件：压缩，如tar -cvf a.txt。</p>
-<p>tar -zcvf 压缩后路径加名字 需要压缩的文件：压缩，如tar -zcvf a.txt。压缩后占的空间更少</p>
-<p>tar -xvf 解压缩到的路径 解压缩的包：解压缩，如tar -xvf a.txt。</p>
-<p>tar -zxvf 解压缩到的路径 解压缩的包：压缩，如tar -zxvf a.txt。</p>
-<p>tar的参数：c：表示create，即压缩，z：约等于zip，即打包后空间会更小，v：压缩后展示压缩包中文件名字。f：表示结束。x：extract，即解压缩。</p>
-<p>b：表示查看压缩包内容。其中c、x、b同时只能存在一个。</p>
-</blockquote>
-<h2 id="文件传输">文件传输</h2>
-<blockquote>
-<p>scp 目录加文件名 用户名@IP地址:目录加文件名：将文件传输利用网络传输到另一个服务器。如scp ./a.txt root@10.0.2.6:~/b.txt</p>
-</blockquote>
-<h2 id="进程管理命令">进程管理命令</h2>
-<blockquote>
-<p>top ：查看当前系统使用情况。</p>
-<p>ps：查看进程情况。</p>
-<p>ps aux：查看所有正在执行的进程。经常和grep配合使用。如ps aux | grep "top"</p>
-<p>lsof -i:port ：根据端口号查看进程。需要yum install lsof</p>
-<p>kill 进程号：杀死进程。</p>
-<p>kill -9 进程号：强制杀死进程。</p>
-<p>service xxx start：启动服务。</p>
-<p>service xxxx stop：关闭服务。</p>
-</blockquote>
-<h2 id="权限管理命令">权限管理命令</h2>
-<blockquote>
-<p>chmod xxx aaa：设置aaa的权限为xxx。第一个x为拥有者权限，第二个x为用户组权限，第三个x为其他组权限。如chmod 777 a.txt：表示将a.txt的权限均设为可读、可写、可执行。</p>
-</blockquote>
-<h2 id="软件安装命令">软件安装命令</h2>
-<blockquote>
-<p>yum install xxxx：安装xxxx</p>
-<p>yum install ifconfig -y：安装时自动同意。</p>
-</blockquote>
-<h2 id="安全相关命令">安全相关命令</h2>
-<blockquote>
-<p>systemctl disable firewalld ：关闭防火墙。</p>
-</blockquote>
-<h2 id="关机命令">关机命令</h2>
-<blockquote>
-<p>shutdown：关机</p>
-<p>reboot：重启</p>
-<p>poweroff：关机</p>
-<p>halt：进入系统停止的模式，屏幕可能保留一些信息，取决于电源管理模式。</p>
-<p>systemctl suspend：休眠</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>操作系统</category>
-      </categories>
-      <tags>
-        <tag>Linux指令</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>2.垃圾收集</title>
     <url>/2021/02/20/JVMKnowledge/2.%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86/</url>
     <content><![CDATA[<h1 id="垃圾收集">垃圾收集</h1>
@@ -3552,83 +3473,6 @@
       </tags>
   </entry>
   <entry>
-    <title>多线程相关</title>
-    <url>/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/</url>
-    <content><![CDATA[<h1 id="多线程">多线程</h1>
-<h2 id="进程和线程">进程和线程</h2>
-<blockquote>
-<p>进程是执行程序的一次执行过程，是一个动态的概念。是系统资源分配的单位。</p>
-<p>通常一个进程中包含多个线程，一个进程至少含一个线程。线程是CPU调度和执行的单位。</p>
-</blockquote>
-<h3 id="java创建线程的方式">JAVA创建线程的方式</h3>
-<blockquote>
-<ol type="1">
-<li>继承Thread类，重写run方法。调用是使用start方法调用，若使用run方法调用则变为单线程。</li>
-<li>实现runnable接口，重写run方法，执行线程需丢入runnable接口实现类，调用start方法。(避免使用继承)</li>
-<li>实现callable接口，需要返回值类型，重写call方法，需要抛出异常。(可以返回结果，可以抛出异常)<img src="/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/实现callable.png" alt="实现callable"></li>
-</ol>
-</blockquote>
-<h2 id="java线程的状态">Java线程的状态</h2>
-<blockquote>
-<p>NEW、RUNNABLE、BLOCKED、WAITING、TIMED_WAITING、TERMINATED</p>
-<p>NEW：线程还没有启动。</p>
-<p>RUNNABLE：线程已经在jvm中运行了，但可能还在等待操作系统的处理器之类的资源。</p>
-<p>BLOCKED：线程等待monitor lock。</p>
-<p>WAITING：正在等待另一个线程执行的状态。</p>
-<p>TIMED_WAITING：有着指定特定等待时间等待另一个线程执行的状态。</p>
-<p>TERMINATED：线程终止，线程已经结束执行。</p>
-<p>线程分为用户线程和守护线程(Daemon)，虚拟机必须确保用户线程执行完毕，虚拟机不用等待守护线程执行完毕。可以通过调用线程的setDaemon(true)，将某个线程变为守护线程</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-        <tag>并发</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Dubbo简单介绍</title>
-    <url>/2021/02/20/codeAnalyse/Dubbo/</url>
-    <content><![CDATA[<h1 id="dubbo">Dubbo</h1>
-<h2 id="rmi-和-rpc">RMI 和 RPC</h2>
-<blockquote>
-<p>RMI：远程方法调用，是java自带的API可以实现的，依赖JVM。客户端将要调用的方法和参数打包成辅助对象，通过网络socket，发送给服务端辅助对象，服务端接收后进行解包，找到真正被调用的方法，执行这个方法将执行结果，依次返回。服务端辅助对象进行打包，然后客户端辅助对象进行解包，结果返回给真正的调用者。</p>
-<p>IPC：进程间通信。进程是计算机系统资源分配的最小单位，每个进程都是资源隔离的。</p>
-<p>LPC：本地过程调用。</p>
-<p>RPC：远程过程调用。</p>
-</blockquote>
-<h2 id="常用rpc框架">常用RPC框架</h2>
-<h3 id="dubbo-1">Dubbo</h3>
-<blockquote>
-<p>阿里开发，基于Spring和Netty，是当前使用最广泛的RPC框架。</p>
-</blockquote>
-<h3 id="brpc">BRPC</h3>
-<blockquote>
-<p>百度开发，"baidu-rpc"，支持多种协议，性能优良。</p>
-</blockquote>
-<h3 id="grpc">GRPC</h3>
-<blockquote>
-<p>谷歌开发，基于Netty，服务于TensorFlow的底层通信。</p>
-</blockquote>
-<h3 id="thrift">Thrift</h3>
-<blockquote>
-<p>Facebook开发。</p>
-</blockquote>
-<h2 id="注册中心---zookeeper">注册中心 - Zookeeper</h2>
-]]></content>
-      <categories>
-        <category>框架入门</category>
-      </categories>
-      <tags>
-        <tag>并发</tag>
-        <tag>Dubbo</tag>
-        <tag>分布式</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>并发相关内容</title>
     <url>/2021/02/20/JavaBasicKnowledge/%E5%B9%B6%E5%8F%91%E7%9B%B8%E5%85%B3/</url>
     <content><![CDATA[<h1 id="并发相关">并发相关</h1>
@@ -3765,6 +3609,83 @@
       </tags>
   </entry>
   <entry>
+    <title>多线程相关</title>
+    <url>/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/</url>
+    <content><![CDATA[<h1 id="多线程">多线程</h1>
+<h2 id="进程和线程">进程和线程</h2>
+<blockquote>
+<p>进程是执行程序的一次执行过程，是一个动态的概念。是系统资源分配的单位。</p>
+<p>通常一个进程中包含多个线程，一个进程至少含一个线程。线程是CPU调度和执行的单位。</p>
+</blockquote>
+<h3 id="java创建线程的方式">JAVA创建线程的方式</h3>
+<blockquote>
+<ol type="1">
+<li>继承Thread类，重写run方法。调用是使用start方法调用，若使用run方法调用则变为单线程。</li>
+<li>实现runnable接口，重写run方法，执行线程需丢入runnable接口实现类，调用start方法。(避免使用继承)</li>
+<li>实现callable接口，需要返回值类型，重写call方法，需要抛出异常。(可以返回结果，可以抛出异常)<img src="/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/实现callable.png" alt="实现callable"></li>
+</ol>
+</blockquote>
+<h2 id="java线程的状态">Java线程的状态</h2>
+<blockquote>
+<p>NEW、RUNNABLE、BLOCKED、WAITING、TIMED_WAITING、TERMINATED</p>
+<p>NEW：线程还没有启动。</p>
+<p>RUNNABLE：线程已经在jvm中运行了，但可能还在等待操作系统的处理器之类的资源。</p>
+<p>BLOCKED：线程等待monitor lock。</p>
+<p>WAITING：正在等待另一个线程执行的状态。</p>
+<p>TIMED_WAITING：有着指定特定等待时间等待另一个线程执行的状态。</p>
+<p>TERMINATED：线程终止，线程已经结束执行。</p>
+<p>线程分为用户线程和守护线程(Daemon)，虚拟机必须确保用户线程执行完毕，虚拟机不用等待守护线程执行完毕。可以通过调用线程的setDaemon(true)，将某个线程变为守护线程</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>并发</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Dubbo简单介绍</title>
+    <url>/2021/02/20/codeAnalyse/Dubbo/</url>
+    <content><![CDATA[<h1 id="dubbo">Dubbo</h1>
+<h2 id="rmi-和-rpc">RMI 和 RPC</h2>
+<blockquote>
+<p>RMI：远程方法调用，是java自带的API可以实现的，依赖JVM。客户端将要调用的方法和参数打包成辅助对象，通过网络socket，发送给服务端辅助对象，服务端接收后进行解包，找到真正被调用的方法，执行这个方法将执行结果，依次返回。服务端辅助对象进行打包，然后客户端辅助对象进行解包，结果返回给真正的调用者。</p>
+<p>IPC：进程间通信。进程是计算机系统资源分配的最小单位，每个进程都是资源隔离的。</p>
+<p>LPC：本地过程调用。</p>
+<p>RPC：远程过程调用。</p>
+</blockquote>
+<h2 id="常用rpc框架">常用RPC框架</h2>
+<h3 id="dubbo-1">Dubbo</h3>
+<blockquote>
+<p>阿里开发，基于Spring和Netty，是当前使用最广泛的RPC框架。</p>
+</blockquote>
+<h3 id="brpc">BRPC</h3>
+<blockquote>
+<p>百度开发，"baidu-rpc"，支持多种协议，性能优良。</p>
+</blockquote>
+<h3 id="grpc">GRPC</h3>
+<blockquote>
+<p>谷歌开发，基于Netty，服务于TensorFlow的底层通信。</p>
+</blockquote>
+<h3 id="thrift">Thrift</h3>
+<blockquote>
+<p>Facebook开发。</p>
+</blockquote>
+<h2 id="注册中心---zookeeper">注册中心 - Zookeeper</h2>
+]]></content>
+      <categories>
+        <category>框架入门</category>
+      </categories>
+      <tags>
+        <tag>并发</tag>
+        <tag>Dubbo</tag>
+        <tag>分布式</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>SpringBoot原理分析</title>
     <url>/2021/02/20/codeAnalyse/SpringBoot%E5%8E%9F%E7%90%86/</url>
     <content><![CDATA[<h1 id="springboot原理">SpringBoot原理</h1>
@@ -3880,264 +3801,6 @@
       </categories>
       <tags>
         <tag>网络</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Mybatis流程源码分析</title>
-    <url>/2021/02/20/codeAnalyse/mybatis%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h1 id="mybatis流程">Mybatis流程</h1>
-<h2 id="创建sqlsessionfactory的流程">创建SqlSessionFactory的流程</h2>
-<blockquote>
-<p>由于创建工厂需要许多配置，mybatis利用了Builder模式。</p>
-<p>先创建SqlSessionFactoryBuilder，调用SqlSessionFactoryBuilder的build方法，本质上就是通过解析xml文件，将文件内容映射到Configuration对象中，然后利用这个对象产生builder创建工厂所需的配置，然后创建出SqlSessionFactory。</p>
-<p>具体则是先将xml的输入流传给SqlSessionFactoryBuilder，然后创建一个XMLConfigBuilder，负责解析xml内容放入configuration对象，解析的过程中会按类别解析，通过调用不同的方法解析xml的不同部分。解析mapper还有专门的XMLMapperBuilder其中对于二级缓存的处理也在这里进行。解析完成后configuration对象会保存全部的配置信息。</p>
-</blockquote>
-<h2 id="利用sqlsessionfactory创建sqlsession的流程">利用SqlSessionFactory创建SqlSession的流程</h2>
-<blockquote>
-<p>就是SqlSessionFactory调用openSession，传入ExecutorType、TransactionIsolationLevel、autoCommit三个参数，或让mybatis按默认设置，</p>
-<p>ExecutorType有BatchExecutor、ReuseExecutor、SimpleExecutor、CachingExecutor四种。</p>
-<p>​ BatchExecutor 让update操作变为批处理操作，即让连续的update先累积，等到下一次query操作前再一起执行。是使用List作为批处理存储。对于update操作会复用最近一次的statement。失败了会全部回滚。</p>
-<p>​ ReuseExecutor 复用Statement，利用Map&lt;String, Statement&gt;来判定。</p>
-<p>​ SimpleExecutor 即使用的Statement直接关闭。</p>
-<p>​ CachingExecutor 相当于在前面三个执行者的基础上套了一层缓存机制，让query方法先查看缓存，只有缓存没有时再让三个执行者执行操作。这里的缓存是通过mybatis自己实现的statement对象内部的cache实现的，有些类似hashmap，是利用cache和cachekey获得的结果。</p>
-<p>TransactionIsolationLevel即事物隔离级别。</p>
-<p>​ READ_UNCOMMITTED 读未提交 存在脏读、不可重复读、幻读</p>
-<p>​ READ_COMMITTED 读提交 存在不可重复读、幻读</p>
-<p>​ REPEATABLE_READ 可重复读 存在幻读</p>
-<p>​ SERIALIZABLE 序列化</p>
-<p>autoCommit是否自动提交。</p>
-</blockquote>
-<h2 id="利用sqlsession创建mapper">利用SqlSession创建Mapper</h2>
-<blockquote>
-<p>SqlSession使用getMapper方法，实际上是调用了configuration中的mapperRegistry的getMapper方法，这里使用了动态代理的设计模式。同时这里还使用了工厂方法，根据不同的类名创建对应的代理工厂。</p>
-<p>这个动态代理是JDK代理，它需要使用对应类加载器，对应类接口，对应的InvocationHandler。在mybatis中InvocationHandler是MapperProxy，MapperProxy的重写的invoke函数逻辑是对于Object自带的方法直接调用，对于接口默认的方法直接调用(这个特性是由于JDK8让接口方法可以有默认实现)。对于接口的方法则创建一个MapperMethod对象，该对象使用了缓存机制，利用Map&lt;Method, MapperMethod&gt;缓存方法。</p>
-<p>而MapperMethod的excuse即为代理方法的实现，该类中含有MethodSignature、SqlCommand两个内部类用于实现解析sql及方法，而具体方法实现是根据判断当前sql是增删改查中的哪种再调用sqlSession的方法来实现的。</p>
-</blockquote>
-<h2 id="executor与handler">Executor与Handler</h2>
-<blockquote>
-<p>Executor是通过StatementHandler来执行sql的。StatementHandler先prepare方法配置基础设置，然后使用parameterize来设置statement的参数。若为query操作则StatementHandler会使用ResultSetHandler来处理结果集。</p>
-<p>StatementHandler为抽象interface mybatis基于这个接口实现了抽象类BaseStatementHandler，还实现了路由类RoutingStatementHandler，路由类是用于根据参数创建对应具体类的。而抽象类是作为三个具体类的基础，三个具体类分别为CallableStatementHandler、PreparedStatementHandler、SimpleStatementHandler。</p>
-<p>抽象类提供给三个具体类prepare方法，其中prepare中含有抽象方法instantiateStatement，是由具体子类实现的。(模板方法模式)</p>
-</blockquote>
-<h2 id="mybatis对于数据库操作的整体流程">mybatis对于数据库操作的整体流程</h2>
-<blockquote>
-<p>先使用builder模式，根据输入的xml输入流，利用对应XML解析对象解析，并将结果最终存入Configuration对象，然后利用Configuration对象创建出一个对应的SqlSessionFactory。</p>
-<p>然后需要通过sqlSessionFactory的openSession方法创建一个SqlSession，这里可以设置SqlSession的Executor、TransactionIsolationLevel和autoCommit。Executor代表这个SqlSession采用什么执行器，执行器是对statement对象的处理。具体执行器共有3种：SimpleExecutor 、ReuseExecutor 、BatchExecutor 。同时若启用了缓存cache，则会在执行器外再包装一层CachingExecutor ，相当于对于查询操作提供了二级缓存。这个缓存是位于mybatis的MappedStatement类中。本质上这种缓存就是一个嵌套的哈希结构。Map&lt;Cache, TransactionalCache&gt;，TransactionalCache也是key-value结构。</p>
-<p>而事物隔离即为正常的数据库事物隔离级别。</p>
-<p>创建完SqlSession后，调用SqlSession的getMapper方法获取对应mapper对象。这里使用了动态代理。mybatis是先根据传入的类对象，通过configuration的配置信息中的MapperRegistry类对象找到对应的proxy工厂，利用代理工厂创建对应的代理对象。代理对象的创建使用的是JDK动态代理，即传入需要代理的类加载器、需要代理的接口、以及InvocationHandler。mybatis的handler是先判断方法是否为Object的，然后判断方法是否为接口默认实现的。只有接口未实现的方法才进行特殊处理，处理过程即为根据方法的类型(增删改查)，执行SqlSession的对应方法。</p>
-<p>SqlSession执行对应方法则是利用SqlSession内部的executor执行对应操作的。所以实际上sql操作还是由executor执行的。而executor执行操作需要利用StatementHandler先后执行prepare初始化基本配置和parameterize处理参数。参数的处理利用了ParameterHandler，这个时候typeHandler就会起作用。若为query操作还需要对返回值进行处理，处理时利用了ResultSetHandler，这个时候typeHandler就会起作用。</p>
-</blockquote>
-<h2 id="mybatis的缓存机制">mybatis的缓存机制</h2>
-<blockquote>
-<p>mybatis共有两个缓存机制：一级缓存和二级缓存。</p>
-<p>一级缓存默认开启且无法关闭。</p>
-<p>二级缓存需要配置。</p>
-<p>一级缓存是Executor的基本实现类BaseExecutor中实现的，本质上是个Map&lt;Object, Object&gt;。由于每个SqlSession里都带有一个Executor，故一级缓存是SqlSession层面的。</p>
-<p>二级缓存则需要手动配置，开启后会在具体的Executor之外使用CachingExecutor包装，这里使用了装饰者模式。二级缓存本质上是在namespace层面的缓存。</p>
-</blockquote>
-<h2 id="mybatis是怎么实现和springboot的整合的">mybatis是怎么实现和SpringBoot的整合的？</h2>
-<blockquote>
-
-</blockquote>
-]]></content>
-      <categories>
-        <category>源码分析</category>
-      </categories>
-      <tags>
-        <tag>Mybatis</tag>
-        <tag>orm</tag>
-        <tag>数据库</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Nginx了解</title>
-    <url>/2021/02/20/codeAnalyse/nginx%E4%BA%86%E8%A7%A3/</url>
-    <content><![CDATA[<h1 id="nginx">Nginx</h1>
-<h2 id="概述">概述</h2>
-<blockquote>
-<p>Nginx是高性能的http和反向代理服务器，也是一个IMAP/SMTP/POP3等邮件代理服务器。</p>
-<p>正向代理和反向代理</p>
-<p>正向代理：客户端client通过设置，使用代理服务器proxy去访问远程服务器server。客户端知道代理存在。</p>
-<p>​ | client - proxy | - server</p>
-<p>使用场景：</p>
-<p>​ 可以访问原来无法访问的资源。</p>
-<p>​ 做缓存使用，加快访问速度。</p>
-<p>​ 对客户端授权或记录访问信息。</p>
-<p>反向代理：服务器通过代理服务接收连接请求，再转发给内部网络的服务器，将结果返回给客户端。客户端不知道代理存在。</p>
-<p>​ client - | proxy - server |</p>
-<p>使用场景：</p>
-<p>​ 保证内网安全，阻止web攻击。</p>
-<p>​ 负载均衡。</p>
-</blockquote>
-<h2 id="nginx命令">Nginx命令</h2>
-<blockquote>
-<p>启动命令./Nginx</p>
-<p>杀死进程 kill SIGNAL pid</p>
-<p>​ kill -9 pid 强制停止</p>
-<p>​ kill -TERM pid 快速停止</p>
-<p>​ kill -QUIT pid 平缓停止</p>
-<p>查看版本 ./Nginx -V</p>
-<p>信号处理 ./Nginx -s SIGNAL(stop、quit、reopen、reload)</p>
-<p>​ 关闭 ./Nginx -s stop</p>
-<p>​ 重加载 ./Nginx -s reload</p>
-<p>​ 平缓停止 ./Nginx -s quit</p>
-<p>​ 快速停止 ./Nginx -s stop</p>
-</blockquote>
-<h2 id="nginx配置">Nginx配置</h2>
-<h3 id="全局块">全局块</h3>
-<blockquote>
-<p>全局块：指定运行时的用户组、进程id存放位置、日志存放位置、worker process数量等。</p>
-<p>#user nobody ：配置用户或用户组</p>
-<p>#worker_processes 1 ：运行启动的进程数</p>
-<p>#error_log logs/error.log 级别 ：日志路径及级别设置</p>
-<p>#pid logs/nginx.pid 进程id的文件地址</p>
-</blockquote>
-<h3 id="events块">events块</h3>
-<blockquote>
-<p>events块：影响Nginx服务器和用户网络连接配置，如每个进程最大连接数、选择哪种事件驱动模型、是否序列化events块：影响Nginx服务器和用户网络连接配置，如每个进程最大连接数、选择哪种事件驱动模型、是否序列化。</p>
-<p>events{</p>
-<p>​ #worker_connections 1024：每个进程的最大连接数</p>
-<p>}</p>
-</blockquote>
-<h3 id="http块">http块</h3>
-<blockquote>
-<p>http块：配置代理、缓存、日志等绝大部分功能的地方。可以嵌套多个server块，而不同的server可以对应不同的域名(虚拟主机)。</p>
-<p>虚拟主机：同一台Nginx服务器，可以支持多个网站的运行，每个虚拟主机之间都互相独立，具有完整功能。</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 相对路径</span><br><span class="line">			root html;</span><br><span class="line">			# 默认跳转的首页地址</span><br><span class="line">			index index.html index.htm;</span><br><span class="line"></span><br><span class="line">		&#125;	</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>日志配置：可以获取用户地址信息、跳转来源、终端、url访问量等。</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line">#log_format main &#x27;$remote_addr - $remote_user [$time_local] &quot;$request&quot; &#x27;</span><br><span class="line">#                  &#x27;$status $body_bytes_sent &quot;$http_referer&quot; &#x27;</span><br><span class="line">#                  &#x27;&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;&#x27;;</span><br><span class="line"></span><br><span class="line">#access_log logs/access.log main;</span><br></pre></td></tr></table></figure>
-<table>
-<thead>
-<tr class="header">
-<th></th>
-<th>用途</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>remote_addr</td>
-<td>客户端的ip地址</td>
-</tr>
-<tr class="even">
-<td>remote_user</td>
-<td>客户端的用户名称</td>
-</tr>
-<tr class="odd">
-<td>time_local</td>
-<td>访问时间和时区</td>
-</tr>
-<tr class="even">
-<td>request</td>
-<td>请求方法</td>
-</tr>
-<tr class="odd">
-<td>status</td>
-<td>响应状态码 如：200</td>
-</tr>
-<tr class="even">
-<td>body_bytes_sent</td>
-<td>主体内容字节数 如：612</td>
-</tr>
-<tr class="odd">
-<td>http_referer</td>
-<td>记录是从哪个链接访问过来的</td>
-</tr>
-<tr class="even">
-<td>http_user_agent</td>
-<td>用户使用的代理（浏览器）</td>
-</tr>
-<tr class="odd">
-<td>http_x_forwarded_for</td>
-<td>通过代理服务器来记录客户端的ip地址</td>
-</tr>
-</tbody>
-</table>
-</blockquote>
-<h3 id="反向代理配置">反向代理配置</h3>
-<blockquote>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 相对路径</span><br><span class="line">			root html;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://127.0.0.1:8080</span><br><span class="line">			# 默认跳转的首页地址</span><br><span class="line">			index index.html index.htm;</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>代理多个tomcat服务器，通过路径来映射</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location ~ path1 &#123;</span><br><span class="line">			# 相对路径</span><br><span class="line">			root html;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://127.0.0.1:8080</span><br><span class="line">			# 默认跳转的首页地址</span><br><span class="line">			index index.html index.htm;</span><br><span class="line">        &#125;	</span><br><span class="line">		location ~ path2 &#123;</span><br><span class="line">			# 相对路径</span><br><span class="line">			root html;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://127.0.0.1:8081</span><br><span class="line">			# 默认跳转的首页地址</span><br><span class="line">			index index.html index.htm;</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="负载均衡">负载均衡</h3>
-</blockquote>
-<blockquote>
-<p>早期使用DNS(域名解析系统)做负载，具体来说就是给客户端解析不同的ip地址，让流量直接到达服务器。</p>
-<p>优点： 1） 通过健康检查，避免单点故障 2） 当发现节点故障时，从集群中移除，保证应用的高可用</p>
-<p>四层负载均衡，在OSI模型的传输层，主要是转发。 七层负载均衡，在OSI模型的应用层，主要是代理。</p>
-<p>负载均衡器可以处理HTTP/HTTPS/TCP/UDP等的请求。</p>
-<p>负载均衡的调度算法：</p>
-<p>​ 轮询。</p>
-<p>​ 最小连接：优先选择连接数最少的服务器，适用于会话时间较长的业务处理。</p>
-<p>​ IP映射，根据请求的ip地址进行散列，让同一ip下的请求都映射到同一服务器上，可以解决session问题。</p>
-<p>Nginx设置默认轮询算法</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080;</span><br><span class="line">		server 192.168.1.20:8081;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>设置权重的情况，默认权重是1。</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080 weight = 1;</span><br><span class="line">		server 192.168.1.20:8081 weight = 2;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>根据ip地址固定server处理，使用ip_hash。</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080 weight = 1;</span><br><span class="line">		server 192.168.1.20:8081 weight = 2;</span><br><span class="line">		ip_hash;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</blockquote>
-<h3 id="动静分离">动静分离</h3>
-<blockquote>
-<p>将静态资源和动态资源分开。</p>
-<p>静态资源直接查找Nginx的静态资源地址。</p>
-<p>动态资源请求通过反向代理映射到tomcat路径下的资源。</p>
-<p>实现方式：</p>
-<p>​ 单独把静态文件放在独立的服务器及独立的域名下(推荐)。</p>
-<p>​ 将动态资源和静态资源混合在一起，通过Nginx分开。</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080 weight = 1;</span><br><span class="line">		server 192.168.1.20:8081 weight = 2;</span><br><span class="line">		ip_hash;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 访问动态资源</span><br><span class="line">		location ~ .*.jsp$ &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">		# 访问静态资源</span><br><span class="line">		location ~ .*\.(gif|jpg|css)$ &#123;</span><br><span class="line">			root /usr/local/nginx/image;</span><br><span class="line">			// 缓存时间</span><br><span class="line">			expires 3d;</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="location块的匹配规则">location块的匹配规则</h3>
-</blockquote>
-<blockquote>
-<p>匹配规则：</p>
-<p>​ location = /uri 精确匹配</p>
-<p>​ location ^~ /uri 前缀匹配，顺序在正则之前</p>
-<p>​ location ~ pattern 区分大小写的正则匹配</p>
-<p>​ location ~* pattern 不区分大小写的正则匹配</p>
-<p>​ location /uri 前缀匹配，顺序在正则之后(两种前缀匹配不能同时出现)</p>
-<p>​ location / 通用匹配，接收未匹配到其他location的请求。</p>
-<p>匹配顺序：</p>
-<p>​ 首先会进行精确匹配，然后会进行前缀匹配，具体顺序按指令长度从长到短的顺序依次匹配。</p>
-<p>​ 使用正则匹配时，是按照配置文件的顺序依次匹配的。如果不希望前缀匹配后进行正则匹配，那么使用^~。</p>
-</blockquote>
-<h3 id="url重写">URL重写</h3>
-<blockquote>
-<p>即对URL的规范化处理。</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080 weight = 1;</span><br><span class="line">		server 192.168.1.20:8081 weight = 2;</span><br><span class="line">		ip_hash;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		</span><br><span class="line">		# 重写URL</span><br><span class="line">		rewrite ^/(.*) http://www.xxxx.com/xxx;</span><br><span class="line"></span><br><span class="line">		# 访问动态资源</span><br><span class="line">		location ~ .*.jsp$ &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">		# 访问静态资源</span><br><span class="line">		location ~ .*\.(gif|jpg|css)$ &#123;</span><br><span class="line">			root /usr/local/nginx/image;</span><br><span class="line">			// 缓存时间</span><br><span class="line">			expires 3d;</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="nginx安装">Nginx安装</h2>
-</blockquote>
-<blockquote>
-<p>在各官网下载相关组件 nginx openssl zlib pcre 等等</p>
-<p>以openssl为例 1） 通过rz上传压缩包 2） 通过tar -xvf *.tar.gz 进行解压缩 3）cd openssl-1.1.1d 进行配置检查以及编译 ./config 执行配置检查 make &amp; make install 进行编译和安装</p>
-<p>​ 如上过程，适用于zlib和pcre ​ 注意： 对于 pcre而言， 执行检查命令为 ./configure 4) 安装nginx过程中 执行配置检查</p>
-<pre><code>./configure --sbin-path=/usr/local/nginx/nginx \
---conf-path=/usr/local/nginx/nginx.conf \
---pid-path=/usr/local/nginx/nginx.pid \
---with-http_ssl_module \
---with-pcre=/usr/local/src/pcre-8.44 \
---with-zlib=/usr/local/src/zlib-1.2.11 \
---with-openssl=/usr/local/src/openssl-1.1.1d</code></pre>
-<ol start="5" type="1">
-<li>仍然执行 make 以及 make install<br>
-</li>
-<li>nginx安装成功 ./nginx验证</li>
-</ol>
-<p>注意事项：nginx服务器，需要虚拟机开放80端口的访问 防火墙配置 （同样适用于开放8080 8081端口） firewall-cmd --list-all 查看当前配置 firewall-cmd --add-service=http --permanent 开放http访问 firewall-cmd --add-port=80/tcp --permanent 开放80端口 firewall-cmd --reload 重启防火墙保存</p>
-<p>jdk的安装 1） 解压缩 -- 拷贝目录到 /usr/local/java 2) 更改环境变量 vim /etc/profile</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">export JAVA_HOME=/usr/local/java</span><br><span class="line">export JAVA_BIN=$JAVA_HOME/bin</span><br><span class="line">export PATH=$PATH:$JAVA_HOME/bin</span><br><span class="line">export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar</span><br><span class="line">export PATH=$JAVA_HOME/bin:$JRE_HOME/bin:$PATH</span><br></pre></td></tr></table></figure>
-<ol start="3" type="1">
-<li>让环境变量生效 source /etc/profile</li>
-<li>验证版本 java -version</li>
-</ol>
-<p>tomcat的安装 1） 解压缩 -- 拷贝目录到 /usr/local/tomcat 2) 执行启动 ./startup.sh</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>框架入门</category>
-      </categories>
-      <tags>
-        <tag>并发</tag>
-        <tag>网络</tag>
-        <tag>负载均衡</tag>
       </tags>
   </entry>
   <entry>
@@ -4464,8 +4127,266 @@
       </categories>
       <tags>
         <tag>分布式</tag>
-        <tag>数据库</tag>
         <tag>缓存</tag>
+        <tag>数据库</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mybatis流程源码分析</title>
+    <url>/2021/02/20/codeAnalyse/mybatis%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h1 id="mybatis流程">Mybatis流程</h1>
+<h2 id="创建sqlsessionfactory的流程">创建SqlSessionFactory的流程</h2>
+<blockquote>
+<p>由于创建工厂需要许多配置，mybatis利用了Builder模式。</p>
+<p>先创建SqlSessionFactoryBuilder，调用SqlSessionFactoryBuilder的build方法，本质上就是通过解析xml文件，将文件内容映射到Configuration对象中，然后利用这个对象产生builder创建工厂所需的配置，然后创建出SqlSessionFactory。</p>
+<p>具体则是先将xml的输入流传给SqlSessionFactoryBuilder，然后创建一个XMLConfigBuilder，负责解析xml内容放入configuration对象，解析的过程中会按类别解析，通过调用不同的方法解析xml的不同部分。解析mapper还有专门的XMLMapperBuilder其中对于二级缓存的处理也在这里进行。解析完成后configuration对象会保存全部的配置信息。</p>
+</blockquote>
+<h2 id="利用sqlsessionfactory创建sqlsession的流程">利用SqlSessionFactory创建SqlSession的流程</h2>
+<blockquote>
+<p>就是SqlSessionFactory调用openSession，传入ExecutorType、TransactionIsolationLevel、autoCommit三个参数，或让mybatis按默认设置，</p>
+<p>ExecutorType有BatchExecutor、ReuseExecutor、SimpleExecutor、CachingExecutor四种。</p>
+<p>​ BatchExecutor 让update操作变为批处理操作，即让连续的update先累积，等到下一次query操作前再一起执行。是使用List作为批处理存储。对于update操作会复用最近一次的statement。失败了会全部回滚。</p>
+<p>​ ReuseExecutor 复用Statement，利用Map&lt;String, Statement&gt;来判定。</p>
+<p>​ SimpleExecutor 即使用的Statement直接关闭。</p>
+<p>​ CachingExecutor 相当于在前面三个执行者的基础上套了一层缓存机制，让query方法先查看缓存，只有缓存没有时再让三个执行者执行操作。这里的缓存是通过mybatis自己实现的statement对象内部的cache实现的，有些类似hashmap，是利用cache和cachekey获得的结果。</p>
+<p>TransactionIsolationLevel即事物隔离级别。</p>
+<p>​ READ_UNCOMMITTED 读未提交 存在脏读、不可重复读、幻读</p>
+<p>​ READ_COMMITTED 读提交 存在不可重复读、幻读</p>
+<p>​ REPEATABLE_READ 可重复读 存在幻读</p>
+<p>​ SERIALIZABLE 序列化</p>
+<p>autoCommit是否自动提交。</p>
+</blockquote>
+<h2 id="利用sqlsession创建mapper">利用SqlSession创建Mapper</h2>
+<blockquote>
+<p>SqlSession使用getMapper方法，实际上是调用了configuration中的mapperRegistry的getMapper方法，这里使用了动态代理的设计模式。同时这里还使用了工厂方法，根据不同的类名创建对应的代理工厂。</p>
+<p>这个动态代理是JDK代理，它需要使用对应类加载器，对应类接口，对应的InvocationHandler。在mybatis中InvocationHandler是MapperProxy，MapperProxy的重写的invoke函数逻辑是对于Object自带的方法直接调用，对于接口默认的方法直接调用(这个特性是由于JDK8让接口方法可以有默认实现)。对于接口的方法则创建一个MapperMethod对象，该对象使用了缓存机制，利用Map&lt;Method, MapperMethod&gt;缓存方法。</p>
+<p>而MapperMethod的excuse即为代理方法的实现，该类中含有MethodSignature、SqlCommand两个内部类用于实现解析sql及方法，而具体方法实现是根据判断当前sql是增删改查中的哪种再调用sqlSession的方法来实现的。</p>
+</blockquote>
+<h2 id="executor与handler">Executor与Handler</h2>
+<blockquote>
+<p>Executor是通过StatementHandler来执行sql的。StatementHandler先prepare方法配置基础设置，然后使用parameterize来设置statement的参数。若为query操作则StatementHandler会使用ResultSetHandler来处理结果集。</p>
+<p>StatementHandler为抽象interface mybatis基于这个接口实现了抽象类BaseStatementHandler，还实现了路由类RoutingStatementHandler，路由类是用于根据参数创建对应具体类的。而抽象类是作为三个具体类的基础，三个具体类分别为CallableStatementHandler、PreparedStatementHandler、SimpleStatementHandler。</p>
+<p>抽象类提供给三个具体类prepare方法，其中prepare中含有抽象方法instantiateStatement，是由具体子类实现的。(模板方法模式)</p>
+</blockquote>
+<h2 id="mybatis对于数据库操作的整体流程">mybatis对于数据库操作的整体流程</h2>
+<blockquote>
+<p>先使用builder模式，根据输入的xml输入流，利用对应XML解析对象解析，并将结果最终存入Configuration对象，然后利用Configuration对象创建出一个对应的SqlSessionFactory。</p>
+<p>然后需要通过sqlSessionFactory的openSession方法创建一个SqlSession，这里可以设置SqlSession的Executor、TransactionIsolationLevel和autoCommit。Executor代表这个SqlSession采用什么执行器，执行器是对statement对象的处理。具体执行器共有3种：SimpleExecutor 、ReuseExecutor 、BatchExecutor 。同时若启用了缓存cache，则会在执行器外再包装一层CachingExecutor ，相当于对于查询操作提供了二级缓存。这个缓存是位于mybatis的MappedStatement类中。本质上这种缓存就是一个嵌套的哈希结构。Map&lt;Cache, TransactionalCache&gt;，TransactionalCache也是key-value结构。</p>
+<p>而事物隔离即为正常的数据库事物隔离级别。</p>
+<p>创建完SqlSession后，调用SqlSession的getMapper方法获取对应mapper对象。这里使用了动态代理。mybatis是先根据传入的类对象，通过configuration的配置信息中的MapperRegistry类对象找到对应的proxy工厂，利用代理工厂创建对应的代理对象。代理对象的创建使用的是JDK动态代理，即传入需要代理的类加载器、需要代理的接口、以及InvocationHandler。mybatis的handler是先判断方法是否为Object的，然后判断方法是否为接口默认实现的。只有接口未实现的方法才进行特殊处理，处理过程即为根据方法的类型(增删改查)，执行SqlSession的对应方法。</p>
+<p>SqlSession执行对应方法则是利用SqlSession内部的executor执行对应操作的。所以实际上sql操作还是由executor执行的。而executor执行操作需要利用StatementHandler先后执行prepare初始化基本配置和parameterize处理参数。参数的处理利用了ParameterHandler，这个时候typeHandler就会起作用。若为query操作还需要对返回值进行处理，处理时利用了ResultSetHandler，这个时候typeHandler就会起作用。</p>
+</blockquote>
+<h2 id="mybatis的缓存机制">mybatis的缓存机制</h2>
+<blockquote>
+<p>mybatis共有两个缓存机制：一级缓存和二级缓存。</p>
+<p>一级缓存默认开启且无法关闭。</p>
+<p>二级缓存需要配置。</p>
+<p>一级缓存是Executor的基本实现类BaseExecutor中实现的，本质上是个Map&lt;Object, Object&gt;。由于每个SqlSession里都带有一个Executor，故一级缓存是SqlSession层面的。</p>
+<p>二级缓存则需要手动配置，开启后会在具体的Executor之外使用CachingExecutor包装，这里使用了装饰者模式。二级缓存本质上是在namespace层面的缓存。</p>
+</blockquote>
+<h2 id="mybatis是怎么实现和springboot的整合的">mybatis是怎么实现和SpringBoot的整合的？</h2>
+<blockquote>
+
+</blockquote>
+]]></content>
+      <categories>
+        <category>源码分析</category>
+      </categories>
+      <tags>
+        <tag>数据库</tag>
+        <tag>Mybatis</tag>
+        <tag>orm</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Nginx了解</title>
+    <url>/2021/02/20/codeAnalyse/nginx%E4%BA%86%E8%A7%A3/</url>
+    <content><![CDATA[<h1 id="nginx">Nginx</h1>
+<h2 id="概述">概述</h2>
+<blockquote>
+<p>Nginx是高性能的http和反向代理服务器，也是一个IMAP/SMTP/POP3等邮件代理服务器。</p>
+<p>正向代理和反向代理</p>
+<p>正向代理：客户端client通过设置，使用代理服务器proxy去访问远程服务器server。客户端知道代理存在。</p>
+<p>​ | client - proxy | - server</p>
+<p>使用场景：</p>
+<p>​ 可以访问原来无法访问的资源。</p>
+<p>​ 做缓存使用，加快访问速度。</p>
+<p>​ 对客户端授权或记录访问信息。</p>
+<p>反向代理：服务器通过代理服务接收连接请求，再转发给内部网络的服务器，将结果返回给客户端。客户端不知道代理存在。</p>
+<p>​ client - | proxy - server |</p>
+<p>使用场景：</p>
+<p>​ 保证内网安全，阻止web攻击。</p>
+<p>​ 负载均衡。</p>
+</blockquote>
+<h2 id="nginx命令">Nginx命令</h2>
+<blockquote>
+<p>启动命令./Nginx</p>
+<p>杀死进程 kill SIGNAL pid</p>
+<p>​ kill -9 pid 强制停止</p>
+<p>​ kill -TERM pid 快速停止</p>
+<p>​ kill -QUIT pid 平缓停止</p>
+<p>查看版本 ./Nginx -V</p>
+<p>信号处理 ./Nginx -s SIGNAL(stop、quit、reopen、reload)</p>
+<p>​ 关闭 ./Nginx -s stop</p>
+<p>​ 重加载 ./Nginx -s reload</p>
+<p>​ 平缓停止 ./Nginx -s quit</p>
+<p>​ 快速停止 ./Nginx -s stop</p>
+</blockquote>
+<h2 id="nginx配置">Nginx配置</h2>
+<h3 id="全局块">全局块</h3>
+<blockquote>
+<p>全局块：指定运行时的用户组、进程id存放位置、日志存放位置、worker process数量等。</p>
+<p>#user nobody ：配置用户或用户组</p>
+<p>#worker_processes 1 ：运行启动的进程数</p>
+<p>#error_log logs/error.log 级别 ：日志路径及级别设置</p>
+<p>#pid logs/nginx.pid 进程id的文件地址</p>
+</blockquote>
+<h3 id="events块">events块</h3>
+<blockquote>
+<p>events块：影响Nginx服务器和用户网络连接配置，如每个进程最大连接数、选择哪种事件驱动模型、是否序列化events块：影响Nginx服务器和用户网络连接配置，如每个进程最大连接数、选择哪种事件驱动模型、是否序列化。</p>
+<p>events{</p>
+<p>​ #worker_connections 1024：每个进程的最大连接数</p>
+<p>}</p>
+</blockquote>
+<h3 id="http块">http块</h3>
+<blockquote>
+<p>http块：配置代理、缓存、日志等绝大部分功能的地方。可以嵌套多个server块，而不同的server可以对应不同的域名(虚拟主机)。</p>
+<p>虚拟主机：同一台Nginx服务器，可以支持多个网站的运行，每个虚拟主机之间都互相独立，具有完整功能。</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 相对路径</span><br><span class="line">			root html;</span><br><span class="line">			# 默认跳转的首页地址</span><br><span class="line">			index index.html index.htm;</span><br><span class="line"></span><br><span class="line">		&#125;	</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>日志配置：可以获取用户地址信息、跳转来源、终端、url访问量等。</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line">#log_format main &#x27;$remote_addr - $remote_user [$time_local] &quot;$request&quot; &#x27;</span><br><span class="line">#                  &#x27;$status $body_bytes_sent &quot;$http_referer&quot; &#x27;</span><br><span class="line">#                  &#x27;&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;&#x27;;</span><br><span class="line"></span><br><span class="line">#access_log logs/access.log main;</span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>remote_addr</td>
+<td>客户端的ip地址</td>
+</tr>
+<tr class="even">
+<td>remote_user</td>
+<td>客户端的用户名称</td>
+</tr>
+<tr class="odd">
+<td>time_local</td>
+<td>访问时间和时区</td>
+</tr>
+<tr class="even">
+<td>request</td>
+<td>请求方法</td>
+</tr>
+<tr class="odd">
+<td>status</td>
+<td>响应状态码 如：200</td>
+</tr>
+<tr class="even">
+<td>body_bytes_sent</td>
+<td>主体内容字节数 如：612</td>
+</tr>
+<tr class="odd">
+<td>http_referer</td>
+<td>记录是从哪个链接访问过来的</td>
+</tr>
+<tr class="even">
+<td>http_user_agent</td>
+<td>用户使用的代理（浏览器）</td>
+</tr>
+<tr class="odd">
+<td>http_x_forwarded_for</td>
+<td>通过代理服务器来记录客户端的ip地址</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<h3 id="反向代理配置">反向代理配置</h3>
+<blockquote>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 相对路径</span><br><span class="line">			root html;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://127.0.0.1:8080</span><br><span class="line">			# 默认跳转的首页地址</span><br><span class="line">			index index.html index.htm;</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>代理多个tomcat服务器，通过路径来映射</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location ~ path1 &#123;</span><br><span class="line">			# 相对路径</span><br><span class="line">			root html;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://127.0.0.1:8080</span><br><span class="line">			# 默认跳转的首页地址</span><br><span class="line">			index index.html index.htm;</span><br><span class="line">        &#125;	</span><br><span class="line">		location ~ path2 &#123;</span><br><span class="line">			# 相对路径</span><br><span class="line">			root html;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://127.0.0.1:8081</span><br><span class="line">			# 默认跳转的首页地址</span><br><span class="line">			index index.html index.htm;</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="负载均衡">负载均衡</h3>
+</blockquote>
+<blockquote>
+<p>早期使用DNS(域名解析系统)做负载，具体来说就是给客户端解析不同的ip地址，让流量直接到达服务器。</p>
+<p>优点： 1） 通过健康检查，避免单点故障 2） 当发现节点故障时，从集群中移除，保证应用的高可用</p>
+<p>四层负载均衡，在OSI模型的传输层，主要是转发。 七层负载均衡，在OSI模型的应用层，主要是代理。</p>
+<p>负载均衡器可以处理HTTP/HTTPS/TCP/UDP等的请求。</p>
+<p>负载均衡的调度算法：</p>
+<p>​ 轮询。</p>
+<p>​ 最小连接：优先选择连接数最少的服务器，适用于会话时间较长的业务处理。</p>
+<p>​ IP映射，根据请求的ip地址进行散列，让同一ip下的请求都映射到同一服务器上，可以解决session问题。</p>
+<p>Nginx设置默认轮询算法</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080;</span><br><span class="line">		server 192.168.1.20:8081;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>设置权重的情况，默认权重是1。</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080 weight = 1;</span><br><span class="line">		server 192.168.1.20:8081 weight = 2;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>根据ip地址固定server处理，使用ip_hash。</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080 weight = 1;</span><br><span class="line">		server 192.168.1.20:8081 weight = 2;</span><br><span class="line">		ip_hash;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h3 id="动静分离">动静分离</h3>
+<blockquote>
+<p>将静态资源和动态资源分开。</p>
+<p>静态资源直接查找Nginx的静态资源地址。</p>
+<p>动态资源请求通过反向代理映射到tomcat路径下的资源。</p>
+<p>实现方式：</p>
+<p>​ 单独把静态文件放在独立的服务器及独立的域名下(推荐)。</p>
+<p>​ 将动态资源和静态资源混合在一起，通过Nginx分开。</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080 weight = 1;</span><br><span class="line">		server 192.168.1.20:8081 weight = 2;</span><br><span class="line">		ip_hash;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 访问动态资源</span><br><span class="line">		location ~ .*.jsp$ &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">		# 访问静态资源</span><br><span class="line">		location ~ .*\.(gif|jpg|css)$ &#123;</span><br><span class="line">			root /usr/local/nginx/image;</span><br><span class="line">			// 缓存时间</span><br><span class="line">			expires 3d;</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="location块的匹配规则">location块的匹配规则</h3>
+</blockquote>
+<blockquote>
+<p>匹配规则：</p>
+<p>​ location = /uri 精确匹配</p>
+<p>​ location ^~ /uri 前缀匹配，顺序在正则之前</p>
+<p>​ location ~ pattern 区分大小写的正则匹配</p>
+<p>​ location ~* pattern 不区分大小写的正则匹配</p>
+<p>​ location /uri 前缀匹配，顺序在正则之后(两种前缀匹配不能同时出现)</p>
+<p>​ location / 通用匹配，接收未匹配到其他location的请求。</p>
+<p>匹配顺序：</p>
+<p>​ 首先会进行精确匹配，然后会进行前缀匹配，具体顺序按指令长度从长到短的顺序依次匹配。</p>
+<p>​ 使用正则匹配时，是按照配置文件的顺序依次匹配的。如果不希望前缀匹配后进行正则匹配，那么使用^~。</p>
+</blockquote>
+<h3 id="url重写">URL重写</h3>
+<blockquote>
+<p>即对URL的规范化处理。</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080 weight = 1;</span><br><span class="line">		server 192.168.1.20:8081 weight = 2;</span><br><span class="line">		ip_hash;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		</span><br><span class="line">		# 重写URL</span><br><span class="line">		rewrite ^/(.*) http://www.xxxx.com/xxx;</span><br><span class="line"></span><br><span class="line">		# 访问动态资源</span><br><span class="line">		location ~ .*.jsp$ &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">		# 访问静态资源</span><br><span class="line">		location ~ .*\.(gif|jpg|css)$ &#123;</span><br><span class="line">			root /usr/local/nginx/image;</span><br><span class="line">			// 缓存时间</span><br><span class="line">			expires 3d;</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="nginx安装">Nginx安装</h2>
+</blockquote>
+<blockquote>
+<p>在各官网下载相关组件 nginx openssl zlib pcre 等等</p>
+<p>以openssl为例 1） 通过rz上传压缩包 2） 通过tar -xvf *.tar.gz 进行解压缩 3）cd openssl-1.1.1d 进行配置检查以及编译 ./config 执行配置检查 make &amp; make install 进行编译和安装</p>
+<p>​ 如上过程，适用于zlib和pcre ​ 注意： 对于 pcre而言， 执行检查命令为 ./configure 4) 安装nginx过程中 执行配置检查</p>
+<pre><code>./configure --sbin-path=/usr/local/nginx/nginx \
+--conf-path=/usr/local/nginx/nginx.conf \
+--pid-path=/usr/local/nginx/nginx.pid \
+--with-http_ssl_module \
+--with-pcre=/usr/local/src/pcre-8.44 \
+--with-zlib=/usr/local/src/zlib-1.2.11 \
+--with-openssl=/usr/local/src/openssl-1.1.1d</code></pre>
+<ol start="5" type="1">
+<li>仍然执行 make 以及 make install<br>
+</li>
+<li>nginx安装成功 ./nginx验证</li>
+</ol>
+<p>注意事项：nginx服务器，需要虚拟机开放80端口的访问 防火墙配置 （同样适用于开放8080 8081端口） firewall-cmd --list-all 查看当前配置 firewall-cmd --add-service=http --permanent 开放http访问 firewall-cmd --add-port=80/tcp --permanent 开放80端口 firewall-cmd --reload 重启防火墙保存</p>
+<p>jdk的安装 1） 解压缩 -- 拷贝目录到 /usr/local/java 2) 更改环境变量 vim /etc/profile</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">export JAVA_HOME=/usr/local/java</span><br><span class="line">export JAVA_BIN=$JAVA_HOME/bin</span><br><span class="line">export PATH=$PATH:$JAVA_HOME/bin</span><br><span class="line">export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar</span><br><span class="line">export PATH=$JAVA_HOME/bin:$JRE_HOME/bin:$PATH</span><br></pre></td></tr></table></figure>
+<ol start="3" type="1">
+<li>让环境变量生效 source /etc/profile</li>
+<li>验证版本 java -version</li>
+</ol>
+<p>tomcat的安装 1） 解压缩 -- 拷贝目录到 /usr/local/tomcat 2) 执行启动 ./startup.sh</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>框架入门</category>
+      </categories>
+      <tags>
+        <tag>并发</tag>
+        <tag>网络</tag>
+        <tag>负载均衡</tag>
       </tags>
   </entry>
   <entry>
@@ -4678,6 +4599,67 @@
       </tags>
   </entry>
   <entry>
+    <title>物理层</title>
+    <url>/2021/02/20/computerNetwork/%E7%AC%AC2%E7%AB%A0-%E7%89%A9%E7%90%86%E5%B1%82/</url>
+    <content><![CDATA[<h1 id="物理层">物理层</h1>
+<h2 id="物理层的基本概念">物理层的基本概念</h2>
+<blockquote>
+<p>尼奎斯特定理 $ C = 2Blog_2V $ 。C为最大数据速率，B为带宽频率，V为离散等级。</p>
+<p>香农定理<span class="math inline">\(C = B log_2(1+S/N)\)</span> 。S/N是信噪比，<span class="math inline">\(10log_{10}S/N\)</span>为分贝，B为带宽频率，C为最大数据速率。</p>
+</blockquote>
+<h3 id="物理层的主要任务">物理层的主要任务</h3>
+<p>物理层解决如何在连接各种计算机的传输媒体上传输数据比特流。</p>
+<p>确定与传输媒体的接口的一些特性:</p>
+<blockquote>
+<p>机械特性:如接口形状、大小、引线数目</p>
+<p>电气特性:如规定电压范围</p>
+<p>功能特性:如规定-5V表示0</p>
+<p>过程特性/规程特性:规定建立连接时各个相关部件的工作步骤</p>
+</blockquote>
+<h2 id="数据通信的基础知识">数据通信的基础知识</h2>
+<blockquote>
+<p>单向通信/单工通信 ---------只能有一个方向的通信而没有反方向的交互，如电台</p>
+<p>半双工通信---------通信双方都可以发送消息，但不能双方同时发送。如对讲机</p>
+<p>全双工通信--------通信的双方-可以同时发送和接收消息。如电话</p>
+<p>数据比特流传输距离较短,用解调器变为模拟信号后传输距离会加长。</p>
+<p>数据--------传送消息的实体</p>
+<p>信号--------数据的电气/电磁表现</p>
+<p>​ 模拟信号--------连续</p>
+<p>​ 数字信号---------离散</p>
+<p>码元----------在使用时间域的波形表示数字信号时，代表不同离散数值的基本波形</p>
+<p>信号调制方法:调幅、调频、调相</p>
+</blockquote>
+<h2 id="物理层下的传输媒体">物理层下的传输媒体</h2>
+<h3 id="导向传输媒体">导向传输媒体</h3>
+<blockquote>
+<p><span class="math display">\[
+常用传输频率10^4-------- 10^{16}
+\]</span></p>
+<p>双绞线:</p>
+<p>​ 屏蔽双绞线STP</p>
+<p>​ 无屏蔽双绞线UTP</p>
+<p>同轴电缆:</p>
+<p>​ 50Ω同轴电缆用于数字传输，基带同轴电缆</p>
+<p>​ 75Ω同轴电缆用于模拟传输，宽带同轴电缆</p>
+</blockquote>
+<h2 id="信道复用技术">信道复用技术</h2>
+<blockquote>
+<p>频分复用:每个用户使用不同的频率传递。</p>
+<p>时分复用:将单位时间划分为若干个时间片，每个用户使用对应的时间片传递。 统计时分复用在发送数据时在数据中添加标记，接收方根据标记判定谁接收并将标记去除。</p>
+<p>波分复用:每个用户使用不同的波长传递。</p>
+<p>码分复用:自己的码片乘积为1，同他人码片乘积为0，传输的信号为原数据同对应码片的乘积，总的传输信号为各个设备传输的信号之和，接收者只要将总信号同自己的码片相乘即可得到需要接收的值。</p>
+<p>码分复用的缺点:设备数变多后码片需要越多</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>计算机网络</category>
+      </categories>
+      <tags>
+        <tag>网络</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>概论</title>
     <url>/2021/02/20/computerNetwork/%E7%AC%AC1%E7%AB%A0-%E6%A6%82%E8%AE%BA/</url>
     <content><![CDATA[<h1 id="概论">概论</h1>
@@ -4843,67 +4825,6 @@
 <p>​ 比特同步</p>
 <p>​ 比特编码</p>
 <p>​ RJ45、802.3</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>计算机网络</category>
-      </categories>
-      <tags>
-        <tag>网络</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>物理层</title>
-    <url>/2021/02/20/computerNetwork/%E7%AC%AC2%E7%AB%A0-%E7%89%A9%E7%90%86%E5%B1%82/</url>
-    <content><![CDATA[<h1 id="物理层">物理层</h1>
-<h2 id="物理层的基本概念">物理层的基本概念</h2>
-<blockquote>
-<p>尼奎斯特定理 $ C = 2Blog_2V $ 。C为最大数据速率，B为带宽频率，V为离散等级。</p>
-<p>香农定理<span class="math inline">\(C = B log_2(1+S/N)\)</span> 。S/N是信噪比，<span class="math inline">\(10log_{10}S/N\)</span>为分贝，B为带宽频率，C为最大数据速率。</p>
-</blockquote>
-<h3 id="物理层的主要任务">物理层的主要任务</h3>
-<p>物理层解决如何在连接各种计算机的传输媒体上传输数据比特流。</p>
-<p>确定与传输媒体的接口的一些特性:</p>
-<blockquote>
-<p>机械特性:如接口形状、大小、引线数目</p>
-<p>电气特性:如规定电压范围</p>
-<p>功能特性:如规定-5V表示0</p>
-<p>过程特性/规程特性:规定建立连接时各个相关部件的工作步骤</p>
-</blockquote>
-<h2 id="数据通信的基础知识">数据通信的基础知识</h2>
-<blockquote>
-<p>单向通信/单工通信 ---------只能有一个方向的通信而没有反方向的交互，如电台</p>
-<p>半双工通信---------通信双方都可以发送消息，但不能双方同时发送。如对讲机</p>
-<p>全双工通信--------通信的双方-可以同时发送和接收消息。如电话</p>
-<p>数据比特流传输距离较短,用解调器变为模拟信号后传输距离会加长。</p>
-<p>数据--------传送消息的实体</p>
-<p>信号--------数据的电气/电磁表现</p>
-<p>​ 模拟信号--------连续</p>
-<p>​ 数字信号---------离散</p>
-<p>码元----------在使用时间域的波形表示数字信号时，代表不同离散数值的基本波形</p>
-<p>信号调制方法:调幅、调频、调相</p>
-</blockquote>
-<h2 id="物理层下的传输媒体">物理层下的传输媒体</h2>
-<h3 id="导向传输媒体">导向传输媒体</h3>
-<blockquote>
-<p><span class="math display">\[
-常用传输频率10^4-------- 10^{16}
-\]</span></p>
-<p>双绞线:</p>
-<p>​ 屏蔽双绞线STP</p>
-<p>​ 无屏蔽双绞线UTP</p>
-<p>同轴电缆:</p>
-<p>​ 50Ω同轴电缆用于数字传输，基带同轴电缆</p>
-<p>​ 75Ω同轴电缆用于模拟传输，宽带同轴电缆</p>
-</blockquote>
-<h2 id="信道复用技术">信道复用技术</h2>
-<blockquote>
-<p>频分复用:每个用户使用不同的频率传递。</p>
-<p>时分复用:将单位时间划分为若干个时间片，每个用户使用对应的时间片传递。 统计时分复用在发送数据时在数据中添加标记，接收方根据标记判定谁接收并将标记去除。</p>
-<p>波分复用:每个用户使用不同的波长传递。</p>
-<p>码分复用:自己的码片乘积为1，同他人码片乘积为0，传输的信号为原数据同对应码片的乘积，总的传输信号为各个设备传输的信号之和，接收者只要将总信号同自己的码片相乘即可得到需要接收的值。</p>
-<p>码分复用的缺点:设备数变多后码片需要越多</p>
 </blockquote>
 ]]></content>
       <categories>
@@ -5113,6 +5034,67 @@
       </tags>
   </entry>
   <entry>
+    <title>传输层</title>
+    <url>/2021/02/20/computerNetwork/%E7%AC%AC5%E7%AB%A0-%E4%BC%A0%E8%BE%93%E5%B1%82/</url>
+    <content><![CDATA[<h1 id="传输层">传输层</h1>
+<h2 id="各层协议">各层协议</h2>
+<blockquote>
+<p>应用层: http、https、ftp、DNS、SMTP、PoP3、RDP</p>
+<p>传输层: TCP、UDP</p>
+<p>网络层: IP(RIP、OSPF、BGP) 、ICMP、IGMP、ARP</p>
+</blockquote>
+<h2 id="传输层两个协议应用场景">传输层两个协议应用场景</h2>
+<h3 id="tcp">TCP</h3>
+<blockquote>
+<p>分段、编号、流量控制、可靠传输、建立会话、面向连接。</p>
+</blockquote>
+<h3 id="udp">UDP</h3>
+<blockquote>
+<p>一个数据包就能完成数据通信、不建立会话。</p>
+</blockquote>
+<h2 id="传输层和应用层之间的关系">传输层和应用层之间的关系</h2>
+<blockquote>
+<p>http = TCP + 80</p>
+<p>https = TCP + 443</p>
+<p>ftp = TCP + 21</p>
+<p>SMTP = TCP + 25</p>
+<p>POP3 = TCP + 110</p>
+<p>RDP = TCP + 3389</p>
+<p>共享文件夹 = TCP + 445</p>
+<p>SQLServer = TCP + 1433</p>
+<p>DNS = UDP + 53 OR TCP + 53</p>
+</blockquote>
+<h2 id="应用层协议和服务之间的关系">应用层协议和服务之间的关系</h2>
+<blockquote>
+<p>服务运行后在TCP或UDP的某个端口监听客户端请求。</p>
+</blockquote>
+<h2 id="udp协议">UDP协议</h2>
+<blockquote>
+<p>两个对等运输实体在通信时传送的数据单位叫作运输协议数据单元。</p>
+<p>TCP传送的协议数据单元是<strong>TCP报文段</strong>。</p>
+<p>UDP传送的协议数据单元是<strong>UDP报文</strong>或<strong>用户数据报</strong>。</p>
+<p>UDP的首部格式<img src="/2021/02/20/computerNetwork/%E7%AC%AC5%E7%AB%A0-%E4%BC%A0%E8%BE%93%E5%B1%82/UDP首部格式.png" alt="UDP首部格式"></p>
+</blockquote>
+<h2 id="tcp协议">TCP协议</h2>
+<blockquote>
+<p><strong>TCP的特点</strong></p>
+<p>​ TCP是面向连接的传输层协议，每条TCP连接只能有两个端点，故TCP连接是点对点的。</p>
+<p>​ TCP提供可靠交付的服务，TCP提供全双工通信。</p>
+<p>​ TCP面向字节流。</p>
+<p>​ 提供流量控制。</p>
+<p>​ 避免网络拥塞</p>
+</blockquote>
+<h3 id="tcp如何">TCP如何</h3>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>计算机网络</category>
+      </categories>
+      <tags>
+        <tag>网络</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>网络层</title>
     <url>/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/</url>
     <content><![CDATA[<h1 id="网络层">网络层</h1>
@@ -5301,67 +5283,6 @@
       </tags>
   </entry>
   <entry>
-    <title>传输层</title>
-    <url>/2021/02/20/computerNetwork/%E7%AC%AC5%E7%AB%A0-%E4%BC%A0%E8%BE%93%E5%B1%82/</url>
-    <content><![CDATA[<h1 id="传输层">传输层</h1>
-<h2 id="各层协议">各层协议</h2>
-<blockquote>
-<p>应用层: http、https、ftp、DNS、SMTP、PoP3、RDP</p>
-<p>传输层: TCP、UDP</p>
-<p>网络层: IP(RIP、OSPF、BGP) 、ICMP、IGMP、ARP</p>
-</blockquote>
-<h2 id="传输层两个协议应用场景">传输层两个协议应用场景</h2>
-<h3 id="tcp">TCP</h3>
-<blockquote>
-<p>分段、编号、流量控制、可靠传输、建立会话、面向连接。</p>
-</blockquote>
-<h3 id="udp">UDP</h3>
-<blockquote>
-<p>一个数据包就能完成数据通信、不建立会话。</p>
-</blockquote>
-<h2 id="传输层和应用层之间的关系">传输层和应用层之间的关系</h2>
-<blockquote>
-<p>http = TCP + 80</p>
-<p>https = TCP + 443</p>
-<p>ftp = TCP + 21</p>
-<p>SMTP = TCP + 25</p>
-<p>POP3 = TCP + 110</p>
-<p>RDP = TCP + 3389</p>
-<p>共享文件夹 = TCP + 445</p>
-<p>SQLServer = TCP + 1433</p>
-<p>DNS = UDP + 53 OR TCP + 53</p>
-</blockquote>
-<h2 id="应用层协议和服务之间的关系">应用层协议和服务之间的关系</h2>
-<blockquote>
-<p>服务运行后在TCP或UDP的某个端口监听客户端请求。</p>
-</blockquote>
-<h2 id="udp协议">UDP协议</h2>
-<blockquote>
-<p>两个对等运输实体在通信时传送的数据单位叫作运输协议数据单元。</p>
-<p>TCP传送的协议数据单元是<strong>TCP报文段</strong>。</p>
-<p>UDP传送的协议数据单元是<strong>UDP报文</strong>或<strong>用户数据报</strong>。</p>
-<p>UDP的首部格式<img src="/2021/02/20/computerNetwork/%E7%AC%AC5%E7%AB%A0-%E4%BC%A0%E8%BE%93%E5%B1%82/UDP首部格式.png" alt="UDP首部格式"></p>
-</blockquote>
-<h2 id="tcp协议">TCP协议</h2>
-<blockquote>
-<p><strong>TCP的特点</strong></p>
-<p>​ TCP是面向连接的传输层协议，每条TCP连接只能有两个端点，故TCP连接是点对点的。</p>
-<p>​ TCP提供可靠交付的服务，TCP提供全双工通信。</p>
-<p>​ TCP面向字节流。</p>
-<p>​ 提供流量控制。</p>
-<p>​ 避免网络拥塞</p>
-</blockquote>
-<h3 id="tcp如何">TCP如何</h3>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>计算机网络</category>
-      </categories>
-      <tags>
-        <tag>网络</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>应用层</title>
     <url>/2021/02/20/computerNetwork/%E7%AC%AC6%E7%AB%A0-%E5%BA%94%E7%94%A8%E5%B1%82/</url>
     <content><![CDATA[<h2 id="使用tcp">使用TCP</h2>
@@ -5379,6 +5300,114 @@
       </categories>
       <tags>
         <tag>网络</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux介绍及基本指令</title>
+    <url>/2021/02/20/Linux/Linux%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%9F%BA%E6%9C%AC%E6%8C%87%E4%BB%A4/</url>
+    <content><![CDATA[<h1 id="linux介绍及基本指令">Linux介绍及基本指令</h1>
+<h2 id="linux区别">Linux区别</h2>
+<blockquote>
+<p>Ubantu：分为用户版和服务器版。</p>
+<p>​ 用户版，有着良好的用户界面，有强大的软件支持。</p>
+<p>​ 服务器版比较少用。</p>
+<p>Debian：系统十分稳定，内核非常小。</p>
+<p>RedHat：是一个商用的操作系统，性能非常好，软件支持也非常好。</p>
+<p>Centos：基本上相当于RedHat的复刻版本。免费。</p>
+</blockquote>
+<h2 id="根目录下各目录对应的功能">根目录下各目录对应的功能</h2>
+<h2 id="在linux中获取帮助">在linux中获取帮助</h2>
+<blockquote>
+<p>man 命令名：查看命令的操作说明</p>
+<p>命令行 --help：查看命令的语法</p>
+</blockquote>
+<h2 id="linux基本命令">Linux基本命令</h2>
+<blockquote>
+<p>ls：查看当前目录中所有文件及目录</p>
+<p>ll：查看当前目录内所有文件及目录详细信息。详细信息具体查看方式。以drwxr-xr-x为例(第一个字符拆出，然后每三个字符表示一个内容)：</p>
+<p>d：文件类型，目录。rwx：拥有者权限，可读，可写，可执行。r-x：用户组权限，可读，不可写，可执行。r-x：其他组权限，可读，不可写，可执行。</p>
+<p>具体文件类型有：d：路径。<em>-</em>：文件。 l ：连接(快捷方式)。b：表示可按块随机读写的设备。c：设备文件里的串行端口设备，如键盘、设备。</p>
+<p>表示权限的三个字符可以用0~7的数字表示。如rwx为7，r-x为5。</p>
+<p>ls -al：查看所有文件及目录包括隐藏目录。</p>
+<p>pwd：查看当前所在层级</p>
+<p>echo xxx：打印xxx</p>
+<p>date：查看日期</p>
+<p>cal：查看日历</p>
+<p>grep xxx：用于查看包含xxx的对象。</p>
+<p>curl 网址：向对应网址发出http请求。curl -i www.baidu.com ：向百度首页发出请求，会返回响应头。</p>
+<p>history：查看先前输入过的命令。</p>
+<p>df：查看磁盘使用情况。</p>
+</blockquote>
+<h2 id="文件基本命令">文件基本命令</h2>
+<blockquote>
+<p>vi xxx：打开临时记事本，基本可以认为是创建文件。</p>
+<p>mkdir xxx：创建文件夹</p>
+<p>rm -rf xxx：删除目录。</p>
+<p>cp a b ：把a文件复制到b处</p>
+<p>mv a b ：把a文件移动到b处（也可以当做重命名使用）</p>
+<p>tail -number xx：查看文件最后number行内容(可以用于监控日志使用tail -F/-f xxx)-F，-f分别为追踪文件名和追踪文件索引。</p>
+<p>cat xxx：查看文件内容，往往伴随着grep使用如 cat a.txt | grep "a:xxx"。</p>
+<p>less xxx：查看文件一页的内容。</p>
+<p>find xxx：查找文件(可以查找所有文件)。</p>
+<p>whereis xx：查找命令所在目录(只能查找二进制类的文件)。</p>
+<p>which xxx：在PATH变量指定的路径中搜索指定的系统命令的位置。</p>
+<p>sh xxx.sh：执行shell命令。这种执行sh文件不需要本身具有权限。</p>
+<p>path/xxx.sh：执行shell命令。sh文件本身需要有权限。(如./xxx.sh其中.表示当前目录)</p>
+</blockquote>
+<h2 id="文件解压缩">文件解压缩</h2>
+<blockquote>
+<p>zip -r 压缩后路径加名字 需要压缩的文件：压缩，如zip -r a.zip a.txt。这个命令需要yum install zip</p>
+<p>unzip -d 解压缩到的路径 解压缩的包：解压缩，如unzip -d . a.zip。这个命令需要yum install unzip。</p>
+<p>tar -cvf 压缩后路径加名字 需要压缩的文件：压缩，如tar -cvf a.txt。</p>
+<p>tar -zcvf 压缩后路径加名字 需要压缩的文件：压缩，如tar -zcvf a.txt。压缩后占的空间更少</p>
+<p>tar -xvf 解压缩到的路径 解压缩的包：解压缩，如tar -xvf a.txt。</p>
+<p>tar -zxvf 解压缩到的路径 解压缩的包：压缩，如tar -zxvf a.txt。</p>
+<p>tar的参数：c：表示create，即压缩，z：约等于zip，即打包后空间会更小，v：压缩后展示压缩包中文件名字。f：表示结束。x：extract，即解压缩。</p>
+<p>b：表示查看压缩包内容。其中c、x、b同时只能存在一个。</p>
+</blockquote>
+<h2 id="文件传输">文件传输</h2>
+<blockquote>
+<p>scp 目录加文件名 用户名@IP地址:目录加文件名：将文件传输利用网络传输到另一个服务器。如scp ./a.txt root@10.0.2.6:~/b.txt</p>
+</blockquote>
+<h2 id="进程管理命令">进程管理命令</h2>
+<blockquote>
+<p>top ：查看当前系统使用情况。</p>
+<p>ps：查看进程情况。</p>
+<p>ps aux：查看所有正在执行的进程。经常和grep配合使用。如ps aux | grep "top"</p>
+<p>lsof -i:port ：根据端口号查看进程。需要yum install lsof</p>
+<p>kill 进程号：杀死进程。</p>
+<p>kill -9 进程号：强制杀死进程。</p>
+<p>service xxx start：启动服务。</p>
+<p>service xxxx stop：关闭服务。</p>
+</blockquote>
+<h2 id="权限管理命令">权限管理命令</h2>
+<blockquote>
+<p>chmod xxx aaa：设置aaa的权限为xxx。第一个x为拥有者权限，第二个x为用户组权限，第三个x为其他组权限。如chmod 777 a.txt：表示将a.txt的权限均设为可读、可写、可执行。</p>
+</blockquote>
+<h2 id="软件安装命令">软件安装命令</h2>
+<blockquote>
+<p>yum install xxxx：安装xxxx</p>
+<p>yum install ifconfig -y：安装时自动同意。</p>
+</blockquote>
+<h2 id="安全相关命令">安全相关命令</h2>
+<blockquote>
+<p>systemctl disable firewalld ：关闭防火墙。</p>
+</blockquote>
+<h2 id="关机命令">关机命令</h2>
+<blockquote>
+<p>shutdown：关机</p>
+<p>reboot：重启</p>
+<p>poweroff：关机</p>
+<p>halt：进入系统停止的模式，屏幕可能保留一些信息，取决于电源管理模式。</p>
+<p>systemctl suspend：休眠</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>操作系统</category>
+      </categories>
+      <tags>
+        <tag>Linux指令</tag>
       </tags>
   </entry>
   <entry>

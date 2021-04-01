@@ -198,7 +198,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">50</span>
+          <span class="site-state-item-count">51</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/28/netty%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91/C10K%E9%97%AE%E9%A2%98%E7%9A%84%E8%A7%A3%E5%86%B3%E5%8F%8AIO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/28/netty%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91/C10K%E9%97%AE%E9%A2%98%E7%9A%84%E8%A7%A3%E5%86%B3%E5%8F%8AIO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/" class="post-title-link" itemprop="url">C10K问题的解决及I/O多路复用</a>
+          <a href="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/" class="post-title-link" itemprop="url">I/O模型及I/O线程模型</a>
         </h2>
 
         <div class="post-meta-container">
@@ -294,7 +294,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-05 19:48:41" itemprop="dateModified" datetime="2021-03-05T19:48:41+08:00">2021-03-05</time>
+        <time title="修改时间：2021-03-17 13:45:48" itemprop="dateModified" datetime="2021-03-17T13:45:48+08:00">2021-03-17</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -303,10 +303,6 @@
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
           <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
-        </span>
-          ，
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
         </span>
     </span>
 
@@ -336,56 +332,103 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="c10k问题的解决及io多路复用">C10K问题的解决及I/O多路复用</h1>
-<h2 id="c10k问题">C10K问题</h2>
+          <h1 id="io模型及io线程模型">I/O模型及I/O线程模型</h1>
+<h2 id="io模型">I/O模型</h2>
+<h3 id="阻塞型iobio">阻塞型I/O(BIO)</h3>
 <blockquote>
-<p>即网络通信时单机服务器保持的TCP连接数超过10K即1万，导致服务器压力过大无法承载。</p>
+<p>线程调用recvfrom，持续等待直到复制完成。</p>
+<figure>
+<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/阻塞型IO.png" alt="阻塞型IO"><figcaption aria-hidden="true">阻塞型IO</figcaption>
+</figure>
+<p>优点：程序简单</p>
+<p>缺点：每个连接需要独立进程/线程，并发量大时维护程序的线程切换开销大。</p>
 </blockquote>
-<h2 id="发生c10k问题的原因">发生C10K问题的原因</h2>
+<h3 id="非阻塞型io">非阻塞型I/O</h3>
 <blockquote>
-<p>本质上是操作系统的问题，操作系统使用的都是传统阻塞I/O模型，处理方式都是requests per thread，导致并发10K和并发100的关键在于CPU。</p>
+<p>线程调用recvfrom，不持续等待，而是不断轮询操作系统内核。</p>
+<figure>
+<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/非阻塞型IO.png" alt="非阻塞型IO"><figcaption aria-hidden="true">非阻塞型IO</figcaption>
+</figure>
+<p>优点：不会阻塞在内核的等待数据过程，每次发起的 I/O 请求可以立即返回，不用阻塞等待，实时性较好。</p>
+<p>缺点：轮询占用大量CPU时间，系统资源利用率低。</p>
 </blockquote>
-<h2 id="解决方法">解决方法</h2>
+<h3 id="io多路复用nio">I/O多路复用(NIO)</h3>
 <blockquote>
-<p>原始的TCP连接需要一个线程/进程处理一个连接。</p>
-<p>改进为同一个线程/进程处理多个连接。即使用I/O多路复用技术</p>
+<p>如select、poll、epoll，用一个描述符管理多个描述符，同时管理多个I/O操作，当有事件发生时才堵塞进行复制。</p>
+<figure>
+<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/NIO.png" alt="NIO"><figcaption aria-hidden="true">NIO</figcaption>
+</figure>
+<p>优点：节省大量系统资源。</p>
+<p>缺点：在并发量低时延迟较多线程+堵塞I/O更高，因为I/O多路复用对单个连接需要进行两次系统调用。</p>
 </blockquote>
-<h2 id="io多路复用技术的发展">I/O多路复用技术的发展</h2>
-<h3 id="原始情况">原始情况</h3>
+<h3 id="信号驱动型io">信号驱动型I/O</h3>
 <blockquote>
-<p>最简单的思路为利用循环挨个处理每个连接，每个连接对应一个socket，当所有socket都有数据时这个方法可行，但若某个socket没有数据会导致线程/进程被阻塞。</p>
+<p>使用信号来驱动，当数据准备好时进程会受到一个信号，在信号处理函数中处理数据。</p>
+<figure>
+<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/信号驱动型IO.png" alt="信号驱动型IO"><figcaption aria-hidden="true">信号驱动型IO</figcaption>
+</figure>
+<p>优点：线程没有在等待数据时被阻塞，提高资源利用率。</p>
+<p>缺点：信号I/O在大量I/O操作时可能会因为信号序列溢出导致无法通知。</p>
 </blockquote>
-<h3 id="select">Select</h3>
+<h3 id="异步ioaio">异步I/O(AIO)</h3>
 <blockquote>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 该函数准许进程指示内核等待多个事件中的任何一个发送，并只在有一个或多个事件发生或经历一段指定的时间后才唤醒。</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">select</span><span class="params">(<span class="keyword">int</span> maxfdp1,fd_set *readset,fd_set *writeset,fd_set *exceptset,<span class="keyword">const</span> struct timeval *timeout)</span></span></span><br></pre></td></tr></table></figure>
-<p>该函数会传递readset、writeset、exceptset，即读事件、写事件、异常事件，使用fd_set来告知内核同时监控多个文件句柄，最后是timeout是时间参数，可以分为三种情况：一直等待某个描述字直到事件就绪回调、等待到某个时间若某个描述字事件不就绪则不等待、根本不等待某个描述字。</p>
-<p>回调后可以通过FD_ISSET 来逐个查看fd_set中的句柄状态，当连接数大时效率较低，因此select存在句柄管理上限。</p>
-<p>且fd_set只有一个字段关注事件和发生事件，使用前往往要初始化。</p>
-<p>此外fd_set在调用select时需要反复在用户态和内核态传递。</p>
+<p>类似于信号驱动I/O，但是AIO会在内核完成了数据复制操作后才给线程发送信号，线程无须等待。</p>
+<figure>
+<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/异步IO.png" alt="img"><figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p>优点：异步I/O充分利用DMA，让I/O操作和计算重叠。</p>
+<p>缺点：AIO需要操作系统支持，目前AIO在linux中还不完善，且AIO代码编写复杂。</p>
 </blockquote>
-<h3 id="poll">Poll</h3>
+<h2 id="io线程模型">I/O线程模型</h2>
+<h3 id="传统阻塞-io-服务模型">传统阻塞 I/O 服务模型</h3>
 <blockquote>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">poll</span> <span class="params">( struct pollfd * fds, <span class="keyword">unsigned</span> <span class="keyword">int</span> nfds, <span class="keyword">int</span> timeout)</span></span>;</span><br></pre></td></tr></table></figure>
-<p>本质上和select没有区别，都需要轮询，但是poll没有最大文件描述符的限制</p>
-<p>pollfd存在事件字段和发生事件字段，使用前不用重复初始化。</p>
-<p>此外pollfd在调用poll时需要反复在用户态和内核态传递。</p>
+<p>采用阻塞式I/O获取输入数据，每个连接都需要独立的线程完成数据输入、业务处理、数据返回的完整操作。</p>
+<p>缺点：</p>
+<p>​ 并发数较大时需要大量线程。</p>
+<p>​ 连接后若没有数据会被阻塞在read操作上。</p>
 </blockquote>
-<h3 id="epoll">Epoll</h3>
+<h3 id="reactor模式">Reactor模式</h3>
 <blockquote>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建一个epoll的句柄，用于管理size个监听数目，返回一个fd值。</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_create</span><span class="params">(<span class="keyword">int</span> size)</span></span>;</span><br><span class="line"><span class="comment">// epoll的事件注册函数，会先注册需要监听的事件类型，epfd为epoll_create的返回值。</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_ctl</span><span class="params">(<span class="keyword">int</span> epfd, <span class="keyword">int</span> op, <span class="keyword">int</span> fd, struct epoll_event *event)</span></span>;</span><br><span class="line"><span class="comment">// 等待事件的发生，只会返回需要处理的事件文件描述符</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_wait</span><span class="params">(<span class="keyword">int</span> epfd, struct epoll_event * events, <span class="keyword">int</span> maxevents, <span class="keyword">int</span> timeout)</span></span>;</span><br></pre></td></tr></table></figure>
-<p>epoll_event在用户态和内核态的传递只需要在epoll_ctl进行一次。</p>
-<p>且事件触发时只会返回触发事件的文件描述符，避免遍历全部的文件描述符。</p>
-<p>有ET模式和LT模式</p>
-<p>​ ET模式：边缘触发，当状态发生时才通知，每个事件仅通知一次，所以程序必须立即处理该事件。</p>
-<p>​ LT模式：水平触发，当epoll_wait检测到其上有事件发生并将此事件通知应用程序后，应用程序可以不立即处理该事件，下次调用epoll_wait时操作系统还会再次向应用程序通知此事件。</p>
+<p>I/O复用结合线程池</p>
+<p>主要组件为Reactor、Acceptor、Handler</p>
+<p>非阻塞同步网络模型。</p>
 </blockquote>
-<h2 id="c10m">C10M</h2>
+<h4 id="单线程reactor">单线程reactor</h4>
 <blockquote>
-<p>即并发量上升到10M，此时瓶颈变为了操作系统。</p>
-<p>可能的解决方案：</p>
-<p>​ 让数据报直接传递到业务逻辑，不经过linux协议栈。</p>
-<p>​ 自己管理内存，如将内存预留一部分，并使用更大的内存分页进行管理。</p>
-<p>​ 多线程核间绑定，将线程同处理器核心进行绑定，最大化核心Cache利用，实现无锁设计，避免线程切换开销。</p>
+<p>Reactor对象通过select监控请求事件，收到事件后通过Dispatch分发。</p>
+<p>若是连接事件通过Acceptor处理。然后创建一个Handler处理连接后的事件</p>
+<p>若不是连接事件则交给Handler处理。</p>
+<p>优点：单线程不用考虑线程切换开销。</p>
+<p>缺点：只有一个线程无法完全发挥多核CPU的性能。</p>
+</blockquote>
+<h4 id="多线程reactor">多线程reactor</h4>
+<blockquote>
+<p>优化了Handler，handler只负责数据读取，然后将数据分发给worker线程处理，worker线程处理完成后将结果返回给handler。</p>
+<p>优点：充分利用多核CPU处理能力</p>
+<p>缺点：多线程数据共享和访问比较困难。reactor负责承担所有事件响应，容易成为瓶颈。</p>
+</blockquote>
+<h4 id="主从reactor模型">主从Reactor模型</h4>
+<blockquote>
+<figure>
+<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/主从reactor.png" alt="主从reactor"><figcaption aria-hidden="true">主从reactor</figcaption>
+</figure>
+<p>主Reactor负责将新连接分发给Acceptor，然后主Reactor将连接分发给从reactor。从reactor会将连接加入连接队列进行监听，并创建一个handler用于处理。新事件发生时，从reactor会调用连接对应的handler进行处理，handler负责数据读取，而业务仍交给worker处理。</p>
+<p>优点：父线程与子线程的数据交互简单职责明确，父线程只需要接收新连接，子线程完成后续的业务处理。</p>
+</blockquote>
+<h3 id="proactor模型">Proactor模型</h3>
+<blockquote>
+<figure>
+<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/proactor模型.png" alt="proactor模型"><figcaption aria-hidden="true">proactor模型</figcaption>
+</figure>
+<p>异步网络模型。</p>
+<p>组件：Proactor Initiator、Proactor 、Handler 、AsyOptProcessor。即一个初始化器，一个注册器，一个proactor，一个handler</p>
+<p>流程：initiator创建Proactor 、Handler ，然后Proactor 和Handler 都通过AsyOptProcessor注册到内核。</p>
+<p>AsyOptProcessor处理注册请求，并处理I/O操作。</p>
+<p>AsyOptProcessor完成I/O操作后会通知Proactor，Proactor根据不同的事件类型回调不同的Handler进行业务处理。</p>
+<p>优点：效率较reactor模型更高。</p>
+<p>缺点：编程更加复杂。</p>
+<p>​ 内存使用更加困难。</p>
+<p>​ 需要操作系统支持。</p>
 </blockquote>
 
       
@@ -406,7 +449,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/24/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/24/">24</a><span class="page-number current">25</span><a class="page-number" href="/page/26/">26</a><span class="space">&hellip;</span><a class="page-number" href="/page/50/">50</a><a class="extend next" rel="next" href="/page/26/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/24/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/24/">24</a><span class="page-number current">25</span><a class="page-number" href="/page/26/">26</a><span class="space">&hellip;</span><a class="page-number" href="/page/51/">51</a><a class="extend next" rel="next" href="/page/26/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -451,13 +494,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">166k</span>
+    <span title="站点总字数">171k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:31</span>
+    <span title="站点阅读时长">2:35</span>
   </span>
 </div>
 <div class="busuanzi-count">
