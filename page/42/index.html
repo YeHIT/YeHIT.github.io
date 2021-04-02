@@ -198,7 +198,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-count">52</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/codeAnalyse/redis%E4%BD%BF%E7%94%A8/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/codeAnalyse/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E6%B1%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/codeAnalyse/redis%E4%BD%BF%E7%94%A8/" class="post-title-link" itemprop="url">Redis入门</a>
+          <a href="/2021/02/20/codeAnalyse/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E6%B1%A0/" class="post-title-link" itemprop="url">数据库连接池</a>
         </h2>
 
         <div class="post-meta-container">
@@ -286,16 +286,10 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
+      
 
-      <time title="创建时间：2021-02-20 12:26:00" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:16:58" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
     </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-01 23:49:09" itemprop="dateModified" datetime="2021-03-01T23:49:09+08:00">2021-03-01</time>
-      </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
@@ -303,10 +297,6 @@
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
           <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
-        </span>
-          ，
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%A1%86%E6%9E%B6%E5%85%A5%E9%97%A8/" itemprop="url" rel="index"><span itemprop="name">框架入门</span></a>
         </span>
           ，
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
@@ -322,14 +312,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>6.3k</span>
+      <span>515</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>6 分钟</span>
+      <span>1 分钟</span>
     </span>
 </div>
 
@@ -340,318 +330,37 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="redis使用">Redis使用</h1>
-<h2 id="传统数据库的发展">传统数据库的发展</h2>
+          <h1 id="数据库连接池">数据库连接池</h1>
+<h2 id="常用数据库连接池">常用数据库连接池</h2>
+<h3 id="dbcp">DBCP</h3>
+<h4 id="常用参数">常用参数</h4>
 <blockquote>
-<p>单库 -&gt; 单库加缓存 -&gt; 主从分离+缓存(主写从读) -&gt; 分库分表(水平拆分(将一个库拆成多个库)、垂直拆分(按模块拆分))</p>
+<p>initialSize 初始连接数</p>
+<p>maxActive 最多可容纳活跃连接数</p>
+<p>maxIdle 最大空闲连接数(已创建但未被使用的连接，会被定期回收，回收直到maxIdle数量)</p>
+<p>minIdle 最小空闲连接数</p>
+<p>maxWait 获取连接的最大等待时间</p>
 </blockquote>
-<h3 id="传统数据库特点acid">传统数据库特点ACID</h3>
+<h3 id="c3p0">C3P0</h3>
+<h4 id="常用参数-1">常用参数</h4>
 <blockquote>
-<p>A(Atomicity)：原子性</p>
-<p>C(Consistency)：一致性</p>
-<p>I(Isolation)：隔离性</p>
-<p>D(Durability)：持久性</p>
+<p>initialPoolSize 初始连接数</p>
+<p>maxPoolSize 最大连接数</p>
+<p>minPoolSize 最小连接数</p>
+<p>acquireIncrement 当没有空闲连接时，一次性创建新连接的数量</p>
+<p>maxIdleTime 连接的最大空闲时间，即若一直未使用则自动断掉连接。</p>
 </blockquote>
-<h3 id="mysql的数据类型">Mysql的数据类型</h3>
+<h3 id="druid">Druid</h3>
+<h4 id="常用参数-2">常用参数</h4>
 <blockquote>
-<p>数值型</p>
-<p>​ 整数型</p>
-<p>​ 小数型</p>
-<p>日期时间类型</p>
-<p>字符串型</p>
-</blockquote>
-<h2 id="nosql">NoSQL</h2>
-<blockquote>
-<p>易拓展：没有关系型数据库的关系型特性。</p>
-<p>性能高：NoSQL读写性能高。且cache一般是细粒度的。</p>
-<p>数据类型灵活。</p>
-</blockquote>
-<h3 id="nosql分类">NoSQL分类</h3>
-<blockquote>
-<p>K-V：Memcache、Redis</p>
-<p>列族：Hbase</p>
-<p>文档：MongoDB</p>
-<p>图：Neo4j</p>
-</blockquote>
-<h3 id="nosql-cap定理">NoSQL CAP定理</h3>
-<blockquote>
-<p>CAP定理：一个分布式系统不可能同时很好的满足一致性、可用性、分区容忍性这三个需求，最多只能同时较好的满足两个。</p>
-<p>C(Consistency)：所有节点在同一时间有相同的数据。</p>
-<p>A(Availability)：保证每个请求不管成功或者失败都有响应。</p>
-<p>P(Partition tolerance)：系统中任意信息丢失或失败不会影响系统继续运作。</p>
-<p>满足CA：单点集群。</p>
-<p>满足CP：满足一致性、分区容忍性的系统，性能一般不高</p>
-<p>满足AP：满足可用性、分区容忍性的系统，一致性要求较低。</p>
-</blockquote>
-<h3 id="nosql-base特点">NoSQL BASE特点</h3>
-<blockquote>
-<p>BA： Basically Availble基本可用。</p>
-<p>S：Soft-state：软状态/柔性事务，无连接</p>
-<p>E：Eventual Consistency 最终一致性。</p>
-</blockquote>
-<h2 id="redis">Redis</h2>
-<h3 id="redis命令">Redis命令</h3>
-<blockquote>
-<p>redis-server：启动服务端</p>
-<p>redis-benchmark：压测</p>
-<p>redis-cli -p 端口号：启动客户端。</p>
-<p>set key1 "xxxx"：设置key1的值为xxxx</p>
-<p>get key1：获取key1对应的值</p>
-<p>exit：退出当前连接</p>
-<p>shutdown：关闭服务端</p>
-<p>keys pattern：表示查找符合pattern的key。如keys *</p>
-<p>dbsize：展示数据库key个数。</p>
-<p>flushdb：删除当前数据库的操作。</p>
-<p>flushall：删除所有数据库的数据。</p>
-<p>exists xxx：判断xxx的键是否存在。</p>
-<p>type xxx：判断xxx的键存储的值类型。</p>
-<p>expire key 秒数(n)：设置key值的有效时间为n秒，过期后该key即被删除。</p>
-<p>ttl key：查看key的有效时间，正数未过期。返回-1时说明key没有设置有效时间，返回-2说明key已不存在。</p>
-<p>pexpire key 毫秒数：设置key值的有效时间为x毫秒。</p>
-<p>pttl key：查看key的有效时间，毫秒为单位。</p>
-<p>persist key：让key始终存在。</p>
-<p>del key：删去key。</p>
-<p>rename key1 key2： 把key1重命名为key2。</p>
-<p>randomkey：随机找到一个key。</p>
-<p>move key dbId ：把key移动到第dbId个数据库下。</p>
-</blockquote>
-<h3 id="redis配置">Redis配置：</h3>
-<blockquote>
-<p>database 16：默认16个数据库，可以通过select x来选择当前使用的数据库。可以通过ip：6379【x】中x值判断当前是哪个数据库。</p>
-</blockquote>
-<h3 id="redis数据结构">Redis数据结构</h3>
-<h4 id="基本数据结构">基本数据结构</h4>
-<h5 id="string">String</h5>
-<blockquote>
-<p>命令：</p>
-<p>​ strlen key ：获取key存储的字符串长度</p>
-<p>​ append key “xxx" ：在原有的基础上添加字符串。</p>
-<p>​ getrange key strat end： 获取子串</p>
-<p>​ getset key value ：修改原key对应的值并将旧值返回。</p>
-<p>当值为整数时，直接进行数学运算。</p>
-<p>​ incr key ：key对应的值自增1</p>
-<p>​ incrby key number ：key对应的值自增number</p>
-<p>​ decr key：key对应的值自减1</p>
-<p>​ decrby key number ：key对应的值自减number</p>
-<p>​ setex key 秒数 值：相当于同时设置了过期时间和值。</p>
-<p>​ setnx key：不存在时才设置。</p>
-<p>​ mget key1 key2.....：一次获取多个key对应的值</p>
-<p>​ mset key1 value1 key2 value2.....：一次设置多个key-value。</p>
-<p>​ msetnx key1 value1 key2 value2.....：一次设置多个key-value，具体set操作同setnx。</p>
-<p>原理：</p>
-<p>​ redis字符串是动态字符串，内部类似于ArrayList。采用预分配冗余空间的方式减少内存的频繁分配。当字符串长度&lt;1MB，扩容方式是直接加倍，若&gt;1MB，一次扩容只扩容1MB，直到扩大到512MB。</p>
-</blockquote>
-<h5 id="list">List</h5>
-<blockquote>
-<p>lpush key value1 value2 value3 .... ：从左侧存放值。</p>
-<p>lpop key：从左侧弹出。</p>
-<p>rpush key value1 value2 value3 .... ：从右侧存放值。</p>
-<p>rpop key：从右侧弹出。</p>
-<p>lrange key start end：按范围查看值。</p>
-<p>llen key：查看长度</p>
-<p>lindex key index：获取key对应index位置的值。</p>
-<p>lrem key count value：移除count绝对值个和value相同的值。</p>
-<p>ltrim key start end：截取范围内的值重新赋值给key。</p>
-<p>linsert key before/after oldValue newValue 插入数据到某个数据前/后。</p>
-<p>lpushx key value ：在列表头部插入数据。</p>
-<p>rpushx key value：在列表尾部插入数据。</p>
-<p>lset key pos value：把列表的第pos个位置改为value。</p>
-<p>最多可存储<span class="math inline">\(2^{32}-1\)</span>个元素</p>
-<p>原理：</p>
-<p>​ 底层是一个快速链表，在列表元素较少时使用连续的内存压缩列表ziplist。当数据量较多时，改为quicklist，即将多个ziplist使用双向指针串起来使用。</p>
-</blockquote>
-<h5 id="hash">Hash</h5>
-<blockquote>
-<p>本质上类似于HashMap&lt;String,Map&gt;</p>
-<p>hset key field value</p>
-<p>hget key field</p>
-<p>hkeys key</p>
-<p>hvals key</p>
-<p>hmset key field1 value1 field2 value2 ....</p>
-<p>hmget key field1 field2 .....</p>
-<p>hdel key field</p>
-<p>hgetall key</p>
-<p>hexists key field</p>
-<p>hsetnx key field value</p>
-<p>hincrby key field increment 让field增加increment</p>
-<p>原理：</p>
-<p>​ 底层同HashMap，也是数组+链表，但是redis的值只能为字符串，且二者rehash的方式不同，java的HashMap是一次全部rehash，redis采用渐进式rehash。具体操作为同时保留新旧两个hash结构，然后逐步搬迁。</p>
-</blockquote>
-<h5 id="set">Set</h5>
-<blockquote>
-<p>类似于HashSet，也是通过哈希表实现的，相当于所有value都是空的。通过计算hash的方式快速排除重复。</p>
-<p>sadd key value1 value2 value3 value4</p>
-<p>scard key 查看当前set的元素个数</p>
-<p>smembers key 查看当前set的具体元素值</p>
-<p>srem key value1 value2 value3 value4 移除元素</p>
-<p>sismember key value 判断value是不是set中的元素</p>
-<p>srandmember key number 在set中随机查看number个元素。</p>
-<p>spop key number 在set中随机弹出number个元素。</p>
-<p>smove key1 key2 value 移动元素value从key1到key2</p>
-<p>sinter key1 key2 求key1、key2的交集</p>
-<p>sunion key1 key2 求key1、key2的并集</p>
-<p>sdiff key1 key2 求key1、key2的差集</p>
-<p>sunionstore des key1 key2 求出key1、key2的并集然后存入des中</p>
-</blockquote>
-<h5 id="zset有序集合">Zset(有序集合)</h5>
-<blockquote>
-<p>和无序集合的区别是每个元素除了值之外还有一个浮点数的分数。内部实现使用了跳表。分数可重复，但值不可重复。</p>
-<p>zadd key score1 value1 score2 value2 score3 value3 ....</p>
-<p>zrange key start end [with scores] 查看范围内的值，加了with scores可以看见对应分数。</p>
-<p>zrangebyscore key min max [limit offset num]查看对应分数范围内的值。 分数前加(表示开区间，[表示闭区间。如 zrangebyscore key (1 [99。加上【】内语句可以分页。</p>
-<p>zrem key value 删除</p>
-<p>zcard key 统计元素个数</p>
-<p>zcount key min max 统计分数在min，max内的值个数</p>
-<p>zscore key member 查询指定成员分数</p>
-<p>zrank key member 查询指定成员分数排名(正序，从小到大排名)</p>
-<p>zrevrank key member 查询指定成员分数排名(逆序，从大到小排名)</p>
-</blockquote>
-<h4 id="拓展数据结构">拓展数据结构</h4>
-<h5 id="geo">GEO</h5>
-<blockquote>
-<p>基于zset的拓展，用于存储地理位置信息。</p>
-<p>geoadd key 经度1 纬度1 member1 经度2 纬度2 member2.....</p>
-<p>zrange key start end withscores</p>
-<p>geodis key value1 value2 距离单位(m/km) 求两个位置之间的距离。</p>
-<p>geopos key value 查询某地位置</p>
-<p>geohash key value 对value进行hash</p>
-<p>georadius key 经度 纬度 半径长度 长度单位 [withdist/withcoord/withhash]：以某个经纬度位置为中心，然后指定半径，返回满足条件的地址。</p>
-</blockquote>
-<h5 id="bitmap">Bitmap</h5>
-<blockquote>
-<p>setbit key index 0/1 零存</p>
-<p>set key value 整存</p>
-<p>getbit key index 零取</p>
-<p>get key 整取</p>
-<p>bitcount key 计算有几个1</p>
-<p>bitcount key start end 从第start个字符到第end个字符有几个1</p>
-</blockquote>
-<h5 id="hyperloglog基数统计">HyperLogLog(基数统计)</h5>
-<blockquote>
-<p>pfadd key field 添加指定元素，若已存储返回0</p>
-<p>pfcount key 返回基数值</p>
-</blockquote>
-<h5 id="stream">Stream</h5>
-<blockquote>
-<p>具体指令格式省略。</p>
-<p>xadd 生成消息，返回消息id(时间戳+顺序)，顺序指该毫秒下消息的顺序。</p>
-<p>xlen 查看消息列表长度</p>
-<p>xrange 查看消息</p>
-<p>xdel 删去消息</p>
-<p>xread 读取消息</p>
-</blockquote>
-<h3 id="发布和订阅">发布和订阅</h3>
-<blockquote>
-<p>发布者发布消息到调度中心，订阅者从订阅中心订阅消息。类似于观察者模式。</p>
-<p>redis中使用subscribe channel订阅，使用publish channel message发布消息。</p>
-</blockquote>
-<h3 id="redis配置-1">Redis配置</h3>
-<h3 id="redis淘汰策略">Redis淘汰策略</h3>
-<blockquote>
-<p>volatile-lru：对超时key采用最近最少使用策略。</p>
-<p>allkeys-lru：对所有key采用最近最少使用策略。</p>
-<p>volatile-random：对超时的key采用随机淘汰策略。</p>
-<p>allkeys-random：对所有key采用随机淘汰策略。</p>
-<p>volatile-ttl：采用删除存活时间最短的键值对策略。</p>
-<p>noeviction：不淘汰，当内存已满时再进行写操作会返回错误。</p>
-<p>这里的LRU算法和TTL算法都是近似算法，redis使用抽样的方式执行。可以配置maxmemory-samples的值来控制抽样范围。</p>
-</blockquote>
-<h3 id="redis持久化">Redis持久化</h3>
-<h4 id="rdb">RDB</h4>
-<blockquote>
-<p>在指定时间间隔对数据进行快照存储。是全量备份。</p>
-<p>命令触发：</p>
-<p>​ save：阻塞当前Redis服务器，直到持久化完成。</p>
-<p>​ bgsave：fork一个子进程，由子进程负责持久化过程。</p>
-<p>自动触发：</p>
-<p>​ 根据配置的save m n 配置规则自动触发</p>
-<p>​ 从结点全量复制时，主节点发送rdb文件给从节点完成复制操作，主节点触发bgsave</p>
-<p>​ 执行debug reload时</p>
-<p>​ 执行shutdown若没有开启aof时也会触发。</p>
-<p>恢复方式：</p>
-<p>​ 将备份文件(dump.rdb)移动到redis安装目录并启动服务即可。</p>
-</blockquote>
-<h4 id="aof">AOF</h4>
-<blockquote>
-<p>以日志文本形式记录服务器所处理的每个数据更改指令，通过重放来恢复数据，是增量备份。</p>
-<p>本质上就是以日志的形式记录服务器处理的每个更改操作。</p>
-<p>但是实际中由于更改操作可能数量巨大，导致恢复数据较慢，所以会对日志进行重写，即让某些操作合并。</p>
-<p>具体流程：命令写入-&gt; 追加到aof_buf -&gt; 同步到aof磁盘</p>
-<p>aof重写：</p>
-<p>​ 手动触发：bgrewriteaof</p>
-<p>​ 自动触发：根据配置规则来触发。</p>
-<p>写入aof文件时若redis服务器宕机，日志文件会出现格式错误，重启时服务器会拒绝载入。可以通过redis-check-aof -fix file.aof来修复。</p>
-</blockquote>
-<h3 id="redis分布式锁">Redis分布式锁</h3>
-<h4 id="乐观锁">乐观锁</h4>
-<blockquote>
-<p>每次处理数据时都认为别人都不会去修改数据，所以每次拿数据时都不会上锁。但如果想要更新数据，会在更新前检查在读取至更新这段时间内别人是否修改过这个数据，若修改过则重新读取，再次尝试更新，循环步骤直至成功。</p>
-<p>乐观锁回滚重试，适用于写比较少的情况。</p>
-<p>CAS算法(非阻塞同步)：</p>
-<p>​ 读取一个A，在将其更新到B前，检查值是否还是A。</p>
-<p>​ 若还是A则将A更新为B，否则什么也不做。</p>
-<p>CAS缺点：ABA问题。</p>
-</blockquote>
-<h4 id="悲观锁">悲观锁</h4>
-<blockquote>
-<p>每次处理数据时都认为别人都会去修改数据，所以每次拿数据时都会上锁。</p>
-<p>悲观锁阻塞事务，适用于写比较多的情况。</p>
-</blockquote>
-<h4 id="分布式锁">分布式锁</h4>
-<blockquote>
-<p>三种方式：数据库乐观锁、基于Redis的分布式锁、基于ZooKeeper的分布式锁。</p>
-<p>分布式锁需要满足四个条件：</p>
-<p>​ 互斥性。任意时刻只有一个客户端能持有锁。</p>
-<p>​ 不会发生死锁。即使一个客户端崩溃了未能主动解锁，其他客户端也能加锁。</p>
-<p>​ 具有容错性。</p>
-<p>​ 加锁和解锁必须是同一个客户端。</p>
-<p>redis实现分布式锁：</p>
-<p>​ 通过setnx，和del来实现加锁和解锁的功能。</p>
-<p>​ 其中setnx key value ex 在加锁的同时加上锁的过期时间，避免产生死锁。</p>
-<p>​ 也可能配合lua脚本使用，因为lua可以保证连续多个子命令的原子性执行的。</p>
-</blockquote>
-<h2 id="主从模式">主从模式</h2>
-<blockquote>
-<p>slave of</p>
-<p>从节点只允许读。</p>
-<p>复制过程：</p>
-<p>​ 旧版是SYNC：主库先生成一个RDB文件，然后将这个文件通过网络发送给从库</p>
-<p>​ 新版(2.8以后)是PSYNC：分为完整重同步和部分重同步。完整重同步用于初次复制，类似于旧版的SYNC。部分重同步用于处理断线后重复制的情况。当从服务器断线后重连主服务器时，条件允许的话主服务器可以将主从服务器断开连接期间的写命令发送给从服务器，从服务器只要接收执行这些命令即可完成同步。</p>
-<p>​ 部分重同步的实现需要：</p>
-<p>​ 主服务器的复制偏移量和从服务器的复制偏移量。</p>
-<p>​ 主服务器的复制积压缓冲区。</p>
-<p>​ 服务器的运行ID。</p>
-</blockquote>
-<h2 id="哨兵模式">哨兵模式</h2>
-<blockquote>
-<p>主服务器中断服务时，将一个从服务器升级为主服务器。为了实现自动执行这一操作，就出现了哨兵模式。</p>
-<p>哨兵作用是监控redis系统的运行状况，功能包括：</p>
-<p>​ 监控主服务器和从服务器是否正常运行。</p>
-<p>​ 主服务器出现故障时自动将从服务器转换为主服务器。</p>
-<p>哨兵模式优点：</p>
-<p>​ 主从可以切换，系统更加健壮，可用性更高。</p>
-<p>哨兵模式缺点：</p>
-<p>​ Redis较难在线扩容，在集群容量达到上限时在线扩容变得十分复杂。</p>
-</blockquote>
-<h2 id="cluster模式">Cluster模式</h2>
-<blockquote>
-<p>集群：使用多个主从模式的redis搭建，每个主从模式的redis又充当彼此的哨兵。</p>
-</blockquote>
-<h2 id="缓存可能遇到的问题">缓存可能遇到的问题</h2>
-<h3 id="缓存穿透">缓存穿透</h3>
-<blockquote>
-<p>访问一个不存在的key，缓存不起作用，请求穿透到DB。这个key在数据库也查询不出结果，导致反复查询都会直接去查询数据库。</p>
-<p>解决方案：采用布隆过滤器，使用一个足够大的位图，存储可能访问的key，不存在的key直接过滤。或者对应key去查询数据库时即使查询不出结果也在缓存中设置一个缓存，让下次查询可以访问缓存。</p>
-</blockquote>
-<h3 id="缓存雪崩">缓存雪崩</h3>
-<blockquote>
-<p>大量的key设置了相同的过期时间，导致缓存在同一时刻全部失效，造成瞬时DB请求量大、压力骤增，引起雪崩。</p>
-<p>解决方案：给缓存设置过期时间的同时加上一个随机值时间，使得每个key的过期时间发布开，不会集中在同一时刻失效。</p>
-</blockquote>
-<h3 id="缓存击穿">缓存击穿</h3>
-<blockquote>
-<p>一个存在的key，在缓存过期的一刻，同时有大量的请求，这些请求会击穿到DB，造成瞬时DB请求量大。</p>
-<p>解决方案：在访问key之前，采用SETNX来设置另一个短期key来锁住当前key的访问，访问结束再删除该短期key。</p>
+<p>initialSize 初始连接数</p>
+<p>maxActive 最多可容纳活跃连接数</p>
+<p>maxIdle 最大空闲连接数(已创建但未被使用的连接，会被定期回收，回收直到maxIdle数量)</p>
+<p>minIdle 最小空闲连接数</p>
+<p>maxWait 获取连接的最大等待时间</p>
+<p>timeBetweenEvictionRunsMillis 间隔多长时间检测是否关闭空闲连接。</p>
+<p>minEvictableIdleTime 控制一个连接在资源池中最小的生存时间</p>
+<p>maxEvictableIdleTime 控制一个连接在资源池中最大的生存时间</p>
 </blockquote>
 
       
@@ -672,7 +381,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/41/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/41/">41</a><span class="page-number current">42</span><a class="page-number" href="/page/43/">43</a><span class="space">&hellip;</span><a class="page-number" href="/page/51/">51</a><a class="extend next" rel="next" href="/page/43/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/41/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/41/">41</a><span class="page-number current">42</span><a class="page-number" href="/page/43/">43</a><span class="space">&hellip;</span><a class="page-number" href="/page/52/">52</a><a class="extend next" rel="next" href="/page/43/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -717,13 +426,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">171k</span>
+    <span title="站点总字数">178k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:35</span>
+    <span title="站点阅读时长">2:42</span>
   </span>
 </div>
 <div class="busuanzi-count">

@@ -198,7 +198,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-count">52</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/codeAnalyse/nginx%E4%BA%86%E8%A7%A3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/" class="post-title-link" itemprop="url">SpringBoot常用配置</a>
+          <a href="/2021/02/20/codeAnalyse/nginx%E4%BA%86%E8%A7%A3/" class="post-title-link" itemprop="url">Nginx了解</a>
         </h2>
 
         <div class="post-meta-container">
@@ -288,7 +288,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：17:17:46" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:13:13" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -308,14 +308,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>3.9k</span>
+      <span>6k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>4 分钟</span>
+      <span>5 分钟</span>
     </span>
 </div>
 
@@ -326,159 +326,183 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="springboot常用配置">SpringBoot常用配置</h1>
-<h2 id="选择不同配置">选择不同配置</h2>
+          <h1 id="nginx">Nginx</h1>
+<h2 id="概述">概述</h2>
 <blockquote>
-<p>也可以通过在类中使用@Profile("xx")来表示这个类只有在xx为active的情况下才可使用。</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/springboot多配置文件设置启用.png" alt="springboot多配置文件设置启用"><figcaption aria-hidden="true">springboot多配置文件设置启用</figcaption>
-</figure>
+<p>Nginx是高性能的http和反向代理服务器，也是一个IMAP/SMTP/POP3等邮件代理服务器。</p>
+<p>正向代理和反向代理</p>
+<p>正向代理：客户端client通过设置，使用代理服务器proxy去访问远程服务器server。客户端知道代理存在。</p>
+<p>​ | client - proxy | - server</p>
+<p>使用场景：</p>
+<p>​ 可以访问原来无法访问的资源。</p>
+<p>​ 做缓存使用，加快访问速度。</p>
+<p>​ 对客户端授权或记录访问信息。</p>
+<p>反向代理：服务器通过代理服务接收连接请求，再转发给内部网络的服务器，将结果返回给客户端。客户端不知道代理存在。</p>
+<p>​ client - | proxy - server |</p>
+<p>使用场景：</p>
+<p>​ 保证内网安全，阻止web攻击。</p>
+<p>​ 负载均衡。</p>
 </blockquote>
-<h2 id="自动加载配置文件的内容">自动加载配置文件的内容</h2>
+<h2 id="nginx命令">Nginx命令</h2>
 <blockquote>
-<p><span class="citation" data-cites="Value">@Value</span></p>
-<p><span class="citation" data-cites="ConfigurationProperties">@ConfigurationProperties</span>(prefix = "spring.datasource.druid.write") 使用该注解需要引入且要启用@EnableConfigurationProperties(使用前面一个注解的类.class)</p>
-<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;&#x2F;groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-configuration-processor&lt;&#x2F;artifactId&gt;</span><br><span class="line">    &lt;optional&gt;true&lt;&#x2F;optional&gt;</span><br><span class="line">&lt;&#x2F;dependency&gt;</span><br></pre></td></tr></table></figure></p>
-<p><span class="citation" data-cites="PropertySource">@PropertySource</span></p>
+<p>启动命令./Nginx</p>
+<p>杀死进程 kill SIGNAL pid</p>
+<p>​ kill -9 pid 强制停止</p>
+<p>​ kill -TERM pid 快速停止</p>
+<p>​ kill -QUIT pid 平缓停止</p>
+<p>查看版本 ./Nginx -V</p>
+<p>信号处理 ./Nginx -s SIGNAL(stop、quit、reopen、reload)</p>
+<p>​ 关闭 ./Nginx -s stop</p>
+<p>​ 重加载 ./Nginx -s reload</p>
+<p>​ 平缓停止 ./Nginx -s quit</p>
+<p>​ 快速停止 ./Nginx -s stop</p>
 </blockquote>
-<h2 id="配置文件的加载顺序下覆盖上">配置文件的加载顺序(下覆盖上)</h2>
+<h2 id="nginx配置">Nginx配置</h2>
+<h3 id="全局块">全局块</h3>
 <blockquote>
-<ol type="1">
-<li>Application properties packaged inside your jar (application.properties and YAML variants).</li>
-<li>Profile-specific application properties packaged inside your jar (application-{profile}.properties and YAML variants).</li>
-<li>Application properties outside of your packaged jar (application.properties and YAML variants)</li>
-<li>Profile-specific application properties outside of your packaged jar (application-{profile}.properties and YAML variants).</li>
-</ol>
+<p>全局块：指定运行时的用户组、进程id存放位置、日志存放位置、worker process数量等。</p>
+<p>#user nobody ：配置用户或用户组</p>
+<p>#worker_processes 1 ：运行启动的进程数</p>
+<p>#error_log logs/error.log 级别 ：日志路径及级别设置</p>
+<p>#pid logs/nginx.pid 进程id的文件地址</p>
 </blockquote>
-<h2 id="自动加载的-application.properties-的加载顺序下覆盖上">自动加载的 application.properties 的加载顺序(下覆盖上)</h2>
+<h3 id="events块">events块</h3>
 <blockquote>
-<ol type="1">
-<li><p>The classpath root</p></li>
-<li><p>The classpath /config package</p></li>
-<li><p>The current directory</p></li>
-<li><p>The /config subdirectory in the current directory</p></li>
-<li><p>Immediate child directories of the /config subdirectory</p></li>
-</ol>
-<p>4、5的差别就是如果config目录的根目录里有application.properties，则会将config子目录的application.properties覆盖。</p>
-<p>而classpath中springboot不会自动扫描config子目录中的目录。</p>
-<p>可以通过修改spring.config.name来修改默认配置文件名。</p>
-<p>修改spring.config.location 可以修改springboot获取配置文件的位置。</p>
-<p>修改spring.config.additional-location可以在springboot默认获取配置文件的位置的基础上补充一些获取配置文件的位置。optional: 前缀</p>
+<p>events块：影响Nginx服务器和用户网络连接配置，如每个进程最大连接数、选择哪种事件驱动模型、是否序列化events块：影响Nginx服务器和用户网络连接配置，如每个进程最大连接数、选择哪种事件驱动模型、是否序列化。</p>
+<p>events{</p>
+<p>​ #worker_connections 1024：每个进程的最大连接数</p>
+<p>}</p>
 </blockquote>
-<h2 id="可以使用来获取外部目录classpath中不能使用">可以使用*来获取外部目录，classpath中不能使用*</h2>
-<h2 id="可以使用---在.pro配置文件中划分逻辑页">可以使用#---在.pro配置文件中划分逻辑页</h2>
-<h2 id="使用---在.yml配置文件划分逻辑页">使用---在.yml配置文件划分逻辑页</h2>
-<h2 id="在多个配置文件中均存在同一个list的值则只会去最高优先级的list值">在多个配置文件中均存在同一个list的值，则只会去最高优先级的list值</h2>
-<h2 id="在多个配置文件中均存在同一个map的值则使用互补配置的方式构造map">在多个配置文件中均存在同一个Map的值，则使用互补配置的方式构造Map</h2>
-<h2 id="spring自动注入的注解">spring自动注入的注解</h2>
+<h3 id="http块">http块</h3>
 <blockquote>
-<p><span class="citation" data-cites="Component">@Component</span>("name")将一个类生成一个Bean实例并用spring管理。<span class="citation" data-cites="Controller">@Controller</span>、<span class="citation" data-cites="Repository">@Repository</span>、<span class="citation" data-cites="Service都是类似的功能">@Service都是类似的功能</span>。这些注解要放在类上。</p>
-<p><span class="citation" data-cites="Bean">@Bean</span>("name")将一个方法返回的对象实例用spring管理。该注解放在方法上。</p>
-<p><span class="citation" data-cites="Autowired">@Autowired</span> 自动注入。该注解可以放在构造器方法、方法、参数、属性、注解上。</p>
-<p><span class="citation" data-cites="Primary">@Primary</span> 写在类上或方法上。为了消除自动装配的歧义性，如spring管理了两个都实现了同一父类的类，则存在@Primary 的类会被最先调用。</p>
-<p><span class="citation" data-cites="Qualifier">@Qualifier</span>("name")写在变量、方法、参数、类上、注解上，可以根据传入的name按名字查找spring管理的类。</p>
+<p>http块：配置代理、缓存、日志等绝大部分功能的地方。可以嵌套多个server块，而不同的server可以对应不同的域名(虚拟主机)。</p>
+<p>虚拟主机：同一台Nginx服务器，可以支持多个网站的运行，每个虚拟主机之间都互相独立，具有完整功能。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 相对路径</span><br><span class="line">			root html;</span><br><span class="line">			# 默认跳转的首页地址</span><br><span class="line">			index index.html index.htm;</span><br><span class="line"></span><br><span class="line">		&#125;	</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>日志配置：可以获取用户地址信息、跳转来源、终端、url访问量等。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#log_format main &#x27;$remote_addr - $remote_user [$time_local] &quot;$request&quot; &#x27;</span><br><span class="line">#                  &#x27;$status $body_bytes_sent &quot;$http_referer&quot; &#x27;</span><br><span class="line">#                  &#x27;&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;&#x27;;</span><br><span class="line"></span><br><span class="line">#access_log logs/access.log main;</span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>remote_addr</td>
+<td>客户端的ip地址</td>
+</tr>
+<tr class="even">
+<td>remote_user</td>
+<td>客户端的用户名称</td>
+</tr>
+<tr class="odd">
+<td>time_local</td>
+<td>访问时间和时区</td>
+</tr>
+<tr class="even">
+<td>request</td>
+<td>请求方法</td>
+</tr>
+<tr class="odd">
+<td>status</td>
+<td>响应状态码 如：200</td>
+</tr>
+<tr class="even">
+<td>body_bytes_sent</td>
+<td>主体内容字节数 如：612</td>
+</tr>
+<tr class="odd">
+<td>http_referer</td>
+<td>记录是从哪个链接访问过来的</td>
+</tr>
+<tr class="even">
+<td>http_user_agent</td>
+<td>用户使用的代理（浏览器）</td>
+</tr>
+<tr class="odd">
+<td>http_x_forwarded_for</td>
+<td>通过代理服务器来记录客户端的ip地址</td>
+</tr>
+</tbody>
+</table>
 </blockquote>
-<h2 id="spring监听器">Spring监听器</h2>
+<h3 id="反向代理配置">反向代理配置</h3>
 <blockquote>
-<p>使用过程:</p>
-<p>​ 自定义事件，继承org.springframework.context.ApplicationEvent类。</p>
-<p>​ 自定义事件监听器，实现org.springframework.context.ApplicationListener接口。</p>
-<p>​ 在spring容器中发布事件。</p>
-<p>实现监听的方式：</p>
-<p>​ 自定义类实现ApplicationListener，在主函数中装载监听。</p>
-<p>​ 自定义类实现ApplicationListener，在接口上加上@Component注解</p>
-<p>​ 自定义类不实现接口，在对应方法上标明@EventListener注解。</p>
-<p>​ 自定义类实现ApplicationListener，在application.properties中配置context.listener.classes</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 相对路径</span><br><span class="line">			root html;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://127.0.0.1:8080</span><br><span class="line">			# 默认跳转的首页地址</span><br><span class="line">			index index.html index.htm;</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>代理多个tomcat服务器，通过路径来映射</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location ~ path1 &#123;</span><br><span class="line">			# 相对路径</span><br><span class="line">			root html;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://127.0.0.1:8080</span><br><span class="line">			# 默认跳转的首页地址</span><br><span class="line">			index index.html index.htm;</span><br><span class="line">        &#125;	</span><br><span class="line">		location ~ path2 &#123;</span><br><span class="line">			# 相对路径</span><br><span class="line">			root html;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://127.0.0.1:8081</span><br><span class="line">			# 默认跳转的首页地址</span><br><span class="line">			index index.html index.htm;</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="负载均衡">负载均衡</h3>
 </blockquote>
-<h2 id="spring内置容器的配置">Spring内置容器的配置</h2>
 <blockquote>
-<p>修改配置：</p>
-<ol type="1">
-<li><p>可以在application.properties中按server.xxx:的方式修改</p></li>
-<li><p>创建一个配置类通过编写public WebServerFactoryCustomizer<ConfigurableWebServerFactory> customizer()方法来设置。</ConfigurableWebServerFactory></p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/内嵌服务器配置修改.png" alt="内嵌服务器配置修改"><figcaption aria-hidden="true">内嵌服务器配置修改</figcaption>
-</figure></li>
-</ol>
-<p>更换容器：</p>
-<p>​ 通过先将start内的容器依赖去除然后导入新依赖即可。</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/修改内嵌容器.png" alt="修改内嵌容器"><figcaption aria-hidden="true">修改内嵌容器</figcaption>
-</figure>
+<p>早期使用DNS(域名解析系统)做负载，具体来说就是给客户端解析不同的ip地址，让流量直接到达服务器。</p>
+<p>优点： 1） 通过健康检查，避免单点故障 2） 当发现节点故障时，从集群中移除，保证应用的高可用</p>
+<p>四层负载均衡，在OSI模型的传输层，主要是转发。 七层负载均衡，在OSI模型的应用层，主要是代理。</p>
+<p>负载均衡器可以处理HTTP/HTTPS/TCP/UDP等的请求。</p>
+<p>负载均衡的调度算法：</p>
+<p>​ 轮询。</p>
+<p>​ 最小连接：优先选择连接数最少的服务器，适用于会话时间较长的业务处理。</p>
+<p>​ IP映射，根据请求的ip地址进行散列，让同一ip下的请求都映射到同一服务器上，可以解决session问题。</p>
+<p>Nginx设置默认轮询算法</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080;</span><br><span class="line">		server 192.168.1.20:8081;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>设置权重的情况，默认权重是1。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080 weight = 1;</span><br><span class="line">		server 192.168.1.20:8081 weight = 2;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>根据ip地址固定server处理，使用ip_hash。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080 weight = 1;</span><br><span class="line">		server 192.168.1.20:8081 weight = 2;</span><br><span class="line">		ip_hash;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 定位出路径或文件地址</span><br><span class="line">		location / &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </blockquote>
-<h2 id="过滤器和拦截器">过滤器和拦截器</h2>
+<h3 id="动静分离">动静分离</h3>
 <blockquote>
-<p>过滤器：在进入servlet前过滤。</p>
+<p>将静态资源和动态资源分开。</p>
+<p>静态资源直接查找Nginx的静态资源地址。</p>
+<p>动态资源请求通过反向代理映射到tomcat路径下的资源。</p>
 <p>实现方式：</p>
-<p>​ 创建类实现接口javax.servlet.Filter，加上@Component，然后使用一个如下的配置类注入spring容器。</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/filterConfig.png" alt="filterConfig"><figcaption aria-hidden="true">filterConfig</figcaption>
-</figure>
-<p>​ 创建类实现接口javax.servlet.Filter，加上@WebFilter，然后在主启动类中加上@ServletComponentScan注解。</p>
-<p>拦截器：拦截方法。</p>
-<p>​ 创建类实现HandlerInterceptor接口，然后创建配置类实现WebMvcConfigurer接口，配置类如下。</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/interceptorConfig.png" alt="interceptorConfig"><figcaption aria-hidden="true">interceptorConfig</figcaption>
-</figure>
+<p>​ 单独把静态文件放在独立的服务器及独立的域名下(推荐)。</p>
+<p>​ 将动态资源和静态资源混合在一起，通过Nginx分开。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080 weight = 1;</span><br><span class="line">		server 192.168.1.20:8081 weight = 2;</span><br><span class="line">		ip_hash;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		# 访问动态资源</span><br><span class="line">		location ~ .*.jsp$ &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">		# 访问静态资源</span><br><span class="line">		location ~ .*\.(gif|jpg|css)$ &#123;</span><br><span class="line">			root /usr/local/nginx/image;</span><br><span class="line">			// 缓存时间</span><br><span class="line">			expires 3d;</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="location块的匹配规则">location块的匹配规则</h3>
 </blockquote>
-<h2 id="错误及异常处理">错误及异常处理</h2>
-<h3 id="数值校验">数值校验</h3>
 <blockquote>
-<p>在参数前加入@Valid/<span class="citation" data-cites="Validated注解">@Validated注解</span>，然后跟上BindingResult对象即可获取错误时的错误信息。如图</p>
-<p>利用配置文件ValidationMessages.properties中设置发生错误的提示信息。在bean的注解属性中通过{key}获取属性。</p>
+<p>匹配规则：</p>
+<p>​ location = /uri 精确匹配</p>
+<p>​ location ^~ /uri 前缀匹配，顺序在正则之前</p>
+<p>​ location ~ pattern 区分大小写的正则匹配</p>
+<p>​ location ~* pattern 不区分大小写的正则匹配</p>
+<p>​ location /uri 前缀匹配，顺序在正则之后(两种前缀匹配不能同时出现)</p>
+<p>​ location / 通用匹配，接收未匹配到其他location的请求。</p>
+<p>匹配顺序：</p>
+<p>​ 首先会进行精确匹配，然后会进行前缀匹配，具体顺序按指令长度从长到短的顺序依次匹配。</p>
+<p>​ 使用正则匹配时，是按照配置文件的顺序依次匹配的。如果不希望前缀匹配后进行正则匹配，那么使用^~。</p>
 </blockquote>
-<h3 id="错误页指定">错误页指定</h3>
+<h3 id="url重写">URL重写</h3>
 <blockquote>
-<p>用到了再查</p>
+<p>即对URL的规范化处理。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">	# 设置需要负载均衡的服务器</span><br><span class="line">	upstream myserver&#123;</span><br><span class="line">		server 192.168.1.20:8080 weight = 1;</span><br><span class="line">		server 192.168.1.20:8081 weight = 2;</span><br><span class="line">		ip_hash;</span><br><span class="line">	&#125;</span><br><span class="line">	# 对应虚拟主机的配置</span><br><span class="line">	server &#123;</span><br><span class="line">		# 监听的端口号</span><br><span class="line">		listen 80;</span><br><span class="line">		# 监听的域名</span><br><span class="line">		server_name localhost;</span><br><span class="line">		</span><br><span class="line">		# 重写URL</span><br><span class="line">		rewrite ^/(.*) http://www.xxxx.com/xxx;</span><br><span class="line"></span><br><span class="line">		# 访问动态资源</span><br><span class="line">		location ~ .*.jsp$ &#123;</span><br><span class="line">			# 将域名请求转发到8080端口交给tomcat处理</span><br><span class="line">			proxy_pass http://myserver</span><br><span class="line">        &#125;	</span><br><span class="line">		# 访问静态资源</span><br><span class="line">		location ~ .*\.(gif|jpg|css)$ &#123;</span><br><span class="line">			root /usr/local/nginx/image;</span><br><span class="line">			// 缓存时间</span><br><span class="line">			expires 3d;</span><br><span class="line">        &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="nginx安装">Nginx安装</h2>
 </blockquote>
-<h3 id="全局异常处理">全局异常处理</h3>
 <blockquote>
-<p>实现一个异常处理类并加上@ControllerAdvice注解。如图</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/全局异常处理.png" alt="全局异常处理"><figcaption aria-hidden="true">全局异常处理</figcaption>
-</figure>
-</blockquote>
-<h2 id="日志">日志</h2>
-<h3 id="日志文件输出">日志文件输出</h3>
-<blockquote>
-<p>在application中添加logging.file.path = xxx 默认日志名为spring.log</p>
-<p>或添加logging.file.name = xxxx 默认输出路径为项目当前路径。</p>
-<p>二者不能同时使用。</p>
-</blockquote>
-<h3 id="日志级别控制">日志级别控制</h3>
-<blockquote>
-<p>日志级别有TRACE、DEBUG、INFO、WARN、ERROR、FATAL、OFF。</p>
-<p>logging.level.包名 = xxx级别</p>
-<p>logging.level.root = 设置全局日志级别</p>
-</blockquote>
-<h2 id="文档生成">文档生成</h2>
-<h3 id="swaggle">swaggle</h3>
-<blockquote>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;io.springfox&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;springfox-swagger2&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.9.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line">		</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;io.springfox&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;springfox-swagger-ui&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.9.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableSwagger2</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SwaggerConfig</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Docket <span class="title">api</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Docket(DocumentationType.SWAGGER_2).select()</span><br><span class="line">                .apis(RequestHandlerSelectors.any())</span><br><span class="line">                .paths(PathSelectors.any())</span><br><span class="line">                .build();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>访问http://localhost:8080/v2/api-docs拿到api的json</p>
-<p>访问http://localhost:8080/swagger-ui.html获取页面</p>
-</blockquote>
-<h2 id="监控">监控</h2>
-<blockquote>
-<p>本质上是通过log收集信息，然后利用信息分析。</p>
-</blockquote>
-<h2 id="缓存">缓存</h2>
-<blockquote>
-<p><span class="citation" data-cites="Cacheable">@Cacheable</span>(value = "xx", key = "zz", condition = "yyy")</p>
-<p>​ value 表示缓存名</p>
-<p>​ key为缓存键，需要用SPEL写</p>
-<p>​ condition为缓存触发的条件，需要用SPEL写</p>
-<p>​ 缓存值为对应方法的返回值</p>
-<p><span class="citation" data-cites="CacheEvict">@CacheEvict</span>(beforeInvocation = true表示在方法触发前就移除了缓存) 移除缓存</p>
-<p><span class="citation" data-cites="CachePut">@CachePut</span> 添加缓存</p>
-</blockquote>
-<h2 id="微服务">微服务</h2>
-<blockquote>
-<p>注册中心</p>
-<p>服务提供者</p>
-<p>服务追踪</p>
-<p>服务治理</p>
+<p>在各官网下载相关组件 nginx openssl zlib pcre 等等</p>
+<p>以openssl为例 1） 通过rz上传压缩包 2） 通过tar -xvf *.tar.gz 进行解压缩 3）cd openssl-1.1.1d 进行配置检查以及编译 ./config 执行配置检查 make &amp; make install 进行编译和安装</p>
+<p>​ 如上过程，适用于zlib和pcre ​ 注意： 对于 pcre而言， 执行检查命令为 ./configure 4) 安装nginx过程中 执行配置检查</p>
+<pre><code>./configure --sbin-path=/usr/local/nginx/nginx \
+--conf-path=/usr/local/nginx/nginx.conf \
+--pid-path=/usr/local/nginx/nginx.pid \
+--with-http_ssl_module \
+--with-pcre=/usr/local/src/pcre-8.44 \
+--with-zlib=/usr/local/src/zlib-1.2.11 \
+--with-openssl=/usr/local/src/openssl-1.1.1d</code></pre>
+<ol start="5" type="1">
+<li>仍然执行 make 以及 make install<br>
+</li>
+<li>nginx安装成功 ./nginx验证</li>
+</ol>
+<p>注意事项：nginx服务器，需要虚拟机开放80端口的访问 防火墙配置 （同样适用于开放8080 8081端口） firewall-cmd --list-all 查看当前配置 firewall-cmd --add-service=http --permanent 开放http访问 firewall-cmd --add-port=80/tcp --permanent 开放80端口 firewall-cmd --reload 重启防火墙保存</p>
+<p>jdk的安装 1） 解压缩 -- 拷贝目录到 /usr/local/java 2) 更改环境变量 vim /etc/profile</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">export JAVA_HOME=/usr/local/java</span><br><span class="line">export JAVA_BIN=$JAVA_HOME/bin</span><br><span class="line">export PATH=$PATH:$JAVA_HOME/bin</span><br><span class="line">export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar</span><br><span class="line">export PATH=$JAVA_HOME/bin:$JRE_HOME/bin:$PATH</span><br></pre></td></tr></table></figure>
+<ol start="3" type="1">
+<li>让环境变量生效 source /etc/profile</li>
+<li>验证版本 java -version</li>
+</ol>
+<p>tomcat的安装 1） 解压缩 -- 拷贝目录到 /usr/local/tomcat 2) 执行启动 ./startup.sh</p>
 </blockquote>
 
       
@@ -499,7 +523,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/39/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/39/">39</a><span class="page-number current">40</span><a class="page-number" href="/page/41/">41</a><span class="space">&hellip;</span><a class="page-number" href="/page/51/">51</a><a class="extend next" rel="next" href="/page/41/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/39/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/39/">39</a><span class="page-number current">40</span><a class="page-number" href="/page/41/">41</a><span class="space">&hellip;</span><a class="page-number" href="/page/52/">52</a><a class="extend next" rel="next" href="/page/41/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -544,13 +568,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">171k</span>
+    <span title="站点总字数">178k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:35</span>
+    <span title="站点阅读时长">2:42</span>
   </span>
 </div>
 <div class="busuanzi-count">

@@ -1,6 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Dubbo负载均衡及其他常见的负载均衡方法</title>
+    <url>/2021/04/02/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E5%8F%8A%E5%85%B6%E4%BB%96%E5%B8%B8%E8%A7%81%E7%9A%84%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%96%B9%E6%B3%95/</url>
+    <content><![CDATA[<h1 id="dubbo负载均衡及其他常见的负载均衡方法">Dubbo负载均衡及其他常见的负载均衡方法</h1>
+<blockquote>
+<p>之前主要详细分析了Dubbo内部服务暴露的过程，可以见<a href="http://49.234.221.130/2021/03/31/分布式组件及原理/Dubbo服务暴露流程/">Dubbo服务暴露流程 | Yesomething</a>，在分析过程中发现Dubbo服务引用的过程本质上和服务暴露过程区别不大。而Dubbo调用服务的过程调用链过长，且使用了太多自定义SPI动态加载类和代理模式，这里就不具体展开源码了。其核心流程大致可以分为：(预先已经完成服务引用) 构造请求 -&gt; 序列化 -&gt; 服务提供者反序列化 -&gt; 根据序列化结果触发对应方法 -&gt; 方法返回结果封装 -&gt; 序列化发送给调用方 -&gt; 调用方解析结果 -&gt; 结束调用。</p>
+<p>但是这调用链的过程中，发现Dubbo提供了许多有趣的组件，如可以用于限流/服务降级MockInvoker、Dubbo服务失败failover机制、Dubbo调用服务的负载均衡方式等。</p>
+<p>这篇文章主要分析Dubbo提供的负载均衡方式，并尝试了解更多常见的负载均衡方法。</p>
+</blockquote>
+<h2 id="dubbo内置的负载均衡策略">Dubbo内置的负载均衡策略</h2>
+<h3 id="random-loadbalance">random loadbalance</h3>
+<blockquote>
+<p><strong>按权重设置随机概率</strong>。然后权重不同会让每个服务提供者占中权重的一个小区间，通过随机数产生对应offset，落到哪个区间就使用哪个服务提供者。</p>
+<p>如：服务A的三个提供者，权重分别为100，50，200，记为A1、A2、A3。则A1占有[0，100)区间，A2占有[100，150)区间，A3占有[150,350)区间。然后通过生成[0,350)范围内的随机数来确定使用哪个服务提供者。</p>
+<p><strong>这个方式基本随机，可能随机出分布不均匀的情况。</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">protected</span> &lt;T&gt; <span class="function">Invoker&lt;T&gt; <span class="title">doSelect</span><span class="params">(List&lt;Invoker&lt;T&gt;&gt; invokers, URL url, Invocation invocation)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Number of invokers</span></span><br><span class="line">    <span class="keyword">int</span> length = invokers.size();</span><br><span class="line">    <span class="comment">// 判断是否权重相同</span></span><br><span class="line">    <span class="keyword">boolean</span> sameWeight = <span class="keyword">true</span>;</span><br><span class="line">    <span class="comment">// the maxWeight of every invokers, the minWeight = 0 or the maxWeight of the last invoker</span></span><br><span class="line">    <span class="keyword">int</span>[] weights = <span class="keyword">new</span> <span class="keyword">int</span>[length];</span><br><span class="line">    <span class="comment">// 权重和</span></span><br><span class="line">    <span class="keyword">int</span> totalWeight = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; length; i++) &#123;</span><br><span class="line">        <span class="keyword">int</span> weight = getWeight(invokers.get(i), invocation);</span><br><span class="line">        <span class="comment">// Sum</span></span><br><span class="line">        totalWeight += weight;</span><br><span class="line">        <span class="comment">// save for later use</span></span><br><span class="line">        weights[i] = totalWeight;</span><br><span class="line">        <span class="keyword">if</span> (sameWeight &amp;&amp; totalWeight != weight * (i + <span class="number">1</span>)) &#123;</span><br><span class="line">            sameWeight = <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (totalWeight &gt; <span class="number">0</span> &amp;&amp; !sameWeight) &#123;</span><br><span class="line">		<span class="comment">// 产生偏移量</span></span><br><span class="line">        <span class="keyword">int</span> offset = ThreadLocalRandom.current().nextInt(totalWeight);</span><br><span class="line">        <span class="comment">// 判断落在哪个区间</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; length; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (offset &lt; weights[i]) &#123;</span><br><span class="line">                <span class="keyword">return</span> invokers.get(i);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 如果没有设置权重或者总权重为0则随机调用一个服务提供者，返回</span></span><br><span class="line">    <span class="keyword">return</span> invokers.get(ThreadLocalRandom.current().nextInt(length));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="roundrobin-loadbalance">roundrobin loadbalance</h3>
+</blockquote>
+<blockquote>
+<p><strong>轮询，按公约后的权重设置轮询比例。</strong></p>
+<p>该类内部维护了一个以&lt;服务名为key，对应服务提供者作为Map&gt;的ConcurrentMap。具体实现为ConcurrentMap&lt;String, ConcurrentMap&lt;String, WeightedRoundRobin&gt;&gt;。</p>
+<p>假定服务A的三个提供者，权重分别为100，50，200，记为A1、A2、A3。</p>
+<p><strong>类似随机负载均衡，但是过程更加合适，分布均匀。</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">阶段</th>
+<th style="text-align: center;">A1</th>
+<th style="text-align: center;">A2</th>
+<th style="text-align: center;">A3</th>
+<th style="text-align: center;">TotalWeight</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">初始化</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">第一次选用</td>
+<td style="text-align: center;">0+100 = 100</td>
+<td style="text-align: center;">0 + 50 = 50</td>
+<td style="text-align: center;">0 + 200 = 200</td>
+<td style="text-align: center;">100 + 50 + 200 = 350</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">选用A3完成</td>
+<td style="text-align: center;">100</td>
+<td style="text-align: center;">50</td>
+<td style="text-align: center;">200- 350 = -150</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">第二次选用初始化</td>
+<td style="text-align: center;">100</td>
+<td style="text-align: center;">50</td>
+<td style="text-align: center;">-150</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">第二次选用</td>
+<td style="text-align: center;">100 + 100 = 200</td>
+<td style="text-align: center;">50 + 50 = 100</td>
+<td style="text-align: center;">-150 + 200 = 50</td>
+<td style="text-align: center;">350</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">选用A1完成</td>
+<td style="text-align: center;">200 - 350 = -150</td>
+<td style="text-align: center;">100</td>
+<td style="text-align: center;">50</td>
+<td style="text-align: center;">0</td>
+</tr>
+</tbody>
+</table>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">protected</span> &lt;T&gt; <span class="function">Invoker&lt;T&gt; <span class="title">doSelect</span><span class="params">(List&lt;Invoker&lt;T&gt;&gt; invokers, URL url, Invocation invocation)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 获取服务ID</span></span><br><span class="line">    String key = invokers.get(<span class="number">0</span>).getUrl().getServiceKey() + <span class="string">&quot;.&quot;</span> + invocation.getMethodName();</span><br><span class="line">    <span class="comment">// 获取对应服务提供者的Map</span></span><br><span class="line">    ConcurrentMap&lt;String, WeightedRoundRobin&gt; map = methodWeightMap.computeIfAbsent(key, k -&gt; <span class="keyword">new</span> ConcurrentHashMap&lt;&gt;());</span><br><span class="line">    <span class="keyword">int</span> totalWeight = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">long</span> maxCurrent = Long.MIN_VALUE;</span><br><span class="line">    <span class="keyword">long</span> now = System.currentTimeMillis();</span><br><span class="line">    Invoker&lt;T&gt; selectedInvoker = <span class="keyword">null</span>;</span><br><span class="line">    WeightedRoundRobin selectedWRR = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">for</span> (Invoker&lt;T&gt; invoker : invokers) &#123;</span><br><span class="line">        <span class="comment">// 服务提供者ID</span></span><br><span class="line">        String identifyString = invoker.getUrl().toIdentityString();</span><br><span class="line">        <span class="keyword">int</span> weight = getWeight(invoker, invocation);</span><br><span class="line">        <span class="comment">// 将对应权重存入服务提供者Map</span></span><br><span class="line">        WeightedRoundRobin weightedRoundRobin = map.computeIfAbsent(identifyString, k -&gt; &#123;</span><br><span class="line">            WeightedRoundRobin wrr = <span class="keyword">new</span> WeightedRoundRobin();</span><br><span class="line">            wrr.setWeight(weight);</span><br><span class="line">            <span class="keyword">return</span> wrr;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (weight != weightedRoundRobin.getWeight()) &#123;</span><br><span class="line">            <span class="comment">//weight changed</span></span><br><span class="line">            weightedRoundRobin.setWeight(weight);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">long</span> cur = weightedRoundRobin.increaseCurrent();</span><br><span class="line">        weightedRoundRobin.setLastUpdate(now);</span><br><span class="line">        <span class="keyword">if</span> (cur &gt; maxCurrent) &#123;</span><br><span class="line">            maxCurrent = cur;</span><br><span class="line">            selectedInvoker = invoker;</span><br><span class="line">            selectedWRR = weightedRoundRobin;</span><br><span class="line">        &#125;</span><br><span class="line">        totalWeight += weight;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (invokers.size() != map.size()) &#123;</span><br><span class="line">        map.entrySet().removeIf(item -&gt; now - item.getValue().getLastUpdate() &gt; RECYCLE_PERIOD);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (selectedInvoker != <span class="keyword">null</span>) &#123;</span><br><span class="line">        selectedWRR.sel(totalWeight);</span><br><span class="line">        <span class="keyword">return</span> selectedInvoker;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// should not happen here</span></span><br><span class="line">    <span class="keyword">return</span> invokers.get(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="leastactive-loadbalance">leastactive loadbalance</h3>
+</blockquote>
+<blockquote>
+<p><strong>最少活跃调用数</strong>，相同活跃数的随机，活跃数指调用前后计数差。使慢的提供者收到更少请求。</p>
+<p>所谓活跃数，可以理解为当前服务提供者正在给多少消费者提供服务。</p>
+<p>这个负载均衡策略即为先找出活跃数最少的那批服务提供者，然后根据服务提供者的权重再按照随机负载均衡选取。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">protected</span> &lt;T&gt; <span class="function">Invoker&lt;T&gt; <span class="title">doSelect</span><span class="params">(List&lt;Invoker&lt;T&gt;&gt; invokers, URL url, Invocation invocation)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Number of invokers</span></span><br><span class="line">    <span class="keyword">int</span> length = invokers.size();</span><br><span class="line">    <span class="comment">// The least active value of all invokers</span></span><br><span class="line">    <span class="keyword">int</span> leastActive = -<span class="number">1</span>;</span><br><span class="line">    <span class="comment">// The number of invokers having the same least active value (leastActive)</span></span><br><span class="line">    <span class="keyword">int</span> leastCount = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// The index of invokers having the same least active value (leastActive)</span></span><br><span class="line">    <span class="keyword">int</span>[] leastIndexes = <span class="keyword">new</span> <span class="keyword">int</span>[length];</span><br><span class="line">    <span class="comment">// the weight of every invokers</span></span><br><span class="line">    <span class="keyword">int</span>[] weights = <span class="keyword">new</span> <span class="keyword">int</span>[length];</span><br><span class="line">    <span class="comment">// The sum of the warmup weights of all the least active invokers</span></span><br><span class="line">    <span class="keyword">int</span> totalWeight = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// The weight of the first least active invoker</span></span><br><span class="line">    <span class="keyword">int</span> firstWeight = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// Every least active invoker has the same weight value?</span></span><br><span class="line">    <span class="keyword">boolean</span> sameWeight = <span class="keyword">true</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 遍历所有服务提供者</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; length; i++) &#123;</span><br><span class="line">        Invoker&lt;T&gt; invoker = invokers.get(i);</span><br><span class="line">        <span class="comment">// 获取服务提供者的活跃度</span></span><br><span class="line">        <span class="keyword">int</span> active = RpcStatus.getStatus(invoker.getUrl(), invocation.getMethodName()).getActive();</span><br><span class="line">        <span class="comment">// Get the weight of the invoker&#x27;s configuration. The default value is 100.</span></span><br><span class="line">        <span class="keyword">int</span> afterWarmup = getWeight(invoker, invocation);</span><br><span class="line">        <span class="comment">// save for later use</span></span><br><span class="line">        weights[i] = afterWarmup;</span><br><span class="line">        <span class="comment">// If it is the first invoker or the active number of the invoker is less than the current least active number</span></span><br><span class="line">        <span class="keyword">if</span> (leastActive == -<span class="number">1</span> || active &lt; leastActive) &#123;</span><br><span class="line">            <span class="comment">// Reset the active number of the current invoker to the least active number</span></span><br><span class="line">            leastActive = active;</span><br><span class="line">            <span class="comment">// Reset the number of least active invokers</span></span><br><span class="line">            leastCount = <span class="number">1</span>;</span><br><span class="line">            <span class="comment">// Put the first least active invoker first in leastIndexes</span></span><br><span class="line">            leastIndexes[<span class="number">0</span>] = i;</span><br><span class="line">            <span class="comment">// Reset totalWeight</span></span><br><span class="line">            totalWeight = afterWarmup;</span><br><span class="line">            <span class="comment">// Record the weight the first least active invoker</span></span><br><span class="line">            firstWeight = afterWarmup;</span><br><span class="line">            <span class="comment">// Each invoke has the same weight (only one invoker here)</span></span><br><span class="line">            sameWeight = <span class="keyword">true</span>;</span><br><span class="line">            <span class="comment">// If current invoker&#x27;s active value equals with leaseActive, then accumulating.</span></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (active == leastActive) &#123;</span><br><span class="line">            <span class="comment">// Record the index of the least active invoker in leastIndexes order</span></span><br><span class="line">            leastIndexes[leastCount++] = i;</span><br><span class="line">            <span class="comment">// Accumulate the total weight of the least active invoker</span></span><br><span class="line">            totalWeight += afterWarmup;</span><br><span class="line">            <span class="comment">// If every invoker has the same weight?</span></span><br><span class="line">            <span class="keyword">if</span> (sameWeight &amp;&amp; afterWarmup != firstWeight) &#123;</span><br><span class="line">                sameWeight = <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Choose an invoker from all the least active invokers</span></span><br><span class="line">    <span class="keyword">if</span> (leastCount == <span class="number">1</span>) &#123;</span><br><span class="line">        <span class="comment">// If we got exactly one invoker having the least active value, return this invoker directly.</span></span><br><span class="line">        <span class="keyword">return</span> invokers.get(leastIndexes[<span class="number">0</span>]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!sameWeight &amp;&amp; totalWeight &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// If (not every invoker has the same weight &amp; at least one invoker&#x27;s weight&gt;0), select randomly based on </span></span><br><span class="line">        <span class="comment">// totalWeight.</span></span><br><span class="line">        <span class="keyword">int</span> offsetWeight = ThreadLocalRandom.current().nextInt(totalWeight);</span><br><span class="line">        <span class="comment">// Return a invoker based on the random value.</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; leastCount; i++) &#123;</span><br><span class="line">            <span class="keyword">int</span> leastIndex = leastIndexes[i];</span><br><span class="line">            offsetWeight -= weights[leastIndex];</span><br><span class="line">            <span class="keyword">if</span> (offsetWeight &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> invokers.get(leastIndex);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// If all invokers have the same weight value or totalWeight=0, return evenly.</span></span><br><span class="line">    <span class="keyword">return</span> invokers.get(leastIndexes[ThreadLocalRandom.current().nextInt(leastCount)]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="consistanthash-loadbalance">consistanthash loadbalance</h3>
+</blockquote>
+<blockquote>
+<p><strong>一致性Hash</strong>，相同参数的请求总是发给同一个提供者。<strong>默认一致性hash使用160个虚拟节点。</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">protected</span> &lt;T&gt; <span class="function">Invoker&lt;T&gt; <span class="title">doSelect</span><span class="params">(List&lt;Invoker&lt;T&gt;&gt; invokers, URL url, Invocation invocation)</span> </span>&#123;</span><br><span class="line">    String methodName = RpcUtils.getMethodName(invocation);</span><br><span class="line">    String key = invokers.get(<span class="number">0</span>).getUrl().getServiceKey() + <span class="string">&quot;.&quot;</span> + methodName;</span><br><span class="line">    <span class="comment">// using the hashcode of list to compute the hash only pay attention to the elements in the list</span></span><br><span class="line">    <span class="keyword">int</span> invokersHashCode = invokers.hashCode();</span><br><span class="line">    ConsistentHashSelector&lt;T&gt; selector = (ConsistentHashSelector&lt;T&gt;) selectors.get(key);</span><br><span class="line">    <span class="keyword">if</span> (selector == <span class="keyword">null</span> || selector.identityHashCode != invokersHashCode) &#123;</span><br><span class="line">        selectors.put(key, <span class="keyword">new</span> ConsistentHashSelector&lt;T&gt;(invokers, methodName, invokersHashCode));</span><br><span class="line">        selector = (ConsistentHashSelector&lt;T&gt;) selectors.get(key);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> selector.select(invocation);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="shortestresponseloadbalance">ShortestResponseLoadBalance</h3>
+</blockquote>
+<blockquote>
+<p><strong>最短响应时间负载均衡</strong>。Dubbo的响应时间为服务提供者响应服务的平均时间 * 当前服务提供者的活跃数。</p>
+<p>代码流程即：先找出响应时间最短的那批服务提供者，找出后再通过随机负载均衡来选择服务提供者。</p>
+</blockquote>
+<h2 id="其他的负载均衡策略">其他的负载均衡策略</h2>
+<blockquote>
+<p>待定</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>分布式</category>
+      </categories>
+      <tags>
+        <tag>Dubbo</tag>
+        <tag>分布式</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Dubbo引用服务流程</title>
     <url>/2021/03/31/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo%E5%BC%95%E7%94%A8%E6%9C%8D%E5%8A%A1%E6%B5%81%E7%A8%8B/</url>
     <content><![CDATA[<h1 id="dubbo引用服务流程">Dubbo引用服务流程</h1>
@@ -1880,6 +1990,78 @@
       </tags>
   </entry>
   <entry>
+    <title>操作系统突击</title>
+    <url>/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%AA%81%E5%87%BB/</url>
+    <content><![CDATA[<h1 id="操作系统突击">操作系统突击</h1>
+<h2 id="进程线程和协程">进程、线程和协程</h2>
+<blockquote>
+<p>进程是操作系统资源分配和调度的基本单位。每个进程有着自己的独立内存空间，不同进程之间使用进程间通信来通信。操作系统是以进程为单位分配系统资源(如CPU时间片、内存等资源)，<strong>进程是资源分配的最小单位</strong>。每个进程都有自己的地址空间，一般情况下，包括文本区域、数据区域和堆栈。</p>
+<p>进程间通信的方法：</p>
+<p>​ 管道：一种半双工的通信方式，数据只能单向流动，且只能在具有亲缘关系的进程间调用。</p>
+<p>​ 消息队列：即将消息使用链表的形式存放在内核中并由消息队列标识符标识。</p>
+<p>​ 信号量：本质上是一种计数器，可以用于控制多个进程对共享资源的访问。</p>
+<p>​ 共享内存：映射一段能被其他进程所访问的内存，这个共享内存由一个进程创建，但由多个进程共享。它是最快的IPC方式，针对其他进程间通信效率低而设计的。</p>
+<p>​ 信号：一种事件通知机制，进程可以通过发送信号给另一个进程，另一个进程则会根据收到的信号执行对应的处理方。</p>
+<p>​ socket：</p>
+<p>线程是依附于进程，是<strong>操作系统调度的最小单位</strong>。</p>
+<p>线程间通信的方法：</p>
+<p>​ 锁机制。</p>
+<p>​ 信号量机制。</p>
+<p>​ 信号机制。</p>
+<p>​ volatile变量。</p>
+<p>协程：不被操作系统内核所管理，完全是由程序所控制。</p>
+</blockquote>
+<h2 id="上下文切换过程">上下文切换过程</h2>
+<blockquote>
+<p>用户态到内核态什么时候切换？</p>
+<p>​ 中断、系统调用、发生异常。</p>
+<p>用户态内核态切换过程主要需要保存用户态的寄存器，返回时会切换回用户态。</p>
+<p><strong>进程上下文切换发生的场景</strong>：</p>
+<p>​ 1.运行中的进程执行完终止了，CPU 会释放出来，新的基础进程就可以被调度到CPU上运行了。</p>
+<p>​ 2. 运行中的进程时间片用完，进程被挂起</p>
+<p>​ 3.运行中的进程资源不足，进程被挂起</p>
+<p>​ 4.运行中的进程执行Sleep方法主动挂起</p>
+<p>​ 5.新进程优先级更高，运行中的进程被挂起</p>
+<p>​ 6.发生硬件中断，运行中的进程会被中断挂起，转而执行内核中的中断服务程序。</p>
+<p>进程上下文主要包含两个部分：<strong>寄存器如PC</strong>和<strong>操作系统所需的特定数据PCB</strong></p>
+<p><strong>进程是由内核来管理和调度的，进程的切换只能发生在内核态。</strong>进程上下文包括虚拟内存、栈、全局变量等用户空间资源，还包括内核堆栈、寄存器等内核空间的状态。切换时需要保存的信息更多，而加入另一个进程的上下文时，也需要加载这个进程的虚拟内存和用户栈。</p>
+<p>线程是操作系统调度的最小单位。同时线程会共享父进程的虚拟内存和全局变量等资源，因此父进程的资源加上线上自己的私有数据就叫做线程的上下文。</p>
+<p>线程上下文切换：</p>
+<p>​ 当线程属于同一个进程时，全局变量、虚拟内存不需要切换，只需要切换私有数据和寄存器等不共享的数据。</p>
+<p>​ 当线程属于不同进程时，同进程切换。</p>
+</blockquote>
+<h2 id="调度算法">调度算法</h2>
+<blockquote>
+<p><strong>先来先服务调度算法FCFS</strong>、<strong>短作业（进程）优先调度算法SJF（非抢占）</strong>、<strong>基于时间片的轮转调度算法RR</strong>、<strong>多级反馈队列算法FB</strong></p>
+</blockquote>
+<h2 id="死锁的四个条件">死锁的四个条件</h2>
+<blockquote>
+<p><strong>互斥</strong>：某种资源一次只能运行一个进程访问。</p>
+<p><strong>请求保持</strong>：一个进程占有资源，但还有资源没有满足。</p>
+<p><strong>不可抢占</strong>：不可以去抢夺别人已拥有的资源。</p>
+<p><strong>循环等待</strong>：存在一个进程链，每个进程都占有下一个进程所需的至少一种资源。</p>
+</blockquote>
+<h2 id="fork是如何创建子进程的">fork是如何创建子进程的？</h2>
+<blockquote>
+<p>fork会先为新进程创建和父进程值相同的内核栈、进程信息等，然后判断当前用户进程数是否超过数量，对父子进程进行区分，将部分描述符置为0，给进程分配对应的进程id，将进程设置为就绪状态，放入就绪队列，等待CPU调度。</p>
+</blockquote>
+<h2 id="硬中断和软中断">硬中断和软中断</h2>
+<blockquote>
+<p>硬中断是由硬件产生的，比如，像磁盘，网卡，键盘，时钟等。硬中断可以直接中断CPU。它会引起内核中相关的代码被触发。</p>
+<p>软中断的处理非常像硬中断。然而，它们仅仅是由当前正在运行的进程所产生的。一般而言软中断是I/O请求。</p>
+<p>二者的区别：</p>
+<p>​ 软中断是由运行的进程发出的，它会中断进程正在执行的代码，然后将请求发给内核。</p>
+<p>​ 硬中断是由硬件产生的，它会中断CPU正在执行的代码。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>面试突击</category>
+      </categories>
+      <tags>
+        <tag>操作系统</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>redis突击</title>
     <url>/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/redis%E7%AA%81%E5%87%BB/</url>
     <content><![CDATA[<h1 id="redis突击">redis突击</h1>
@@ -2096,78 +2278,6 @@
       </categories>
       <tags>
         <tag>redis</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>操作系统突击</title>
-    <url>/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%AA%81%E5%87%BB/</url>
-    <content><![CDATA[<h1 id="操作系统突击">操作系统突击</h1>
-<h2 id="进程线程和协程">进程、线程和协程</h2>
-<blockquote>
-<p>进程是操作系统资源分配和调度的基本单位。每个进程有着自己的独立内存空间，不同进程之间使用进程间通信来通信。操作系统是以进程为单位分配系统资源(如CPU时间片、内存等资源)，<strong>进程是资源分配的最小单位</strong>。每个进程都有自己的地址空间，一般情况下，包括文本区域、数据区域和堆栈。</p>
-<p>进程间通信的方法：</p>
-<p>​ 管道：一种半双工的通信方式，数据只能单向流动，且只能在具有亲缘关系的进程间调用。</p>
-<p>​ 消息队列：即将消息使用链表的形式存放在内核中并由消息队列标识符标识。</p>
-<p>​ 信号量：本质上是一种计数器，可以用于控制多个进程对共享资源的访问。</p>
-<p>​ 共享内存：映射一段能被其他进程所访问的内存，这个共享内存由一个进程创建，但由多个进程共享。它是最快的IPC方式，针对其他进程间通信效率低而设计的。</p>
-<p>​ 信号：一种事件通知机制，进程可以通过发送信号给另一个进程，另一个进程则会根据收到的信号执行对应的处理方。</p>
-<p>​ socket：</p>
-<p>线程是依附于进程，是<strong>操作系统调度的最小单位</strong>。</p>
-<p>线程间通信的方法：</p>
-<p>​ 锁机制。</p>
-<p>​ 信号量机制。</p>
-<p>​ 信号机制。</p>
-<p>​ volatile变量。</p>
-<p>协程：不被操作系统内核所管理，完全是由程序所控制。</p>
-</blockquote>
-<h2 id="上下文切换过程">上下文切换过程</h2>
-<blockquote>
-<p>用户态到内核态什么时候切换？</p>
-<p>​ 中断、系统调用、发生异常。</p>
-<p>用户态内核态切换过程主要需要保存用户态的寄存器，返回时会切换回用户态。</p>
-<p><strong>进程上下文切换发生的场景</strong>：</p>
-<p>​ 1.运行中的进程执行完终止了，CPU 会释放出来，新的基础进程就可以被调度到CPU上运行了。</p>
-<p>​ 2. 运行中的进程时间片用完，进程被挂起</p>
-<p>​ 3.运行中的进程资源不足，进程被挂起</p>
-<p>​ 4.运行中的进程执行Sleep方法主动挂起</p>
-<p>​ 5.新进程优先级更高，运行中的进程被挂起</p>
-<p>​ 6.发生硬件中断，运行中的进程会被中断挂起，转而执行内核中的中断服务程序。</p>
-<p>进程上下文主要包含两个部分：<strong>寄存器如PC</strong>和<strong>操作系统所需的特定数据PCB</strong></p>
-<p><strong>进程是由内核来管理和调度的，进程的切换只能发生在内核态。</strong>进程上下文包括虚拟内存、栈、全局变量等用户空间资源，还包括内核堆栈、寄存器等内核空间的状态。切换时需要保存的信息更多，而加入另一个进程的上下文时，也需要加载这个进程的虚拟内存和用户栈。</p>
-<p>线程是操作系统调度的最小单位。同时线程会共享父进程的虚拟内存和全局变量等资源，因此父进程的资源加上线上自己的私有数据就叫做线程的上下文。</p>
-<p>线程上下文切换：</p>
-<p>​ 当线程属于同一个进程时，全局变量、虚拟内存不需要切换，只需要切换私有数据和寄存器等不共享的数据。</p>
-<p>​ 当线程属于不同进程时，同进程切换。</p>
-</blockquote>
-<h2 id="调度算法">调度算法</h2>
-<blockquote>
-<p><strong>先来先服务调度算法FCFS</strong>、<strong>短作业（进程）优先调度算法SJF（非抢占）</strong>、<strong>基于时间片的轮转调度算法RR</strong>、<strong>多级反馈队列算法FB</strong></p>
-</blockquote>
-<h2 id="死锁的四个条件">死锁的四个条件</h2>
-<blockquote>
-<p><strong>互斥</strong>：某种资源一次只能运行一个进程访问。</p>
-<p><strong>请求保持</strong>：一个进程占有资源，但还有资源没有满足。</p>
-<p><strong>不可抢占</strong>：不可以去抢夺别人已拥有的资源。</p>
-<p><strong>循环等待</strong>：存在一个进程链，每个进程都占有下一个进程所需的至少一种资源。</p>
-</blockquote>
-<h2 id="fork是如何创建子进程的">fork是如何创建子进程的？</h2>
-<blockquote>
-<p>fork会先为新进程创建和父进程值相同的内核栈、进程信息等，然后判断当前用户进程数是否超过数量，对父子进程进行区分，将部分描述符置为0，给进程分配对应的进程id，将进程设置为就绪状态，放入就绪队列，等待CPU调度。</p>
-</blockquote>
-<h2 id="硬中断和软中断">硬中断和软中断</h2>
-<blockquote>
-<p>硬中断是由硬件产生的，比如，像磁盘，网卡，键盘，时钟等。硬中断可以直接中断CPU。它会引起内核中相关的代码被触发。</p>
-<p>软中断的处理非常像硬中断。然而，它们仅仅是由当前正在运行的进程所产生的。一般而言软中断是I/O请求。</p>
-<p>二者的区别：</p>
-<p>​ 软中断是由运行的进程发出的，它会中断进程正在执行的代码，然后将请求发给内核。</p>
-<p>​ 硬中断是由硬件产生的，它会中断CPU正在执行的代码。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>面试突击</category>
-      </categories>
-      <tags>
-        <tag>操作系统</tag>
       </tags>
   </entry>
   <entry>
@@ -3291,6 +3401,83 @@
       </tags>
   </entry>
   <entry>
+    <title>HashMap分析</title>
+    <url>/2021/02/20/JavaBasicKnowledge/HashMap/</url>
+    <content><![CDATA[<h1 id="hashmap">HashMap</h1>
+<h2 id="hashmap初始化">HashMap初始化</h2>
+<blockquote>
+<p>初始化时可以设置初始大小和负载因子。默认负载因子0.75，默认容量为16。</p>
+<p>HashMap的threshold为负载因子 * 容量。</p>
+</blockquote>
+<h2 id="hashmap的get方法">HashMap的get方法</h2>
+<blockquote>
+<p>就是根据传入的key求出对应的hash值，然后根据hash值和数组长度-1进行&amp;运算获得对应下标位置，获取位置后判断当前结点是树结点还是链表结点，从而采取不同的处理方式。</p>
+</blockquote>
+<h2 id="hashmap的remove方法">HashMap的remove方法</h2>
+<blockquote>
+<p>根据传入的key求出对应hash值，找到对应桶位，然后根据对应结点的类型为树结点还是链表结点，根据不同结点的类型执行不同的删除操作。链表需要改变指向，树则需要再次平衡。</p>
+</blockquote>
+<h2 id="hashmap的resize方法">HashMap的resize方法</h2>
+<blockquote>
+<p>先判断当前是否有table，如果没有table且未设置初始大小，则初始化容量为默认值，阈值为默认值 * 负载因子的数组。若设置了初始大小则初始化容量为设置的大小的二次幂值的数组。</p>
+<p>若存在table，先判断旧容量是否大于最大值，若大于则设置阈值为Integer.MAX_VALUE，返回table，否则判断旧容量左移1位后是否不超过最大容量且判断当前容量是否超过默认容量16，若不超过最大容量且当前容量超过默认容量则将旧阈值左移一位。否则将计算newCap * loadFactor，判断新容量是否大于最大容量，若不大于则使用newCap * loadFactor作为新阈值，使用newCap作为数组的新容量。</p>
+<p>创建完新数组后，需要将旧table的数据复制到新table之中。</p>
+<p>复制的过程：</p>
+<p>​ 遍历桶位，若某个桶位只有一个元素则直接根据hash值&amp;新数组容量-1判断需要插入到新数组的什么位置。</p>
+<p>​ 若该元素是树结点则使用spilt方法，插入到新数组。</p>
+<p>​ 若桶位存在多个链表结点，则大致流程为使用4个指针来记录新旧两个数组的头尾链表位置。即先记录头位置，然后将头位置赋值给尾位置，利用尾位置不断连接结点，最后将头结点赋值给桶位元素。</p>
+</blockquote>
+<h2 id="hashmap的put方法">HashMap的put方法</h2>
+<blockquote>
+<p>获取已存在的table，若当前table不存在则resize一个table，若存在则找到对应桶位，根据结点类型采取不同的插入操作，对于链表，插入完成后还会判断当前桶位元素个数是否大于树化阈值，若大于则将桶树化。对于树结点，插入时需要进行平衡。最后插入完成后，判断当前HashMap元素个数是否大于总阈值，若大于则resize扩容。</p>
+</blockquote>
+<h2 id="tips">tips</h2>
+<blockquote>
+<p>jdk8后，HashMap红黑树和链表转化是根据泊松分布的，链表转化为树阈值为8，树退化为链表阈值为6。</p>
+<p>且红黑树的排序是根据节点的hashcode大小，对于实现了Comparable接口的则使用compare方法来比较。</p>
+<p>hashmap默认负载因子0.75，默认容量为16，最大容量为2^30次方，且容量必须为2的次幂大小，因为使用位运算来执行取模操作。</p>
+<p>hashmap在操作时会自增modcount，若在遍历时对hashmap执行了操作，则会由于modcount改变而抛出异常。</p>
+<p>HashMap线程非安全，HashTable线程安全，ConcurrentHashMap线程安全。</p>
+<p>HashTable本质是上是将各方法都加上了synchronized。</p>
+</blockquote>
+<h2 id="面试题">面试题</h2>
+<h3 id="key为null时执行put操作数据放在哪个桶位">key为null时，执行put操作，数据放在哪个桶位？</h3>
+<blockquote>
+<p>key为null时HashMap求出的hash值为0，故放在第0个桶位。</p>
+</blockquote>
+<h3 id="hashmap的hash函数为什么需要将hash值移位并异或">HashMap的hash函数为什么需要将hash值移位并异或？</h3>
+<blockquote>
+<p>注释里有说，为了让高位的hash值对数据产生影响。</p>
+</blockquote>
+<h3 id="为什么hashmap内部的散列表数组长度一定是2的次方数">为什么HashMap内部的散列表数组长度一定是2的次方数？</h3>
+<blockquote>
+<p>让查找位置时使用数组长度-1的值会对应2进制的000011111111，后位均为1，提高HashMap的散列性。</p>
+</blockquote>
+<h3 id="hashmap内部的散列表结构什么时候初始化初始化大小有几种情况">HashMap内部的散列表结构，什么时候初始化？初始化大小有几种情况？</h3>
+<blockquote>
+<p>构造方法共四种：无参构造、传入初始容量、传入初始容量及负载因子、传入Map</p>
+<p>传入Map时会调用resize会初始化。</p>
+<p>resize时会初始化。</p>
+</blockquote>
+<h3 id="hashmap为什么需要扩容扩容又是如何实现的">HashMap为什么需要扩容，扩容又是如何实现的？</h3>
+<blockquote>
+<p>因为数组过小，会导致插入时会插入到同一个桶位导致查询效率下降，故用空间换时间的方式优化。</p>
+</blockquote>
+<h3 id="jdk8为什么hashmap引入红黑树">JDK8为什么HashMap引入红黑树？</h3>
+<blockquote>
+<p>因为数据增大时链表的查询速度低。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>容器</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Object类分析</title>
     <url>/2021/02/20/JavaBasicKnowledge/Object/</url>
     <content><![CDATA[<h1 id="object类">Object类</h1>
@@ -3401,71 +3588,32 @@
       </tags>
   </entry>
   <entry>
-    <title>HashMap分析</title>
-    <url>/2021/02/20/JavaBasicKnowledge/HashMap/</url>
-    <content><![CDATA[<h1 id="hashmap">HashMap</h1>
-<h2 id="hashmap初始化">HashMap初始化</h2>
+    <title>多线程相关</title>
+    <url>/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/</url>
+    <content><![CDATA[<h1 id="多线程">多线程</h1>
+<h2 id="进程和线程">进程和线程</h2>
 <blockquote>
-<p>初始化时可以设置初始大小和负载因子。默认负载因子0.75，默认容量为16。</p>
-<p>HashMap的threshold为负载因子 * 容量。</p>
+<p>进程是执行程序的一次执行过程，是一个动态的概念。是系统资源分配的单位。</p>
+<p>通常一个进程中包含多个线程，一个进程至少含一个线程。线程是CPU调度和执行的单位。</p>
 </blockquote>
-<h2 id="hashmap的get方法">HashMap的get方法</h2>
+<h3 id="java创建线程的方式">JAVA创建线程的方式</h3>
 <blockquote>
-<p>就是根据传入的key求出对应的hash值，然后根据hash值和数组长度-1进行&amp;运算获得对应下标位置，获取位置后判断当前结点是树结点还是链表结点，从而采取不同的处理方式。</p>
+<ol type="1">
+<li>继承Thread类，重写run方法。调用是使用start方法调用，若使用run方法调用则变为单线程。</li>
+<li>实现runnable接口，重写run方法，执行线程需丢入runnable接口实现类，调用start方法。(避免使用继承)</li>
+<li>实现callable接口，需要返回值类型，重写call方法，需要抛出异常。(可以返回结果，可以抛出异常)<img src="/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/实现callable.png" alt="实现callable"></li>
+</ol>
 </blockquote>
-<h2 id="hashmap的remove方法">HashMap的remove方法</h2>
+<h2 id="java线程的状态">Java线程的状态</h2>
 <blockquote>
-<p>根据传入的key求出对应hash值，找到对应桶位，然后根据对应结点的类型为树结点还是链表结点，根据不同结点的类型执行不同的删除操作。链表需要改变指向，树则需要再次平衡。</p>
-</blockquote>
-<h2 id="hashmap的resize方法">HashMap的resize方法</h2>
-<blockquote>
-<p>先判断当前是否有table，如果没有table且未设置初始大小，则初始化容量为默认值，阈值为默认值 * 负载因子的数组。若设置了初始大小则初始化容量为设置的大小的二次幂值的数组。</p>
-<p>若存在table，先判断旧容量是否大于最大值，若大于则设置阈值为Integer.MAX_VALUE，返回table，否则判断旧容量左移1位后是否不超过最大容量且判断当前容量是否超过默认容量16，若不超过最大容量且当前容量超过默认容量则将旧阈值左移一位。否则将计算newCap * loadFactor，判断新容量是否大于最大容量，若不大于则使用newCap * loadFactor作为新阈值，使用newCap作为数组的新容量。</p>
-<p>创建完新数组后，需要将旧table的数据复制到新table之中。</p>
-<p>复制的过程：</p>
-<p>​ 遍历桶位，若某个桶位只有一个元素则直接根据hash值&amp;新数组容量-1判断需要插入到新数组的什么位置。</p>
-<p>​ 若该元素是树结点则使用spilt方法，插入到新数组。</p>
-<p>​ 若桶位存在多个链表结点，则大致流程为使用4个指针来记录新旧两个数组的头尾链表位置。即先记录头位置，然后将头位置赋值给尾位置，利用尾位置不断连接结点，最后将头结点赋值给桶位元素。</p>
-</blockquote>
-<h2 id="hashmap的put方法">HashMap的put方法</h2>
-<blockquote>
-<p>获取已存在的table，若当前table不存在则resize一个table，若存在则找到对应桶位，根据结点类型采取不同的插入操作，对于链表，插入完成后还会判断当前桶位元素个数是否大于树化阈值，若大于则将桶树化。对于树结点，插入时需要进行平衡。最后插入完成后，判断当前HashMap元素个数是否大于总阈值，若大于则resize扩容。</p>
-</blockquote>
-<h2 id="tips">tips</h2>
-<blockquote>
-<p>jdk8后，HashMap红黑树和链表转化是根据泊松分布的，链表转化为树阈值为8，树退化为链表阈值为6。</p>
-<p>且红黑树的排序是根据节点的hashcode大小，对于实现了Comparable接口的则使用compare方法来比较。</p>
-<p>hashmap默认负载因子0.75，默认容量为16，最大容量为2^30次方，且容量必须为2的次幂大小，因为使用位运算来执行取模操作。</p>
-<p>hashmap在操作时会自增modcount，若在遍历时对hashmap执行了操作，则会由于modcount改变而抛出异常。</p>
-<p>HashMap线程非安全，HashTable线程安全，ConcurrentHashMap线程安全。</p>
-<p>HashTable本质是上是将各方法都加上了synchronized。</p>
-</blockquote>
-<h2 id="面试题">面试题</h2>
-<h3 id="key为null时执行put操作数据放在哪个桶位">key为null时，执行put操作，数据放在哪个桶位？</h3>
-<blockquote>
-<p>key为null时HashMap求出的hash值为0，故放在第0个桶位。</p>
-</blockquote>
-<h3 id="hashmap的hash函数为什么需要将hash值移位并异或">HashMap的hash函数为什么需要将hash值移位并异或？</h3>
-<blockquote>
-<p>注释里有说，为了让高位的hash值对数据产生影响。</p>
-</blockquote>
-<h3 id="为什么hashmap内部的散列表数组长度一定是2的次方数">为什么HashMap内部的散列表数组长度一定是2的次方数？</h3>
-<blockquote>
-<p>让查找位置时使用数组长度-1的值会对应2进制的000011111111，后位均为1，提高HashMap的散列性。</p>
-</blockquote>
-<h3 id="hashmap内部的散列表结构什么时候初始化初始化大小有几种情况">HashMap内部的散列表结构，什么时候初始化？初始化大小有几种情况？</h3>
-<blockquote>
-<p>构造方法共四种：无参构造、传入初始容量、传入初始容量及负载因子、传入Map</p>
-<p>传入Map时会调用resize会初始化。</p>
-<p>resize时会初始化。</p>
-</blockquote>
-<h3 id="hashmap为什么需要扩容扩容又是如何实现的">HashMap为什么需要扩容，扩容又是如何实现的？</h3>
-<blockquote>
-<p>因为数组过小，会导致插入时会插入到同一个桶位导致查询效率下降，故用空间换时间的方式优化。</p>
-</blockquote>
-<h3 id="jdk8为什么hashmap引入红黑树">JDK8为什么HashMap引入红黑树？</h3>
-<blockquote>
-<p>因为数据增大时链表的查询速度低。</p>
+<p>NEW、RUNNABLE、BLOCKED、WAITING、TIMED_WAITING、TERMINATED</p>
+<p>NEW：线程还没有启动。</p>
+<p>RUNNABLE：线程已经在jvm中运行了，但可能还在等待操作系统的处理器之类的资源。</p>
+<p>BLOCKED：线程等待monitor lock。</p>
+<p>WAITING：正在等待另一个线程执行的状态。</p>
+<p>TIMED_WAITING：有着指定特定等待时间等待另一个线程执行的状态。</p>
+<p>TERMINATED：线程终止，线程已经结束执行。</p>
+<p>线程分为用户线程和守护线程(Daemon)，虚拟机必须确保用户线程执行完毕，虚拟机不用等待守护线程执行完毕。可以通过调用线程的setDaemon(true)，将某个线程变为守护线程</p>
 </blockquote>
 ]]></content>
       <categories>
@@ -3474,7 +3622,7 @@
       </categories>
       <tags>
         <tag>Java</tag>
-        <tag>容器</tag>
+        <tag>并发</tag>
       </tags>
   </entry>
   <entry>
@@ -3722,6 +3870,45 @@
       </tags>
   </entry>
   <entry>
+    <title>Dubbo简单介绍</title>
+    <url>/2021/02/20/codeAnalyse/Dubbo/</url>
+    <content><![CDATA[<h1 id="dubbo">Dubbo</h1>
+<h2 id="rmi-和-rpc">RMI 和 RPC</h2>
+<blockquote>
+<p>RMI：远程方法调用，是java自带的API可以实现的，依赖JVM。客户端将要调用的方法和参数打包成辅助对象，通过网络socket，发送给服务端辅助对象，服务端接收后进行解包，找到真正被调用的方法，执行这个方法将执行结果，依次返回。服务端辅助对象进行打包，然后客户端辅助对象进行解包，结果返回给真正的调用者。</p>
+<p>IPC：进程间通信。进程是计算机系统资源分配的最小单位，每个进程都是资源隔离的。</p>
+<p>LPC：本地过程调用。</p>
+<p>RPC：远程过程调用。</p>
+</blockquote>
+<h2 id="常用rpc框架">常用RPC框架</h2>
+<h3 id="dubbo-1">Dubbo</h3>
+<blockquote>
+<p>阿里开发，基于Spring和Netty，是当前使用最广泛的RPC框架。</p>
+</blockquote>
+<h3 id="brpc">BRPC</h3>
+<blockquote>
+<p>百度开发，"baidu-rpc"，支持多种协议，性能优良。</p>
+</blockquote>
+<h3 id="grpc">GRPC</h3>
+<blockquote>
+<p>谷歌开发，基于Netty，服务于TensorFlow的底层通信。</p>
+</blockquote>
+<h3 id="thrift">Thrift</h3>
+<blockquote>
+<p>Facebook开发。</p>
+</blockquote>
+<h2 id="注册中心---zookeeper">注册中心 - Zookeeper</h2>
+]]></content>
+      <categories>
+        <category>框架入门</category>
+      </categories>
+      <tags>
+        <tag>并发</tag>
+        <tag>Dubbo</tag>
+        <tag>分布式</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>SpringBoot原理分析</title>
     <url>/2021/02/20/codeAnalyse/SpringBoot%E5%8E%9F%E7%90%86/</url>
     <content><![CDATA[<h1 id="springboot原理">SpringBoot原理</h1>
@@ -3774,6 +3961,69 @@
       </categories>
       <tags>
         <tag>Springboot</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>http基本知识及改进</title>
+    <url>/2021/02/20/codeAnalyse/http%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86%E5%8F%8A%E6%94%B9%E8%BF%9B/</url>
+    <content><![CDATA[<h1 id="http基本知识及改进">http基本知识及改进</h1>
+<h2 id="http介绍">HTTP介绍</h2>
+<h3 id="版本">0.9版本</h3>
+<blockquote>
+<p>GET /index.html</p>
+<p>服务端只能返回html格式，传输过程只能处理文字</p>
+</blockquote>
+<h3 id="版本-1">1.0版本</h3>
+<blockquote>
+<p>支持任何格式的内容，包括图像、视频、二进制等。</p>
+<p>引入了POST命令、HEAD命令。</p>
+<p>增加了请求头、状态码，以及权限缓存等。</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"># 请求包</span><br><span class="line">GET / HTTP/1.0</span><br><span class="line">User-Agent:Mozilla/1.0</span><br><span class="line">Accept: */*</span><br><span class="line"></span><br><span class="line"># 应答包</span><br><span class="line">HTTP/1.0 200 OK</span><br><span class="line">Content-Type: text/plain</span><br><span class="line">Content-Length: 12345</span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"> ....</span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>Content-Type表示当前数据格式：text/html、image/png、application/pdf、video/mp4。</p>
+<p>前面是一级格式，后面是二级类型，用斜杆分隔，还可以增加其他参数，如编码格式</p>
+<p>Content-Type：text/plain；charset=utf-8</p>
+<p>Content-Encoding表示数据压缩的方式：gzip、compress、deflate。</p>
+<p>对应客户端的字段为Accept-Encoding，代表接收哪些压缩方式。</p>
+<h4 id="缺点和问题">缺点和问题：</h4>
+<p>每个TCP连接只能发送一个请求，发送完毕连接关闭，使用成本很高，性能较差。</p>
+<p>Connection：keep-alive (非标准字段)</p>
+</blockquote>
+<h2 id="版本-2">1.1版本</h2>
+<blockquote>
+<p>持久连接：默认不关闭TCP连接，可以被多个请求复用。</p>
+<p>管道机制：支持客户端发送多个请求，管理请求的顺序。服务器还是按照接受请求的顺序，返回对应的响应结果。</p>
+<p>Content-Length：用于区分数据包的字段。</p>
+<p>支持了DELETE、PUT、PATCH等命令。</p>
+<h4 id="缺点和问题-1">缺点和问题</h4>
+<p>当部分请求耗时较长时，仍会阻塞后续请求的处理速度，这种现象叫做“队头阻塞/线头阻塞”。</p>
+</blockquote>
+<h3 id="版本-3">2.0版本</h3>
+<blockquote>
+<p>解决了队头阻塞的问题。多路复用。</p>
+</blockquote>
+<h2 id="http的缺陷">HTTP的缺陷</h2>
+<blockquote>
+<p>通信只能由客户端发起，需要一种服务端能够主动推送的能力-websocket。</p>
+<p>这种双向通信的能力，也叫"全双工"，协议标识符：http://127.0.0.1/ 变为 ws://127.0.0.1/ 通信的最小单位是帧frame。</p>
+</blockquote>
+<h2 id="websocket">WebSocket</h2>
+<blockquote>
+<p>websocket是由浏览器发起的。</p>
+<p>响应码101代表本次协议需要更改为websocket。</p>
+<p>建立连接后，支持文本信息和二进制信息。</p>
+<p>Websocket实现的原理：</p>
+<p>​ 通过http协议进行连接的建立，建立连接后不再使用http，而tcp自身是支持双向通信的，所以可以达到全双工的效果。</p>
+<p>通信使用的单位叫帧frame</p>
+<p>客户端：发送时，将消息切割成多个帧。</p>
+<p>服务端：接收时，将关联的帧重新组装。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>计算机网络</category>
+      </categories>
+      <tags>
+        <tag>网络</tag>
       </tags>
   </entry>
   <entry>
@@ -3841,108 +4091,6 @@
         <tag>Mybatis</tag>
         <tag>orm</tag>
         <tag>数据库</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>http基本知识及改进</title>
-    <url>/2021/02/20/codeAnalyse/http%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86%E5%8F%8A%E6%94%B9%E8%BF%9B/</url>
-    <content><![CDATA[<h1 id="http基本知识及改进">http基本知识及改进</h1>
-<h2 id="http介绍">HTTP介绍</h2>
-<h3 id="版本">0.9版本</h3>
-<blockquote>
-<p>GET /index.html</p>
-<p>服务端只能返回html格式，传输过程只能处理文字</p>
-</blockquote>
-<h3 id="版本-1">1.0版本</h3>
-<blockquote>
-<p>支持任何格式的内容，包括图像、视频、二进制等。</p>
-<p>引入了POST命令、HEAD命令。</p>
-<p>增加了请求头、状态码，以及权限缓存等。</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"># 请求包</span><br><span class="line">GET / HTTP/1.0</span><br><span class="line">User-Agent:Mozilla/1.0</span><br><span class="line">Accept: */*</span><br><span class="line"></span><br><span class="line"># 应答包</span><br><span class="line">HTTP/1.0 200 OK</span><br><span class="line">Content-Type: text/plain</span><br><span class="line">Content-Length: 12345</span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"> ....</span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>Content-Type表示当前数据格式：text/html、image/png、application/pdf、video/mp4。</p>
-<p>前面是一级格式，后面是二级类型，用斜杆分隔，还可以增加其他参数，如编码格式</p>
-<p>Content-Type：text/plain；charset=utf-8</p>
-<p>Content-Encoding表示数据压缩的方式：gzip、compress、deflate。</p>
-<p>对应客户端的字段为Accept-Encoding，代表接收哪些压缩方式。</p>
-<h4 id="缺点和问题">缺点和问题：</h4>
-<p>每个TCP连接只能发送一个请求，发送完毕连接关闭，使用成本很高，性能较差。</p>
-<p>Connection：keep-alive (非标准字段)</p>
-</blockquote>
-<h2 id="版本-2">1.1版本</h2>
-<blockquote>
-<p>持久连接：默认不关闭TCP连接，可以被多个请求复用。</p>
-<p>管道机制：支持客户端发送多个请求，管理请求的顺序。服务器还是按照接受请求的顺序，返回对应的响应结果。</p>
-<p>Content-Length：用于区分数据包的字段。</p>
-<p>支持了DELETE、PUT、PATCH等命令。</p>
-<h4 id="缺点和问题-1">缺点和问题</h4>
-<p>当部分请求耗时较长时，仍会阻塞后续请求的处理速度，这种现象叫做“队头阻塞/线头阻塞”。</p>
-</blockquote>
-<h3 id="版本-3">2.0版本</h3>
-<blockquote>
-<p>解决了队头阻塞的问题。多路复用。</p>
-</blockquote>
-<h2 id="http的缺陷">HTTP的缺陷</h2>
-<blockquote>
-<p>通信只能由客户端发起，需要一种服务端能够主动推送的能力-websocket。</p>
-<p>这种双向通信的能力，也叫"全双工"，协议标识符：http://127.0.0.1/ 变为 ws://127.0.0.1/ 通信的最小单位是帧frame。</p>
-</blockquote>
-<h2 id="websocket">WebSocket</h2>
-<blockquote>
-<p>websocket是由浏览器发起的。</p>
-<p>响应码101代表本次协议需要更改为websocket。</p>
-<p>建立连接后，支持文本信息和二进制信息。</p>
-<p>Websocket实现的原理：</p>
-<p>​ 通过http协议进行连接的建立，建立连接后不再使用http，而tcp自身是支持双向通信的，所以可以达到全双工的效果。</p>
-<p>通信使用的单位叫帧frame</p>
-<p>客户端：发送时，将消息切割成多个帧。</p>
-<p>服务端：接收时，将关联的帧重新组装。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>计算机网络</category>
-      </categories>
-      <tags>
-        <tag>网络</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Dubbo简单介绍</title>
-    <url>/2021/02/20/codeAnalyse/Dubbo/</url>
-    <content><![CDATA[<h1 id="dubbo">Dubbo</h1>
-<h2 id="rmi-和-rpc">RMI 和 RPC</h2>
-<blockquote>
-<p>RMI：远程方法调用，是java自带的API可以实现的，依赖JVM。客户端将要调用的方法和参数打包成辅助对象，通过网络socket，发送给服务端辅助对象，服务端接收后进行解包，找到真正被调用的方法，执行这个方法将执行结果，依次返回。服务端辅助对象进行打包，然后客户端辅助对象进行解包，结果返回给真正的调用者。</p>
-<p>IPC：进程间通信。进程是计算机系统资源分配的最小单位，每个进程都是资源隔离的。</p>
-<p>LPC：本地过程调用。</p>
-<p>RPC：远程过程调用。</p>
-</blockquote>
-<h2 id="常用rpc框架">常用RPC框架</h2>
-<h3 id="dubbo-1">Dubbo</h3>
-<blockquote>
-<p>阿里开发，基于Spring和Netty，是当前使用最广泛的RPC框架。</p>
-</blockquote>
-<h3 id="brpc">BRPC</h3>
-<blockquote>
-<p>百度开发，"baidu-rpc"，支持多种协议，性能优良。</p>
-</blockquote>
-<h3 id="grpc">GRPC</h3>
-<blockquote>
-<p>谷歌开发，基于Netty，服务于TensorFlow的底层通信。</p>
-</blockquote>
-<h3 id="thrift">Thrift</h3>
-<blockquote>
-<p>Facebook开发。</p>
-</blockquote>
-<h2 id="注册中心---zookeeper">注册中心 - Zookeeper</h2>
-]]></content>
-      <categories>
-        <category>框架入门</category>
-      </categories>
-      <tags>
-        <tag>并发</tag>
-        <tag>Dubbo</tag>
-        <tag>分布式</tag>
       </tags>
   </entry>
   <entry>
@@ -4134,253 +4282,6 @@
         <tag>并发</tag>
         <tag>网络</tag>
         <tag>负载均衡</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>多线程相关</title>
-    <url>/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/</url>
-    <content><![CDATA[<h1 id="多线程">多线程</h1>
-<h2 id="进程和线程">进程和线程</h2>
-<blockquote>
-<p>进程是执行程序的一次执行过程，是一个动态的概念。是系统资源分配的单位。</p>
-<p>通常一个进程中包含多个线程，一个进程至少含一个线程。线程是CPU调度和执行的单位。</p>
-</blockquote>
-<h3 id="java创建线程的方式">JAVA创建线程的方式</h3>
-<blockquote>
-<ol type="1">
-<li>继承Thread类，重写run方法。调用是使用start方法调用，若使用run方法调用则变为单线程。</li>
-<li>实现runnable接口，重写run方法，执行线程需丢入runnable接口实现类，调用start方法。(避免使用继承)</li>
-<li>实现callable接口，需要返回值类型，重写call方法，需要抛出异常。(可以返回结果，可以抛出异常)<img src="/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/实现callable.png" alt="实现callable"></li>
-</ol>
-</blockquote>
-<h2 id="java线程的状态">Java线程的状态</h2>
-<blockquote>
-<p>NEW、RUNNABLE、BLOCKED、WAITING、TIMED_WAITING、TERMINATED</p>
-<p>NEW：线程还没有启动。</p>
-<p>RUNNABLE：线程已经在jvm中运行了，但可能还在等待操作系统的处理器之类的资源。</p>
-<p>BLOCKED：线程等待monitor lock。</p>
-<p>WAITING：正在等待另一个线程执行的状态。</p>
-<p>TIMED_WAITING：有着指定特定等待时间等待另一个线程执行的状态。</p>
-<p>TERMINATED：线程终止，线程已经结束执行。</p>
-<p>线程分为用户线程和守护线程(Daemon)，虚拟机必须确保用户线程执行完毕，虚拟机不用等待守护线程执行完毕。可以通过调用线程的setDaemon(true)，将某个线程变为守护线程</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-        <tag>并发</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SpringBoot常用配置</title>
-    <url>/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/</url>
-    <content><![CDATA[<h1 id="springboot常用配置">SpringBoot常用配置</h1>
-<h2 id="选择不同配置">选择不同配置</h2>
-<blockquote>
-<p>也可以通过在类中使用@Profile("xx")来表示这个类只有在xx为active的情况下才可使用。</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/springboot多配置文件设置启用.png" alt="springboot多配置文件设置启用"><figcaption aria-hidden="true">springboot多配置文件设置启用</figcaption>
-</figure>
-</blockquote>
-<h2 id="自动加载配置文件的内容">自动加载配置文件的内容</h2>
-<blockquote>
-<p><span class="citation" data-cites="Value">@Value</span></p>
-<p><span class="citation" data-cites="ConfigurationProperties">@ConfigurationProperties</span>(prefix = "spring.datasource.druid.write") 使用该注解需要引入且要启用@EnableConfigurationProperties(使用前面一个注解的类.class)</p>
-<p><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;&#x2F;groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-configuration-processor&lt;&#x2F;artifactId&gt;</span><br><span class="line">    &lt;optional&gt;true&lt;&#x2F;optional&gt;</span><br><span class="line">&lt;&#x2F;dependency&gt;</span><br></pre></td></tr></table></figure></p>
-<p><span class="citation" data-cites="PropertySource">@PropertySource</span></p>
-</blockquote>
-<h2 id="配置文件的加载顺序下覆盖上">配置文件的加载顺序(下覆盖上)</h2>
-<blockquote>
-<ol type="1">
-<li>Application properties packaged inside your jar (application.properties and YAML variants).</li>
-<li>Profile-specific application properties packaged inside your jar (application-{profile}.properties and YAML variants).</li>
-<li>Application properties outside of your packaged jar (application.properties and YAML variants)</li>
-<li>Profile-specific application properties outside of your packaged jar (application-{profile}.properties and YAML variants).</li>
-</ol>
-</blockquote>
-<h2 id="自动加载的-application.properties-的加载顺序下覆盖上">自动加载的 application.properties 的加载顺序(下覆盖上)</h2>
-<blockquote>
-<ol type="1">
-<li><p>The classpath root</p></li>
-<li><p>The classpath /config package</p></li>
-<li><p>The current directory</p></li>
-<li><p>The /config subdirectory in the current directory</p></li>
-<li><p>Immediate child directories of the /config subdirectory</p></li>
-</ol>
-<p>4、5的差别就是如果config目录的根目录里有application.properties，则会将config子目录的application.properties覆盖。</p>
-<p>而classpath中springboot不会自动扫描config子目录中的目录。</p>
-<p>可以通过修改spring.config.name来修改默认配置文件名。</p>
-<p>修改spring.config.location 可以修改springboot获取配置文件的位置。</p>
-<p>修改spring.config.additional-location可以在springboot默认获取配置文件的位置的基础上补充一些获取配置文件的位置。optional: 前缀</p>
-</blockquote>
-<h2 id="可以使用来获取外部目录classpath中不能使用">可以使用*来获取外部目录，classpath中不能使用*</h2>
-<h2 id="可以使用---在.pro配置文件中划分逻辑页">可以使用#---在.pro配置文件中划分逻辑页</h2>
-<h2 id="使用---在.yml配置文件划分逻辑页">使用---在.yml配置文件划分逻辑页</h2>
-<h2 id="在多个配置文件中均存在同一个list的值则只会去最高优先级的list值">在多个配置文件中均存在同一个list的值，则只会去最高优先级的list值</h2>
-<h2 id="在多个配置文件中均存在同一个map的值则使用互补配置的方式构造map">在多个配置文件中均存在同一个Map的值，则使用互补配置的方式构造Map</h2>
-<h2 id="spring自动注入的注解">spring自动注入的注解</h2>
-<blockquote>
-<p><span class="citation" data-cites="Component">@Component</span>("name")将一个类生成一个Bean实例并用spring管理。<span class="citation" data-cites="Controller">@Controller</span>、<span class="citation" data-cites="Repository">@Repository</span>、<span class="citation" data-cites="Service都是类似的功能">@Service都是类似的功能</span>。这些注解要放在类上。</p>
-<p><span class="citation" data-cites="Bean">@Bean</span>("name")将一个方法返回的对象实例用spring管理。该注解放在方法上。</p>
-<p><span class="citation" data-cites="Autowired">@Autowired</span> 自动注入。该注解可以放在构造器方法、方法、参数、属性、注解上。</p>
-<p><span class="citation" data-cites="Primary">@Primary</span> 写在类上或方法上。为了消除自动装配的歧义性，如spring管理了两个都实现了同一父类的类，则存在@Primary 的类会被最先调用。</p>
-<p><span class="citation" data-cites="Qualifier">@Qualifier</span>("name")写在变量、方法、参数、类上、注解上，可以根据传入的name按名字查找spring管理的类。</p>
-</blockquote>
-<h2 id="spring监听器">Spring监听器</h2>
-<blockquote>
-<p>使用过程:</p>
-<p>​ 自定义事件，继承org.springframework.context.ApplicationEvent类。</p>
-<p>​ 自定义事件监听器，实现org.springframework.context.ApplicationListener接口。</p>
-<p>​ 在spring容器中发布事件。</p>
-<p>实现监听的方式：</p>
-<p>​ 自定义类实现ApplicationListener，在主函数中装载监听。</p>
-<p>​ 自定义类实现ApplicationListener，在接口上加上@Component注解</p>
-<p>​ 自定义类不实现接口，在对应方法上标明@EventListener注解。</p>
-<p>​ 自定义类实现ApplicationListener，在application.properties中配置context.listener.classes</p>
-</blockquote>
-<h2 id="spring内置容器的配置">Spring内置容器的配置</h2>
-<blockquote>
-<p>修改配置：</p>
-<ol type="1">
-<li><p>可以在application.properties中按server.xxx:的方式修改</p></li>
-<li><p>创建一个配置类通过编写public WebServerFactoryCustomizer<ConfigurableWebServerFactory> customizer()方法来设置。</ConfigurableWebServerFactory></p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/内嵌服务器配置修改.png" alt="内嵌服务器配置修改"><figcaption aria-hidden="true">内嵌服务器配置修改</figcaption>
-</figure></li>
-</ol>
-<p>更换容器：</p>
-<p>​ 通过先将start内的容器依赖去除然后导入新依赖即可。</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/修改内嵌容器.png" alt="修改内嵌容器"><figcaption aria-hidden="true">修改内嵌容器</figcaption>
-</figure>
-</blockquote>
-<h2 id="过滤器和拦截器">过滤器和拦截器</h2>
-<blockquote>
-<p>过滤器：在进入servlet前过滤。</p>
-<p>实现方式：</p>
-<p>​ 创建类实现接口javax.servlet.Filter，加上@Component，然后使用一个如下的配置类注入spring容器。</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/filterConfig.png" alt="filterConfig"><figcaption aria-hidden="true">filterConfig</figcaption>
-</figure>
-<p>​ 创建类实现接口javax.servlet.Filter，加上@WebFilter，然后在主启动类中加上@ServletComponentScan注解。</p>
-<p>拦截器：拦截方法。</p>
-<p>​ 创建类实现HandlerInterceptor接口，然后创建配置类实现WebMvcConfigurer接口，配置类如下。</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/interceptorConfig.png" alt="interceptorConfig"><figcaption aria-hidden="true">interceptorConfig</figcaption>
-</figure>
-</blockquote>
-<h2 id="错误及异常处理">错误及异常处理</h2>
-<h3 id="数值校验">数值校验</h3>
-<blockquote>
-<p>在参数前加入@Valid/<span class="citation" data-cites="Validated注解">@Validated注解</span>，然后跟上BindingResult对象即可获取错误时的错误信息。如图</p>
-<p>利用配置文件ValidationMessages.properties中设置发生错误的提示信息。在bean的注解属性中通过{key}获取属性。</p>
-</blockquote>
-<h3 id="错误页指定">错误页指定</h3>
-<blockquote>
-<p>用到了再查</p>
-</blockquote>
-<h3 id="全局异常处理">全局异常处理</h3>
-<blockquote>
-<p>实现一个异常处理类并加上@ControllerAdvice注解。如图</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/全局异常处理.png" alt="全局异常处理"><figcaption aria-hidden="true">全局异常处理</figcaption>
-</figure>
-</blockquote>
-<h2 id="日志">日志</h2>
-<h3 id="日志文件输出">日志文件输出</h3>
-<blockquote>
-<p>在application中添加logging.file.path = xxx 默认日志名为spring.log</p>
-<p>或添加logging.file.name = xxxx 默认输出路径为项目当前路径。</p>
-<p>二者不能同时使用。</p>
-</blockquote>
-<h3 id="日志级别控制">日志级别控制</h3>
-<blockquote>
-<p>日志级别有TRACE、DEBUG、INFO、WARN、ERROR、FATAL、OFF。</p>
-<p>logging.level.包名 = xxx级别</p>
-<p>logging.level.root = 设置全局日志级别</p>
-</blockquote>
-<h2 id="文档生成">文档生成</h2>
-<h3 id="swaggle">swaggle</h3>
-<blockquote>
-<figure class="highlight"><table><tr><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;io.springfox&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;springfox-swagger2&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.9.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line">		</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;io.springfox&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;springfox-swagger-ui&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.9.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableSwagger2</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SwaggerConfig</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Docket <span class="title">api</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Docket(DocumentationType.SWAGGER_2).select()</span><br><span class="line">                .apis(RequestHandlerSelectors.any())</span><br><span class="line">                .paths(PathSelectors.any())</span><br><span class="line">                .build();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>访问http://localhost:8080/v2/api-docs拿到api的json</p>
-<p>访问http://localhost:8080/swagger-ui.html获取页面</p>
-</blockquote>
-<h2 id="监控">监控</h2>
-<blockquote>
-<p>本质上是通过log收集信息，然后利用信息分析。</p>
-</blockquote>
-<h2 id="缓存">缓存</h2>
-<blockquote>
-<p><span class="citation" data-cites="Cacheable">@Cacheable</span>(value = "xx", key = "zz", condition = "yyy")</p>
-<p>​ value 表示缓存名</p>
-<p>​ key为缓存键，需要用SPEL写</p>
-<p>​ condition为缓存触发的条件，需要用SPEL写</p>
-<p>​ 缓存值为对应方法的返回值</p>
-<p><span class="citation" data-cites="CacheEvict">@CacheEvict</span>(beforeInvocation = true表示在方法触发前就移除了缓存) 移除缓存</p>
-<p><span class="citation" data-cites="CachePut">@CachePut</span> 添加缓存</p>
-</blockquote>
-<h2 id="微服务">微服务</h2>
-<blockquote>
-<p>注册中心</p>
-<p>服务提供者</p>
-<p>服务追踪</p>
-<p>服务治理</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>框架入门</category>
-      </categories>
-      <tags>
-        <tag>Springboot</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>数据库连接池</title>
-    <url>/2021/02/20/codeAnalyse/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E6%B1%A0/</url>
-    <content><![CDATA[<h1 id="数据库连接池">数据库连接池</h1>
-<h2 id="常用数据库连接池">常用数据库连接池</h2>
-<h3 id="dbcp">DBCP</h3>
-<h4 id="常用参数">常用参数</h4>
-<blockquote>
-<p>initialSize 初始连接数</p>
-<p>maxActive 最多可容纳活跃连接数</p>
-<p>maxIdle 最大空闲连接数(已创建但未被使用的连接，会被定期回收，回收直到maxIdle数量)</p>
-<p>minIdle 最小空闲连接数</p>
-<p>maxWait 获取连接的最大等待时间</p>
-</blockquote>
-<h3 id="c3p0">C3P0</h3>
-<h4 id="常用参数-1">常用参数</h4>
-<blockquote>
-<p>initialPoolSize 初始连接数</p>
-<p>maxPoolSize 最大连接数</p>
-<p>minPoolSize 最小连接数</p>
-<p>acquireIncrement 当没有空闲连接时，一次性创建新连接的数量</p>
-<p>maxIdleTime 连接的最大空闲时间，即若一直未使用则自动断掉连接。</p>
-</blockquote>
-<h3 id="druid">Druid</h3>
-<h4 id="常用参数-2">常用参数</h4>
-<blockquote>
-<p>initialSize 初始连接数</p>
-<p>maxActive 最多可容纳活跃连接数</p>
-<p>maxIdle 最大空闲连接数(已创建但未被使用的连接，会被定期回收，回收直到maxIdle数量)</p>
-<p>minIdle 最小空闲连接数</p>
-<p>maxWait 获取连接的最大等待时间</p>
-<p>timeBetweenEvictionRunsMillis 间隔多长时间检测是否关闭空闲连接。</p>
-<p>minEvictableIdleTime 控制一个连接在资源池中最小的生存时间</p>
-<p>maxEvictableIdleTime 控制一个连接在资源池中最大的生存时间</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>数据库</category>
-      </categories>
-      <tags>
-        <tag>数据库</tag>
       </tags>
   </entry>
   <entry>
@@ -4706,9 +4607,218 @@
         <category>数据库</category>
       </categories>
       <tags>
-        <tag>数据库</tag>
         <tag>分布式</tag>
+        <tag>数据库</tag>
         <tag>缓存</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>数据库连接池</title>
+    <url>/2021/02/20/codeAnalyse/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E6%B1%A0/</url>
+    <content><![CDATA[<h1 id="数据库连接池">数据库连接池</h1>
+<h2 id="常用数据库连接池">常用数据库连接池</h2>
+<h3 id="dbcp">DBCP</h3>
+<h4 id="常用参数">常用参数</h4>
+<blockquote>
+<p>initialSize 初始连接数</p>
+<p>maxActive 最多可容纳活跃连接数</p>
+<p>maxIdle 最大空闲连接数(已创建但未被使用的连接，会被定期回收，回收直到maxIdle数量)</p>
+<p>minIdle 最小空闲连接数</p>
+<p>maxWait 获取连接的最大等待时间</p>
+</blockquote>
+<h3 id="c3p0">C3P0</h3>
+<h4 id="常用参数-1">常用参数</h4>
+<blockquote>
+<p>initialPoolSize 初始连接数</p>
+<p>maxPoolSize 最大连接数</p>
+<p>minPoolSize 最小连接数</p>
+<p>acquireIncrement 当没有空闲连接时，一次性创建新连接的数量</p>
+<p>maxIdleTime 连接的最大空闲时间，即若一直未使用则自动断掉连接。</p>
+</blockquote>
+<h3 id="druid">Druid</h3>
+<h4 id="常用参数-2">常用参数</h4>
+<blockquote>
+<p>initialSize 初始连接数</p>
+<p>maxActive 最多可容纳活跃连接数</p>
+<p>maxIdle 最大空闲连接数(已创建但未被使用的连接，会被定期回收，回收直到maxIdle数量)</p>
+<p>minIdle 最小空闲连接数</p>
+<p>maxWait 获取连接的最大等待时间</p>
+<p>timeBetweenEvictionRunsMillis 间隔多长时间检测是否关闭空闲连接。</p>
+<p>minEvictableIdleTime 控制一个连接在资源池中最小的生存时间</p>
+<p>maxEvictableIdleTime 控制一个连接在资源池中最大的生存时间</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>数据库</category>
+      </categories>
+      <tags>
+        <tag>数据库</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SpringBoot常用配置</title>
+    <url>/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/</url>
+    <content><![CDATA[<h1 id="springboot常用配置">SpringBoot常用配置</h1>
+<h2 id="选择不同配置">选择不同配置</h2>
+<blockquote>
+<p>也可以通过在类中使用@Profile("xx")来表示这个类只有在xx为active的情况下才可使用。</p>
+<figure>
+<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/springboot多配置文件设置启用.png" alt="springboot多配置文件设置启用"><figcaption aria-hidden="true">springboot多配置文件设置启用</figcaption>
+</figure>
+</blockquote>
+<h2 id="自动加载配置文件的内容">自动加载配置文件的内容</h2>
+<blockquote>
+<p><span class="citation" data-cites="Value">@Value</span></p>
+<p><span class="citation" data-cites="ConfigurationProperties">@ConfigurationProperties</span>(prefix = "spring.datasource.druid.write") 使用该注解需要引入且要启用@EnableConfigurationProperties(使用前面一个注解的类.class)</p>
+<p><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;&#x2F;groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-configuration-processor&lt;&#x2F;artifactId&gt;</span><br><span class="line">    &lt;optional&gt;true&lt;&#x2F;optional&gt;</span><br><span class="line">&lt;&#x2F;dependency&gt;</span><br></pre></td></tr></table></figure></p>
+<p><span class="citation" data-cites="PropertySource">@PropertySource</span></p>
+</blockquote>
+<h2 id="配置文件的加载顺序下覆盖上">配置文件的加载顺序(下覆盖上)</h2>
+<blockquote>
+<ol type="1">
+<li>Application properties packaged inside your jar (application.properties and YAML variants).</li>
+<li>Profile-specific application properties packaged inside your jar (application-{profile}.properties and YAML variants).</li>
+<li>Application properties outside of your packaged jar (application.properties and YAML variants)</li>
+<li>Profile-specific application properties outside of your packaged jar (application-{profile}.properties and YAML variants).</li>
+</ol>
+</blockquote>
+<h2 id="自动加载的-application.properties-的加载顺序下覆盖上">自动加载的 application.properties 的加载顺序(下覆盖上)</h2>
+<blockquote>
+<ol type="1">
+<li><p>The classpath root</p></li>
+<li><p>The classpath /config package</p></li>
+<li><p>The current directory</p></li>
+<li><p>The /config subdirectory in the current directory</p></li>
+<li><p>Immediate child directories of the /config subdirectory</p></li>
+</ol>
+<p>4、5的差别就是如果config目录的根目录里有application.properties，则会将config子目录的application.properties覆盖。</p>
+<p>而classpath中springboot不会自动扫描config子目录中的目录。</p>
+<p>可以通过修改spring.config.name来修改默认配置文件名。</p>
+<p>修改spring.config.location 可以修改springboot获取配置文件的位置。</p>
+<p>修改spring.config.additional-location可以在springboot默认获取配置文件的位置的基础上补充一些获取配置文件的位置。optional: 前缀</p>
+</blockquote>
+<h2 id="可以使用来获取外部目录classpath中不能使用">可以使用*来获取外部目录，classpath中不能使用*</h2>
+<h2 id="可以使用---在.pro配置文件中划分逻辑页">可以使用#---在.pro配置文件中划分逻辑页</h2>
+<h2 id="使用---在.yml配置文件划分逻辑页">使用---在.yml配置文件划分逻辑页</h2>
+<h2 id="在多个配置文件中均存在同一个list的值则只会去最高优先级的list值">在多个配置文件中均存在同一个list的值，则只会去最高优先级的list值</h2>
+<h2 id="在多个配置文件中均存在同一个map的值则使用互补配置的方式构造map">在多个配置文件中均存在同一个Map的值，则使用互补配置的方式构造Map</h2>
+<h2 id="spring自动注入的注解">spring自动注入的注解</h2>
+<blockquote>
+<p><span class="citation" data-cites="Component">@Component</span>("name")将一个类生成一个Bean实例并用spring管理。<span class="citation" data-cites="Controller">@Controller</span>、<span class="citation" data-cites="Repository">@Repository</span>、<span class="citation" data-cites="Service都是类似的功能">@Service都是类似的功能</span>。这些注解要放在类上。</p>
+<p><span class="citation" data-cites="Bean">@Bean</span>("name")将一个方法返回的对象实例用spring管理。该注解放在方法上。</p>
+<p><span class="citation" data-cites="Autowired">@Autowired</span> 自动注入。该注解可以放在构造器方法、方法、参数、属性、注解上。</p>
+<p><span class="citation" data-cites="Primary">@Primary</span> 写在类上或方法上。为了消除自动装配的歧义性，如spring管理了两个都实现了同一父类的类，则存在@Primary 的类会被最先调用。</p>
+<p><span class="citation" data-cites="Qualifier">@Qualifier</span>("name")写在变量、方法、参数、类上、注解上，可以根据传入的name按名字查找spring管理的类。</p>
+</blockquote>
+<h2 id="spring监听器">Spring监听器</h2>
+<blockquote>
+<p>使用过程:</p>
+<p>​ 自定义事件，继承org.springframework.context.ApplicationEvent类。</p>
+<p>​ 自定义事件监听器，实现org.springframework.context.ApplicationListener接口。</p>
+<p>​ 在spring容器中发布事件。</p>
+<p>实现监听的方式：</p>
+<p>​ 自定义类实现ApplicationListener，在主函数中装载监听。</p>
+<p>​ 自定义类实现ApplicationListener，在接口上加上@Component注解</p>
+<p>​ 自定义类不实现接口，在对应方法上标明@EventListener注解。</p>
+<p>​ 自定义类实现ApplicationListener，在application.properties中配置context.listener.classes</p>
+</blockquote>
+<h2 id="spring内置容器的配置">Spring内置容器的配置</h2>
+<blockquote>
+<p>修改配置：</p>
+<ol type="1">
+<li><p>可以在application.properties中按server.xxx:的方式修改</p></li>
+<li><p>创建一个配置类通过编写public WebServerFactoryCustomizer<ConfigurableWebServerFactory> customizer()方法来设置。</ConfigurableWebServerFactory></p>
+<figure>
+<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/内嵌服务器配置修改.png" alt="内嵌服务器配置修改"><figcaption aria-hidden="true">内嵌服务器配置修改</figcaption>
+</figure></li>
+</ol>
+<p>更换容器：</p>
+<p>​ 通过先将start内的容器依赖去除然后导入新依赖即可。</p>
+<figure>
+<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/修改内嵌容器.png" alt="修改内嵌容器"><figcaption aria-hidden="true">修改内嵌容器</figcaption>
+</figure>
+</blockquote>
+<h2 id="过滤器和拦截器">过滤器和拦截器</h2>
+<blockquote>
+<p>过滤器：在进入servlet前过滤。</p>
+<p>实现方式：</p>
+<p>​ 创建类实现接口javax.servlet.Filter，加上@Component，然后使用一个如下的配置类注入spring容器。</p>
+<figure>
+<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/filterConfig.png" alt="filterConfig"><figcaption aria-hidden="true">filterConfig</figcaption>
+</figure>
+<p>​ 创建类实现接口javax.servlet.Filter，加上@WebFilter，然后在主启动类中加上@ServletComponentScan注解。</p>
+<p>拦截器：拦截方法。</p>
+<p>​ 创建类实现HandlerInterceptor接口，然后创建配置类实现WebMvcConfigurer接口，配置类如下。</p>
+<figure>
+<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/interceptorConfig.png" alt="interceptorConfig"><figcaption aria-hidden="true">interceptorConfig</figcaption>
+</figure>
+</blockquote>
+<h2 id="错误及异常处理">错误及异常处理</h2>
+<h3 id="数值校验">数值校验</h3>
+<blockquote>
+<p>在参数前加入@Valid/<span class="citation" data-cites="Validated注解">@Validated注解</span>，然后跟上BindingResult对象即可获取错误时的错误信息。如图</p>
+<p>利用配置文件ValidationMessages.properties中设置发生错误的提示信息。在bean的注解属性中通过{key}获取属性。</p>
+</blockquote>
+<h3 id="错误页指定">错误页指定</h3>
+<blockquote>
+<p>用到了再查</p>
+</blockquote>
+<h3 id="全局异常处理">全局异常处理</h3>
+<blockquote>
+<p>实现一个异常处理类并加上@ControllerAdvice注解。如图</p>
+<figure>
+<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/全局异常处理.png" alt="全局异常处理"><figcaption aria-hidden="true">全局异常处理</figcaption>
+</figure>
+</blockquote>
+<h2 id="日志">日志</h2>
+<h3 id="日志文件输出">日志文件输出</h3>
+<blockquote>
+<p>在application中添加logging.file.path = xxx 默认日志名为spring.log</p>
+<p>或添加logging.file.name = xxxx 默认输出路径为项目当前路径。</p>
+<p>二者不能同时使用。</p>
+</blockquote>
+<h3 id="日志级别控制">日志级别控制</h3>
+<blockquote>
+<p>日志级别有TRACE、DEBUG、INFO、WARN、ERROR、FATAL、OFF。</p>
+<p>logging.level.包名 = xxx级别</p>
+<p>logging.level.root = 设置全局日志级别</p>
+</blockquote>
+<h2 id="文档生成">文档生成</h2>
+<h3 id="swaggle">swaggle</h3>
+<blockquote>
+<figure class="highlight"><table><tr><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;io.springfox&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;springfox-swagger2&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.9.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line">		</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;io.springfox&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;springfox-swagger-ui&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.9.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableSwagger2</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SwaggerConfig</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Docket <span class="title">api</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Docket(DocumentationType.SWAGGER_2).select()</span><br><span class="line">                .apis(RequestHandlerSelectors.any())</span><br><span class="line">                .paths(PathSelectors.any())</span><br><span class="line">                .build();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>访问http://localhost:8080/v2/api-docs拿到api的json</p>
+<p>访问http://localhost:8080/swagger-ui.html获取页面</p>
+</blockquote>
+<h2 id="监控">监控</h2>
+<blockquote>
+<p>本质上是通过log收集信息，然后利用信息分析。</p>
+</blockquote>
+<h2 id="缓存">缓存</h2>
+<blockquote>
+<p><span class="citation" data-cites="Cacheable">@Cacheable</span>(value = "xx", key = "zz", condition = "yyy")</p>
+<p>​ value 表示缓存名</p>
+<p>​ key为缓存键，需要用SPEL写</p>
+<p>​ condition为缓存触发的条件，需要用SPEL写</p>
+<p>​ 缓存值为对应方法的返回值</p>
+<p><span class="citation" data-cites="CacheEvict">@CacheEvict</span>(beforeInvocation = true表示在方法触发前就移除了缓存) 移除缓存</p>
+<p><span class="citation" data-cites="CachePut">@CachePut</span> 添加缓存</p>
+</blockquote>
+<h2 id="微服务">微服务</h2>
+<blockquote>
+<p>注册中心</p>
+<p>服务提供者</p>
+<p>服务追踪</p>
+<p>服务治理</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>框架入门</category>
+      </categories>
+      <tags>
+        <tag>Springboot</tag>
       </tags>
   </entry>
   <entry>
@@ -5147,6 +5257,67 @@
       </tags>
   </entry>
   <entry>
+    <title>传输层</title>
+    <url>/2021/02/20/computerNetwork/%E7%AC%AC5%E7%AB%A0-%E4%BC%A0%E8%BE%93%E5%B1%82/</url>
+    <content><![CDATA[<h1 id="传输层">传输层</h1>
+<h2 id="各层协议">各层协议</h2>
+<blockquote>
+<p>应用层: http、https、ftp、DNS、SMTP、PoP3、RDP</p>
+<p>传输层: TCP、UDP</p>
+<p>网络层: IP(RIP、OSPF、BGP) 、ICMP、IGMP、ARP</p>
+</blockquote>
+<h2 id="传输层两个协议应用场景">传输层两个协议应用场景</h2>
+<h3 id="tcp">TCP</h3>
+<blockquote>
+<p>分段、编号、流量控制、可靠传输、建立会话、面向连接。</p>
+</blockquote>
+<h3 id="udp">UDP</h3>
+<blockquote>
+<p>一个数据包就能完成数据通信、不建立会话。</p>
+</blockquote>
+<h2 id="传输层和应用层之间的关系">传输层和应用层之间的关系</h2>
+<blockquote>
+<p>http = TCP + 80</p>
+<p>https = TCP + 443</p>
+<p>ftp = TCP + 21</p>
+<p>SMTP = TCP + 25</p>
+<p>POP3 = TCP + 110</p>
+<p>RDP = TCP + 3389</p>
+<p>共享文件夹 = TCP + 445</p>
+<p>SQLServer = TCP + 1433</p>
+<p>DNS = UDP + 53 OR TCP + 53</p>
+</blockquote>
+<h2 id="应用层协议和服务之间的关系">应用层协议和服务之间的关系</h2>
+<blockquote>
+<p>服务运行后在TCP或UDP的某个端口监听客户端请求。</p>
+</blockquote>
+<h2 id="udp协议">UDP协议</h2>
+<blockquote>
+<p>两个对等运输实体在通信时传送的数据单位叫作运输协议数据单元。</p>
+<p>TCP传送的协议数据单元是<strong>TCP报文段</strong>。</p>
+<p>UDP传送的协议数据单元是<strong>UDP报文</strong>或<strong>用户数据报</strong>。</p>
+<p>UDP的首部格式<img src="/2021/02/20/computerNetwork/%E7%AC%AC5%E7%AB%A0-%E4%BC%A0%E8%BE%93%E5%B1%82/UDP首部格式.png" alt="UDP首部格式"></p>
+</blockquote>
+<h2 id="tcp协议">TCP协议</h2>
+<blockquote>
+<p><strong>TCP的特点</strong></p>
+<p>​ TCP是面向连接的传输层协议，每条TCP连接只能有两个端点，故TCP连接是点对点的。</p>
+<p>​ TCP提供可靠交付的服务，TCP提供全双工通信。</p>
+<p>​ TCP面向字节流。</p>
+<p>​ 提供流量控制。</p>
+<p>​ 避免网络拥塞</p>
+</blockquote>
+<h3 id="tcp如何">TCP如何</h3>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>计算机网络</category>
+      </categories>
+      <tags>
+        <tag>网络</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>网络层</title>
     <url>/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/</url>
     <content><![CDATA[<h1 id="网络层">网络层</h1>
@@ -5325,67 +5496,6 @@
 <blockquote>
 <p>默认网关为网络上的最低地址，如192.32.65.0/24的默认网关为192.32.65.1</p>
 </blockquote>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>计算机网络</category>
-      </categories>
-      <tags>
-        <tag>网络</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>传输层</title>
-    <url>/2021/02/20/computerNetwork/%E7%AC%AC5%E7%AB%A0-%E4%BC%A0%E8%BE%93%E5%B1%82/</url>
-    <content><![CDATA[<h1 id="传输层">传输层</h1>
-<h2 id="各层协议">各层协议</h2>
-<blockquote>
-<p>应用层: http、https、ftp、DNS、SMTP、PoP3、RDP</p>
-<p>传输层: TCP、UDP</p>
-<p>网络层: IP(RIP、OSPF、BGP) 、ICMP、IGMP、ARP</p>
-</blockquote>
-<h2 id="传输层两个协议应用场景">传输层两个协议应用场景</h2>
-<h3 id="tcp">TCP</h3>
-<blockquote>
-<p>分段、编号、流量控制、可靠传输、建立会话、面向连接。</p>
-</blockquote>
-<h3 id="udp">UDP</h3>
-<blockquote>
-<p>一个数据包就能完成数据通信、不建立会话。</p>
-</blockquote>
-<h2 id="传输层和应用层之间的关系">传输层和应用层之间的关系</h2>
-<blockquote>
-<p>http = TCP + 80</p>
-<p>https = TCP + 443</p>
-<p>ftp = TCP + 21</p>
-<p>SMTP = TCP + 25</p>
-<p>POP3 = TCP + 110</p>
-<p>RDP = TCP + 3389</p>
-<p>共享文件夹 = TCP + 445</p>
-<p>SQLServer = TCP + 1433</p>
-<p>DNS = UDP + 53 OR TCP + 53</p>
-</blockquote>
-<h2 id="应用层协议和服务之间的关系">应用层协议和服务之间的关系</h2>
-<blockquote>
-<p>服务运行后在TCP或UDP的某个端口监听客户端请求。</p>
-</blockquote>
-<h2 id="udp协议">UDP协议</h2>
-<blockquote>
-<p>两个对等运输实体在通信时传送的数据单位叫作运输协议数据单元。</p>
-<p>TCP传送的协议数据单元是<strong>TCP报文段</strong>。</p>
-<p>UDP传送的协议数据单元是<strong>UDP报文</strong>或<strong>用户数据报</strong>。</p>
-<p>UDP的首部格式<img src="/2021/02/20/computerNetwork/%E7%AC%AC5%E7%AB%A0-%E4%BC%A0%E8%BE%93%E5%B1%82/UDP首部格式.png" alt="UDP首部格式"></p>
-</blockquote>
-<h2 id="tcp协议">TCP协议</h2>
-<blockquote>
-<p><strong>TCP的特点</strong></p>
-<p>​ TCP是面向连接的传输层协议，每条TCP连接只能有两个端点，故TCP连接是点对点的。</p>
-<p>​ TCP提供可靠交付的服务，TCP提供全双工通信。</p>
-<p>​ TCP面向字节流。</p>
-<p>​ 提供流量控制。</p>
-<p>​ 避免网络拥塞</p>
-</blockquote>
-<h3 id="tcp如何">TCP如何</h3>
 ]]></content>
       <categories>
         <category>基础知识</category>
