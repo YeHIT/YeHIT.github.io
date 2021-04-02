@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/JVMKnowledge/1.JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/computerNetwork/%E7%AC%AC1%E7%AB%A0-%E6%A6%82%E8%AE%BA/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/JVMKnowledge/1.JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" class="post-title-link" itemprop="url">1.JAVA内存管理</a>
+          <a href="/2021/02/20/computerNetwork/%E7%AC%AC1%E7%AB%A0-%E6%A6%82%E8%AE%BA/" class="post-title-link" itemprop="url">概论</a>
         </h2>
 
         <div class="post-meta-container">
@@ -286,23 +286,21 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
+      
 
-      <time title="创建时间：2021-02-20 12:26:00" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:05:46" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
     </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-24 18:15:31" itemprop="dateModified" datetime="2021-03-24T18:15:31+08:00">2021-03-24</time>
-      </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/JVM/" itemprop="url" rel="index"><span itemprop="name">JVM</span></a>
+          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
         </span>
     </span>
 
@@ -314,14 +312,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>3.2k</span>
+      <span>1.8k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>3 分钟</span>
+      <span>2 分钟</span>
     </span>
 </div>
 
@@ -332,112 +330,169 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="java内存管理">JAVA内存管理</h1>
-<h2 id="java内存区域">Java内存区域</h2>
-<h3 id="总览">总览</h3>
+          <h1 id="概论">概论</h1>
+<h2 id="网络大小划分">网络大小划分</h2>
 <blockquote>
-<p>堆+栈+程序计数器</p>
-<p>堆: 方法区 + 堆</p>
-<p>栈: 虚拟机栈 + 本地方法栈</p>
+<p>个域网</p>
+<p>局域网：用于企业时被称为企业网络</p>
+<p>城域网</p>
+<p>广域网</p>
+<p>互联网</p>
 </blockquote>
-<figure>
-<img src="/2021/02/20/JVMKnowledge/1.JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Java内存区域.png" alt="Java内存区域"><figcaption aria-hidden="true">Java内存区域</figcaption>
-</figure>
-<h3 id="各部分的作用">各部分的作用</h3>
-<h4 id="程序计数器">程序计数器</h4>
+<h2 id="报文的不同称呼">报文的不同称呼</h2>
 <blockquote>
-<p>是当前线程所执行的字节码的行号指示器。各线程均有一个程序计数器。如果执行的是Java方法，则程序计数器记录的值为正在执行的虚拟机字节码的地址。若执行的是本地方法，则此时程序计数器的值为undefined。该区域没有规定任何OutOfMemoryError情况。</p>
+<p>网络层中叫数据包/包</p>
 </blockquote>
-<h4 id="java虚拟机栈">Java虚拟机栈</h4>
+<h1 id="因特网边缘部分的通信方式">因特网边缘部分的通信方式</h1>
 <blockquote>
-<p>生命周期和线程一致，且是线程私有的。当每个方法被执行时，Java虚拟机栈就会创建一个栈帧来保存局部变量表、操作数栈、动态连接、方法出口等信息。每个方法从被调用到执行完毕的过程，对应着一个栈帧在虚拟机栈中入栈到出栈的过程。</p>
-<p>局部变量表用于存储各种Java虚拟机的<strong>基本数据类型</strong>、<strong>对象引用</strong>(reference类型，不等同与对象本身，可以是对象起始地址的引用指针，也可以是指向一个代表对象句柄或其他与此对象有关的位置)和<strong>returnAdress类型</strong>(指向了一条字节码指令的地址)。在虚拟机栈中，这些数据类型都是用变量槽来表示的。其中64位的long和double占两个变量槽，其他的均只占一个变量槽。局部变量表的大小在<strong>编译期间</strong>就已经完成，故方法所需栈帧分配的局部变量表空间是完全确定的，且不会发生改变。这里空间是指变量槽数，不是具体字节/比特数。</p>
-<p>当调用的方法是非static方法时，局部变量表中第0索引的Slot变量槽默认是this关键字指向的对象。</p>
-<p>可能出现的异常：</p>
-<p>​ StackOverflowError：线程请求栈深度超过虚拟机允许的深度。</p>
-<p>​ OutOfMemoryError：当虚拟机栈容量可以动态拓展时，不能申请到足够的内存。</p>
+<h4 id="客户服务器方式-cs">客户服务器方式 C/S</h4>
+<h4 id="对等方式-p2ppeer-to-peer">对等方式 P2P(peer to peer)</h4>
+<p>既是服务器又是客户机</p>
 </blockquote>
-<h4 id="本地方法栈">本地方法栈</h4>
+<h1 id="数据交换方式">数据交换方式</h1>
 <blockquote>
-<p>和虚拟机栈类似，虚拟机栈为虚拟机执行Java方法服务，而本地方法栈是为虚拟机使用到的本地方法服务。</p>
+<h4 id="电路交换---面向连接">电路交换---面向连接</h4>
+<p>交换机位于中心，需要连接时会通过电路连接两个主机。</p>
+<p>建立连接:申请占用通信资源。</p>
+<p>通话:一直占用通信资源。</p>
+<p>释放连接:释放通信资源</p>
+<p>适用于数据量很大的实时传输，核心路由器之间可以用电路交换</p>
+<h4 id="报文交换">报文交换</h4>
+<p>报文一般比分组长的多</p>
+<p>报文发送时间长</p>
+<h4 id="分组交换计算机使用的方式">分组交换:计算机使用的方式</h4>
+<p>发送端对报文进行拆分成不同小组，添加首部组合成一个数据然后发送给接收端。</p>
+<p>接收端对数据进行拆除首部，然后根据首部的信息将收到的数据组合成报文</p>
 </blockquote>
-<h4 id="java堆">Java堆</h4>
+<h1 id="局域网和广域网不单单从覆盖范围划分还要从使用的技术是什么">局域网和广域网不单单从覆盖范围划分，还要从使用的技术是什么</h1>
 <blockquote>
-<p>Java堆是虚拟机所管理的内存中最大的一块。它是被所有线程共享的一块内存区域，在虚拟机启动时创建。java堆的唯一目的就是存放对象实例。它也是垃圾收集器管理的内存区域。大部分垃圾收集器都是基于分代收集理论设计的。</p>
-<p>从分配内存的角度看，所有线程共享的Java堆可以划分出多个线程私有的分配缓冲区。</p>
-<p>可能出现的异常：</p>
-<p>​ OutOfMemoryError：Java堆中没有内存完成实例分配，且堆无法再拓展。</p>
+<p>局域网 自己购买设备、自己维护、带宽固定 距离100米内</p>
+<p>广域网 花钱买服务、花钱买带宽</p>
 </blockquote>
-<h4 id="方法区">方法区</h4>
+<h1 id="网络的拓扑结构">网络的拓扑结构</h1>
 <blockquote>
-<p>HotSpot：JDK8后使用在本地内存中实现的元空间来代替JDK7中永久代还剩余的内容，JDK6之前使用永久代来实现方法区。</p>
-<p>方法区是各个线程共享的内存区域，用于存储已被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等数据。</p>
-<p>这个区域的回收目标主要是针对常量池的回收和对类型的卸载。</p>
-<p>可能出现的异常：</p>
-<p>​ OutOfMemoryError：方法区无法满足新的内存分配需求。</p>
+<p>总线型、环形、星型、树型、网状结构</p>
 </blockquote>
-<h5 id="运行时常量池">运行时常量池</h5>
+<h1 id="网络工作方式">网络工作方式</h1>
 <blockquote>
-<p>运行时常量池是方法区的一部分。该部分用于存放编译器生成的各种字面量与符号引用即常量池表。</p>
+<p>资源子网、通信子网、接入网</p>
 </blockquote>
-<h4 id="直接内存">直接内存</h4>
+<h1 id="计算机网络的性能">计算机网络的性能</h1>
 <blockquote>
-<p>直接内存不是虚拟机运行时数据区的一部分，也不是Java虚拟机规范中定义的内存区域。</p>
-<p>如JDK1.4引入的NIO可以使用Native函数分配堆外内存，然后通过一个存储在Java堆里的DirectByteBuffer对象作为这块内存的引用进行操作。</p>
-<p>本机的直接内存的分配不会受到Java堆大小的限制，但是会受到本机总内存大小及处理器寻址空间的限制。</p>
+<p>速率:主机在数字信道传送数据位数的速率，也成为data rate 或bit rate。</p>
+<p>带宽:数据信道所能传送的最高数据率。</p>
+<p>吞吐量:单位时间内通过某个网络的数据量。</p>
+<p>时延:</p>
+<blockquote>
+<p>发送时延 数据块长度/信道带宽</p>
+<p>传播时延:信道长度/信号在信道上的传播速率</p>
+<p>处理时延:在</p>
+<p>排队时延:在接收方主机处等待的时间</p>
 </blockquote>
-<h2 id="hotspot虚拟机对象相关内容">HotSpot虚拟机对象相关内容</h2>
-<h3 id="对象创建">对象创建</h3>
+<p>时延带宽积 :传播时延 * 带宽</p>
+<p>往返时间RTT:从发送方发送数据开始到发送方收到接收方确认。</p>
+<p>利用率:</p>
 <blockquote>
-<p>步骤分为：类加载检查 -&gt; 分配内存 -&gt; 初始化 -&gt; 对象设置 -&gt; 等待执行构造函数</p>
-<p>类加载检查：当Java虚拟机遇到一条字节码new指令时，首先检查这个指令的参数是否可以从常量池地位到一个类的符号引用，并且检查这个符号引用代表的类是否已经被加载、解析、初始化过。若没有执行相应类的类加载过程。</p>
-<p>分配内存：类加载完成后对象所需内存大小可以完全确定，分配内存的方法分为指针碰撞法和空闲列表法。</p>
-<p>​ 指针碰撞法：将Java堆的内存视为绝对规整，使用过的内存在一边，未使用过的内存在另一边，分配内存时只需要将指针朝未使用过的内存那边移动即可。该方法要求垃圾收集器需要有空间压缩整理能力。</p>
-<p>​ 空闲列表法：Java堆的内存中使用过的内存和未使用过的内存交错在一起，需要维护一个列表记录哪些内存块可用。</p>
-<p>分配内存时需要考虑并发问题：即当A利用指针分配内存但还为修改指针位置时，B也使用原来的指针分配内存。解决该问题可以使用CAS加失败重试或把内存操作按照线程划分在不同的空间之中进行，即每个线程在Java堆中预先分配一小块内存，称为TLAB(本地线程分配缓冲)，只有本地缓冲区的内存用完了，分配新缓冲区时才需要同步锁定。</p>
-<p>初始化：虚拟机将分配到的内存空间都初始化为0值。</p>
-<p>对象设置：将对象信息如对象是哪个类的实例、如何找到类的元数据信息、对象的GC分代年龄等存入对象的对象头中。</p>
-<p>等待执行构造函数：虚拟机等到执行了<init>()方法，完成对对象的全部初始化，此时对象才算被完全的构造出来。</init></p>
+<p>信道利用率 = 有数据通过时间 / (有 + 无数据通过的时间)</p>
+<p>网络利用率：信道利用率加权平均值</p>
 </blockquote>
-<h3 id="对象内存布局">对象内存布局</h3>
-<blockquote>
-<p>存储布局划分为三个部分：对象头、实例数据、对齐填充(padding)</p>
-<p>对象头可以分为两类：</p>
-<p>​ 一类存储对象自身的运行时数据，如HashCode、GC分代年龄、锁状态标识、线程持有的锁、偏向线程ID、偏向时间戳等。被称为Mark Word。</p>
-<p>​ 另一类为类型指针，即对象指向它的类型元数据的指针。Java虚拟机通过这个指针来确定该对象是哪个类的实例。若对象为Java数组，对象头中还要一块用于记录数组长度的数据。</p>
-<p>实例数据：即对象真正存储的有效信息，无论是从父类继承还是子类自己定义的字段。存储顺序可以通过(-XX:FieldsAllocationStyle参数)及字段在源码中定义顺序来调整。HotSpot默认分配顺序会将相同宽度的字段分配到一起存放，如longs/doubles。</p>
-<p>padding：即填充部分，无意义，只是用于将数据对齐。</p>
+<p>非性能指标:费用、质量、标准化、可靠性、可扩展性、可升级性、管理与维护</p>
 </blockquote>
-<h3 id="对象访问定位">对象访问定位</h3>
+<h1 id="计算机网络的体系结构">计算机网络的体系结构</h1>
 <blockquote>
-<p>Java程序会通过栈上的reference数据来操作栈上的具体对象。</p>
-<p>主流的访问方式分为句柄和直接指针：</p>
-<p>​ 句柄：Java堆中可能划分出一块内存作为句柄池，reference存储的就是对象的句柄地址，而句柄包含对象实例数据与类型数据各自具体的地址信息。</p>
-<p>​ 直接指针：reference存储的就是对象地址，访问对象本身不需要多一次间接访问。</p>
-<p>​ 两者的优点：句柄访问的优势在于reference存储的是稳定的句柄地址，对象被移动(垃圾回收时对象常常需要被移动)时只需要改变句柄中实例数据指针即可。直接指针的优势在于速度更快，减少了一次指针定位的开销。</p>
+<p>OSI(开放式系统互联)七层模型:分层有利于标准化，且分层后各层之间的变化不会影响到其他层，尽量降低了相互之间的依赖。</p>
+<p>物理层:规定电压、接口标准</p>
+<p>数据链路层:输入如何封装，添加物理层地址，MAC</p>
+<p>网络层:选择最佳路径，IP地址编址</p>
+<p>传输层:可靠传输(建立会话)、不可靠传输(不建立会话)、流量控制。</p>
+<p>会话层:服务和客户端建立的会话。 netstat -nb</p>
+<p>表示层:加密、压缩、编码，开发人员考虑。</p>
+<p>应用层: 能够产生网络流量，能够和用户交互的应用程序。</p>
 </blockquote>
-<h2 id="触发异常的情况">触发异常的情况</h2>
-<h3 id="java堆内存的outofmemoryerror异常">Java堆内存的OutOfMemoryError异常</h3>
+<h1 id="网络排错">网络排错</h1>
 <blockquote>
-<p>不断创建对象且保证GC Roots到对象之间有可达路径来避免垃圾回收机制清除这些对象。</p>
+<p>需要从底层到高层逐一排查</p>
 </blockquote>
-<h3 id="虚拟机栈和本地方法栈溢出">虚拟机栈和本地方法栈溢出</h3>
+<h1 id="网络安全和osi参考模型的关系">网络安全和OSI参考模型的关系</h1>
 <blockquote>
-<p>-Xss设置栈容量。</p>
-<p>1）如果线程请求的栈深度大于虚拟机所允许的最大深度，将抛出StackOverflowError异常。</p>
-<p>2）如果虚拟机的栈内存允许动态扩展，当扩展栈容量无法申请到足够的内存时，将抛出OutOfMemoryError异常。</p>
-<p>创建太多线程也会导致OutOfMemoryError异常。</p>
+<p>物理层安全</p>
+<p>数据链路层安全:ADSL、无线AP</p>
+<p>网络层安全</p>
+<p>应用层安全: SQL注入漏洞、上传漏洞</p>
 </blockquote>
-<h2 id="方法区和运行时常量池溢出">方法区和运行时常量池溢出</h2>
+<h1 id="一些基本概念">一些基本概念</h1>
 <blockquote>
-<p>运行时常量池，从JDK7开始后原本存放到永久代的字符串常量池被移动到Java堆中。</p>
-<p>-XX：PermSize和-XX：MaxPermSize限制永久代大小。</p>
-<p>方法区溢出会在运行时产生大量的类时出现，OutOfMemoryError。</p>
+<p>实体:交换信息的硬件或软件进程。</p>
+<p>协议:控制两个对等实体通信的规则。</p>
+<p>服务:下层向上层提供服务，上层需要使用下层提供的服务来实现本层的功能。</p>
+<p>服务访问点:相邻两层实体间交换信息的地方。</p>
+<p>AP接入点和无线路由器和基站作用相差不大，主要负责中继无线计算机之间的数据包，还负责中继无线计算机和Internet之间的数据包。</p>
+<p>IEEE802.11俗称WIFI。以太网IEEE802.3。</p>
+<p>将两个或多个网络连接起来并提供必要转换的机器，其硬件和软件方面的总称是网关。路由器就是一个网关，在网络层交换数据包。</p>
+<p>不可靠的无连接服务通常称为数据报服务。</p>
 </blockquote>
-<h3 id="本机直接内存溢出">本机直接内存溢出</h3>
+<h1 id="tpcip">TPC/IP</h1>
 <blockquote>
-<p>大小默认与Java堆最大值一致。可以通过-XX：MaxDirectMemorySize参数指定。</p>
-<p>直接或间接(NIO)使用了太多是Unsafe::allocateMemory()分配过多的直接内存会触发OutOfMemoryError异常。</p>
+<p>五层模型:</p>
+<p>应用层:</p>
+<blockquote>
+<p>数据单元:传输数据单元PDU</p>
+</blockquote>
+<p>运输层:</p>
+<blockquote>
+<p>数据单元:报文</p>
+</blockquote>
+<p>网络层:</p>
+<blockquote>
+<p>数据单元:(IP数据报/IP分组/包)</p>
+</blockquote>
+<p>数据链路层:</p>
+<blockquote>
+<p>数据单元:数据帧</p>
+</blockquote>
+<p>物理层:</p>
+<blockquote>
+<p>数据单元:比特010101</p>
+</blockquote>
+</blockquote>
+<h1 id="osi参考模型">OSI参考模型</h1>
+<blockquote>
+<p>应用层:</p>
+<p>​ 所有可以和用户交互产生网络流量的程序。</p>
+<p>​ 文件传输FTP、电子邮件SMTP、万维网HTTP</p>
+<p>表示层</p>
+<p>​ 用于处理两个通信系统中交换信息的表示方式。</p>
+<p>​ 数据格式变换、数据加密解密、数据压缩和恢复</p>
+<p>​ JPEG、ASCII</p>
+<p>会话层</p>
+<p>​ 向表示层实体/用户进程提供建立连接并在连接上有序地传输数据。</p>
+<p>​ 建立、管理、终止会话。</p>
+<p>​ 使用检验点可以使会话在通信失效时从检验点/同步点进行恢复通信，实现数据同步。</p>
+<p>​ ADSP、ASP</p>
+<p>传输层</p>
+<p>​ 负责主机中两个进程的通信，即端到端的通信。传输单位是报文/用户数据报</p>
+<p>​ 可靠传输、不可靠传输</p>
+<p>​ 差错控制</p>
+<p>​ 复用分用</p>
+<p>网络层</p>
+<p>​ 路由选择</p>
+<p>​ 流量控制</p>
+<p>​ 差错控制</p>
+<p>​ 拥塞控制</p>
+<p>数据链路层 加上报头和报尾。</p>
+<p>​ 把网络层传下来的数据报组装成帧</p>
+<p>​ 差错控制</p>
+<p>​ 流量控制</p>
+<p>​ 接入控制</p>
+<p>​ SDLC、HDLC、PPP、STP</p>
+<p>物理层</p>
+<p>​ 在物理媒体上实现比特流的透明传输</p>
+<p>​ 定义接口特性</p>
+<p>​ 定义传输模式</p>
+<p>​ 定义传输速率</p>
+<p>​ 比特同步</p>
+<p>​ 比特编码</p>
+<p>​ RJ45、802.3</p>
 </blockquote>
 
       

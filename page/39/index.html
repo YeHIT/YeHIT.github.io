@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/computerNetwork/%E7%AC%AC5%E7%AB%A0-%E4%BC%A0%E8%BE%93%E5%B1%82/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/computerNetwork/%E7%AC%AC5%E7%AB%A0-%E4%BC%A0%E8%BE%93%E5%B1%82/" class="post-title-link" itemprop="url">传输层</a>
+          <a href="/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" class="post-title-link" itemprop="url">多线程相关</a>
         </h2>
 
         <div class="post-meta-container">
@@ -288,7 +288,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：17:14:25" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：17:12:35" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -300,7 +300,7 @@
         </span>
           ，
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
+          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
         </span>
     </span>
 
@@ -312,7 +312,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>517</span>
+      <span>573</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -330,55 +330,31 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="传输层">传输层</h1>
-<h2 id="各层协议">各层协议</h2>
+          <h1 id="多线程">多线程</h1>
+<h2 id="进程和线程">进程和线程</h2>
 <blockquote>
-<p>应用层: http、https、ftp、DNS、SMTP、PoP3、RDP</p>
-<p>传输层: TCP、UDP</p>
-<p>网络层: IP(RIP、OSPF、BGP) 、ICMP、IGMP、ARP</p>
+<p>进程是执行程序的一次执行过程，是一个动态的概念。是系统资源分配的单位。</p>
+<p>通常一个进程中包含多个线程，一个进程至少含一个线程。线程是CPU调度和执行的单位。</p>
 </blockquote>
-<h2 id="传输层两个协议应用场景">传输层两个协议应用场景</h2>
-<h3 id="tcp">TCP</h3>
+<h3 id="java创建线程的方式">JAVA创建线程的方式</h3>
 <blockquote>
-<p>分段、编号、流量控制、可靠传输、建立会话、面向连接。</p>
+<ol type="1">
+<li>继承Thread类，重写run方法。调用是使用start方法调用，若使用run方法调用则变为单线程。</li>
+<li>实现runnable接口，重写run方法，执行线程需丢入runnable接口实现类，调用start方法。(避免使用继承)</li>
+<li>实现callable接口，需要返回值类型，重写call方法，需要抛出异常。(可以返回结果，可以抛出异常)<img src="/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/实现callable.png" alt="实现callable"></li>
+</ol>
 </blockquote>
-<h3 id="udp">UDP</h3>
+<h2 id="java线程的状态">Java线程的状态</h2>
 <blockquote>
-<p>一个数据包就能完成数据通信、不建立会话。</p>
+<p>NEW、RUNNABLE、BLOCKED、WAITING、TIMED_WAITING、TERMINATED</p>
+<p>NEW：线程还没有启动。</p>
+<p>RUNNABLE：线程已经在jvm中运行了，但可能还在等待操作系统的处理器之类的资源。</p>
+<p>BLOCKED：线程等待monitor lock。</p>
+<p>WAITING：正在等待另一个线程执行的状态。</p>
+<p>TIMED_WAITING：有着指定特定等待时间等待另一个线程执行的状态。</p>
+<p>TERMINATED：线程终止，线程已经结束执行。</p>
+<p>线程分为用户线程和守护线程(Daemon)，虚拟机必须确保用户线程执行完毕，虚拟机不用等待守护线程执行完毕。可以通过调用线程的setDaemon(true)，将某个线程变为守护线程</p>
 </blockquote>
-<h2 id="传输层和应用层之间的关系">传输层和应用层之间的关系</h2>
-<blockquote>
-<p>http = TCP + 80</p>
-<p>https = TCP + 443</p>
-<p>ftp = TCP + 21</p>
-<p>SMTP = TCP + 25</p>
-<p>POP3 = TCP + 110</p>
-<p>RDP = TCP + 3389</p>
-<p>共享文件夹 = TCP + 445</p>
-<p>SQLServer = TCP + 1433</p>
-<p>DNS = UDP + 53 OR TCP + 53</p>
-</blockquote>
-<h2 id="应用层协议和服务之间的关系">应用层协议和服务之间的关系</h2>
-<blockquote>
-<p>服务运行后在TCP或UDP的某个端口监听客户端请求。</p>
-</blockquote>
-<h2 id="udp协议">UDP协议</h2>
-<blockquote>
-<p>两个对等运输实体在通信时传送的数据单位叫作运输协议数据单元。</p>
-<p>TCP传送的协议数据单元是<strong>TCP报文段</strong>。</p>
-<p>UDP传送的协议数据单元是<strong>UDP报文</strong>或<strong>用户数据报</strong>。</p>
-<p>UDP的首部格式<img src="/2021/02/20/computerNetwork/%E7%AC%AC5%E7%AB%A0-%E4%BC%A0%E8%BE%93%E5%B1%82/UDP首部格式.png" alt="UDP首部格式"></p>
-</blockquote>
-<h2 id="tcp协议">TCP协议</h2>
-<blockquote>
-<p><strong>TCP的特点</strong></p>
-<p>​ TCP是面向连接的传输层协议，每条TCP连接只能有两个端点，故TCP连接是点对点的。</p>
-<p>​ TCP提供可靠交付的服务，TCP提供全双工通信。</p>
-<p>​ TCP面向字节流。</p>
-<p>​ 提供流量控制。</p>
-<p>​ 避免网络拥塞</p>
-</blockquote>
-<h3 id="tcp如何">TCP如何</h3>
 
       
     </div>
