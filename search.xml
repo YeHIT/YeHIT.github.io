@@ -16,8 +16,8 @@
 <p>如：服务A的三个提供者，权重分别为100，50，200，记为A1、A2、A3。则A1占有[0，100)区间，A2占有[100，150)区间，A3占有[150,350)区间。然后通过生成[0,350)范围内的随机数来确定使用哪个服务提供者。</p>
 <p><strong>这个方式基本随机，可能随机出分布不均匀的情况。</strong></p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">protected</span> &lt;T&gt; <span class="function">Invoker&lt;T&gt; <span class="title">doSelect</span><span class="params">(List&lt;Invoker&lt;T&gt;&gt; invokers, URL url, Invocation invocation)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Number of invokers</span></span><br><span class="line">    <span class="keyword">int</span> length = invokers.size();</span><br><span class="line">    <span class="comment">// 判断是否权重相同</span></span><br><span class="line">    <span class="keyword">boolean</span> sameWeight = <span class="keyword">true</span>;</span><br><span class="line">    <span class="comment">// the maxWeight of every invokers, the minWeight = 0 or the maxWeight of the last invoker</span></span><br><span class="line">    <span class="keyword">int</span>[] weights = <span class="keyword">new</span> <span class="keyword">int</span>[length];</span><br><span class="line">    <span class="comment">// 权重和</span></span><br><span class="line">    <span class="keyword">int</span> totalWeight = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; length; i++) &#123;</span><br><span class="line">        <span class="keyword">int</span> weight = getWeight(invokers.get(i), invocation);</span><br><span class="line">        <span class="comment">// Sum</span></span><br><span class="line">        totalWeight += weight;</span><br><span class="line">        <span class="comment">// save for later use</span></span><br><span class="line">        weights[i] = totalWeight;</span><br><span class="line">        <span class="keyword">if</span> (sameWeight &amp;&amp; totalWeight != weight * (i + <span class="number">1</span>)) &#123;</span><br><span class="line">            sameWeight = <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (totalWeight &gt; <span class="number">0</span> &amp;&amp; !sameWeight) &#123;</span><br><span class="line">		<span class="comment">// 产生偏移量</span></span><br><span class="line">        <span class="keyword">int</span> offset = ThreadLocalRandom.current().nextInt(totalWeight);</span><br><span class="line">        <span class="comment">// 判断落在哪个区间</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; length; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (offset &lt; weights[i]) &#123;</span><br><span class="line">                <span class="keyword">return</span> invokers.get(i);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 如果没有设置权重或者总权重为0则随机调用一个服务提供者，返回</span></span><br><span class="line">    <span class="keyword">return</span> invokers.get(ThreadLocalRandom.current().nextInt(length));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="roundrobin-loadbalance">roundrobin loadbalance</h3>
 </blockquote>
+<h3 id="roundrobin-loadbalance">roundrobin loadbalance</h3>
 <blockquote>
 <p><strong>轮询，按公约后的权重设置轮询比例。</strong></p>
 <p>该类内部维护了一个以&lt;服务名为key，对应服务提供者作为Map&gt;的ConcurrentMap。具体实现为ConcurrentMap&lt;String, ConcurrentMap&lt;String, WeightedRoundRobin&gt;&gt;。</p>
@@ -79,20 +79,20 @@
 </tbody>
 </table>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">protected</span> &lt;T&gt; <span class="function">Invoker&lt;T&gt; <span class="title">doSelect</span><span class="params">(List&lt;Invoker&lt;T&gt;&gt; invokers, URL url, Invocation invocation)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 获取服务ID</span></span><br><span class="line">    String key = invokers.get(<span class="number">0</span>).getUrl().getServiceKey() + <span class="string">&quot;.&quot;</span> + invocation.getMethodName();</span><br><span class="line">    <span class="comment">// 获取对应服务提供者的Map</span></span><br><span class="line">    ConcurrentMap&lt;String, WeightedRoundRobin&gt; map = methodWeightMap.computeIfAbsent(key, k -&gt; <span class="keyword">new</span> ConcurrentHashMap&lt;&gt;());</span><br><span class="line">    <span class="keyword">int</span> totalWeight = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">long</span> maxCurrent = Long.MIN_VALUE;</span><br><span class="line">    <span class="keyword">long</span> now = System.currentTimeMillis();</span><br><span class="line">    Invoker&lt;T&gt; selectedInvoker = <span class="keyword">null</span>;</span><br><span class="line">    WeightedRoundRobin selectedWRR = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">for</span> (Invoker&lt;T&gt; invoker : invokers) &#123;</span><br><span class="line">        <span class="comment">// 服务提供者ID</span></span><br><span class="line">        String identifyString = invoker.getUrl().toIdentityString();</span><br><span class="line">        <span class="keyword">int</span> weight = getWeight(invoker, invocation);</span><br><span class="line">        <span class="comment">// 将对应权重存入服务提供者Map</span></span><br><span class="line">        WeightedRoundRobin weightedRoundRobin = map.computeIfAbsent(identifyString, k -&gt; &#123;</span><br><span class="line">            WeightedRoundRobin wrr = <span class="keyword">new</span> WeightedRoundRobin();</span><br><span class="line">            wrr.setWeight(weight);</span><br><span class="line">            <span class="keyword">return</span> wrr;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (weight != weightedRoundRobin.getWeight()) &#123;</span><br><span class="line">            <span class="comment">//weight changed</span></span><br><span class="line">            weightedRoundRobin.setWeight(weight);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">long</span> cur = weightedRoundRobin.increaseCurrent();</span><br><span class="line">        weightedRoundRobin.setLastUpdate(now);</span><br><span class="line">        <span class="keyword">if</span> (cur &gt; maxCurrent) &#123;</span><br><span class="line">            maxCurrent = cur;</span><br><span class="line">            selectedInvoker = invoker;</span><br><span class="line">            selectedWRR = weightedRoundRobin;</span><br><span class="line">        &#125;</span><br><span class="line">        totalWeight += weight;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (invokers.size() != map.size()) &#123;</span><br><span class="line">        map.entrySet().removeIf(item -&gt; now - item.getValue().getLastUpdate() &gt; RECYCLE_PERIOD);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (selectedInvoker != <span class="keyword">null</span>) &#123;</span><br><span class="line">        selectedWRR.sel(totalWeight);</span><br><span class="line">        <span class="keyword">return</span> selectedInvoker;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// should not happen here</span></span><br><span class="line">    <span class="keyword">return</span> invokers.get(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="leastactive-loadbalance">leastactive loadbalance</h3>
 </blockquote>
+<h3 id="leastactive-loadbalance">leastactive loadbalance</h3>
 <blockquote>
 <p><strong>最少活跃调用数</strong>，相同活跃数的随机，活跃数指调用前后计数差。使慢的提供者收到更少请求。</p>
 <p>所谓活跃数，可以理解为当前服务提供者正在给多少消费者提供服务。</p>
 <p>这个负载均衡策略即为先找出活跃数最少的那批服务提供者，然后根据服务提供者的权重再按照随机负载均衡选取。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">protected</span> &lt;T&gt; <span class="function">Invoker&lt;T&gt; <span class="title">doSelect</span><span class="params">(List&lt;Invoker&lt;T&gt;&gt; invokers, URL url, Invocation invocation)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Number of invokers</span></span><br><span class="line">    <span class="keyword">int</span> length = invokers.size();</span><br><span class="line">    <span class="comment">// The least active value of all invokers</span></span><br><span class="line">    <span class="keyword">int</span> leastActive = -<span class="number">1</span>;</span><br><span class="line">    <span class="comment">// The number of invokers having the same least active value (leastActive)</span></span><br><span class="line">    <span class="keyword">int</span> leastCount = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// The index of invokers having the same least active value (leastActive)</span></span><br><span class="line">    <span class="keyword">int</span>[] leastIndexes = <span class="keyword">new</span> <span class="keyword">int</span>[length];</span><br><span class="line">    <span class="comment">// the weight of every invokers</span></span><br><span class="line">    <span class="keyword">int</span>[] weights = <span class="keyword">new</span> <span class="keyword">int</span>[length];</span><br><span class="line">    <span class="comment">// The sum of the warmup weights of all the least active invokers</span></span><br><span class="line">    <span class="keyword">int</span> totalWeight = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// The weight of the first least active invoker</span></span><br><span class="line">    <span class="keyword">int</span> firstWeight = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// Every least active invoker has the same weight value?</span></span><br><span class="line">    <span class="keyword">boolean</span> sameWeight = <span class="keyword">true</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 遍历所有服务提供者</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; length; i++) &#123;</span><br><span class="line">        Invoker&lt;T&gt; invoker = invokers.get(i);</span><br><span class="line">        <span class="comment">// 获取服务提供者的活跃度</span></span><br><span class="line">        <span class="keyword">int</span> active = RpcStatus.getStatus(invoker.getUrl(), invocation.getMethodName()).getActive();</span><br><span class="line">        <span class="comment">// Get the weight of the invoker&#x27;s configuration. The default value is 100.</span></span><br><span class="line">        <span class="keyword">int</span> afterWarmup = getWeight(invoker, invocation);</span><br><span class="line">        <span class="comment">// save for later use</span></span><br><span class="line">        weights[i] = afterWarmup;</span><br><span class="line">        <span class="comment">// If it is the first invoker or the active number of the invoker is less than the current least active number</span></span><br><span class="line">        <span class="keyword">if</span> (leastActive == -<span class="number">1</span> || active &lt; leastActive) &#123;</span><br><span class="line">            <span class="comment">// Reset the active number of the current invoker to the least active number</span></span><br><span class="line">            leastActive = active;</span><br><span class="line">            <span class="comment">// Reset the number of least active invokers</span></span><br><span class="line">            leastCount = <span class="number">1</span>;</span><br><span class="line">            <span class="comment">// Put the first least active invoker first in leastIndexes</span></span><br><span class="line">            leastIndexes[<span class="number">0</span>] = i;</span><br><span class="line">            <span class="comment">// Reset totalWeight</span></span><br><span class="line">            totalWeight = afterWarmup;</span><br><span class="line">            <span class="comment">// Record the weight the first least active invoker</span></span><br><span class="line">            firstWeight = afterWarmup;</span><br><span class="line">            <span class="comment">// Each invoke has the same weight (only one invoker here)</span></span><br><span class="line">            sameWeight = <span class="keyword">true</span>;</span><br><span class="line">            <span class="comment">// If current invoker&#x27;s active value equals with leaseActive, then accumulating.</span></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (active == leastActive) &#123;</span><br><span class="line">            <span class="comment">// Record the index of the least active invoker in leastIndexes order</span></span><br><span class="line">            leastIndexes[leastCount++] = i;</span><br><span class="line">            <span class="comment">// Accumulate the total weight of the least active invoker</span></span><br><span class="line">            totalWeight += afterWarmup;</span><br><span class="line">            <span class="comment">// If every invoker has the same weight?</span></span><br><span class="line">            <span class="keyword">if</span> (sameWeight &amp;&amp; afterWarmup != firstWeight) &#123;</span><br><span class="line">                sameWeight = <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Choose an invoker from all the least active invokers</span></span><br><span class="line">    <span class="keyword">if</span> (leastCount == <span class="number">1</span>) &#123;</span><br><span class="line">        <span class="comment">// If we got exactly one invoker having the least active value, return this invoker directly.</span></span><br><span class="line">        <span class="keyword">return</span> invokers.get(leastIndexes[<span class="number">0</span>]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!sameWeight &amp;&amp; totalWeight &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// If (not every invoker has the same weight &amp; at least one invoker&#x27;s weight&gt;0), select randomly based on </span></span><br><span class="line">        <span class="comment">// totalWeight.</span></span><br><span class="line">        <span class="keyword">int</span> offsetWeight = ThreadLocalRandom.current().nextInt(totalWeight);</span><br><span class="line">        <span class="comment">// Return a invoker based on the random value.</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; leastCount; i++) &#123;</span><br><span class="line">            <span class="keyword">int</span> leastIndex = leastIndexes[i];</span><br><span class="line">            offsetWeight -= weights[leastIndex];</span><br><span class="line">            <span class="keyword">if</span> (offsetWeight &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> invokers.get(leastIndex);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// If all invokers have the same weight value or totalWeight=0, return evenly.</span></span><br><span class="line">    <span class="keyword">return</span> invokers.get(leastIndexes[ThreadLocalRandom.current().nextInt(leastCount)]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="consistanthash-loadbalance">consistanthash loadbalance</h3>
 </blockquote>
+<h3 id="consistanthash-loadbalance">consistanthash loadbalance</h3>
 <blockquote>
 <p><strong>一致性Hash</strong>，相同参数的请求总是发给同一个提供者。<strong>默认一致性hash使用160个虚拟节点。</strong></p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">protected</span> &lt;T&gt; <span class="function">Invoker&lt;T&gt; <span class="title">doSelect</span><span class="params">(List&lt;Invoker&lt;T&gt;&gt; invokers, URL url, Invocation invocation)</span> </span>&#123;</span><br><span class="line">    String methodName = RpcUtils.getMethodName(invocation);</span><br><span class="line">    String key = invokers.get(<span class="number">0</span>).getUrl().getServiceKey() + <span class="string">&quot;.&quot;</span> + methodName;</span><br><span class="line">    <span class="comment">// using the hashcode of list to compute the hash only pay attention to the elements in the list</span></span><br><span class="line">    <span class="keyword">int</span> invokersHashCode = invokers.hashCode();</span><br><span class="line">    ConsistentHashSelector&lt;T&gt; selector = (ConsistentHashSelector&lt;T&gt;) selectors.get(key);</span><br><span class="line">    <span class="keyword">if</span> (selector == <span class="keyword">null</span> || selector.identityHashCode != invokersHashCode) &#123;</span><br><span class="line">        selectors.put(key, <span class="keyword">new</span> ConsistentHashSelector&lt;T&gt;(invokers, methodName, invokersHashCode));</span><br><span class="line">        selector = (ConsistentHashSelector&lt;T&gt;) selectors.get(key);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> selector.select(invocation);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="shortestresponseloadbalance">ShortestResponseLoadBalance</h3>
 </blockquote>
+<h3 id="shortestresponseloadbalance">ShortestResponseLoadBalance</h3>
 <blockquote>
 <p><strong>最短响应时间负载均衡</strong>。Dubbo的响应时间为服务提供者响应服务的平均时间 * 当前服务提供者的活跃数。</p>
 <p>代码流程即：先找出响应时间最短的那批服务提供者，找出后再通过随机负载均衡来选择服务提供者。</p>
@@ -579,6 +579,64 @@
       </tags>
   </entry>
   <entry>
+    <title>3.常用工具</title>
+    <url>/2021/03/21/JVMKnowledge/3.%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7/</url>
+    <content><![CDATA[<h1 id="常用工具">常用工具</h1>
+<h2 id="jps">jps</h2>
+<blockquote>
+<p>jps用于列出正在运行的虚拟机进程，并显示虚拟机执行主类名称及这些进程的本地虚拟机唯一ID。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">jps [ options ] [ hostid ]</span><br></pre></td></tr></table></figure>
+<figure>
+<img src="/2021/03/21/JVMKnowledge/3.%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7/jps.png" alt="jps"><figcaption aria-hidden="true">jps</figcaption>
+</figure>
+</blockquote>
+<h2 id="jstat">jstat</h2>
+<blockquote>
+<p>jstat用于监视虚拟机各种运行状态信息的命令行工具。可以显示本地或远程虚拟机进程中类加载、内存、垃圾收集、即时编译等运行时数据。</p>
+<p>往往通过jps找出对应进程本地虚拟机唯一ID，加上对应参数来查看具体虚拟机信息。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">jstat [ option vmid [interval[s|ms] [count]] ]</span><br></pre></td></tr></table></figure>
+<p>如<img src="/2021/03/21/JVMKnowledge/3.%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7/jstat.png" alt="jstat"></p>
+</blockquote>
+<h2 id="jinfo">jinfo</h2>
+<blockquote>
+<p>jinfo的作用是实时查看和调整虚拟机各项参数。</p>
+<p>jinfo + jps查看的唯一ID：打印全部配置信息。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">jinfo [ option ] pid</span><br></pre></td></tr></table></figure>
+<figure>
+<img src="/2021/03/21/JVMKnowledge/3.%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7/jinfo.png" alt="jinfo"><figcaption aria-hidden="true">jinfo</figcaption>
+</figure>
+</blockquote>
+<h2 id="jmap">jmap</h2>
+<blockquote>
+<p>Java内存映像工具，jmap命令用于生成堆转储快照即heap dump/dump文件。</p>
+<p>jmap作用除了获取堆转储快照之外，还可以查询finalize执行队列、Java堆和方法区的详细信息，如空间使用率、当前使用的收集器等。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">jmap [ option ] vmid</span><br></pre></td></tr></table></figure>
+<figure>
+<img src="/2021/03/21/JVMKnowledge/3.%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7/jmap.png" alt="jmap"><figcaption aria-hidden="true">jmap</figcaption>
+</figure>
+</blockquote>
+<h2 id="jhat">jhat</h2>
+<blockquote>
+<p>jhat一般是同jmap配合使用，通过jhat命令可以分析jmap产生的堆转储快照。一般不用这个指令，因为jhat耗时久且有更好用的工具可以用于分析dump文件。</p>
+</blockquote>
+<h2 id="jstack">jstack</h2>
+<blockquote>
+<p>jstack命令用于生成虚拟机当前时刻的线程快照(threaddump/javacore文件)。线程快照是当前虚拟机内每一条线程正在执行的方法堆栈的集合，生成快照的目的通常是定位线程出现长时间停顿的原因：如死锁、死循环、请求外部资源导致长时间挂起等。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">jstack [ option ] vmid</span><br></pre></td></tr></table></figure>
+<figure>
+<img src="/2021/03/21/JVMKnowledge/3.%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7/jstack.png" alt="jstack"><figcaption aria-hidden="true">jstack</figcaption>
+</figure>
+</blockquote>
+]]></content>
+      <categories>
+        <category>JVM</category>
+      </categories>
+      <tags>
+        <tag>JVM</tag>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>4.虚拟机执行子系统</title>
     <url>/2021/03/21/JVMKnowledge/4.%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%89%A7%E8%A1%8C%E5%AD%90%E7%B3%BB%E7%BB%9F/</url>
     <content><![CDATA[<h1 id="虚拟机执行子系统">虚拟机执行子系统</h1>
@@ -666,64 +724,6 @@
 <p>双亲委派模型第二次被破坏是这个模型自身缺陷导致的，双亲委派模型很好地解决了各个类加载器协作时基础类型的一致性问题(越基础的类由越上层的加载器进行加载)。但是当基础类型需要调用用户代码时如何解决呢？如<strong>JNDI服务</strong>，代码是由启动类加载器完成加载，但JNDI的存在目的是对资源进行查找和集中管理，需要调用其他厂商实现并部署在应用程序ClassPath下的JNDI服务提供者接口代码。</p>
 <p><strong>解决措施</strong>：Java设计者引入了<strong>线程上下文类加载器</strong>，这个类加载器通过java.lang.Thread类的setContext-ClassLoader()方法进行设置。若创建线程时未设置，会从父线程中继承，若应用程序全局范围内都为设置，则默认为<strong>应用程序类加载器</strong>。而利用线程上下文类加载器，JNDI服务使用该加载器去加载所需的SPI服务代码，即父类加载器去请求子类加载器完成类加载的行为。</p>
 <p>双亲委派模型的第三次被破坏是由于用户对程序动态性的追求而导致的，如OSGi，为了实现模块化热部署，它设计了一种复杂的网状结构去进行类加载。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>JVM</category>
-      </categories>
-      <tags>
-        <tag>JVM</tag>
-        <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>3.常用工具</title>
-    <url>/2021/03/21/JVMKnowledge/3.%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7/</url>
-    <content><![CDATA[<h1 id="常用工具">常用工具</h1>
-<h2 id="jps">jps</h2>
-<blockquote>
-<p>jps用于列出正在运行的虚拟机进程，并显示虚拟机执行主类名称及这些进程的本地虚拟机唯一ID。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">jps [ options ] [ hostid ]</span><br></pre></td></tr></table></figure>
-<figure>
-<img src="/2021/03/21/JVMKnowledge/3.%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7/jps.png" alt="jps"><figcaption aria-hidden="true">jps</figcaption>
-</figure>
-</blockquote>
-<h2 id="jstat">jstat</h2>
-<blockquote>
-<p>jstat用于监视虚拟机各种运行状态信息的命令行工具。可以显示本地或远程虚拟机进程中类加载、内存、垃圾收集、即时编译等运行时数据。</p>
-<p>往往通过jps找出对应进程本地虚拟机唯一ID，加上对应参数来查看具体虚拟机信息。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">jstat [ option vmid [interval[s|ms] [count]] ]</span><br></pre></td></tr></table></figure>
-<p>如<img src="/2021/03/21/JVMKnowledge/3.%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7/jstat.png" alt="jstat"></p>
-</blockquote>
-<h2 id="jinfo">jinfo</h2>
-<blockquote>
-<p>jinfo的作用是实时查看和调整虚拟机各项参数。</p>
-<p>jinfo + jps查看的唯一ID：打印全部配置信息。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">jinfo [ option ] pid</span><br></pre></td></tr></table></figure>
-<figure>
-<img src="/2021/03/21/JVMKnowledge/3.%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7/jinfo.png" alt="jinfo"><figcaption aria-hidden="true">jinfo</figcaption>
-</figure>
-</blockquote>
-<h2 id="jmap">jmap</h2>
-<blockquote>
-<p>Java内存映像工具，jmap命令用于生成堆转储快照即heap dump/dump文件。</p>
-<p>jmap作用除了获取堆转储快照之外，还可以查询finalize执行队列、Java堆和方法区的详细信息，如空间使用率、当前使用的收集器等。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">jmap [ option ] vmid</span><br></pre></td></tr></table></figure>
-<figure>
-<img src="/2021/03/21/JVMKnowledge/3.%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7/jmap.png" alt="jmap"><figcaption aria-hidden="true">jmap</figcaption>
-</figure>
-</blockquote>
-<h2 id="jhat">jhat</h2>
-<blockquote>
-<p>jhat一般是同jmap配合使用，通过jhat命令可以分析jmap产生的堆转储快照。一般不用这个指令，因为jhat耗时久且有更好用的工具可以用于分析dump文件。</p>
-</blockquote>
-<h2 id="jstack">jstack</h2>
-<blockquote>
-<p>jstack命令用于生成虚拟机当前时刻的线程快照(threaddump/javacore文件)。线程快照是当前虚拟机内每一条线程正在执行的方法堆栈的集合，生成快照的目的通常是定位线程出现长时间停顿的原因：如死锁、死循环、请求外部资源导致长时间挂起等。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">jstack [ option ] vmid</span><br></pre></td></tr></table></figure>
-<figure>
-<img src="/2021/03/21/JVMKnowledge/3.%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7/jstack.png" alt="jstack"><figcaption aria-hidden="true">jstack</figcaption>
-</figure>
 </blockquote>
 ]]></content>
       <categories>
@@ -2380,12 +2380,12 @@
 <p>16、职业规划</p>
 <p>17、聊天，说感觉我底层了解的还可以，还和我聊了聊一些职业道路的发展问题，说建议多深入了解底层，提升核心竞争力，最好自己动手实现一下raft还有有机会压测一下系统。</p>
 </blockquote>
-<h2 id="hr面">HR面</h2>
+<h3 id="hr面">HR面</h3>
 <blockquote>
 <p>聊聊基本情况、个人职业规划、入职时间、工作意向等。</p>
 <p>反问环节让我注意邮箱可能来的邮件，让我记得扫码。</p>
 </blockquote>
-<h3 id="结果-2">结果</h3>
+<h4 id="结果-2">结果</h4>
 <blockquote>
 <p>第二天流程结束，人晕了。</p>
 </blockquote>
@@ -3126,6 +3126,125 @@
       </tags>
   </entry>
   <entry>
+    <title>1.JAVA内存管理</title>
+    <url>/2021/02/20/JVMKnowledge/1.JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/</url>
+    <content><![CDATA[<h1 id="java内存管理">JAVA内存管理</h1>
+<h2 id="java内存区域">Java内存区域</h2>
+<h3 id="总览">总览</h3>
+<blockquote>
+<p>堆+栈+程序计数器</p>
+<p>堆: 方法区 + 堆</p>
+<p>栈: 虚拟机栈 + 本地方法栈</p>
+</blockquote>
+<figure>
+<img src="/2021/02/20/JVMKnowledge/1.JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Java内存区域.png" alt="Java内存区域"><figcaption aria-hidden="true">Java内存区域</figcaption>
+</figure>
+<h3 id="各部分的作用">各部分的作用</h3>
+<h4 id="程序计数器">程序计数器</h4>
+<blockquote>
+<p>是当前线程所执行的字节码的行号指示器。各线程均有一个程序计数器。如果执行的是Java方法，则程序计数器记录的值为正在执行的虚拟机字节码的地址。若执行的是本地方法，则此时程序计数器的值为undefined。该区域没有规定任何OutOfMemoryError情况。</p>
+</blockquote>
+<h4 id="java虚拟机栈">Java虚拟机栈</h4>
+<blockquote>
+<p>生命周期和线程一致，且是线程私有的。当每个方法被执行时，Java虚拟机栈就会创建一个栈帧来保存局部变量表、操作数栈、动态连接、方法出口等信息。每个方法从被调用到执行完毕的过程，对应着一个栈帧在虚拟机栈中入栈到出栈的过程。</p>
+<p>局部变量表用于存储各种Java虚拟机的<strong>基本数据类型</strong>、<strong>对象引用</strong>(reference类型，不等同与对象本身，可以是对象起始地址的引用指针，也可以是指向一个代表对象句柄或其他与此对象有关的位置)和<strong>returnAdress类型</strong>(指向了一条字节码指令的地址)。在虚拟机栈中，这些数据类型都是用变量槽来表示的。其中64位的long和double占两个变量槽，其他的均只占一个变量槽。局部变量表的大小在<strong>编译期间</strong>就已经完成，故方法所需栈帧分配的局部变量表空间是完全确定的，且不会发生改变。这里空间是指变量槽数，不是具体字节/比特数。</p>
+<p>当调用的方法是非static方法时，局部变量表中第0索引的Slot变量槽默认是this关键字指向的对象。</p>
+<p>可能出现的异常：</p>
+<p>​ StackOverflowError：线程请求栈深度超过虚拟机允许的深度。</p>
+<p>​ OutOfMemoryError：当虚拟机栈容量可以动态拓展时，不能申请到足够的内存。</p>
+</blockquote>
+<h4 id="本地方法栈">本地方法栈</h4>
+<blockquote>
+<p>和虚拟机栈类似，虚拟机栈为虚拟机执行Java方法服务，而本地方法栈是为虚拟机使用到的本地方法服务。</p>
+</blockquote>
+<h4 id="java堆">Java堆</h4>
+<blockquote>
+<p>Java堆是虚拟机所管理的内存中最大的一块。它是被所有线程共享的一块内存区域，在虚拟机启动时创建。java堆的唯一目的就是存放对象实例。它也是垃圾收集器管理的内存区域。大部分垃圾收集器都是基于分代收集理论设计的。</p>
+<p>从分配内存的角度看，所有线程共享的Java堆可以划分出多个线程私有的分配缓冲区。</p>
+<p>可能出现的异常：</p>
+<p>​ OutOfMemoryError：Java堆中没有内存完成实例分配，且堆无法再拓展。</p>
+</blockquote>
+<h4 id="方法区">方法区</h4>
+<blockquote>
+<p>HotSpot：JDK8后使用在本地内存中实现的元空间来代替JDK7中永久代还剩余的内容，JDK6之前使用永久代来实现方法区。</p>
+<p>方法区是各个线程共享的内存区域，用于存储已被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等数据。</p>
+<p>这个区域的回收目标主要是针对常量池的回收和对类型的卸载。</p>
+<p>可能出现的异常：</p>
+<p>​ OutOfMemoryError：方法区无法满足新的内存分配需求。</p>
+</blockquote>
+<h5 id="运行时常量池">运行时常量池</h5>
+<blockquote>
+<p>运行时常量池是方法区的一部分。该部分用于存放编译器生成的各种字面量与符号引用即常量池表。</p>
+</blockquote>
+<h4 id="直接内存">直接内存</h4>
+<blockquote>
+<p>直接内存不是虚拟机运行时数据区的一部分，也不是Java虚拟机规范中定义的内存区域。</p>
+<p>如JDK1.4引入的NIO可以使用Native函数分配堆外内存，然后通过一个存储在Java堆里的DirectByteBuffer对象作为这块内存的引用进行操作。</p>
+<p>本机的直接内存的分配不会受到Java堆大小的限制，但是会受到本机总内存大小及处理器寻址空间的限制。</p>
+</blockquote>
+<h2 id="hotspot虚拟机对象相关内容">HotSpot虚拟机对象相关内容</h2>
+<h3 id="对象创建">对象创建</h3>
+<blockquote>
+<p>步骤分为：类加载检查 -&gt; 分配内存 -&gt; 初始化 -&gt; 对象设置 -&gt; 等待执行构造函数</p>
+<p>类加载检查：当Java虚拟机遇到一条字节码new指令时，首先检查这个指令的参数是否可以从常量池地位到一个类的符号引用，并且检查这个符号引用代表的类是否已经被加载、解析、初始化过。若没有执行相应类的类加载过程。</p>
+<p>分配内存：类加载完成后对象所需内存大小可以完全确定，分配内存的方法分为指针碰撞法和空闲列表法。</p>
+<p>​ 指针碰撞法：将Java堆的内存视为绝对规整，使用过的内存在一边，未使用过的内存在另一边，分配内存时只需要将指针朝未使用过的内存那边移动即可。该方法要求垃圾收集器需要有空间压缩整理能力。</p>
+<p>​ 空闲列表法：Java堆的内存中使用过的内存和未使用过的内存交错在一起，需要维护一个列表记录哪些内存块可用。</p>
+<p>分配内存时需要考虑并发问题：即当A利用指针分配内存但还为修改指针位置时，B也使用原来的指针分配内存。解决该问题可以使用CAS加失败重试或把内存操作按照线程划分在不同的空间之中进行，即每个线程在Java堆中预先分配一小块内存，称为TLAB(本地线程分配缓冲)，只有本地缓冲区的内存用完了，分配新缓冲区时才需要同步锁定。</p>
+<p>初始化：虚拟机将分配到的内存空间都初始化为0值。</p>
+<p>对象设置：将对象信息如对象是哪个类的实例、如何找到类的元数据信息、对象的GC分代年龄等存入对象的对象头中。</p>
+<p>等待执行构造函数：虚拟机等到执行了<init>()方法，完成对对象的全部初始化，此时对象才算被完全的构造出来。</init></p>
+</blockquote>
+<h3 id="对象内存布局">对象内存布局</h3>
+<blockquote>
+<p>存储布局划分为三个部分：对象头、实例数据、对齐填充(padding)</p>
+<p>对象头可以分为两类：</p>
+<p>​ 一类存储对象自身的运行时数据，如HashCode、GC分代年龄、锁状态标识、线程持有的锁、偏向线程ID、偏向时间戳等。被称为Mark Word。</p>
+<p>​ 另一类为类型指针，即对象指向它的类型元数据的指针。Java虚拟机通过这个指针来确定该对象是哪个类的实例。若对象为Java数组，对象头中还要一块用于记录数组长度的数据。</p>
+<p>实例数据：即对象真正存储的有效信息，无论是从父类继承还是子类自己定义的字段。存储顺序可以通过(-XX:FieldsAllocationStyle参数)及字段在源码中定义顺序来调整。HotSpot默认分配顺序会将相同宽度的字段分配到一起存放，如longs/doubles。</p>
+<p>padding：即填充部分，无意义，只是用于将数据对齐。</p>
+</blockquote>
+<h3 id="对象访问定位">对象访问定位</h3>
+<blockquote>
+<p>Java程序会通过栈上的reference数据来操作栈上的具体对象。</p>
+<p>主流的访问方式分为句柄和直接指针：</p>
+<p>​ 句柄：Java堆中可能划分出一块内存作为句柄池，reference存储的就是对象的句柄地址，而句柄包含对象实例数据与类型数据各自具体的地址信息。</p>
+<p>​ 直接指针：reference存储的就是对象地址，访问对象本身不需要多一次间接访问。</p>
+<p>​ 两者的优点：句柄访问的优势在于reference存储的是稳定的句柄地址，对象被移动(垃圾回收时对象常常需要被移动)时只需要改变句柄中实例数据指针即可。直接指针的优势在于速度更快，减少了一次指针定位的开销。</p>
+</blockquote>
+<h2 id="触发异常的情况">触发异常的情况</h2>
+<h3 id="java堆内存的outofmemoryerror异常">Java堆内存的OutOfMemoryError异常</h3>
+<blockquote>
+<p>不断创建对象且保证GC Roots到对象之间有可达路径来避免垃圾回收机制清除这些对象。</p>
+</blockquote>
+<h3 id="虚拟机栈和本地方法栈溢出">虚拟机栈和本地方法栈溢出</h3>
+<blockquote>
+<p>-Xss设置栈容量。</p>
+<p>1）如果线程请求的栈深度大于虚拟机所允许的最大深度，将抛出StackOverflowError异常。</p>
+<p>2）如果虚拟机的栈内存允许动态扩展，当扩展栈容量无法申请到足够的内存时，将抛出OutOfMemoryError异常。</p>
+<p>创建太多线程也会导致OutOfMemoryError异常。</p>
+</blockquote>
+<h2 id="方法区和运行时常量池溢出">方法区和运行时常量池溢出</h2>
+<blockquote>
+<p>运行时常量池，从JDK7开始后原本存放到永久代的字符串常量池被移动到Java堆中。</p>
+<p>-XX：PermSize和-XX：MaxPermSize限制永久代大小。</p>
+<p>方法区溢出会在运行时产生大量的类时出现，OutOfMemoryError。</p>
+</blockquote>
+<h3 id="本机直接内存溢出">本机直接内存溢出</h3>
+<blockquote>
+<p>大小默认与Java堆最大值一致。可以通过-XX：MaxDirectMemorySize参数指定。</p>
+<p>直接或间接(NIO)使用了太多是Unsafe::allocateMemory()分配过多的直接内存会触发OutOfMemoryError异常。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>JVM</category>
+      </categories>
+      <tags>
+        <tag>JVM</tag>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>2.垃圾收集</title>
     <url>/2021/02/20/JVMKnowledge/2.%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86/</url>
     <content><![CDATA[<h1 id="垃圾收集">垃圾收集</h1>
@@ -3341,122 +3460,190 @@
       </tags>
   </entry>
   <entry>
-    <title>1.JAVA内存管理</title>
-    <url>/2021/02/20/JVMKnowledge/1.JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/</url>
-    <content><![CDATA[<h1 id="java内存管理">JAVA内存管理</h1>
-<h2 id="java内存区域">Java内存区域</h2>
-<h3 id="总览">总览</h3>
+    <title>HashMap分析</title>
+    <url>/2021/02/20/JavaBasicKnowledge/HashMap/</url>
+    <content><![CDATA[<h1 id="hashmap">HashMap</h1>
+<h2 id="hashmap初始化">HashMap初始化</h2>
 <blockquote>
-<p>堆+栈+程序计数器</p>
-<p>堆: 方法区 + 堆</p>
-<p>栈: 虚拟机栈 + 本地方法栈</p>
+<p>初始化时可以设置初始大小和负载因子。默认负载因子0.75，默认容量为16。</p>
+<p>HashMap的threshold为负载因子 * 容量。</p>
 </blockquote>
-<figure>
-<img src="/2021/02/20/JVMKnowledge/1.JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Java内存区域.png" alt="Java内存区域"><figcaption aria-hidden="true">Java内存区域</figcaption>
-</figure>
-<h3 id="各部分的作用">各部分的作用</h3>
-<h4 id="程序计数器">程序计数器</h4>
+<h2 id="hashmap的get方法">HashMap的get方法</h2>
 <blockquote>
-<p>是当前线程所执行的字节码的行号指示器。各线程均有一个程序计数器。如果执行的是Java方法，则程序计数器记录的值为正在执行的虚拟机字节码的地址。若执行的是本地方法，则此时程序计数器的值为undefined。该区域没有规定任何OutOfMemoryError情况。</p>
+<p>就是根据传入的key求出对应的hash值，然后根据hash值和数组长度-1进行&amp;运算获得对应下标位置，获取位置后判断当前结点是树结点还是链表结点，从而采取不同的处理方式。</p>
 </blockquote>
-<h4 id="java虚拟机栈">Java虚拟机栈</h4>
+<h2 id="hashmap的remove方法">HashMap的remove方法</h2>
 <blockquote>
-<p>生命周期和线程一致，且是线程私有的。当每个方法被执行时，Java虚拟机栈就会创建一个栈帧来保存局部变量表、操作数栈、动态连接、方法出口等信息。每个方法从被调用到执行完毕的过程，对应着一个栈帧在虚拟机栈中入栈到出栈的过程。</p>
-<p>局部变量表用于存储各种Java虚拟机的<strong>基本数据类型</strong>、<strong>对象引用</strong>(reference类型，不等同与对象本身，可以是对象起始地址的引用指针，也可以是指向一个代表对象句柄或其他与此对象有关的位置)和<strong>returnAdress类型</strong>(指向了一条字节码指令的地址)。在虚拟机栈中，这些数据类型都是用变量槽来表示的。其中64位的long和double占两个变量槽，其他的均只占一个变量槽。局部变量表的大小在<strong>编译期间</strong>就已经完成，故方法所需栈帧分配的局部变量表空间是完全确定的，且不会发生改变。这里空间是指变量槽数，不是具体字节/比特数。</p>
-<p>当调用的方法是非static方法时，局部变量表中第0索引的Slot变量槽默认是this关键字指向的对象。</p>
-<p>可能出现的异常：</p>
-<p>​ StackOverflowError：线程请求栈深度超过虚拟机允许的深度。</p>
-<p>​ OutOfMemoryError：当虚拟机栈容量可以动态拓展时，不能申请到足够的内存。</p>
+<p>根据传入的key求出对应hash值，找到对应桶位，然后根据对应结点的类型为树结点还是链表结点，根据不同结点的类型执行不同的删除操作。链表需要改变指向，树则需要再次平衡。</p>
 </blockquote>
-<h4 id="本地方法栈">本地方法栈</h4>
+<h2 id="hashmap的resize方法">HashMap的resize方法</h2>
 <blockquote>
-<p>和虚拟机栈类似，虚拟机栈为虚拟机执行Java方法服务，而本地方法栈是为虚拟机使用到的本地方法服务。</p>
+<p>先判断当前是否有table，如果没有table且未设置初始大小，则初始化容量为默认值，阈值为默认值 * 负载因子的数组。若设置了初始大小则初始化容量为设置的大小的二次幂值的数组。</p>
+<p>若存在table，先判断旧容量是否大于最大值，若大于则设置阈值为Integer.MAX_VALUE，返回table，否则判断旧容量左移1位后是否不超过最大容量且判断当前容量是否超过默认容量16，若不超过最大容量且当前容量超过默认容量则将旧阈值左移一位。否则将计算newCap * loadFactor，判断新容量是否大于最大容量，若不大于则使用newCap * loadFactor作为新阈值，使用newCap作为数组的新容量。</p>
+<p>创建完新数组后，需要将旧table的数据复制到新table之中。</p>
+<p>复制的过程：</p>
+<p>​ 遍历桶位，若某个桶位只有一个元素则直接根据hash值&amp;新数组容量-1判断需要插入到新数组的什么位置。</p>
+<p>​ 若该元素是树结点则使用spilt方法，插入到新数组。</p>
+<p>​ 若桶位存在多个链表结点，则大致流程为使用4个指针来记录新旧两个数组的头尾链表位置。即先记录头位置，然后将头位置赋值给尾位置，利用尾位置不断连接结点，最后将头结点赋值给桶位元素。</p>
 </blockquote>
-<h4 id="java堆">Java堆</h4>
+<h2 id="hashmap的put方法">HashMap的put方法</h2>
 <blockquote>
-<p>Java堆是虚拟机所管理的内存中最大的一块。它是被所有线程共享的一块内存区域，在虚拟机启动时创建。java堆的唯一目的就是存放对象实例。它也是垃圾收集器管理的内存区域。大部分垃圾收集器都是基于分代收集理论设计的。</p>
-<p>从分配内存的角度看，所有线程共享的Java堆可以划分出多个线程私有的分配缓冲区。</p>
-<p>可能出现的异常：</p>
-<p>​ OutOfMemoryError：Java堆中没有内存完成实例分配，且堆无法再拓展。</p>
+<p>获取已存在的table，若当前table不存在则resize一个table，若存在则找到对应桶位，根据结点类型采取不同的插入操作，对于链表，插入完成后还会判断当前桶位元素个数是否大于树化阈值，若大于则将桶树化。对于树结点，插入时需要进行平衡。最后插入完成后，判断当前HashMap元素个数是否大于总阈值，若大于则resize扩容。</p>
 </blockquote>
-<h4 id="方法区">方法区</h4>
+<h2 id="tips">tips</h2>
 <blockquote>
-<p>HotSpot：JDK8后使用在本地内存中实现的元空间来代替JDK7中永久代还剩余的内容，JDK6之前使用永久代来实现方法区。</p>
-<p>方法区是各个线程共享的内存区域，用于存储已被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等数据。</p>
-<p>这个区域的回收目标主要是针对常量池的回收和对类型的卸载。</p>
-<p>可能出现的异常：</p>
-<p>​ OutOfMemoryError：方法区无法满足新的内存分配需求。</p>
+<p>jdk8后，HashMap红黑树和链表转化是根据泊松分布的，链表转化为树阈值为8，树退化为链表阈值为6。</p>
+<p>且红黑树的排序是根据节点的hashcode大小，对于实现了Comparable接口的则使用compare方法来比较。</p>
+<p>hashmap默认负载因子0.75，默认容量为16，最大容量为2^30次方，且容量必须为2的次幂大小，因为使用位运算来执行取模操作。</p>
+<p>hashmap在操作时会自增modcount，若在遍历时对hashmap执行了操作，则会由于modcount改变而抛出异常。</p>
+<p>HashMap线程非安全，HashTable线程安全，ConcurrentHashMap线程安全。</p>
+<p>HashTable本质是上是将各方法都加上了synchronized。</p>
 </blockquote>
-<h5 id="运行时常量池">运行时常量池</h5>
+<h2 id="面试题">面试题</h2>
+<h3 id="key为null时执行put操作数据放在哪个桶位">key为null时，执行put操作，数据放在哪个桶位？</h3>
 <blockquote>
-<p>运行时常量池是方法区的一部分。该部分用于存放编译器生成的各种字面量与符号引用即常量池表。</p>
+<p>key为null时HashMap求出的hash值为0，故放在第0个桶位。</p>
 </blockquote>
-<h4 id="直接内存">直接内存</h4>
+<h3 id="hashmap的hash函数为什么需要将hash值移位并异或">HashMap的hash函数为什么需要将hash值移位并异或？</h3>
 <blockquote>
-<p>直接内存不是虚拟机运行时数据区的一部分，也不是Java虚拟机规范中定义的内存区域。</p>
-<p>如JDK1.4引入的NIO可以使用Native函数分配堆外内存，然后通过一个存储在Java堆里的DirectByteBuffer对象作为这块内存的引用进行操作。</p>
-<p>本机的直接内存的分配不会受到Java堆大小的限制，但是会受到本机总内存大小及处理器寻址空间的限制。</p>
+<p>注释里有说，为了让高位的hash值对数据产生影响。</p>
 </blockquote>
-<h2 id="hotspot虚拟机对象相关内容">HotSpot虚拟机对象相关内容</h2>
-<h3 id="对象创建">对象创建</h3>
+<h3 id="为什么hashmap内部的散列表数组长度一定是2的次方数">为什么HashMap内部的散列表数组长度一定是2的次方数？</h3>
 <blockquote>
-<p>步骤分为：类加载检查 -&gt; 分配内存 -&gt; 初始化 -&gt; 对象设置 -&gt; 等待执行构造函数</p>
-<p>类加载检查：当Java虚拟机遇到一条字节码new指令时，首先检查这个指令的参数是否可以从常量池地位到一个类的符号引用，并且检查这个符号引用代表的类是否已经被加载、解析、初始化过。若没有执行相应类的类加载过程。</p>
-<p>分配内存：类加载完成后对象所需内存大小可以完全确定，分配内存的方法分为指针碰撞法和空闲列表法。</p>
-<p>​ 指针碰撞法：将Java堆的内存视为绝对规整，使用过的内存在一边，未使用过的内存在另一边，分配内存时只需要将指针朝未使用过的内存那边移动即可。该方法要求垃圾收集器需要有空间压缩整理能力。</p>
-<p>​ 空闲列表法：Java堆的内存中使用过的内存和未使用过的内存交错在一起，需要维护一个列表记录哪些内存块可用。</p>
-<p>分配内存时需要考虑并发问题：即当A利用指针分配内存但还为修改指针位置时，B也使用原来的指针分配内存。解决该问题可以使用CAS加失败重试或把内存操作按照线程划分在不同的空间之中进行，即每个线程在Java堆中预先分配一小块内存，称为TLAB(本地线程分配缓冲)，只有本地缓冲区的内存用完了，分配新缓冲区时才需要同步锁定。</p>
-<p>初始化：虚拟机将分配到的内存空间都初始化为0值。</p>
-<p>对象设置：将对象信息如对象是哪个类的实例、如何找到类的元数据信息、对象的GC分代年龄等存入对象的对象头中。</p>
-<p>等待执行构造函数：虚拟机等到执行了<init>()方法，完成对对象的全部初始化，此时对象才算被完全的构造出来。</init></p>
+<p>让查找位置时使用数组长度-1的值会对应2进制的000011111111，后位均为1，提高HashMap的散列性。</p>
 </blockquote>
-<h3 id="对象内存布局">对象内存布局</h3>
+<h3 id="hashmap内部的散列表结构什么时候初始化初始化大小有几种情况">HashMap内部的散列表结构，什么时候初始化？初始化大小有几种情况？</h3>
 <blockquote>
-<p>存储布局划分为三个部分：对象头、实例数据、对齐填充(padding)</p>
-<p>对象头可以分为两类：</p>
-<p>​ 一类存储对象自身的运行时数据，如HashCode、GC分代年龄、锁状态标识、线程持有的锁、偏向线程ID、偏向时间戳等。被称为Mark Word。</p>
-<p>​ 另一类为类型指针，即对象指向它的类型元数据的指针。Java虚拟机通过这个指针来确定该对象是哪个类的实例。若对象为Java数组，对象头中还要一块用于记录数组长度的数据。</p>
-<p>实例数据：即对象真正存储的有效信息，无论是从父类继承还是子类自己定义的字段。存储顺序可以通过(-XX:FieldsAllocationStyle参数)及字段在源码中定义顺序来调整。HotSpot默认分配顺序会将相同宽度的字段分配到一起存放，如longs/doubles。</p>
-<p>padding：即填充部分，无意义，只是用于将数据对齐。</p>
+<p>构造方法共四种：无参构造、传入初始容量、传入初始容量及负载因子、传入Map</p>
+<p>传入Map时会调用resize会初始化。</p>
+<p>resize时会初始化。</p>
 </blockquote>
-<h3 id="对象访问定位">对象访问定位</h3>
+<h3 id="hashmap为什么需要扩容扩容又是如何实现的">HashMap为什么需要扩容，扩容又是如何实现的？</h3>
 <blockquote>
-<p>Java程序会通过栈上的reference数据来操作栈上的具体对象。</p>
-<p>主流的访问方式分为句柄和直接指针：</p>
-<p>​ 句柄：Java堆中可能划分出一块内存作为句柄池，reference存储的就是对象的句柄地址，而句柄包含对象实例数据与类型数据各自具体的地址信息。</p>
-<p>​ 直接指针：reference存储的就是对象地址，访问对象本身不需要多一次间接访问。</p>
-<p>​ 两者的优点：句柄访问的优势在于reference存储的是稳定的句柄地址，对象被移动(垃圾回收时对象常常需要被移动)时只需要改变句柄中实例数据指针即可。直接指针的优势在于速度更快，减少了一次指针定位的开销。</p>
+<p>因为数组过小，会导致插入时会插入到同一个桶位导致查询效率下降，故用空间换时间的方式优化。</p>
 </blockquote>
-<h2 id="触发异常的情况">触发异常的情况</h2>
-<h3 id="java堆内存的outofmemoryerror异常">Java堆内存的OutOfMemoryError异常</h3>
+<h3 id="jdk8为什么hashmap引入红黑树">JDK8为什么HashMap引入红黑树？</h3>
 <blockquote>
-<p>不断创建对象且保证GC Roots到对象之间有可达路径来避免垃圾回收机制清除这些对象。</p>
-</blockquote>
-<h3 id="虚拟机栈和本地方法栈溢出">虚拟机栈和本地方法栈溢出</h3>
-<blockquote>
-<p>-Xss设置栈容量。</p>
-<p>1）如果线程请求的栈深度大于虚拟机所允许的最大深度，将抛出StackOverflowError异常。</p>
-<p>2）如果虚拟机的栈内存允许动态扩展，当扩展栈容量无法申请到足够的内存时，将抛出OutOfMemoryError异常。</p>
-<p>创建太多线程也会导致OutOfMemoryError异常。</p>
-</blockquote>
-<h2 id="方法区和运行时常量池溢出">方法区和运行时常量池溢出</h2>
-<blockquote>
-<p>运行时常量池，从JDK7开始后原本存放到永久代的字符串常量池被移动到Java堆中。</p>
-<p>-XX：PermSize和-XX：MaxPermSize限制永久代大小。</p>
-<p>方法区溢出会在运行时产生大量的类时出现，OutOfMemoryError。</p>
-</blockquote>
-<h3 id="本机直接内存溢出">本机直接内存溢出</h3>
-<blockquote>
-<p>大小默认与Java堆最大值一致。可以通过-XX：MaxDirectMemorySize参数指定。</p>
-<p>直接或间接(NIO)使用了太多是Unsafe::allocateMemory()分配过多的直接内存会触发OutOfMemoryError异常。</p>
+<p>因为数据增大时链表的查询速度低。</p>
 </blockquote>
 ]]></content>
       <categories>
-        <category>JVM</category>
+        <category>基础知识</category>
+        <category>Java</category>
       </categories>
       <tags>
-        <tag>JVM</tag>
         <tag>Java</tag>
+        <tag>容器</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Object类分析</title>
+    <url>/2021/02/20/JavaBasicKnowledge/Object/</url>
+    <content><![CDATA[<h1 id="object类">Object类</h1>
+<blockquote>
+<p>Object类是Java中未指定父类的类的默认继承类，也可以说是所有类的祖先。本文档编写目的为通过查看Java源码来加强自己对Object类的理解。不涉及native实现的方法。</p>
+</blockquote>
+<h4 id="registernatives">registerNatives()</h4>
+<blockquote>
+<p>native实现，目的是在底层创建对应的java本机函数使JVM找到native方法</p>
+</blockquote>
+<h4 id="getclass">getClass()</h4>
+<blockquote>
+<p>返回当前对象运行时对应的类对象，且这个类是静态类型擦除后的结果。如T-&gt;Object;List<String>-&gt;List</String></p>
+</blockquote>
+<h4 id="hashcode">hashCode()</h4>
+<blockquote>
+<p>返回当前对象的hash值，在同一个程序执行中，约定当对象相同时即执行equals方法比较的信息不被更改时，不管调用几次hashcode方法，均要返回相同的值。但不要求不同程序产生相同的hashcode</p>
+<p>如果两个对象可通过equals方法判定相同，则调用hashcode方法会产生两个相同的值。</p>
+<p>如果两个对象通过equals方法判定不同，也不要求hashcode方法产生两个不同的值，但如果产生不同的值会提升哈希表的性能。</p>
+<p>如果可以的话，不同对象应该有不同的hash值，这个通常可以根据将对象在内存中的地址转化为整数来实现，但不强制要求。</p>
+</blockquote>
+<h4 id="equals">equals()</h4>
+<blockquote>
+<p>判断某些对象是否equals to调用该方法的对象。</p>
+<p>实现了非空对象引用上的等价关系判断。</p>
+<p>四个特性:自反、对称、传递、一致。</p>
+<p>自反: x.equals(x) == true</p>
+<p>对称: x.equals(y) == y.equals(x)</p>
+<p>传递: x.equals(y), y.equals(z) ------&gt; x.equals(z)</p>
+<p>一致: 只要用于equals比较的信息不被改变，则不管调用几次equals方法其值总是不变的。</p>
+<p>非空对象引用同null比较值总是为false。</p>
+<p>对象之间equals比较只有两个对象是完全相同即地址一致时才会返回true。</p>
+<p>为了维持hashcode的原则，在重写equals方法的时候，往往需要重写hashcode方法。</p>
+</blockquote>
+<h4 id="clone">clone()</h4>
+<blockquote>
+<p>根据对象的类复制一个对象的副本。</p>
+<p>往往有</p>
+<p>​ x.clone() != x;</p>
+<p>​ x.clone().getClass() == x.getClass()</p>
+<p>​ x.clone.equals(x) == true</p>
+<p>​ 通常返回的clone对象都是调用super.clone得到的。</p>
+<p>​ clone的对象需要和被clone的对象相互独立。这便要求对被clone对象中所有可变属性进行复制，并用副本的引用替换对这些对象的引用。</p>
+<p>Object类的clone方法</p>
+<p>​ 首先需要继承Cloneable接口。数组类型默认实现了Cloneable接口，且T类型的数组clone的结果的类型为T，需要注意的时，数组clone是直接复制原数组的值即对象引用只是将引用拷贝了，故为浅拷贝。</p>
+<p>Object对象没有实现Cloneable接口，故对Object对象使用clone会产生异常。CloneNotSupportedException</p>
+</blockquote>
+<h4 id="tostring">toString()</h4>
+<blockquote>
+<p>返回对象的字符串表示形式。往往需要重写这个方法。</p>
+<p>这个方法的默认表现为“类名+@+hashcode的十六进制表示”</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">getClass().getName() + <span class="string">&#x27;@&#x27;</span> + Integer.toHexString(hashCode())</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h4 id="notify">notify()</h4>
+<blockquote>
+<p>唤醒正在wait()该线程所拥有的对象的一个线程。如果有多个线程都在wait该对象，则随机唤醒一个线程，由具体实现决定。</p>
+<p>被唤醒的线程只有在对象没有被锁定的情况下才能执行。且被唤醒的线程仍然需要以通常的方式同其他线程竞争对象的使用权，没有其他特权。</p>
+<p>该方法只能由当前具有对象使用权的线程调用，获取对象使用权的方式</p>
+<p>​ 1.执行对象的synchronize修饰的方法</p>
+<p>​ 2.执行synchronize修饰的代码段。</p>
+<p>​ 3.执行synchronize修饰的静态方法。</p>
+<p>未拥有对象monitor的线程调用会抛出IllegalMonitorStateException异常。</p>
+</blockquote>
+<h4 id="notifyall">notifyAll()</h4>
+<blockquote>
+<p>唤醒正在wait()该线程所拥有的对象的所有线程。</p>
+</blockquote>
+<h4 id="waitlong-timeout">wait(long timeout)</h4>
+<blockquote>
+<p>让当前线程等待一段时间，直到被notify/notifyAll/一段时间过后唤醒。</p>
+<p>调用该方法的线程必须有对象的monitor。</p>
+<p>该方法会让线程进入该对象的等待集中，然后放弃对该对象的所有同步声明。 出于线程调度目的，该线程被禁用，并且在发生以下四种情况之一之前一直处于休眠状态：</p>
+<ol type="1">
+<li>某些线程调用了notify方法并恰好唤醒该线程。</li>
+<li>某些线程调用了notifyAll方法。</li>
+<li>某些线程调用了interrupt方法。</li>
+<li>一段特定时间过去。若为设置特定时间线程会等到被notify为止。</li>
+</ol>
+<p>从wait方法返回的对象和线程的同步状态会和调用该方法时的状态完全相同。</p>
+<p>存在虚假唤醒(spurious wakeup)的问题需要在while中调用wait来避免。</p>
+<p>如果该线程在等待之前，或等待期间被另一个线程调用该线程的interrupt()方法，那么当被interrupt线程获得锁之后，会立刻抛出InterruptedException异常，我们可以对这个异常进行捕获，然后处理，以实现线程的唤醒和通信。</p>
+<p>wait方法将当前线程放入该对象的等待集中，只会解锁该对象，若当前线程还锁定了其他对象，那么这些对象不会被解锁。(死锁)</p>
+</blockquote>
+<h4 id="waitlong-timeout-int-nanos">wait(long timeout, int nanos)</h4>
+<blockquote>
+<p>同一个参数的wait基本一致，但可以输入纳秒级的精度。实际上只是nanos大于0直接让timeout++而已。</p>
+</blockquote>
+<h4 id="wait">wait()</h4>
+<blockquote>
+<p>不支持超时自动唤醒。相当于wait(0)</p>
+</blockquote>
+<h4 id="finalize">finalize()</h4>
+<blockquote>
+<p>当资源不可达时GC会自动调用对象的finalize方法</p>
+<p>这个方法内部可以执行任何操作，包括让这个对象重新可达。但往往只是执行清除操作，如中断I/O连接。</p>
+<p>Java编程语言对于所有的对象都不能够保证哪个线程会调用它的finalize方法。然而可以保证一点，调用终结方法的线程必然不会被任何用户可见的同步锁锁住。如果一个没有被捕获的异常在执行终结方法时被抛出，异常会被忽略并且哪个对象的终结过程会被终止。</p>
+<p>调用该方法后，java虚拟机会再次判断对象是否可达，若仍不可达对象往往会被摧毁。</p>
+<p>finalize()方法不会调用多次。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>Java基本类</tag>
       </tags>
   </entry>
   <entry>
@@ -3634,83 +3821,6 @@
       </tags>
   </entry>
   <entry>
-    <title>HashMap分析</title>
-    <url>/2021/02/20/JavaBasicKnowledge/HashMap/</url>
-    <content><![CDATA[<h1 id="hashmap">HashMap</h1>
-<h2 id="hashmap初始化">HashMap初始化</h2>
-<blockquote>
-<p>初始化时可以设置初始大小和负载因子。默认负载因子0.75，默认容量为16。</p>
-<p>HashMap的threshold为负载因子 * 容量。</p>
-</blockquote>
-<h2 id="hashmap的get方法">HashMap的get方法</h2>
-<blockquote>
-<p>就是根据传入的key求出对应的hash值，然后根据hash值和数组长度-1进行&amp;运算获得对应下标位置，获取位置后判断当前结点是树结点还是链表结点，从而采取不同的处理方式。</p>
-</blockquote>
-<h2 id="hashmap的remove方法">HashMap的remove方法</h2>
-<blockquote>
-<p>根据传入的key求出对应hash值，找到对应桶位，然后根据对应结点的类型为树结点还是链表结点，根据不同结点的类型执行不同的删除操作。链表需要改变指向，树则需要再次平衡。</p>
-</blockquote>
-<h2 id="hashmap的resize方法">HashMap的resize方法</h2>
-<blockquote>
-<p>先判断当前是否有table，如果没有table且未设置初始大小，则初始化容量为默认值，阈值为默认值 * 负载因子的数组。若设置了初始大小则初始化容量为设置的大小的二次幂值的数组。</p>
-<p>若存在table，先判断旧容量是否大于最大值，若大于则设置阈值为Integer.MAX_VALUE，返回table，否则判断旧容量左移1位后是否不超过最大容量且判断当前容量是否超过默认容量16，若不超过最大容量且当前容量超过默认容量则将旧阈值左移一位。否则将计算newCap * loadFactor，判断新容量是否大于最大容量，若不大于则使用newCap * loadFactor作为新阈值，使用newCap作为数组的新容量。</p>
-<p>创建完新数组后，需要将旧table的数据复制到新table之中。</p>
-<p>复制的过程：</p>
-<p>​ 遍历桶位，若某个桶位只有一个元素则直接根据hash值&amp;新数组容量-1判断需要插入到新数组的什么位置。</p>
-<p>​ 若该元素是树结点则使用spilt方法，插入到新数组。</p>
-<p>​ 若桶位存在多个链表结点，则大致流程为使用4个指针来记录新旧两个数组的头尾链表位置。即先记录头位置，然后将头位置赋值给尾位置，利用尾位置不断连接结点，最后将头结点赋值给桶位元素。</p>
-</blockquote>
-<h2 id="hashmap的put方法">HashMap的put方法</h2>
-<blockquote>
-<p>获取已存在的table，若当前table不存在则resize一个table，若存在则找到对应桶位，根据结点类型采取不同的插入操作，对于链表，插入完成后还会判断当前桶位元素个数是否大于树化阈值，若大于则将桶树化。对于树结点，插入时需要进行平衡。最后插入完成后，判断当前HashMap元素个数是否大于总阈值，若大于则resize扩容。</p>
-</blockquote>
-<h2 id="tips">tips</h2>
-<blockquote>
-<p>jdk8后，HashMap红黑树和链表转化是根据泊松分布的，链表转化为树阈值为8，树退化为链表阈值为6。</p>
-<p>且红黑树的排序是根据节点的hashcode大小，对于实现了Comparable接口的则使用compare方法来比较。</p>
-<p>hashmap默认负载因子0.75，默认容量为16，最大容量为2^30次方，且容量必须为2的次幂大小，因为使用位运算来执行取模操作。</p>
-<p>hashmap在操作时会自增modcount，若在遍历时对hashmap执行了操作，则会由于modcount改变而抛出异常。</p>
-<p>HashMap线程非安全，HashTable线程安全，ConcurrentHashMap线程安全。</p>
-<p>HashTable本质是上是将各方法都加上了synchronized。</p>
-</blockquote>
-<h2 id="面试题">面试题</h2>
-<h3 id="key为null时执行put操作数据放在哪个桶位">key为null时，执行put操作，数据放在哪个桶位？</h3>
-<blockquote>
-<p>key为null时HashMap求出的hash值为0，故放在第0个桶位。</p>
-</blockquote>
-<h3 id="hashmap的hash函数为什么需要将hash值移位并异或">HashMap的hash函数为什么需要将hash值移位并异或？</h3>
-<blockquote>
-<p>注释里有说，为了让高位的hash值对数据产生影响。</p>
-</blockquote>
-<h3 id="为什么hashmap内部的散列表数组长度一定是2的次方数">为什么HashMap内部的散列表数组长度一定是2的次方数？</h3>
-<blockquote>
-<p>让查找位置时使用数组长度-1的值会对应2进制的000011111111，后位均为1，提高HashMap的散列性。</p>
-</blockquote>
-<h3 id="hashmap内部的散列表结构什么时候初始化初始化大小有几种情况">HashMap内部的散列表结构，什么时候初始化？初始化大小有几种情况？</h3>
-<blockquote>
-<p>构造方法共四种：无参构造、传入初始容量、传入初始容量及负载因子、传入Map</p>
-<p>传入Map时会调用resize会初始化。</p>
-<p>resize时会初始化。</p>
-</blockquote>
-<h3 id="hashmap为什么需要扩容扩容又是如何实现的">HashMap为什么需要扩容，扩容又是如何实现的？</h3>
-<blockquote>
-<p>因为数组过小，会导致插入时会插入到同一个桶位导致查询效率下降，故用空间换时间的方式优化。</p>
-</blockquote>
-<h3 id="jdk8为什么hashmap引入红黑树">JDK8为什么HashMap引入红黑树？</h3>
-<blockquote>
-<p>因为数据增大时链表的查询速度低。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-        <tag>容器</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Dubbo简单介绍</title>
     <url>/2021/02/20/codeAnalyse/Dubbo/</url>
     <content><![CDATA[<h1 id="dubbo">Dubbo</h1>
@@ -3747,234 +3857,6 @@
         <tag>并发</tag>
         <tag>Dubbo</tag>
         <tag>分布式</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Object类分析</title>
-    <url>/2021/02/20/JavaBasicKnowledge/Object/</url>
-    <content><![CDATA[<h1 id="object类">Object类</h1>
-<blockquote>
-<p>Object类是Java中未指定父类的类的默认继承类，也可以说是所有类的祖先。本文档编写目的为通过查看Java源码来加强自己对Object类的理解。不涉及native实现的方法。</p>
-</blockquote>
-<h4 id="registernatives">registerNatives()</h4>
-<blockquote>
-<p>native实现，目的是在底层创建对应的java本机函数使JVM找到native方法</p>
-</blockquote>
-<h4 id="getclass">getClass()</h4>
-<blockquote>
-<p>返回当前对象运行时对应的类对象，且这个类是静态类型擦除后的结果。如T-&gt;Object;List<String>-&gt;List</String></p>
-</blockquote>
-<h4 id="hashcode">hashCode()</h4>
-<blockquote>
-<p>返回当前对象的hash值，在同一个程序执行中，约定当对象相同时即执行equals方法比较的信息不被更改时，不管调用几次hashcode方法，均要返回相同的值。但不要求不同程序产生相同的hashcode</p>
-<p>如果两个对象可通过equals方法判定相同，则调用hashcode方法会产生两个相同的值。</p>
-<p>如果两个对象通过equals方法判定不同，也不要求hashcode方法产生两个不同的值，但如果产生不同的值会提升哈希表的性能。</p>
-<p>如果可以的话，不同对象应该有不同的hash值，这个通常可以根据将对象在内存中的地址转化为整数来实现，但不强制要求。</p>
-</blockquote>
-<h4 id="equals">equals()</h4>
-<blockquote>
-<p>判断某些对象是否equals to调用该方法的对象。</p>
-<p>实现了非空对象引用上的等价关系判断。</p>
-<p>四个特性:自反、对称、传递、一致。</p>
-<p>自反: x.equals(x) == true</p>
-<p>对称: x.equals(y) == y.equals(x)</p>
-<p>传递: x.equals(y), y.equals(z) ------&gt; x.equals(z)</p>
-<p>一致: 只要用于equals比较的信息不被改变，则不管调用几次equals方法其值总是不变的。</p>
-<p>非空对象引用同null比较值总是为false。</p>
-<p>对象之间equals比较只有两个对象是完全相同即地址一致时才会返回true。</p>
-<p>为了维持hashcode的原则，在重写equals方法的时候，往往需要重写hashcode方法。</p>
-</blockquote>
-<h4 id="clone">clone()</h4>
-<blockquote>
-<p>根据对象的类复制一个对象的副本。</p>
-<p>往往有</p>
-<p>​ x.clone() != x;</p>
-<p>​ x.clone().getClass() == x.getClass()</p>
-<p>​ x.clone.equals(x) == true</p>
-<p>​ 通常返回的clone对象都是调用super.clone得到的。</p>
-<p>​ clone的对象需要和被clone的对象相互独立。这便要求对被clone对象中所有可变属性进行复制，并用副本的引用替换对这些对象的引用。</p>
-<p>Object类的clone方法</p>
-<p>​ 首先需要继承Cloneable接口。数组类型默认实现了Cloneable接口，且T类型的数组clone的结果的类型为T，需要注意的时，数组clone是直接复制原数组的值即对象引用只是将引用拷贝了，故为浅拷贝。</p>
-<p>Object对象没有实现Cloneable接口，故对Object对象使用clone会产生异常。CloneNotSupportedException</p>
-</blockquote>
-<h4 id="tostring">toString()</h4>
-<blockquote>
-<p>返回对象的字符串表示形式。往往需要重写这个方法。</p>
-<p>这个方法的默认表现为“类名+@+hashcode的十六进制表示”</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">getClass().getName() + <span class="string">&#x27;@&#x27;</span> + Integer.toHexString(hashCode())</span><br></pre></td></tr></table></figure>
-</blockquote>
-<h4 id="notify">notify()</h4>
-<blockquote>
-<p>唤醒正在wait()该线程所拥有的对象的一个线程。如果有多个线程都在wait该对象，则随机唤醒一个线程，由具体实现决定。</p>
-<p>被唤醒的线程只有在对象没有被锁定的情况下才能执行。且被唤醒的线程仍然需要以通常的方式同其他线程竞争对象的使用权，没有其他特权。</p>
-<p>该方法只能由当前具有对象使用权的线程调用，获取对象使用权的方式</p>
-<p>​ 1.执行对象的synchronize修饰的方法</p>
-<p>​ 2.执行synchronize修饰的代码段。</p>
-<p>​ 3.执行synchronize修饰的静态方法。</p>
-<p>未拥有对象monitor的线程调用会抛出IllegalMonitorStateException异常。</p>
-</blockquote>
-<h4 id="notifyall">notifyAll()</h4>
-<blockquote>
-<p>唤醒正在wait()该线程所拥有的对象的所有线程。</p>
-</blockquote>
-<h4 id="waitlong-timeout">wait(long timeout)</h4>
-<blockquote>
-<p>让当前线程等待一段时间，直到被notify/notifyAll/一段时间过后唤醒。</p>
-<p>调用该方法的线程必须有对象的monitor。</p>
-<p>该方法会让线程进入该对象的等待集中，然后放弃对该对象的所有同步声明。 出于线程调度目的，该线程被禁用，并且在发生以下四种情况之一之前一直处于休眠状态：</p>
-<ol type="1">
-<li>某些线程调用了notify方法并恰好唤醒该线程。</li>
-<li>某些线程调用了notifyAll方法。</li>
-<li>某些线程调用了interrupt方法。</li>
-<li>一段特定时间过去。若为设置特定时间线程会等到被notify为止。</li>
-</ol>
-<p>从wait方法返回的对象和线程的同步状态会和调用该方法时的状态完全相同。</p>
-<p>存在虚假唤醒(spurious wakeup)的问题需要在while中调用wait来避免。</p>
-<p>如果该线程在等待之前，或等待期间被另一个线程调用该线程的interrupt()方法，那么当被interrupt线程获得锁之后，会立刻抛出InterruptedException异常，我们可以对这个异常进行捕获，然后处理，以实现线程的唤醒和通信。</p>
-<p>wait方法将当前线程放入该对象的等待集中，只会解锁该对象，若当前线程还锁定了其他对象，那么这些对象不会被解锁。(死锁)</p>
-</blockquote>
-<h4 id="waitlong-timeout-int-nanos">wait(long timeout, int nanos)</h4>
-<blockquote>
-<p>同一个参数的wait基本一致，但可以输入纳秒级的精度。实际上只是nanos大于0直接让timeout++而已。</p>
-</blockquote>
-<h4 id="wait">wait()</h4>
-<blockquote>
-<p>不支持超时自动唤醒。相当于wait(0)</p>
-</blockquote>
-<h4 id="finalize">finalize()</h4>
-<blockquote>
-<p>当资源不可达时GC会自动调用对象的finalize方法</p>
-<p>这个方法内部可以执行任何操作，包括让这个对象重新可达。但往往只是执行清除操作，如中断I/O连接。</p>
-<p>Java编程语言对于所有的对象都不能够保证哪个线程会调用它的finalize方法。然而可以保证一点，调用终结方法的线程必然不会被任何用户可见的同步锁锁住。如果一个没有被捕获的异常在执行终结方法时被抛出，异常会被忽略并且哪个对象的终结过程会被终止。</p>
-<p>调用该方法后，java虚拟机会再次判断对象是否可达，若仍不可达对象往往会被摧毁。</p>
-<p>finalize()方法不会调用多次。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-        <tag>Java基本类</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SpringBoot原理分析</title>
-    <url>/2021/02/20/codeAnalyse/SpringBoot%E5%8E%9F%E7%90%86/</url>
-    <content><![CDATA[<h1 id="springboot原理">SpringBoot原理</h1>
-<h2 id="springbootapplication"><span class="citation" data-cites="SpringBootApplication">@SpringBootApplication</span></h2>
-<blockquote>
-<p>本质上是</p>
-<p><span class="citation" data-cites="SpringBootConfiguration">@SpringBootConfiguration</span>：实际是@Configuration</p>
-<p><span class="citation" data-cites="EnableAutoConfiguration">@EnableAutoConfiguration</span>：由@AutoConfigurationPackage、<span class="citation" data-cites="Import">@Import</span>({AutoConfigurationImportSelector.class})组成。</p>
-<p><span class="citation" data-cites="ComponentScan">@ComponentScan</span>：启用自动扫描，默认扫描所在类的同级类和同级目录下的所有类。</p>
-<p>即这个注解实现了注册配置类、启用自动配置、启用自动扫描。</p>
-</blockquote>
-<h2 id="springapplication.runtestapplication.classargs的实际流程">SpringApplication.run(TestApplication.class,args)的实际流程</h2>
-<blockquote>
-<p>利用传入的类创建一个SpringApplication实例执行了run方法。</p>
-<h3 id="具体创建实例的流程">具体创建实例的流程：</h3>
-</blockquote>
-<blockquote>
-<figure>
-<img src="/2021/02/20/codeAnalyse/SpringBoot%E5%8E%9F%E7%90%86/SpringBootAplication初始化过程.png" alt="SpringBootAplication初始化过程"><figcaption aria-hidden="true">SpringBootAplication初始化过程</figcaption>
-</figure>
-<p>倒数第四行加载了web应用的配置，具体流程是使用默认的类加载器去查找当前是否使用了对应的类。结果可以得出NONE、SERVLET、REACTIVE。</p>
-<p>倒数三行之前都是加载主配置。</p>
-<p>倒数第三、二行分别是创建初始化器和监听器。创建的流程均为先获取到类加载器，然后查找当前项目中所使用到的初始化器、监听器类名，再利用类名创建类实例，最后将这些实例按优先级排序即可。</p>
-<p>创建类实例的方法即为通过反射调用类的构造方法创建。它们都使用了getSpringFactoriesInstances方法。这个方法是先通过读取META-INF/spring.factories文件内容来获取配置，并将配置放入map中。实际中会读取到项目所有jar包中的META-INF/spring.factories。然后利用传入的类名进行匹配找到所需的初始化器/监听器。</p>
-<p>按优先级排序，Spring则是通过继承OrderComparator(实现了Comparator接口的类来完成的)，这里利用了模板方法模式，通过完成了findOrder方法，通过比较注解的优先级的方式来findOrder，若未设定优先级则设为最低优先级LOWEST_PRECEDENCE这个值为Integer.MAX_VALUE。</p>
-<ul>
-<li>（1）先判断有没有实现PriorityOrdered，实现PriorityOrdered比没实现的有高优先级</li>
-<li>（2）第一步如果比较不出来，判断有没有实现Ordered，如果实现了，取实现方法的int值比较</li>
-<li>前两步都是OrderComparator的默认实现。</li>
-<li>（3）如果没有实现Ordered，判断有没有org.springframework.core.annotation.Order注解， 有注解，取注解上的order值，进行比较</li>
-<li>（4）如果没有Order注解，判断有没有javax.annotation.Priority注解，取注解上的值比较</li>
-<li>若以上都没找到则spring会返回null</li>
-<li>（5）OrderComparator接收到null，返回Integer.MAX_VALUE即LOWEST_PRECEDENCE，值越大优先级越低</li>
-</ul>
-<p>最后一行找到主程序类是通过获取当前程序运行栈，通过找到栈中执行main方法的类，得到主程序类名。</p>
-</blockquote>
-<h3 id="创建实例后执行run方法的流程">创建实例后执行run方法的流程</h3>
-<blockquote>
-
-</blockquote>
-<h2 id="自动配置原理">自动配置原理</h2>
-<blockquote>
-<p><span class="citation" data-cites="EnableAutoConfiguration">@EnableAutoConfiguration</span> = <span class="citation" data-cites="AutoConfigurationPackage">@AutoConfigurationPackage</span> + <span class="citation" data-cites="Import">@Import</span>({AutoConfigurationImportSelector.class})</p>
-<p><span class="citation" data-cites="AutoConfigurationPackage">@AutoConfigurationPackage</span> = <span class="citation" data-cites="Import">@Import</span>({Registrar.class})</p>
-<p>故@EnableAutoConfiguration实际上相当于引入了AutoConfigurationImportSelector和Registrar。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>源码分析</category>
-      </categories>
-      <tags>
-        <tag>Springboot</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>http基本知识及改进</title>
-    <url>/2021/02/20/codeAnalyse/http%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86%E5%8F%8A%E6%94%B9%E8%BF%9B/</url>
-    <content><![CDATA[<h1 id="http基本知识及改进">http基本知识及改进</h1>
-<h2 id="http介绍">HTTP介绍</h2>
-<h3 id="版本">0.9版本</h3>
-<blockquote>
-<p>GET /index.html</p>
-<p>服务端只能返回html格式，传输过程只能处理文字</p>
-</blockquote>
-<h3 id="版本-1">1.0版本</h3>
-<blockquote>
-<p>支持任何格式的内容，包括图像、视频、二进制等。</p>
-<p>引入了POST命令、HEAD命令。</p>
-<p>增加了请求头、状态码，以及权限缓存等。</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"># 请求包</span><br><span class="line">GET / HTTP/1.0</span><br><span class="line">User-Agent:Mozilla/1.0</span><br><span class="line">Accept: */*</span><br><span class="line"></span><br><span class="line"># 应答包</span><br><span class="line">HTTP/1.0 200 OK</span><br><span class="line">Content-Type: text/plain</span><br><span class="line">Content-Length: 12345</span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"> ....</span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>Content-Type表示当前数据格式：text/html、image/png、application/pdf、video/mp4。</p>
-<p>前面是一级格式，后面是二级类型，用斜杆分隔，还可以增加其他参数，如编码格式</p>
-<p>Content-Type：text/plain；charset=utf-8</p>
-<p>Content-Encoding表示数据压缩的方式：gzip、compress、deflate。</p>
-<p>对应客户端的字段为Accept-Encoding，代表接收哪些压缩方式。</p>
-<h4 id="缺点和问题">缺点和问题：</h4>
-<p>每个TCP连接只能发送一个请求，发送完毕连接关闭，使用成本很高，性能较差。</p>
-<p>Connection：keep-alive (非标准字段)</p>
-</blockquote>
-<h2 id="版本-2">1.1版本</h2>
-<blockquote>
-<p>持久连接：默认不关闭TCP连接，可以被多个请求复用。</p>
-<p>管道机制：支持客户端发送多个请求，管理请求的顺序。服务器还是按照接受请求的顺序，返回对应的响应结果。</p>
-<p>Content-Length：用于区分数据包的字段。</p>
-<p>支持了DELETE、PUT、PATCH等命令。</p>
-<h4 id="缺点和问题-1">缺点和问题</h4>
-<p>当部分请求耗时较长时，仍会阻塞后续请求的处理速度，这种现象叫做“队头阻塞/线头阻塞”。</p>
-</blockquote>
-<h3 id="版本-3">2.0版本</h3>
-<blockquote>
-<p>解决了队头阻塞的问题。多路复用。</p>
-</blockquote>
-<h2 id="http的缺陷">HTTP的缺陷</h2>
-<blockquote>
-<p>通信只能由客户端发起，需要一种服务端能够主动推送的能力-websocket。</p>
-<p>这种双向通信的能力，也叫"全双工"，协议标识符：http://127.0.0.1/ 变为 ws://127.0.0.1/ 通信的最小单位是帧frame。</p>
-</blockquote>
-<h2 id="websocket">WebSocket</h2>
-<blockquote>
-<p>websocket是由浏览器发起的。</p>
-<p>响应码101代表本次协议需要更改为websocket。</p>
-<p>建立连接后，支持文本信息和二进制信息。</p>
-<p>Websocket实现的原理：</p>
-<p>​ 通过http协议进行连接的建立，建立连接后不再使用http，而tcp自身是支持双向通信的，所以可以达到全双工的效果。</p>
-<p>通信使用的单位叫帧frame</p>
-<p>客户端：发送时，将消息切割成多个帧。</p>
-<p>服务端：接收时，将关联的帧重新组装。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>计算机网络</category>
-      </categories>
-      <tags>
-        <tag>网络</tag>
       </tags>
   </entry>
   <entry>
@@ -4086,70 +3968,66 @@
       </tags>
   </entry>
   <entry>
-    <title>Mybatis流程源码分析</title>
-    <url>/2021/02/20/codeAnalyse/mybatis%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h1 id="mybatis流程">Mybatis流程</h1>
-<h2 id="创建sqlsessionfactory的流程">创建SqlSessionFactory的流程</h2>
+    <title>http基本知识及改进</title>
+    <url>/2021/02/20/codeAnalyse/http%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86%E5%8F%8A%E6%94%B9%E8%BF%9B/</url>
+    <content><![CDATA[<h1 id="http基本知识及改进">http基本知识及改进</h1>
+<h2 id="http介绍">HTTP介绍</h2>
+<h3 id="版本">0.9版本</h3>
 <blockquote>
-<p>由于创建工厂需要许多配置，mybatis利用了Builder模式。</p>
-<p>先创建SqlSessionFactoryBuilder，调用SqlSessionFactoryBuilder的build方法，本质上就是通过解析xml文件，将文件内容映射到Configuration对象中，然后利用这个对象产生builder创建工厂所需的配置，然后创建出SqlSessionFactory。</p>
-<p>具体则是先将xml的输入流传给SqlSessionFactoryBuilder，然后创建一个XMLConfigBuilder，负责解析xml内容放入configuration对象，解析的过程中会按类别解析，通过调用不同的方法解析xml的不同部分。解析mapper还有专门的XMLMapperBuilder其中对于二级缓存的处理也在这里进行。解析完成后configuration对象会保存全部的配置信息。</p>
+<p>GET /index.html</p>
+<p>服务端只能返回html格式，传输过程只能处理文字</p>
 </blockquote>
-<h2 id="利用sqlsessionfactory创建sqlsession的流程">利用SqlSessionFactory创建SqlSession的流程</h2>
+<h3 id="版本-1">1.0版本</h3>
 <blockquote>
-<p>就是SqlSessionFactory调用openSession，传入ExecutorType、TransactionIsolationLevel、autoCommit三个参数，或让mybatis按默认设置，</p>
-<p>ExecutorType有BatchExecutor、ReuseExecutor、SimpleExecutor、CachingExecutor四种。</p>
-<p>​ BatchExecutor 让update操作变为批处理操作，即让连续的update先累积，等到下一次query操作前再一起执行。是使用List作为批处理存储。对于update操作会复用最近一次的statement。失败了会全部回滚。</p>
-<p>​ ReuseExecutor 复用Statement，利用Map&lt;String, Statement&gt;来判定。</p>
-<p>​ SimpleExecutor 即使用的Statement直接关闭。</p>
-<p>​ CachingExecutor 相当于在前面三个执行者的基础上套了一层缓存机制，让query方法先查看缓存，只有缓存没有时再让三个执行者执行操作。这里的缓存是通过mybatis自己实现的statement对象内部的cache实现的，有些类似hashmap，是利用cache和cachekey获得的结果。</p>
-<p>TransactionIsolationLevel即事物隔离级别。</p>
-<p>​ READ_UNCOMMITTED 读未提交 存在脏读、不可重复读、幻读</p>
-<p>​ READ_COMMITTED 读提交 存在不可重复读、幻读</p>
-<p>​ REPEATABLE_READ 可重复读 存在幻读</p>
-<p>​ SERIALIZABLE 序列化</p>
-<p>autoCommit是否自动提交。</p>
+<p>支持任何格式的内容，包括图像、视频、二进制等。</p>
+<p>引入了POST命令、HEAD命令。</p>
+<p>增加了请求头、状态码，以及权限缓存等。</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"># 请求包</span><br><span class="line">GET / HTTP/1.0</span><br><span class="line">User-Agent:Mozilla/1.0</span><br><span class="line">Accept: */*</span><br><span class="line"></span><br><span class="line"># 应答包</span><br><span class="line">HTTP/1.0 200 OK</span><br><span class="line">Content-Type: text/plain</span><br><span class="line">Content-Length: 12345</span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"> ....</span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>Content-Type表示当前数据格式：text/html、image/png、application/pdf、video/mp4。</p>
+<p>前面是一级格式，后面是二级类型，用斜杆分隔，还可以增加其他参数，如编码格式</p>
+<p>Content-Type：text/plain；charset=utf-8</p>
+<p>Content-Encoding表示数据压缩的方式：gzip、compress、deflate。</p>
+<p>对应客户端的字段为Accept-Encoding，代表接收哪些压缩方式。</p>
+<h4 id="缺点和问题">缺点和问题：</h4>
+<p>每个TCP连接只能发送一个请求，发送完毕连接关闭，使用成本很高，性能较差。</p>
+<p>Connection：keep-alive (非标准字段)</p>
 </blockquote>
-<h2 id="利用sqlsession创建mapper">利用SqlSession创建Mapper</h2>
+<h2 id="版本-2">1.1版本</h2>
 <blockquote>
-<p>SqlSession使用getMapper方法，实际上是调用了configuration中的mapperRegistry的getMapper方法，这里使用了动态代理的设计模式。同时这里还使用了工厂方法，根据不同的类名创建对应的代理工厂。</p>
-<p>这个动态代理是JDK代理，它需要使用对应类加载器，对应类接口，对应的InvocationHandler。在mybatis中InvocationHandler是MapperProxy，MapperProxy的重写的invoke函数逻辑是对于Object自带的方法直接调用，对于接口默认的方法直接调用(这个特性是由于JDK8让接口方法可以有默认实现)。对于接口的方法则创建一个MapperMethod对象，该对象使用了缓存机制，利用Map&lt;Method, MapperMethod&gt;缓存方法。</p>
-<p>而MapperMethod的excuse即为代理方法的实现，该类中含有MethodSignature、SqlCommand两个内部类用于实现解析sql及方法，而具体方法实现是根据判断当前sql是增删改查中的哪种再调用sqlSession的方法来实现的。</p>
+<p>持久连接：默认不关闭TCP连接，可以被多个请求复用。</p>
+<p>管道机制：支持客户端发送多个请求，管理请求的顺序。服务器还是按照接受请求的顺序，返回对应的响应结果。</p>
+<p>Content-Length：用于区分数据包的字段。</p>
+<p>支持了DELETE、PUT、PATCH等命令。</p>
+<h4 id="缺点和问题-1">缺点和问题</h4>
+<p>当部分请求耗时较长时，仍会阻塞后续请求的处理速度，这种现象叫做“队头阻塞/线头阻塞”。</p>
 </blockquote>
-<h2 id="executor与handler">Executor与Handler</h2>
+<h3 id="版本-3">2.0版本</h3>
 <blockquote>
-<p>Executor是通过StatementHandler来执行sql的。StatementHandler先prepare方法配置基础设置，然后使用parameterize来设置statement的参数。若为query操作则StatementHandler会使用ResultSetHandler来处理结果集。</p>
-<p>StatementHandler为抽象interface mybatis基于这个接口实现了抽象类BaseStatementHandler，还实现了路由类RoutingStatementHandler，路由类是用于根据参数创建对应具体类的。而抽象类是作为三个具体类的基础，三个具体类分别为CallableStatementHandler、PreparedStatementHandler、SimpleStatementHandler。</p>
-<p>抽象类提供给三个具体类prepare方法，其中prepare中含有抽象方法instantiateStatement，是由具体子类实现的。(模板方法模式)</p>
+<p>解决了队头阻塞的问题。多路复用。</p>
 </blockquote>
-<h2 id="mybatis对于数据库操作的整体流程">mybatis对于数据库操作的整体流程</h2>
+<h2 id="http的缺陷">HTTP的缺陷</h2>
 <blockquote>
-<p>先使用builder模式，根据输入的xml输入流，利用对应XML解析对象解析，并将结果最终存入Configuration对象，然后利用Configuration对象创建出一个对应的SqlSessionFactory。</p>
-<p>然后需要通过sqlSessionFactory的openSession方法创建一个SqlSession，这里可以设置SqlSession的Executor、TransactionIsolationLevel和autoCommit。Executor代表这个SqlSession采用什么执行器，执行器是对statement对象的处理。具体执行器共有3种：SimpleExecutor 、ReuseExecutor 、BatchExecutor 。同时若启用了缓存cache，则会在执行器外再包装一层CachingExecutor ，相当于对于查询操作提供了二级缓存。这个缓存是位于mybatis的MappedStatement类中。本质上这种缓存就是一个嵌套的哈希结构。Map&lt;Cache, TransactionalCache&gt;，TransactionalCache也是key-value结构。</p>
-<p>而事物隔离即为正常的数据库事物隔离级别。</p>
-<p>创建完SqlSession后，调用SqlSession的getMapper方法获取对应mapper对象。这里使用了动态代理。mybatis是先根据传入的类对象，通过configuration的配置信息中的MapperRegistry类对象找到对应的proxy工厂，利用代理工厂创建对应的代理对象。代理对象的创建使用的是JDK动态代理，即传入需要代理的类加载器、需要代理的接口、以及InvocationHandler。mybatis的handler是先判断方法是否为Object的，然后判断方法是否为接口默认实现的。只有接口未实现的方法才进行特殊处理，处理过程即为根据方法的类型(增删改查)，执行SqlSession的对应方法。</p>
-<p>SqlSession执行对应方法则是利用SqlSession内部的executor执行对应操作的。所以实际上sql操作还是由executor执行的。而executor执行操作需要利用StatementHandler先后执行prepare初始化基本配置和parameterize处理参数。参数的处理利用了ParameterHandler，这个时候typeHandler就会起作用。若为query操作还需要对返回值进行处理，处理时利用了ResultSetHandler，这个时候typeHandler就会起作用。</p>
+<p>通信只能由客户端发起，需要一种服务端能够主动推送的能力-websocket。</p>
+<p>这种双向通信的能力，也叫"全双工"，协议标识符：http://127.0.0.1/ 变为 ws://127.0.0.1/ 通信的最小单位是帧frame。</p>
 </blockquote>
-<h2 id="mybatis的缓存机制">mybatis的缓存机制</h2>
+<h2 id="websocket">WebSocket</h2>
 <blockquote>
-<p>mybatis共有两个缓存机制：一级缓存和二级缓存。</p>
-<p>一级缓存默认开启且无法关闭。</p>
-<p>二级缓存需要配置。</p>
-<p>一级缓存是Executor的基本实现类BaseExecutor中实现的，本质上是个Map&lt;Object, Object&gt;。由于每个SqlSession里都带有一个Executor，故一级缓存是SqlSession层面的。</p>
-<p>二级缓存则需要手动配置，开启后会在具体的Executor之外使用CachingExecutor包装，这里使用了装饰者模式。二级缓存本质上是在namespace层面的缓存。</p>
-</blockquote>
-<h2 id="mybatis是怎么实现和springboot的整合的">mybatis是怎么实现和SpringBoot的整合的？</h2>
-<blockquote>
-
+<p>websocket是由浏览器发起的。</p>
+<p>响应码101代表本次协议需要更改为websocket。</p>
+<p>建立连接后，支持文本信息和二进制信息。</p>
+<p>Websocket实现的原理：</p>
+<p>​ 通过http协议进行连接的建立，建立连接后不再使用http，而tcp自身是支持双向通信的，所以可以达到全双工的效果。</p>
+<p>通信使用的单位叫帧frame</p>
+<p>客户端：发送时，将消息切割成多个帧。</p>
+<p>服务端：接收时，将关联的帧重新组装。</p>
 </blockquote>
 ]]></content>
       <categories>
-        <category>源码分析</category>
+        <category>基础知识</category>
+        <category>计算机网络</category>
       </categories>
       <tags>
-        <tag>Mybatis</tag>
-        <tag>orm</tag>
-        <tag>数据库</tag>
+        <tag>网络</tag>
       </tags>
   </entry>
   <entry>
@@ -4344,165 +4222,55 @@
       </tags>
   </entry>
   <entry>
-    <title>SpringBoot常用配置</title>
-    <url>/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/</url>
-    <content><![CDATA[<h1 id="springboot常用配置">SpringBoot常用配置</h1>
-<h2 id="选择不同配置">选择不同配置</h2>
+    <title>SpringBoot原理分析</title>
+    <url>/2021/02/20/codeAnalyse/SpringBoot%E5%8E%9F%E7%90%86/</url>
+    <content><![CDATA[<h1 id="springboot原理">SpringBoot原理</h1>
+<h2 id="springbootapplication"><span class="citation" data-cites="SpringBootApplication">@SpringBootApplication</span></h2>
 <blockquote>
-<p>也可以通过在类中使用@Profile("xx")来表示这个类只有在xx为active的情况下才可使用。</p>
+<p>本质上是</p>
+<p><span class="citation" data-cites="SpringBootConfiguration">@SpringBootConfiguration</span>：实际是@Configuration</p>
+<p><span class="citation" data-cites="EnableAutoConfiguration">@EnableAutoConfiguration</span>：由@AutoConfigurationPackage、<span class="citation" data-cites="Import">@Import</span>({AutoConfigurationImportSelector.class})组成。</p>
+<p><span class="citation" data-cites="ComponentScan">@ComponentScan</span>：启用自动扫描，默认扫描所在类的同级类和同级目录下的所有类。</p>
+<p>即这个注解实现了注册配置类、启用自动配置、启用自动扫描。</p>
+</blockquote>
+<h2 id="springapplication.runtestapplication.classargs的实际流程">SpringApplication.run(TestApplication.class,args)的实际流程</h2>
+<blockquote>
+<p>利用传入的类创建一个SpringApplication实例执行了run方法。</p>
+<h3 id="具体创建实例的流程">具体创建实例的流程：</h3>
+</blockquote>
+<blockquote>
 <figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/springboot多配置文件设置启用.png" alt="springboot多配置文件设置启用"><figcaption aria-hidden="true">springboot多配置文件设置启用</figcaption>
+<img src="/2021/02/20/codeAnalyse/SpringBoot%E5%8E%9F%E7%90%86/SpringBootAplication初始化过程.png" alt="SpringBootAplication初始化过程"><figcaption aria-hidden="true">SpringBootAplication初始化过程</figcaption>
 </figure>
+<p>倒数第四行加载了web应用的配置，具体流程是使用默认的类加载器去查找当前是否使用了对应的类。结果可以得出NONE、SERVLET、REACTIVE。</p>
+<p>倒数三行之前都是加载主配置。</p>
+<p>倒数第三、二行分别是创建初始化器和监听器。创建的流程均为先获取到类加载器，然后查找当前项目中所使用到的初始化器、监听器类名，再利用类名创建类实例，最后将这些实例按优先级排序即可。</p>
+<p>创建类实例的方法即为通过反射调用类的构造方法创建。它们都使用了getSpringFactoriesInstances方法。这个方法是先通过读取META-INF/spring.factories文件内容来获取配置，并将配置放入map中。实际中会读取到项目所有jar包中的META-INF/spring.factories。然后利用传入的类名进行匹配找到所需的初始化器/监听器。</p>
+<p>按优先级排序，Spring则是通过继承OrderComparator(实现了Comparator接口的类来完成的)，这里利用了模板方法模式，通过完成了findOrder方法，通过比较注解的优先级的方式来findOrder，若未设定优先级则设为最低优先级LOWEST_PRECEDENCE这个值为Integer.MAX_VALUE。</p>
+<ul>
+<li>（1）先判断有没有实现PriorityOrdered，实现PriorityOrdered比没实现的有高优先级</li>
+<li>（2）第一步如果比较不出来，判断有没有实现Ordered，如果实现了，取实现方法的int值比较</li>
+<li>前两步都是OrderComparator的默认实现。</li>
+<li>（3）如果没有实现Ordered，判断有没有org.springframework.core.annotation.Order注解， 有注解，取注解上的order值，进行比较</li>
+<li>（4）如果没有Order注解，判断有没有javax.annotation.Priority注解，取注解上的值比较</li>
+<li>若以上都没找到则spring会返回null</li>
+<li>（5）OrderComparator接收到null，返回Integer.MAX_VALUE即LOWEST_PRECEDENCE，值越大优先级越低</li>
+</ul>
+<p>最后一行找到主程序类是通过获取当前程序运行栈，通过找到栈中执行main方法的类，得到主程序类名。</p>
 </blockquote>
-<h2 id="自动加载配置文件的内容">自动加载配置文件的内容</h2>
+<h3 id="创建实例后执行run方法的流程">创建实例后执行run方法的流程</h3>
 <blockquote>
-<p><span class="citation" data-cites="Value">@Value</span></p>
-<p><span class="citation" data-cites="ConfigurationProperties">@ConfigurationProperties</span>(prefix = "spring.datasource.druid.write") 使用该注解需要引入且要启用@EnableConfigurationProperties(使用前面一个注解的类.class)</p>
-<p><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;&#x2F;groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-configuration-processor&lt;&#x2F;artifactId&gt;</span><br><span class="line">    &lt;optional&gt;true&lt;&#x2F;optional&gt;</span><br><span class="line">&lt;&#x2F;dependency&gt;</span><br></pre></td></tr></table></figure></p>
-<p><span class="citation" data-cites="PropertySource">@PropertySource</span></p>
+
 </blockquote>
-<h2 id="配置文件的加载顺序下覆盖上">配置文件的加载顺序(下覆盖上)</h2>
+<h2 id="自动配置原理">自动配置原理</h2>
 <blockquote>
-<ol type="1">
-<li>Application properties packaged inside your jar (application.properties and YAML variants).</li>
-<li>Profile-specific application properties packaged inside your jar (application-{profile}.properties and YAML variants).</li>
-<li>Application properties outside of your packaged jar (application.properties and YAML variants)</li>
-<li>Profile-specific application properties outside of your packaged jar (application-{profile}.properties and YAML variants).</li>
-</ol>
-</blockquote>
-<h2 id="自动加载的-application.properties-的加载顺序下覆盖上">自动加载的 application.properties 的加载顺序(下覆盖上)</h2>
-<blockquote>
-<ol type="1">
-<li><p>The classpath root</p></li>
-<li><p>The classpath /config package</p></li>
-<li><p>The current directory</p></li>
-<li><p>The /config subdirectory in the current directory</p></li>
-<li><p>Immediate child directories of the /config subdirectory</p></li>
-</ol>
-<p>4、5的差别就是如果config目录的根目录里有application.properties，则会将config子目录的application.properties覆盖。</p>
-<p>而classpath中springboot不会自动扫描config子目录中的目录。</p>
-<p>可以通过修改spring.config.name来修改默认配置文件名。</p>
-<p>修改spring.config.location 可以修改springboot获取配置文件的位置。</p>
-<p>修改spring.config.additional-location可以在springboot默认获取配置文件的位置的基础上补充一些获取配置文件的位置。optional: 前缀</p>
-</blockquote>
-<h2 id="可以使用来获取外部目录classpath中不能使用">可以使用*来获取外部目录，classpath中不能使用*</h2>
-<h2 id="可以使用---在.pro配置文件中划分逻辑页">可以使用#---在.pro配置文件中划分逻辑页</h2>
-<h2 id="使用---在.yml配置文件划分逻辑页">使用---在.yml配置文件划分逻辑页</h2>
-<h2 id="在多个配置文件中均存在同一个list的值则只会去最高优先级的list值">在多个配置文件中均存在同一个list的值，则只会去最高优先级的list值</h2>
-<h2 id="在多个配置文件中均存在同一个map的值则使用互补配置的方式构造map">在多个配置文件中均存在同一个Map的值，则使用互补配置的方式构造Map</h2>
-<h2 id="spring自动注入的注解">spring自动注入的注解</h2>
-<blockquote>
-<p><span class="citation" data-cites="Component">@Component</span>("name")将一个类生成一个Bean实例并用spring管理。<span class="citation" data-cites="Controller">@Controller</span>、<span class="citation" data-cites="Repository">@Repository</span>、<span class="citation" data-cites="Service都是类似的功能">@Service都是类似的功能</span>。这些注解要放在类上。</p>
-<p><span class="citation" data-cites="Bean">@Bean</span>("name")将一个方法返回的对象实例用spring管理。该注解放在方法上。</p>
-<p><span class="citation" data-cites="Autowired">@Autowired</span> 自动注入。该注解可以放在构造器方法、方法、参数、属性、注解上。</p>
-<p><span class="citation" data-cites="Primary">@Primary</span> 写在类上或方法上。为了消除自动装配的歧义性，如spring管理了两个都实现了同一父类的类，则存在@Primary 的类会被最先调用。</p>
-<p><span class="citation" data-cites="Qualifier">@Qualifier</span>("name")写在变量、方法、参数、类上、注解上，可以根据传入的name按名字查找spring管理的类。</p>
-</blockquote>
-<h2 id="spring监听器">Spring监听器</h2>
-<blockquote>
-<p>使用过程:</p>
-<p>​ 自定义事件，继承org.springframework.context.ApplicationEvent类。</p>
-<p>​ 自定义事件监听器，实现org.springframework.context.ApplicationListener接口。</p>
-<p>​ 在spring容器中发布事件。</p>
-<p>实现监听的方式：</p>
-<p>​ 自定义类实现ApplicationListener，在主函数中装载监听。</p>
-<p>​ 自定义类实现ApplicationListener，在接口上加上@Component注解</p>
-<p>​ 自定义类不实现接口，在对应方法上标明@EventListener注解。</p>
-<p>​ 自定义类实现ApplicationListener，在application.properties中配置context.listener.classes</p>
-</blockquote>
-<h2 id="spring内置容器的配置">Spring内置容器的配置</h2>
-<blockquote>
-<p>修改配置：</p>
-<ol type="1">
-<li><p>可以在application.properties中按server.xxx:的方式修改</p></li>
-<li><p>创建一个配置类通过编写public WebServerFactoryCustomizer<ConfigurableWebServerFactory> customizer()方法来设置。</ConfigurableWebServerFactory></p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/内嵌服务器配置修改.png" alt="内嵌服务器配置修改"><figcaption aria-hidden="true">内嵌服务器配置修改</figcaption>
-</figure></li>
-</ol>
-<p>更换容器：</p>
-<p>​ 通过先将start内的容器依赖去除然后导入新依赖即可。</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/修改内嵌容器.png" alt="修改内嵌容器"><figcaption aria-hidden="true">修改内嵌容器</figcaption>
-</figure>
-</blockquote>
-<h2 id="过滤器和拦截器">过滤器和拦截器</h2>
-<blockquote>
-<p>过滤器：在进入servlet前过滤。</p>
-<p>实现方式：</p>
-<p>​ 创建类实现接口javax.servlet.Filter，加上@Component，然后使用一个如下的配置类注入spring容器。</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/filterConfig.png" alt="filterConfig"><figcaption aria-hidden="true">filterConfig</figcaption>
-</figure>
-<p>​ 创建类实现接口javax.servlet.Filter，加上@WebFilter，然后在主启动类中加上@ServletComponentScan注解。</p>
-<p>拦截器：拦截方法。</p>
-<p>​ 创建类实现HandlerInterceptor接口，然后创建配置类实现WebMvcConfigurer接口，配置类如下。</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/interceptorConfig.png" alt="interceptorConfig"><figcaption aria-hidden="true">interceptorConfig</figcaption>
-</figure>
-</blockquote>
-<h2 id="错误及异常处理">错误及异常处理</h2>
-<h3 id="数值校验">数值校验</h3>
-<blockquote>
-<p>在参数前加入@Valid/<span class="citation" data-cites="Validated注解">@Validated注解</span>，然后跟上BindingResult对象即可获取错误时的错误信息。如图</p>
-<p>利用配置文件ValidationMessages.properties中设置发生错误的提示信息。在bean的注解属性中通过{key}获取属性。</p>
-</blockquote>
-<h3 id="错误页指定">错误页指定</h3>
-<blockquote>
-<p>用到了再查</p>
-</blockquote>
-<h3 id="全局异常处理">全局异常处理</h3>
-<blockquote>
-<p>实现一个异常处理类并加上@ControllerAdvice注解。如图</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/全局异常处理.png" alt="全局异常处理"><figcaption aria-hidden="true">全局异常处理</figcaption>
-</figure>
-</blockquote>
-<h2 id="日志">日志</h2>
-<h3 id="日志文件输出">日志文件输出</h3>
-<blockquote>
-<p>在application中添加logging.file.path = xxx 默认日志名为spring.log</p>
-<p>或添加logging.file.name = xxxx 默认输出路径为项目当前路径。</p>
-<p>二者不能同时使用。</p>
-</blockquote>
-<h3 id="日志级别控制">日志级别控制</h3>
-<blockquote>
-<p>日志级别有TRACE、DEBUG、INFO、WARN、ERROR、FATAL、OFF。</p>
-<p>logging.level.包名 = xxx级别</p>
-<p>logging.level.root = 设置全局日志级别</p>
-</blockquote>
-<h2 id="文档生成">文档生成</h2>
-<h3 id="swaggle">swaggle</h3>
-<blockquote>
-<figure class="highlight"><table><tr><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;io.springfox&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;springfox-swagger2&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.9.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line">		</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;io.springfox&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;springfox-swagger-ui&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.9.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableSwagger2</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SwaggerConfig</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Docket <span class="title">api</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Docket(DocumentationType.SWAGGER_2).select()</span><br><span class="line">                .apis(RequestHandlerSelectors.any())</span><br><span class="line">                .paths(PathSelectors.any())</span><br><span class="line">                .build();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>访问http://localhost:8080/v2/api-docs拿到api的json</p>
-<p>访问http://localhost:8080/swagger-ui.html获取页面</p>
-</blockquote>
-<h2 id="监控">监控</h2>
-<blockquote>
-<p>本质上是通过log收集信息，然后利用信息分析。</p>
-</blockquote>
-<h2 id="缓存">缓存</h2>
-<blockquote>
-<p><span class="citation" data-cites="Cacheable">@Cacheable</span>(value = "xx", key = "zz", condition = "yyy")</p>
-<p>​ value 表示缓存名</p>
-<p>​ key为缓存键，需要用SPEL写</p>
-<p>​ condition为缓存触发的条件，需要用SPEL写</p>
-<p>​ 缓存值为对应方法的返回值</p>
-<p><span class="citation" data-cites="CacheEvict">@CacheEvict</span>(beforeInvocation = true表示在方法触发前就移除了缓存) 移除缓存</p>
-<p><span class="citation" data-cites="CachePut">@CachePut</span> 添加缓存</p>
-</blockquote>
-<h2 id="微服务">微服务</h2>
-<blockquote>
-<p>注册中心</p>
-<p>服务提供者</p>
-<p>服务追踪</p>
-<p>服务治理</p>
+<p><span class="citation" data-cites="EnableAutoConfiguration">@EnableAutoConfiguration</span> = <span class="citation" data-cites="AutoConfigurationPackage">@AutoConfigurationPackage</span> + <span class="citation" data-cites="Import">@Import</span>({AutoConfigurationImportSelector.class})</p>
+<p><span class="citation" data-cites="AutoConfigurationPackage">@AutoConfigurationPackage</span> = <span class="citation" data-cites="Import">@Import</span>({Registrar.class})</p>
+<p>故@EnableAutoConfiguration实际上相当于引入了AutoConfigurationImportSelector和Registrar。</p>
 </blockquote>
 ]]></content>
       <categories>
-        <category>框架入门</category>
+        <category>源码分析</category>
       </categories>
       <tags>
         <tag>Springboot</tag>
@@ -4832,8 +4600,240 @@
       </categories>
       <tags>
         <tag>分布式</tag>
-        <tag>数据库</tag>
         <tag>缓存</tag>
+        <tag>数据库</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mybatis流程源码分析</title>
+    <url>/2021/02/20/codeAnalyse/mybatis%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h1 id="mybatis流程">Mybatis流程</h1>
+<h2 id="创建sqlsessionfactory的流程">创建SqlSessionFactory的流程</h2>
+<blockquote>
+<p>由于创建工厂需要许多配置，mybatis利用了Builder模式。</p>
+<p>先创建SqlSessionFactoryBuilder，调用SqlSessionFactoryBuilder的build方法，本质上就是通过解析xml文件，将文件内容映射到Configuration对象中，然后利用这个对象产生builder创建工厂所需的配置，然后创建出SqlSessionFactory。</p>
+<p>具体则是先将xml的输入流传给SqlSessionFactoryBuilder，然后创建一个XMLConfigBuilder，负责解析xml内容放入configuration对象，解析的过程中会按类别解析，通过调用不同的方法解析xml的不同部分。解析mapper还有专门的XMLMapperBuilder其中对于二级缓存的处理也在这里进行。解析完成后configuration对象会保存全部的配置信息。</p>
+</blockquote>
+<h2 id="利用sqlsessionfactory创建sqlsession的流程">利用SqlSessionFactory创建SqlSession的流程</h2>
+<blockquote>
+<p>就是SqlSessionFactory调用openSession，传入ExecutorType、TransactionIsolationLevel、autoCommit三个参数，或让mybatis按默认设置，</p>
+<p>ExecutorType有BatchExecutor、ReuseExecutor、SimpleExecutor、CachingExecutor四种。</p>
+<p>​ BatchExecutor 让update操作变为批处理操作，即让连续的update先累积，等到下一次query操作前再一起执行。是使用List作为批处理存储。对于update操作会复用最近一次的statement。失败了会全部回滚。</p>
+<p>​ ReuseExecutor 复用Statement，利用Map&lt;String, Statement&gt;来判定。</p>
+<p>​ SimpleExecutor 即使用的Statement直接关闭。</p>
+<p>​ CachingExecutor 相当于在前面三个执行者的基础上套了一层缓存机制，让query方法先查看缓存，只有缓存没有时再让三个执行者执行操作。这里的缓存是通过mybatis自己实现的statement对象内部的cache实现的，有些类似hashmap，是利用cache和cachekey获得的结果。</p>
+<p>TransactionIsolationLevel即事物隔离级别。</p>
+<p>​ READ_UNCOMMITTED 读未提交 存在脏读、不可重复读、幻读</p>
+<p>​ READ_COMMITTED 读提交 存在不可重复读、幻读</p>
+<p>​ REPEATABLE_READ 可重复读 存在幻读</p>
+<p>​ SERIALIZABLE 序列化</p>
+<p>autoCommit是否自动提交。</p>
+</blockquote>
+<h2 id="利用sqlsession创建mapper">利用SqlSession创建Mapper</h2>
+<blockquote>
+<p>SqlSession使用getMapper方法，实际上是调用了configuration中的mapperRegistry的getMapper方法，这里使用了动态代理的设计模式。同时这里还使用了工厂方法，根据不同的类名创建对应的代理工厂。</p>
+<p>这个动态代理是JDK代理，它需要使用对应类加载器，对应类接口，对应的InvocationHandler。在mybatis中InvocationHandler是MapperProxy，MapperProxy的重写的invoke函数逻辑是对于Object自带的方法直接调用，对于接口默认的方法直接调用(这个特性是由于JDK8让接口方法可以有默认实现)。对于接口的方法则创建一个MapperMethod对象，该对象使用了缓存机制，利用Map&lt;Method, MapperMethod&gt;缓存方法。</p>
+<p>而MapperMethod的excuse即为代理方法的实现，该类中含有MethodSignature、SqlCommand两个内部类用于实现解析sql及方法，而具体方法实现是根据判断当前sql是增删改查中的哪种再调用sqlSession的方法来实现的。</p>
+</blockquote>
+<h2 id="executor与handler">Executor与Handler</h2>
+<blockquote>
+<p>Executor是通过StatementHandler来执行sql的。StatementHandler先prepare方法配置基础设置，然后使用parameterize来设置statement的参数。若为query操作则StatementHandler会使用ResultSetHandler来处理结果集。</p>
+<p>StatementHandler为抽象interface mybatis基于这个接口实现了抽象类BaseStatementHandler，还实现了路由类RoutingStatementHandler，路由类是用于根据参数创建对应具体类的。而抽象类是作为三个具体类的基础，三个具体类分别为CallableStatementHandler、PreparedStatementHandler、SimpleStatementHandler。</p>
+<p>抽象类提供给三个具体类prepare方法，其中prepare中含有抽象方法instantiateStatement，是由具体子类实现的。(模板方法模式)</p>
+</blockquote>
+<h2 id="mybatis对于数据库操作的整体流程">mybatis对于数据库操作的整体流程</h2>
+<blockquote>
+<p>先使用builder模式，根据输入的xml输入流，利用对应XML解析对象解析，并将结果最终存入Configuration对象，然后利用Configuration对象创建出一个对应的SqlSessionFactory。</p>
+<p>然后需要通过sqlSessionFactory的openSession方法创建一个SqlSession，这里可以设置SqlSession的Executor、TransactionIsolationLevel和autoCommit。Executor代表这个SqlSession采用什么执行器，执行器是对statement对象的处理。具体执行器共有3种：SimpleExecutor 、ReuseExecutor 、BatchExecutor 。同时若启用了缓存cache，则会在执行器外再包装一层CachingExecutor ，相当于对于查询操作提供了二级缓存。这个缓存是位于mybatis的MappedStatement类中。本质上这种缓存就是一个嵌套的哈希结构。Map&lt;Cache, TransactionalCache&gt;，TransactionalCache也是key-value结构。</p>
+<p>而事物隔离即为正常的数据库事物隔离级别。</p>
+<p>创建完SqlSession后，调用SqlSession的getMapper方法获取对应mapper对象。这里使用了动态代理。mybatis是先根据传入的类对象，通过configuration的配置信息中的MapperRegistry类对象找到对应的proxy工厂，利用代理工厂创建对应的代理对象。代理对象的创建使用的是JDK动态代理，即传入需要代理的类加载器、需要代理的接口、以及InvocationHandler。mybatis的handler是先判断方法是否为Object的，然后判断方法是否为接口默认实现的。只有接口未实现的方法才进行特殊处理，处理过程即为根据方法的类型(增删改查)，执行SqlSession的对应方法。</p>
+<p>SqlSession执行对应方法则是利用SqlSession内部的executor执行对应操作的。所以实际上sql操作还是由executor执行的。而executor执行操作需要利用StatementHandler先后执行prepare初始化基本配置和parameterize处理参数。参数的处理利用了ParameterHandler，这个时候typeHandler就会起作用。若为query操作还需要对返回值进行处理，处理时利用了ResultSetHandler，这个时候typeHandler就会起作用。</p>
+</blockquote>
+<h2 id="mybatis的缓存机制">mybatis的缓存机制</h2>
+<blockquote>
+<p>mybatis共有两个缓存机制：一级缓存和二级缓存。</p>
+<p>一级缓存默认开启且无法关闭。</p>
+<p>二级缓存需要配置。</p>
+<p>一级缓存是Executor的基本实现类BaseExecutor中实现的，本质上是个Map&lt;Object, Object&gt;。由于每个SqlSession里都带有一个Executor，故一级缓存是SqlSession层面的。</p>
+<p>二级缓存则需要手动配置，开启后会在具体的Executor之外使用CachingExecutor包装，这里使用了装饰者模式。二级缓存本质上是在namespace层面的缓存。</p>
+</blockquote>
+<h2 id="mybatis是怎么实现和springboot的整合的">mybatis是怎么实现和SpringBoot的整合的？</h2>
+<blockquote>
+
+</blockquote>
+]]></content>
+      <categories>
+        <category>源码分析</category>
+      </categories>
+      <tags>
+        <tag>数据库</tag>
+        <tag>Mybatis</tag>
+        <tag>orm</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SpringBoot常用配置</title>
+    <url>/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/</url>
+    <content><![CDATA[<h1 id="springboot常用配置">SpringBoot常用配置</h1>
+<h2 id="选择不同配置">选择不同配置</h2>
+<blockquote>
+<p>也可以通过在类中使用@Profile("xx")来表示这个类只有在xx为active的情况下才可使用。</p>
+<figure>
+<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/springboot多配置文件设置启用.png" alt="springboot多配置文件设置启用"><figcaption aria-hidden="true">springboot多配置文件设置启用</figcaption>
+</figure>
+</blockquote>
+<h2 id="自动加载配置文件的内容">自动加载配置文件的内容</h2>
+<blockquote>
+<p><span class="citation" data-cites="Value">@Value</span></p>
+<p><span class="citation" data-cites="ConfigurationProperties">@ConfigurationProperties</span>(prefix = "spring.datasource.druid.write") 使用该注解需要引入且要启用@EnableConfigurationProperties(使用前面一个注解的类.class)</p>
+<p><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;&#x2F;groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-configuration-processor&lt;&#x2F;artifactId&gt;</span><br><span class="line">    &lt;optional&gt;true&lt;&#x2F;optional&gt;</span><br><span class="line">&lt;&#x2F;dependency&gt;</span><br></pre></td></tr></table></figure></p>
+<p><span class="citation" data-cites="PropertySource">@PropertySource</span></p>
+</blockquote>
+<h2 id="配置文件的加载顺序下覆盖上">配置文件的加载顺序(下覆盖上)</h2>
+<blockquote>
+<ol type="1">
+<li>Application properties packaged inside your jar (application.properties and YAML variants).</li>
+<li>Profile-specific application properties packaged inside your jar (application-{profile}.properties and YAML variants).</li>
+<li>Application properties outside of your packaged jar (application.properties and YAML variants)</li>
+<li>Profile-specific application properties outside of your packaged jar (application-{profile}.properties and YAML variants).</li>
+</ol>
+</blockquote>
+<h2 id="自动加载的-application.properties-的加载顺序下覆盖上">自动加载的 application.properties 的加载顺序(下覆盖上)</h2>
+<blockquote>
+<ol type="1">
+<li><p>The classpath root</p></li>
+<li><p>The classpath /config package</p></li>
+<li><p>The current directory</p></li>
+<li><p>The /config subdirectory in the current directory</p></li>
+<li><p>Immediate child directories of the /config subdirectory</p></li>
+</ol>
+<p>4、5的差别就是如果config目录的根目录里有application.properties，则会将config子目录的application.properties覆盖。</p>
+<p>而classpath中springboot不会自动扫描config子目录中的目录。</p>
+<p>可以通过修改spring.config.name来修改默认配置文件名。</p>
+<p>修改spring.config.location 可以修改springboot获取配置文件的位置。</p>
+<p>修改spring.config.additional-location可以在springboot默认获取配置文件的位置的基础上补充一些获取配置文件的位置。optional: 前缀</p>
+</blockquote>
+<h2 id="可以使用来获取外部目录classpath中不能使用">可以使用*来获取外部目录，classpath中不能使用*</h2>
+<h2 id="可以使用---在.pro配置文件中划分逻辑页">可以使用#---在.pro配置文件中划分逻辑页</h2>
+<h2 id="使用---在.yml配置文件划分逻辑页">使用---在.yml配置文件划分逻辑页</h2>
+<h2 id="在多个配置文件中均存在同一个list的值则只会去最高优先级的list值">在多个配置文件中均存在同一个list的值，则只会去最高优先级的list值</h2>
+<h2 id="在多个配置文件中均存在同一个map的值则使用互补配置的方式构造map">在多个配置文件中均存在同一个Map的值，则使用互补配置的方式构造Map</h2>
+<h2 id="spring自动注入的注解">spring自动注入的注解</h2>
+<blockquote>
+<p><span class="citation" data-cites="Component">@Component</span>("name")将一个类生成一个Bean实例并用spring管理。<span class="citation" data-cites="Controller">@Controller</span>、<span class="citation" data-cites="Repository">@Repository</span>、<span class="citation" data-cites="Service都是类似的功能">@Service都是类似的功能</span>。这些注解要放在类上。</p>
+<p><span class="citation" data-cites="Bean">@Bean</span>("name")将一个方法返回的对象实例用spring管理。该注解放在方法上。</p>
+<p><span class="citation" data-cites="Autowired">@Autowired</span> 自动注入。该注解可以放在构造器方法、方法、参数、属性、注解上。</p>
+<p><span class="citation" data-cites="Primary">@Primary</span> 写在类上或方法上。为了消除自动装配的歧义性，如spring管理了两个都实现了同一父类的类，则存在@Primary 的类会被最先调用。</p>
+<p><span class="citation" data-cites="Qualifier">@Qualifier</span>("name")写在变量、方法、参数、类上、注解上，可以根据传入的name按名字查找spring管理的类。</p>
+</blockquote>
+<h2 id="spring监听器">Spring监听器</h2>
+<blockquote>
+<p>使用过程:</p>
+<p>​ 自定义事件，继承org.springframework.context.ApplicationEvent类。</p>
+<p>​ 自定义事件监听器，实现org.springframework.context.ApplicationListener接口。</p>
+<p>​ 在spring容器中发布事件。</p>
+<p>实现监听的方式：</p>
+<p>​ 自定义类实现ApplicationListener，在主函数中装载监听。</p>
+<p>​ 自定义类实现ApplicationListener，在接口上加上@Component注解</p>
+<p>​ 自定义类不实现接口，在对应方法上标明@EventListener注解。</p>
+<p>​ 自定义类实现ApplicationListener，在application.properties中配置context.listener.classes</p>
+</blockquote>
+<h2 id="spring内置容器的配置">Spring内置容器的配置</h2>
+<blockquote>
+<p>修改配置：</p>
+<ol type="1">
+<li><p>可以在application.properties中按server.xxx:的方式修改</p></li>
+<li><p>创建一个配置类通过编写public WebServerFactoryCustomizer<ConfigurableWebServerFactory> customizer()方法来设置。</ConfigurableWebServerFactory></p>
+<figure>
+<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/内嵌服务器配置修改.png" alt="内嵌服务器配置修改"><figcaption aria-hidden="true">内嵌服务器配置修改</figcaption>
+</figure></li>
+</ol>
+<p>更换容器：</p>
+<p>​ 通过先将start内的容器依赖去除然后导入新依赖即可。</p>
+<figure>
+<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/修改内嵌容器.png" alt="修改内嵌容器"><figcaption aria-hidden="true">修改内嵌容器</figcaption>
+</figure>
+</blockquote>
+<h2 id="过滤器和拦截器">过滤器和拦截器</h2>
+<blockquote>
+<p>过滤器：在进入servlet前过滤。</p>
+<p>实现方式：</p>
+<p>​ 创建类实现接口javax.servlet.Filter，加上@Component，然后使用一个如下的配置类注入spring容器。</p>
+<figure>
+<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/filterConfig.png" alt="filterConfig"><figcaption aria-hidden="true">filterConfig</figcaption>
+</figure>
+<p>​ 创建类实现接口javax.servlet.Filter，加上@WebFilter，然后在主启动类中加上@ServletComponentScan注解。</p>
+<p>拦截器：拦截方法。</p>
+<p>​ 创建类实现HandlerInterceptor接口，然后创建配置类实现WebMvcConfigurer接口，配置类如下。</p>
+<figure>
+<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/interceptorConfig.png" alt="interceptorConfig"><figcaption aria-hidden="true">interceptorConfig</figcaption>
+</figure>
+</blockquote>
+<h2 id="错误及异常处理">错误及异常处理</h2>
+<h3 id="数值校验">数值校验</h3>
+<blockquote>
+<p>在参数前加入@Valid/<span class="citation" data-cites="Validated注解">@Validated注解</span>，然后跟上BindingResult对象即可获取错误时的错误信息。如图</p>
+<p>利用配置文件ValidationMessages.properties中设置发生错误的提示信息。在bean的注解属性中通过{key}获取属性。</p>
+</blockquote>
+<h3 id="错误页指定">错误页指定</h3>
+<blockquote>
+<p>用到了再查</p>
+</blockquote>
+<h3 id="全局异常处理">全局异常处理</h3>
+<blockquote>
+<p>实现一个异常处理类并加上@ControllerAdvice注解。如图</p>
+<figure>
+<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/全局异常处理.png" alt="全局异常处理"><figcaption aria-hidden="true">全局异常处理</figcaption>
+</figure>
+</blockquote>
+<h2 id="日志">日志</h2>
+<h3 id="日志文件输出">日志文件输出</h3>
+<blockquote>
+<p>在application中添加logging.file.path = xxx 默认日志名为spring.log</p>
+<p>或添加logging.file.name = xxxx 默认输出路径为项目当前路径。</p>
+<p>二者不能同时使用。</p>
+</blockquote>
+<h3 id="日志级别控制">日志级别控制</h3>
+<blockquote>
+<p>日志级别有TRACE、DEBUG、INFO、WARN、ERROR、FATAL、OFF。</p>
+<p>logging.level.包名 = xxx级别</p>
+<p>logging.level.root = 设置全局日志级别</p>
+</blockquote>
+<h2 id="文档生成">文档生成</h2>
+<h3 id="swaggle">swaggle</h3>
+<blockquote>
+<figure class="highlight"><table><tr><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;io.springfox&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;springfox-swagger2&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.9.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line">		</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;io.springfox&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;springfox-swagger-ui&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.9.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableSwagger2</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SwaggerConfig</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Docket <span class="title">api</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Docket(DocumentationType.SWAGGER_2).select()</span><br><span class="line">                .apis(RequestHandlerSelectors.any())</span><br><span class="line">                .paths(PathSelectors.any())</span><br><span class="line">                .build();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>访问http://localhost:8080/v2/api-docs拿到api的json</p>
+<p>访问http://localhost:8080/swagger-ui.html获取页面</p>
+</blockquote>
+<h2 id="监控">监控</h2>
+<blockquote>
+<p>本质上是通过log收集信息，然后利用信息分析。</p>
+</blockquote>
+<h2 id="缓存">缓存</h2>
+<blockquote>
+<p><span class="citation" data-cites="Cacheable">@Cacheable</span>(value = "xx", key = "zz", condition = "yyy")</p>
+<p>​ value 表示缓存名</p>
+<p>​ key为缓存键，需要用SPEL写</p>
+<p>​ condition为缓存触发的条件，需要用SPEL写</p>
+<p>​ 缓存值为对应方法的返回值</p>
+<p><span class="citation" data-cites="CacheEvict">@CacheEvict</span>(beforeInvocation = true表示在方法触发前就移除了缓存) 移除缓存</p>
+<p><span class="citation" data-cites="CachePut">@CachePut</span> 添加缓存</p>
+</blockquote>
+<h2 id="微服务">微服务</h2>
+<blockquote>
+<p>注册中心</p>
+<p>服务提供者</p>
+<p>服务追踪</p>
+<p>服务治理</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>框架入门</category>
+      </categories>
+      <tags>
+        <tag>Springboot</tag>
       </tags>
   </entry>
   <entry>
@@ -4878,28 +4878,6 @@
       </categories>
       <tags>
         <tag>数据库</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Restful基本使用</title>
-    <url>/2021/02/20/designPattern/Restful%E9%A3%8E%E6%A0%BC/</url>
-    <content><![CDATA[<h1 id="restful风格">Restful风格</h1>
-<blockquote>
-<p>本质上就是将接口的功能让http的语义来表示。</p>
-<p>查询-&gt;GET</p>
-<p>新增-&gt;POST</p>
-<p>更新-&gt;PUT</p>
-<p>删除-&gt;DELETE</p>
-<p>本质上要做到，看url知道要什么，看http method知道要做什么，看http status code知道哪里有问题。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>代码规范</category>
-        <category>代码风格</category>
-      </categories>
-      <tags>
-        <tag>设计模式</tag>
-        <tag>代码风格</tag>
       </tags>
   </entry>
   <entry>
@@ -5157,67 +5135,6 @@
       </tags>
   </entry>
   <entry>
-    <title>物理层</title>
-    <url>/2021/02/20/computerNetwork/%E7%AC%AC2%E7%AB%A0-%E7%89%A9%E7%90%86%E5%B1%82/</url>
-    <content><![CDATA[<h1 id="物理层">物理层</h1>
-<h2 id="物理层的基本概念">物理层的基本概念</h2>
-<blockquote>
-<p>尼奎斯特定理 $ C = 2Blog_2V $ 。C为最大数据速率，B为带宽频率，V为离散等级。</p>
-<p>香农定理<span class="math inline">\(C = B log_2(1+S/N)\)</span> 。S/N是信噪比，<span class="math inline">\(10log_{10}S/N\)</span>为分贝，B为带宽频率，C为最大数据速率。</p>
-</blockquote>
-<h3 id="物理层的主要任务">物理层的主要任务</h3>
-<p>物理层解决如何在连接各种计算机的传输媒体上传输数据比特流。</p>
-<p>确定与传输媒体的接口的一些特性:</p>
-<blockquote>
-<p>机械特性:如接口形状、大小、引线数目</p>
-<p>电气特性:如规定电压范围</p>
-<p>功能特性:如规定-5V表示0</p>
-<p>过程特性/规程特性:规定建立连接时各个相关部件的工作步骤</p>
-</blockquote>
-<h2 id="数据通信的基础知识">数据通信的基础知识</h2>
-<blockquote>
-<p>单向通信/单工通信 ---------只能有一个方向的通信而没有反方向的交互，如电台</p>
-<p>半双工通信---------通信双方都可以发送消息，但不能双方同时发送。如对讲机</p>
-<p>全双工通信--------通信的双方-可以同时发送和接收消息。如电话</p>
-<p>数据比特流传输距离较短,用解调器变为模拟信号后传输距离会加长。</p>
-<p>数据--------传送消息的实体</p>
-<p>信号--------数据的电气/电磁表现</p>
-<p>​ 模拟信号--------连续</p>
-<p>​ 数字信号---------离散</p>
-<p>码元----------在使用时间域的波形表示数字信号时，代表不同离散数值的基本波形</p>
-<p>信号调制方法:调幅、调频、调相</p>
-</blockquote>
-<h2 id="物理层下的传输媒体">物理层下的传输媒体</h2>
-<h3 id="导向传输媒体">导向传输媒体</h3>
-<blockquote>
-<p><span class="math display">\[
-常用传输频率10^4-------- 10^{16}
-\]</span></p>
-<p>双绞线:</p>
-<p>​ 屏蔽双绞线STP</p>
-<p>​ 无屏蔽双绞线UTP</p>
-<p>同轴电缆:</p>
-<p>​ 50Ω同轴电缆用于数字传输，基带同轴电缆</p>
-<p>​ 75Ω同轴电缆用于模拟传输，宽带同轴电缆</p>
-</blockquote>
-<h2 id="信道复用技术">信道复用技术</h2>
-<blockquote>
-<p>频分复用:每个用户使用不同的频率传递。</p>
-<p>时分复用:将单位时间划分为若干个时间片，每个用户使用对应的时间片传递。 统计时分复用在发送数据时在数据中添加标记，接收方根据标记判定谁接收并将标记去除。</p>
-<p>波分复用:每个用户使用不同的波长传递。</p>
-<p>码分复用:自己的码片乘积为1，同他人码片乘积为0，传输的信号为原数据同对应码片的乘积，总的传输信号为各个设备传输的信号之和，接收者只要将总信号同自己的码片相乘即可得到需要接收的值。</p>
-<p>码分复用的缺点:设备数变多后码片需要越多</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>计算机网络</category>
-      </categories>
-      <tags>
-        <tag>网络</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>数据链路层</title>
     <url>/2021/02/20/computerNetwork/%E7%AC%AC3%E7%AB%A0-%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82/</url>
     <content><![CDATA[<h1 id="数据链路层">数据链路层</h1>
@@ -5416,67 +5333,6 @@
       </tags>
   </entry>
   <entry>
-    <title>传输层</title>
-    <url>/2021/02/20/computerNetwork/%E7%AC%AC5%E7%AB%A0-%E4%BC%A0%E8%BE%93%E5%B1%82/</url>
-    <content><![CDATA[<h1 id="传输层">传输层</h1>
-<h2 id="各层协议">各层协议</h2>
-<blockquote>
-<p>应用层: http、https、ftp、DNS、SMTP、PoP3、RDP</p>
-<p>传输层: TCP、UDP</p>
-<p>网络层: IP(RIP、OSPF、BGP) 、ICMP、IGMP、ARP</p>
-</blockquote>
-<h2 id="传输层两个协议应用场景">传输层两个协议应用场景</h2>
-<h3 id="tcp">TCP</h3>
-<blockquote>
-<p>分段、编号、流量控制、可靠传输、建立会话、面向连接。</p>
-</blockquote>
-<h3 id="udp">UDP</h3>
-<blockquote>
-<p>一个数据包就能完成数据通信、不建立会话。</p>
-</blockquote>
-<h2 id="传输层和应用层之间的关系">传输层和应用层之间的关系</h2>
-<blockquote>
-<p>http = TCP + 80</p>
-<p>https = TCP + 443</p>
-<p>ftp = TCP + 21</p>
-<p>SMTP = TCP + 25</p>
-<p>POP3 = TCP + 110</p>
-<p>RDP = TCP + 3389</p>
-<p>共享文件夹 = TCP + 445</p>
-<p>SQLServer = TCP + 1433</p>
-<p>DNS = UDP + 53 OR TCP + 53</p>
-</blockquote>
-<h2 id="应用层协议和服务之间的关系">应用层协议和服务之间的关系</h2>
-<blockquote>
-<p>服务运行后在TCP或UDP的某个端口监听客户端请求。</p>
-</blockquote>
-<h2 id="udp协议">UDP协议</h2>
-<blockquote>
-<p>两个对等运输实体在通信时传送的数据单位叫作运输协议数据单元。</p>
-<p>TCP传送的协议数据单元是<strong>TCP报文段</strong>。</p>
-<p>UDP传送的协议数据单元是<strong>UDP报文</strong>或<strong>用户数据报</strong>。</p>
-<p>UDP的首部格式<img src="/2021/02/20/computerNetwork/%E7%AC%AC5%E7%AB%A0-%E4%BC%A0%E8%BE%93%E5%B1%82/UDP首部格式.png" alt="UDP首部格式"></p>
-</blockquote>
-<h2 id="tcp协议">TCP协议</h2>
-<blockquote>
-<p><strong>TCP的特点</strong></p>
-<p>​ TCP是面向连接的传输层协议，每条TCP连接只能有两个端点，故TCP连接是点对点的。</p>
-<p>​ TCP提供可靠交付的服务，TCP提供全双工通信。</p>
-<p>​ TCP面向字节流。</p>
-<p>​ 提供流量控制。</p>
-<p>​ 避免网络拥塞</p>
-</blockquote>
-<h3 id="tcp如何">TCP如何</h3>
-]]></content>
-      <categories>
-        <category>基础知识</category>
-        <category>计算机网络</category>
-      </categories>
-      <tags>
-        <tag>网络</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>网络层</title>
     <url>/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/</url>
     <content><![CDATA[<h1 id="网络层">网络层</h1>
@@ -5665,6 +5521,67 @@
       </tags>
   </entry>
   <entry>
+    <title>传输层</title>
+    <url>/2021/02/20/computerNetwork/%E7%AC%AC5%E7%AB%A0-%E4%BC%A0%E8%BE%93%E5%B1%82/</url>
+    <content><![CDATA[<h1 id="传输层">传输层</h1>
+<h2 id="各层协议">各层协议</h2>
+<blockquote>
+<p>应用层: http、https、ftp、DNS、SMTP、PoP3、RDP</p>
+<p>传输层: TCP、UDP</p>
+<p>网络层: IP(RIP、OSPF、BGP) 、ICMP、IGMP、ARP</p>
+</blockquote>
+<h2 id="传输层两个协议应用场景">传输层两个协议应用场景</h2>
+<h3 id="tcp">TCP</h3>
+<blockquote>
+<p>分段、编号、流量控制、可靠传输、建立会话、面向连接。</p>
+</blockquote>
+<h3 id="udp">UDP</h3>
+<blockquote>
+<p>一个数据包就能完成数据通信、不建立会话。</p>
+</blockquote>
+<h2 id="传输层和应用层之间的关系">传输层和应用层之间的关系</h2>
+<blockquote>
+<p>http = TCP + 80</p>
+<p>https = TCP + 443</p>
+<p>ftp = TCP + 21</p>
+<p>SMTP = TCP + 25</p>
+<p>POP3 = TCP + 110</p>
+<p>RDP = TCP + 3389</p>
+<p>共享文件夹 = TCP + 445</p>
+<p>SQLServer = TCP + 1433</p>
+<p>DNS = UDP + 53 OR TCP + 53</p>
+</blockquote>
+<h2 id="应用层协议和服务之间的关系">应用层协议和服务之间的关系</h2>
+<blockquote>
+<p>服务运行后在TCP或UDP的某个端口监听客户端请求。</p>
+</blockquote>
+<h2 id="udp协议">UDP协议</h2>
+<blockquote>
+<p>两个对等运输实体在通信时传送的数据单位叫作运输协议数据单元。</p>
+<p>TCP传送的协议数据单元是<strong>TCP报文段</strong>。</p>
+<p>UDP传送的协议数据单元是<strong>UDP报文</strong>或<strong>用户数据报</strong>。</p>
+<p>UDP的首部格式<img src="/2021/02/20/computerNetwork/%E7%AC%AC5%E7%AB%A0-%E4%BC%A0%E8%BE%93%E5%B1%82/UDP首部格式.png" alt="UDP首部格式"></p>
+</blockquote>
+<h2 id="tcp协议">TCP协议</h2>
+<blockquote>
+<p><strong>TCP的特点</strong></p>
+<p>​ TCP是面向连接的传输层协议，每条TCP连接只能有两个端点，故TCP连接是点对点的。</p>
+<p>​ TCP提供可靠交付的服务，TCP提供全双工通信。</p>
+<p>​ TCP面向字节流。</p>
+<p>​ 提供流量控制。</p>
+<p>​ 避免网络拥塞</p>
+</blockquote>
+<h3 id="tcp如何">TCP如何</h3>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>计算机网络</category>
+      </categories>
+      <tags>
+        <tag>网络</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>应用层</title>
     <url>/2021/02/20/computerNetwork/%E7%AC%AC6%E7%AB%A0-%E5%BA%94%E7%94%A8%E5%B1%82/</url>
     <content><![CDATA[<h2 id="使用tcp">使用TCP</h2>
@@ -5682,6 +5599,89 @@
       </categories>
       <tags>
         <tag>网络</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>物理层</title>
+    <url>/2021/02/20/computerNetwork/%E7%AC%AC2%E7%AB%A0-%E7%89%A9%E7%90%86%E5%B1%82/</url>
+    <content><![CDATA[<h1 id="物理层">物理层</h1>
+<h2 id="物理层的基本概念">物理层的基本概念</h2>
+<blockquote>
+<p>尼奎斯特定理 $ C = 2Blog_2V $ 。C为最大数据速率，B为带宽频率，V为离散等级。</p>
+<p>香农定理<span class="math inline">\(C = B log_2(1+S/N)\)</span> 。S/N是信噪比，<span class="math inline">\(10log_{10}S/N\)</span>为分贝，B为带宽频率，C为最大数据速率。</p>
+</blockquote>
+<h3 id="物理层的主要任务">物理层的主要任务</h3>
+<p>物理层解决如何在连接各种计算机的传输媒体上传输数据比特流。</p>
+<p>确定与传输媒体的接口的一些特性:</p>
+<blockquote>
+<p>机械特性:如接口形状、大小、引线数目</p>
+<p>电气特性:如规定电压范围</p>
+<p>功能特性:如规定-5V表示0</p>
+<p>过程特性/规程特性:规定建立连接时各个相关部件的工作步骤</p>
+</blockquote>
+<h2 id="数据通信的基础知识">数据通信的基础知识</h2>
+<blockquote>
+<p>单向通信/单工通信 ---------只能有一个方向的通信而没有反方向的交互，如电台</p>
+<p>半双工通信---------通信双方都可以发送消息，但不能双方同时发送。如对讲机</p>
+<p>全双工通信--------通信的双方-可以同时发送和接收消息。如电话</p>
+<p>数据比特流传输距离较短,用解调器变为模拟信号后传输距离会加长。</p>
+<p>数据--------传送消息的实体</p>
+<p>信号--------数据的电气/电磁表现</p>
+<p>​ 模拟信号--------连续</p>
+<p>​ 数字信号---------离散</p>
+<p>码元----------在使用时间域的波形表示数字信号时，代表不同离散数值的基本波形</p>
+<p>信号调制方法:调幅、调频、调相</p>
+</blockquote>
+<h2 id="物理层下的传输媒体">物理层下的传输媒体</h2>
+<h3 id="导向传输媒体">导向传输媒体</h3>
+<blockquote>
+<p><span class="math display">\[
+常用传输频率10^4-------- 10^{16}
+\]</span></p>
+<p>双绞线:</p>
+<p>​ 屏蔽双绞线STP</p>
+<p>​ 无屏蔽双绞线UTP</p>
+<p>同轴电缆:</p>
+<p>​ 50Ω同轴电缆用于数字传输，基带同轴电缆</p>
+<p>​ 75Ω同轴电缆用于模拟传输，宽带同轴电缆</p>
+</blockquote>
+<h2 id="信道复用技术">信道复用技术</h2>
+<blockquote>
+<p>频分复用:每个用户使用不同的频率传递。</p>
+<p>时分复用:将单位时间划分为若干个时间片，每个用户使用对应的时间片传递。 统计时分复用在发送数据时在数据中添加标记，接收方根据标记判定谁接收并将标记去除。</p>
+<p>波分复用:每个用户使用不同的波长传递。</p>
+<p>码分复用:自己的码片乘积为1，同他人码片乘积为0，传输的信号为原数据同对应码片的乘积，总的传输信号为各个设备传输的信号之和，接收者只要将总信号同自己的码片相乘即可得到需要接收的值。</p>
+<p>码分复用的缺点:设备数变多后码片需要越多</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+        <category>计算机网络</category>
+      </categories>
+      <tags>
+        <tag>网络</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Restful基本使用</title>
+    <url>/2021/02/20/designPattern/Restful%E9%A3%8E%E6%A0%BC/</url>
+    <content><![CDATA[<h1 id="restful风格">Restful风格</h1>
+<blockquote>
+<p>本质上就是将接口的功能让http的语义来表示。</p>
+<p>查询-&gt;GET</p>
+<p>新增-&gt;POST</p>
+<p>更新-&gt;PUT</p>
+<p>删除-&gt;DELETE</p>
+<p>本质上要做到，看url知道要什么，看http method知道要做什么，看http status code知道哪里有问题。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>代码规范</category>
+        <category>代码风格</category>
+      </categories>
+      <tags>
+        <tag>设计模式</tag>
+        <tag>代码风格</tag>
       </tags>
   </entry>
   <entry>
@@ -6020,8 +6020,8 @@
 ]]></content>
       <categories>
         <category>基础知识</category>
-        <category>源码分析</category>
         <category>计算机网络</category>
+        <category>源码分析</category>
       </categories>
       <tags>
         <tag>I/O</tag>
