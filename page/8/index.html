@@ -198,20 +198,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">52</span>
+          <span class="site-state-item-count">54</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-count">17</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-count">33</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/21/JVMKnowledge/3.%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/26/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/21/JVMKnowledge/3.%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7/" class="post-title-link" itemprop="url">3.常用工具</a>
+          <a href="/2021/03/26/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80/" class="post-title-link" itemprop="url">分布式基础</a>
         </h2>
 
         <div class="post-meta-container">
@@ -287,14 +287,14 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2021-03-21 00:00:00" itemprop="dateCreated datePublished" datetime="2021-03-21T00:00:00+08:00">2021-03-21</time>
+      <time title="创建时间：2021-03-26 00:00:00" itemprop="dateCreated datePublished" datetime="2021-03-26T00:00:00+08:00">2021-03-26</time>
     </span>
       <span class="post-meta-item">
         <span class="post-meta-item-icon">
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-24 18:11:30" itemprop="dateModified" datetime="2021-03-24T18:11:30+08:00">2021-03-24</time>
+        <time title="修改时间：2021-04-02 00:40:57" itemprop="dateModified" datetime="2021-04-02T00:40:57+08:00">2021-04-02</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -302,7 +302,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/JVM/" itemprop="url" rel="index"><span itemprop="name">JVM</span></a>
+          <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
         </span>
     </span>
 
@@ -314,14 +314,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>683</span>
+      <span>3.2k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>3 分钟</span>
     </span>
 </div>
 
@@ -332,51 +332,182 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="常用工具">常用工具</h1>
-<h2 id="jps">jps</h2>
+          <h1 id="分布式基础">分布式基础</h1>
+<h2 id="分布式怎么进行数据切分访问">分布式怎么进行数据切分访问？</h2>
 <blockquote>
-<p>jps用于列出正在运行的虚拟机进程，并显示虚拟机执行主类名称及这些进程的本地虚拟机唯一ID。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jps [ options ] [ hostid ]</span><br></pre></td></tr></table></figure>
+<p>显然分布式服务中，必然存在服务集群，一般而言是怎么访问这些集群的呢？往往使用hash来将用户划分到不同的区域，以简单的hash函数为例：</p>
+<p>​ 假设存在6台服务器，此时采用的hash函数为(key)%6，这样选择对应的服务器。显然是可以实现功能的。当如果服务器的数量突然减少或增加了，此时hash函数将要变化，而这时原有的映射关系将直接无用。怎么解决这个问题呢？<strong>一致性hash！</strong></p>
+<p><strong>一致性hash算法</strong></p>
+<p>​ 即使用2^32作为取模的数，将整个区域视为一个圆环，先对服务器进行哈希处理，让其发布在圆环的不同位置，然后当有请求到来时，对请求进行哈希处理，此时会发现请求也落在圆环的某个位置，然后沿顺时针查找该位置离哪个服务器最近，即可找到对应提供服务的服务器。此时若需要添加服务器，只需往圆环上添加新位置即可，只需局部调整，无须全部更新。</p>
 <figure>
-<img src="/2021/03/21/JVMKnowledge/3.%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7/jps.png" alt="jps"><figcaption aria-hidden="true">jps</figcaption>
+<img src="/2021/03/26/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80/一致性哈希环.png" alt="一致性哈希环"><figcaption aria-hidden="true">一致性哈希环</figcaption>
 </figure>
+<p>​ 当然这样有时会导致某些数据累积在同一台服务器上，一致性hash为了解决这个问题引入了虚拟节点机制，即用一个服务器结点计算多次哈希，在每个计算位置放置服务器结点，以保障数据可以比较合理的分布。</p>
+<p>一些分布式集群使用一致性hash(或类似原理)的场景：</p>
+<p>​ redis cluster：类似于一致性hash的思想，对于redis集群采用哈希槽的设计思想，即redis cluster有固定的16384即16K个哈希槽(因为16384个槽在传递配置信息时只需要传输2k的位图，16k/ 8bit = 2k，且16k大小的槽足够redis集群使用了)，对请求进行哈希操作时使用16384作为模数，让请求分布到槽中，而每个主机会负责管理一部分的槽。在进行主机的切换拓展时可以通过指定哪个槽由哪个主机负责来实现拓展和移除主机。</p>
 </blockquote>
-<h2 id="jstat">jstat</h2>
+<h2 id="分布式集群怎么选主">分布式集群怎么选主？</h2>
 <blockquote>
-<p>jstat用于监视虚拟机各种运行状态信息的命令行工具。可以显示本地或远程虚拟机进程中类加载、内存、垃圾收集、即时编译等运行时数据。</p>
-<p>往往通过jps找出对应进程本地虚拟机唯一ID，加上对应参数来查看具体虚拟机信息。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jstat [ option vmid [interval[s|ms] [count]] ]</span><br></pre></td></tr></table></figure>
-<p>如<img src="/2021/03/21/JVMKnowledge/3.%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7/jstat.png" alt="jstat"></p>
+<p>分布式集群中往往需要一个主进行管理操作，一般是通过主进行写操作，通过从机进行读操作。</p>
+<p>选主的算法：<strong>基于序号的选主算法(Bully算法)</strong>、<strong>多数派选主算法(Raft和ZAB算法)</strong></p>
 </blockquote>
-<h2 id="jinfo">jinfo</h2>
+<h3 id="bully算法">Bully算法</h3>
 <blockquote>
-<p>jinfo的作用是实时查看和调整虚拟机各项参数。</p>
-<p>jinfo + jps查看的唯一ID：打印全部配置信息。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jinfo [ option ] pid</span><br></pre></td></tr></table></figure>
+<p>选主过程主要分为三种消息</p>
+<table>
+<thead>
+<tr class="header">
+<th><strong>#</strong></th>
+<th><strong>消息类型</strong></th>
+<th><strong>消息描述</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>Election消息</td>
+<td>用于发起选举</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>Alive消息</td>
+<td>对Election消息的应答</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>Victory</td>
+<td>竞选成功的节点向其他节点宣誓主权</td>
+</tr>
+</tbody>
+</table>
+<p>触发选举的时机有两个：</p>
+<p>​ 错误结点恢复。</p>
+<p>​ 检测到master节点故障。</p>
+<p>选举过程：</p>
+<p>​ 1.各节点都判断自己的ID是否最大，若是最大的则直接向其他结点发送Victory消息。</p>
+<p>​ 2.若自己不是当前存活的结点中ID最大的，需要向比自己大的结点发送Election消息。</p>
+<p>​ 3.在规定时间内若没有收到任何结点的Alive消息，则会认为自己为最大的结点，并像其他结点发送Victory消息。若收到比自己大的结点的Alive消息，则会等待收到最大结点的Victory消息。</p>
+<p>​ 4.若收到了比自己小的节点发来的Election消息，则会回复Alive消息。</p>
+<p>优点：选举速度快、算法复杂度低、实现简单。</p>
+<p>缺点：所有节点需要每个节点的相关信息，需要额外信息存储。</p>
+<p>​ 若一个ID比现有集群的master大的结点加入，且不稳定即频繁退出、加入，会导致当前集群频繁进行选主。</p>
+</blockquote>
+<h3 id="raft算法---投票">Raft算法---投票</h3>
+<blockquote>
+<p>Etcd使用raft算法。</p>
+<p>raft集群各角色：</p>
+<table>
+<thead>
+<tr class="header">
+<th>角色</th>
+<th><strong>角色描述</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Leader</strong></td>
+<td>主节点，同一时刻只有一个主节点，负责整个集群的协调和管理</td>
+</tr>
+<tr class="even">
+<td><strong>Candidate</strong></td>
+<td>候选节点，只有候选节点才可以被选为新Leader，每个节点都可能成为候选节点</td>
+</tr>
+<tr class="odd">
+<td><strong>Follower</strong></td>
+<td>Leader的追随者，该角色不能发起选主</td>
+</tr>
+</tbody>
+</table>
+<p>触发选主时机：</p>
+<p>​ Leader故障或任期满。</p>
+<p><strong>数据提交流程</strong>：</p>
+<p>​ Leader收到数据操作请求时，先产生对应log，然后把log的请求发送给各个Follower。每个follower收到请求后会选择是否听从命令，听从返回true，反对返回false。当超过半数的follower成功写log，leader则开始第二阶段的提交，正式写入数据，然后也给其follower发送请求，当超过半数follower成功写入数据，该请求才正式完成。若这两个步骤其中某个步骤没有超过半数的follower成功执行，则这个事务不成功。</p>
+<p><strong>选主流程</strong>：</p>
 <figure>
-<img src="/2021/03/21/JVMKnowledge/3.%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7/jinfo.png" alt="jinfo"><figcaption aria-hidden="true">jinfo</figcaption>
+<img src="/2021/03/26/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80/raft选主.png" alt="raft选主"><figcaption aria-hidden="true">raft选主</figcaption>
 </figure>
+<p>初始化时各个结点均为Follower，每个Follower内部维护了一个随机的timer。timer时间到了没有人主动联系时就会变为candidate。</p>
+<p>当出现candidate节点时，candidate节点会发送请求给follower节点，每个follower节点只能投一张票。</p>
+<p>对于相同情况的candidate，follower按照先来先投票的策略投票。</p>
+<p>发起选主的结点若得到一半以上的结点，则会成为主节点，状态变为Leader，其他结点会由Candidate变为Follower状态，此时Leader和Follower通过心跳保持连接。当follower接收到心跳信号时会刷新内部timer。</p>
+<p>若Leader任期到了，Leader会降为Follower，进行新一轮选主。</p>
+<p><strong>选主可能的问题</strong></p>
+<p>​ 当参选的candidate内部数据是缺失/错误的时，如何解决冲突？</p>
+<p>​ 1.可以当candidate变为Leader前，从所有的follower处获取数据。</p>
+<p>​ 2.当follower遇见这种candidate时不投票给他。(Raft选择的做法)。</p>
+<p>​ Raft具体解决方案：</p>
+<p>​ 在candidate请求被投票时会传递term、lastLogIndex、lastLogTerm三个信息。</p>
+<table>
+<thead>
+<tr class="header">
+<th>参数名</th>
+<th>参数含义</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>term</strong></td>
+<td>自身所处的选举周期</td>
+</tr>
+<tr class="even">
+<td><strong>lastLogIndex</strong></td>
+<td>log最新的index值</td>
+</tr>
+<tr class="odd">
+<td><strong>lastLogTerm</strong></td>
+<td>log中最近的index是在哪个term产生的</td>
+</tr>
+</tbody>
+</table>
+<p>​ 投票结点内部会维护currentTerm，节点自身所处term。log[]自身log集合。commitIndex，log中最后被提交的index值。</p>
+<p>​ 当term&lt;currentTrem时，拒绝投票。</p>
+<p>​ 当已经投票给其他结点时，拒绝投票。</p>
+<p>​ log匹配时，投票。</p>
+<p><strong>优点</strong>：选举速度快，算法复杂度低，易于实现。新结点加入时不会频繁切主，需要得到半数以上支持才会切主。</p>
+<p><strong>缺点</strong>：通信量大。</p>
 </blockquote>
-<h2 id="jmap">jmap</h2>
+<h3 id="zab算法----优先级的民主投票">ZAB算法 -- 优先级的民主投票</h3>
 <blockquote>
-<p>Java内存映像工具，jmap命令用于生成堆转储快照即heap dump/dump文件。</p>
-<p>jmap作用除了获取堆转储快照之外，还可以查询finalize执行队列、Java堆和方法区的详细信息，如空间使用率、当前使用的收集器等。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jmap [ option ] vmid</span><br></pre></td></tr></table></figure>
-<figure>
-<img src="/2021/03/21/JVMKnowledge/3.%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7/jmap.png" alt="jmap"><figcaption aria-hidden="true">jmap</figcaption>
-</figure>
-</blockquote>
-<h2 id="jhat">jhat</h2>
-<blockquote>
-<p>jhat一般是同jmap配合使用，通过jhat命令可以分析jmap产生的堆转储快照。一般不用这个指令，因为jhat耗时久且有更好用的工具可以用于分析dump文件。</p>
-</blockquote>
-<h2 id="jstack">jstack</h2>
-<blockquote>
-<p>jstack命令用于生成虚拟机当前时刻的线程快照(threaddump/javacore文件)。线程快照是当前虚拟机内每一条线程正在执行的方法堆栈的集合，生成快照的目的通常是定位线程出现长时间停顿的原因：如死锁、死循环、请求外部资源导致长时间挂起等。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jstack [ option ] vmid</span><br></pre></td></tr></table></figure>
-<figure>
-<img src="/2021/03/21/JVMKnowledge/3.%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7/jstack.png" alt="jstack"><figcaption aria-hidden="true">jstack</figcaption>
-</figure>
+<p>ZAB是Zookeeper实现分布式协调而设计的。</p>
+<p>ZAB选主的角色：</p>
+<p>​ Leader：主节点。</p>
+<p>​ Follower：跟随者。</p>
+<p>​ Observer：观察者。</p>
+<p>ZAB选举过程中，集群节点的状态：</p>
+<table>
+<thead>
+<tr class="header">
+<th>状态</th>
+<th><strong>状态描述</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Looking</strong></td>
+<td>选举状态，此状态下集群中没有Leader，自己进入选主状态。</td>
+</tr>
+<tr class="even">
+<td><strong>Leading</strong></td>
+<td>领导者状态，已选好主且当前结点为Leader</td>
+</tr>
+<tr class="odd">
+<td><strong>Following</strong></td>
+<td>追随者状态，选为Leader后，其他结点转为Following</td>
+</tr>
+<tr class="even">
+<td><strong>Observing</strong></td>
+<td>观察者状态，持观望态度</td>
+</tr>
+</tbody>
+</table>
+<p>ZAB算法的每个结点都有唯一三元组(server_id，server_zxId，epoch)表示。server_id为当前节点的ID，server_zxId为当前节点存放数据的最新值id，epoch为当前选主进行的轮数。</p>
+<p>具体选主时通过(vote_id，vote_zxId)表示投票给哪个节点，选主唯一原则是server_zxId值最大则成为Leader，如果相同则看server_id最大值。</p>
+<p><strong>具体选主流程：</strong></p>
+<p>​ 1.系统初始化时，即第一轮选主，epoch=1，所有节点zxID=0，此时所有节点都推选自己，将投票信息广播出去。</p>
+<p>​ 2.此时epoch和zxId都是相同的，根据ZAB算法判断，会依据server_id最大者为推选对象，节点更新vote_id重新广播。</p>
+<p>​ 3.节点都推选了server_id最大者后，该节点进入Leading状态，其他结点为Following状态，Leader和Follower建立心跳机制。</p>
+<p>优点：对系统无特殊要求。</p>
+<p>缺点：选举时间长，复杂度高。</p>
 </blockquote>
 
       
@@ -397,7 +528,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/7/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/52/">52</a><a class="extend next" rel="next" href="/page/9/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/7/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/54/">54</a><a class="extend next" rel="next" href="/page/9/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -442,13 +573,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">179k</span>
+    <span title="站点总字数">185k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:43</span>
+    <span title="站点阅读时长">2:48</span>
   </span>
 </div>
 <div class="busuanzi-count">
