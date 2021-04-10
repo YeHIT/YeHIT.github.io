@@ -198,7 +198,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">54</span>
+          <span class="site-state-item-count">55</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/01/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E7%BD%91%E7%BB%9C%E7%AA%81%E5%87%BB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/" class="post-title-link" itemprop="url">I/O模型及I/O线程模型</a>
+          <a href="/2021/03/01/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E7%BD%91%E7%BB%9C%E7%AA%81%E5%87%BB/" class="post-title-link" itemprop="url">网络突击</a>
         </h2>
 
         <div class="post-meta-container">
@@ -287,14 +287,14 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2021-02-28 23:30:00" itemprop="dateCreated datePublished" datetime="2021-02-28T23:30:00+08:00">2021-02-28</time>
+      <time title="创建时间：2021-03-01 00:00:00" itemprop="dateCreated datePublished" datetime="2021-03-01T00:00:00+08:00">2021-03-01</time>
     </span>
       <span class="post-meta-item">
         <span class="post-meta-item-icon">
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-17 13:45:48" itemprop="dateModified" datetime="2021-03-17T13:45:48+08:00">2021-03-17</time>
+        <time title="修改时间：2021-03-23 21:31:27" itemprop="dateModified" datetime="2021-03-23T21:31:27+08:00">2021-03-23</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -302,7 +302,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
+          <a href="/categories/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/" itemprop="url" rel="index"><span itemprop="name">面试突击</span></a>
         </span>
     </span>
 
@@ -314,14 +314,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>1.6k</span>
+      <span>9.3k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>8 分钟</span>
     </span>
 </div>
 
@@ -332,103 +332,279 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="io模型及io线程模型">I/O模型及I/O线程模型</h1>
-<h2 id="io模型">I/O模型</h2>
-<h3 id="阻塞型iobio">阻塞型I/O(BIO)</h3>
+          <h1 id="网络突击">网络突击</h1>
+<h2 id="http相关">Http相关</h2>
+<h3 id="概述">概述</h3>
 <blockquote>
-<p>线程调用recvfrom，持续等待直到复制完成。</p>
-<figure>
-<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/阻塞型IO.png" alt="阻塞型IO"><figcaption aria-hidden="true">阻塞型IO</figcaption>
-</figure>
-<p>优点：程序简单</p>
-<p>缺点：每个连接需要独立进程/线程，并发量大时维护程序的线程切换开销大。</p>
+<p>HTTP基于TCP/IP通信协议传递数据。</p>
+<p>HTTP就是一个用文本格式描述报文头并用双换行分隔报文头和内容，在TCP基础上实现的请求-响应模式的双向通信协议。</p>
+<p>HTTP是无连接的：每次连接只处理一个请求。服务器处理完客户的请求，并收到客户的应答后，即断开连接。引出Keep-alive</p>
+<p>HTTP是媒体独立的：只要客户端和服务器知道如何处理数据内容，任何数据都可以从HTTP发送。通过content-type指定类型。</p>
+<p>HTTP是无状态的：指协议对于事务的处理没有记忆能力。意味着后续处理如果需要前面的信息必须重传。从而引出的Session。</p>
 </blockquote>
-<h3 id="非阻塞型io">非阻塞型I/O</h3>
+<h3 id="http事务-http请求命令-响应码">Http事务 = http请求命令 + 响应码</h3>
 <blockquote>
-<p>线程调用recvfrom，不持续等待，而是不断轮询操作系统内核。</p>
-<figure>
-<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/非阻塞型IO.png" alt="非阻塞型IO"><figcaption aria-hidden="true">非阻塞型IO</figcaption>
-</figure>
-<p>优点：不会阻塞在内核的等待数据过程，每次发起的 I/O 请求可以立即返回，不用阻塞等待，实时性较好。</p>
-<p>缺点：轮询占用大量CPU时间，系统资源利用率低。</p>
+<p>http事务是http请求的最小处理单元。</p>
+<p>请求报文和响应报文。</p>
 </blockquote>
-<h3 id="io多路复用nio">I/O多路复用(NIO)</h3>
+<h4 id="请求报文">请求报文</h4>
 <blockquote>
-<p>如select、poll、epoll，用一个描述符管理多个描述符，同时管理多个I/O操作，当有事件发生时才堵塞进行复制。</p>
-<figure>
-<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/NIO.png" alt="NIO"><figcaption aria-hidden="true">NIO</figcaption>
-</figure>
-<p>优点：节省大量系统资源。</p>
-<p>缺点：在并发量低时延迟较多线程+堵塞I/O更高，因为I/O多路复用对单个连接需要进行两次系统调用。</p>
+<p>请求行+请求头+请求体</p>
+<p>请求行内容为：</p>
+<p>​ 请求方法 + 请求的URL地址 + Http协议版本</p>
+<p>​ 请求方法有：</p>
+<p>​ HTTP1.0：GET(请求指定页面信息并返回主体)、POST(向指定资源提交数据)、HEAD(请求指定页面头)</p>
+<p>​ HTTP1.1：OPTIONS(允许客户端查看服务端性能)、PUT(客户端提交数据代替服务端)、DELETE(请求服务端删除指定页面)、TRACE(回显服务端收到的请求) 、CONNECT (HTTP1.1中预留给能够将连接改为管道方式的代理服务)</p>
+<p>请求头内容为属性，用于让服务端获知客户端信息，以下为常见属性：</p>
+<p>​ accept：告知服务端可以接受的文件格式。如application/json</p>
+<p>​ accept-language：浏览器支持的语言</p>
+<p>​ accept-encoding：指定浏览器可以支持的web服务器返回的内容压缩编码类型。</p>
+<p>​ User-Agent：用户代理，用于查看用户是使用什么访问的。</p>
+<p>​ Cookie：HTTP请求发送时会把请求域名下所有的cookie值都发给服务端。</p>
+<p>​ Cache-Control：设置缓存相关。no-cache代表不接受缓存，max-age表示客户端希望接受存在时间不大于该值的资源。</p>
+<p>​ connection：表示是否需要持久连接，keep-alive表示使用持久连接。http1.1默认使用。</p>
+<p>​ host：指定请求的服务器的域名和端口号</p>
+<p>请求体一般是用来传递参数。</p>
 </blockquote>
-<h3 id="信号驱动型io">信号驱动型I/O</h3>
+<h4 id="响应报文">响应报文</h4>
 <blockquote>
-<p>使用信号来驱动，当数据准备好时进程会受到一个信号，在信号处理函数中处理数据。</p>
-<figure>
-<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/信号驱动型IO.png" alt="信号驱动型IO"><figcaption aria-hidden="true">信号驱动型IO</figcaption>
-</figure>
-<p>优点：线程没有在等待数据时被阻塞，提高资源利用率。</p>
-<p>缺点：信号I/O在大量I/O操作时可能会因为信号序列溢出导致无法通知。</p>
+<p>响应行 + 响应头 + 响应体</p>
+<p>响应行内容为：</p>
+<p>​ HTTP协议版本 + 状态码及描述</p>
+<p>常见状态码：</p>
+<p>​ 1xx：表示服务器收到请求但需要请求者继续操作。</p>
+<p>​ 2xx：成功，操作被成功接收并处理。</p>
+<p>​ 3xx：重定向。</p>
+<p>​ 4xx：客户端错误，请求包含语法错误或无法完成请求。</p>
+<p>​ 5xx：服务器错误。</p>
+<p>​ 具体：</p>
+<p>​ 200 OK：处理成功</p>
+<p>​ 206 Partial Content：断点续传时使用，本质上就是客户端在header上设置一个Content-Range 标识当前传输的位置，服务端根据这个位置来响应。</p>
+<p>​ 301 Moved Permanently：请求的资源已被永久移动到新URI。</p>
+<p>​ 302 Moved Temporarily：资源被临时移动到新URI。</p>
+<p>​ 303 See Other：重定向到另外页面</p>
+<p>​ 304 Not Modified：未修改，服务端不会返回数据。让客户端访问缓存。</p>
+<p>​ 400 Bad Request：客户端请求语法错误。</p>
+<p>​ 401 Unauthorized：请求未经授权。</p>
+<p>​ 403 Forbidden：禁止访问</p>
+<p>​ 404 Not Found：找不到页面</p>
+<p>​ 500 Internal Server Error：服务端出现内部错误。</p>
+<p>​ 502 Bad Gateway：网关错误。</p>
+<p>响应头：</p>
+<p>​ Cache-Control：告知客户端怎么控制缓存。类似请求头。值可以为no-cache，max-age</p>
+<p>​ content-encoding：压缩编码格式。</p>
+<p>​ Content-Type：文件类型</p>
+<p>​ Location：重定向</p>
+<p>​ date：时间</p>
+<p>​ set-cookie：xx=yyy；Max-Age=3600；Version=1；当中Max-Age是用于设置cookie的保存时间。</p>
+<p>响应体就是服务端返回给客户端的信息，如html页面，json之类。</p>
 </blockquote>
-<h3 id="异步ioaio">异步I/O(AIO)</h3>
+<h3 id="get和post的区别">GET和POST的区别</h3>
 <blockquote>
-<p>类似于信号驱动I/O，但是AIO会在内核完成了数据复制操作后才给线程发送信号，线程无须等待。</p>
-<figure>
-<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/异步IO.png" alt="img"><figcaption aria-hidden="true">img</figcaption>
-</figure>
-<p>优点：异步I/O充分利用DMA，让I/O操作和计算重叠。</p>
-<p>缺点：AIO需要操作系统支持，目前AIO在linux中还不完善，且AIO代码编写复杂。</p>
+<p>本质上除了语义不同之外没有区别，但浏览器实现时区别如下：</p>
+<p>​ get可以被缓存、get请求可以被收藏为书签，post不行。</p>
+<p>​ get的数据url可见，post不会。</p>
+<p>​ get长度有限制、post没有</p>
+<p>​ get请求刷新回退都没有影响、post数据会被重新提交</p>
 </blockquote>
-<h2 id="io线程模型">I/O线程模型</h2>
-<h3 id="传统阻塞-io-服务模型">传统阻塞 I/O 服务模型</h3>
+<h3 id="cookiesessiontoken">Cookie、Session、Token</h3>
 <blockquote>
-<p>采用阻塞式I/O获取输入数据，每个连接都需要独立的线程完成数据输入、业务处理、数据返回的完整操作。</p>
-<p>缺点：</p>
-<p>​ 并发数较大时需要大量线程。</p>
-<p>​ 连接后若没有数据会被阻塞在read操作上。</p>
+<p>本质上都是用于存储用户信息的。</p>
+<p>cookie是浏览器层面储存的一种k-v结构数据，当发送请求给服务端时可以把cookie发送给服务端。但是由于cookie是存储在浏览器上的，所以cookie往往不能用来存储用户的私密数据。</p>
+<p>session则是在服务端层面存储用户信息，服务端在使用session时往往会产生一个特殊的sessionId，然后将这个id交给客户端，客户端每次访问服务端时带上这个id即可。但是由于session存储在服务端，所以如果有大量用户时服务端往往会消耗大量资源来存储session，并且如果是多服务端的结构，还需要采用一定操作来保证session的存储。</p>
+<p>token=header密文+payload密文+签名：本质上是将用户第一次发送的用户名+密码的信息进行签名加密然后再发还给用户，而用户浏览器则保存这个信息，在之后的访问过程每次带上这个token供服务端验证。可以防止CSRF(跨站请求伪造)攻击，即在页面中放入一些恶意链接，这些链接会指向如转账之类的功能，由于浏览器发送请求时会默认带上cookie，所以导致请求通过校验被执行。而使用token浏览器就不会默认发送，从而防止csrf攻击。验证时服务端将两个密文解密再签名同自带的签名进行比对判断是否通过认证。此外还可以对payload密文解密来判断token是否过期。</p>
 </blockquote>
-<h3 id="reactor模式">Reactor模式</h3>
+<h3 id="http工作流程">HTTP工作流程</h3>
 <blockquote>
-<p>I/O复用结合线程池</p>
-<p>主要组件为Reactor、Acceptor、Handler</p>
-<p>非阻塞同步网络模型。</p>
+<p>DNS域名解析-&gt;TCP三次握手-&gt;发起HTTP请求-&gt;服务器响应HTTP请求-&gt;浏览器解析HTML并请求资源-&gt;浏览器渲染页面</p>
+<p>DNS既用TCP又用UDP，使用53号端口。</p>
+<p>在域名解析时使用UDP。因为解析的数据少，UDP较快。</p>
+<p>而在域名服务器之间执行数据同步时会使用TCP。因为此时数据量大，TCP是可靠连接，保证数据准确性。</p>
+<p>DNS域名解析流程：</p>
+<p>​ 搜索浏览器自身DNS缓存-&gt;搜索操作系统自身DNS缓存-&gt;读取host文件-&gt;向本地DNS服务器发起域名解析请求。</p>
+<p>​ 本地DNS先向根域名服务器-&gt;顶级域名服务器-&gt; 权限域名服务器得到结果返回。</p>
 </blockquote>
-<h4 id="单线程reactor">单线程reactor</h4>
+<h3 id="http发展流程">HTTP发展流程</h3>
 <blockquote>
-<p>Reactor对象通过select监控请求事件，收到事件后通过Dispatch分发。</p>
-<p>若是连接事件通过Acceptor处理。然后创建一个Handler处理连接后的事件</p>
-<p>若不是连接事件则交给Handler处理。</p>
-<p>优点：单线程不用考虑线程切换开销。</p>
-<p>缺点：只有一个线程无法完全发挥多核CPU的性能。</p>
+<p><strong>http0.9</strong>：只支持get，服务端只能返回html格式，参数过程只支持文字。</p>
+<p><strong>http1.0</strong>：增加了post和head，支持发送任何格式的内容，增加了请求头、状态码，权限缓存相关内容。</p>
+<p>缺点：每个TCP只能发送一个请求，发送完毕连接关闭，使用成本高。队头堵塞，即请求大量资源时耗时较长的资源会影响之后的资源处理。</p>
+<p><strong>http1.1</strong>：引入了Connection： keep-alive让连接持久，还加入了如put、delete、connect之类的请求方式。另外引入了管道机制，支持客户端将多个HTTP请求放入一个TCP连接中，管理请求的顺序，一定程度上解决了队头堵塞。</p>
+<p>缺点：keep-alive虽然可以复用部分连接，但是域名分片的情况下还是要建立多个connection。管道机制要求返回结果是按序的，即使后面的处理成功了，但服务端返回时还是需要按客户端请求的顺序响应，即需要等待前面结果完成。协议开销大，协议头里内容过多且基本不变，增加了传输负担。</p>
+<p><strong>http2.0</strong>：基于SPDY。目的是通过支持请求和响应的多路复用来减低延迟。</p>
+<p>​ http1.x是文本协议，而http2.0使用二进制化分帧的方式，将传输的信息分割为更小的帧，并采用二进制编码的方式，首部信息放入Header frame，Request body放入Data frame，这样会对信息进行顺序标识。而且http2.0在每个TCP连接中承载多个双向流通的流，每个流都有一个独一无二的标识，而流就是由二进制帧组成的，二进制帧的头部信息会标识自己属于哪个流。这样使得服务器可以并行传输数据。从而实现了多路复用。</p>
+<p>​ http2.0可以给流设置优先级使得重要请求可以被优先处理。</p>
+<p>​ 此外http2.0还使用了首部压缩技术，对于一条连接使用首部表来维护key-value，若增加新的key-value则加入表尾，避免每次请求都需要携带首部。此外还对首部使用了HPACK算法压缩。</p>
+<p>​ 不仅如此http2.0还支持服务器主动推送，即先请求服务器，服务器不用解析就可以直接将预先设置好的内容推送给客户端。</p>
+<p><strong>http3.0</strong>：基于QUIC协议，底层使用UDP通信。实现了机制：</p>
+<p>​ 虽然http2.0在TCP的基础上实现了多路复用，但由于TCP的机制，每个流在发送时可能被拆成多个包(TCP分段)，举例S1、S2被拆为p1.1、p1.2、p1.2和p2.1、p2.2、p2.3，而发送过程又是乱序发送的，如p1.1、p1.2、p2.1、p1.3、p2.2、p2.3，这样可能导致的问题：假设p1.3一直超时，等待重传，阻塞了S2的信息。而因为http3.0是基于UDP的没有这个问题，所以可以实现真正的多路复用。</p>
+<p>​ 自定义连接机制：TCP连接是用4元组(源IP、源端口、目的IP、目的端口)的形式标注的，其中一个元素改变就需要建立连接，而HTTP3.0基于UDP实现了自己的连接机制，使用64位的随机数来作为ID来标识。且UDP是无连接的，所以当ip或者端口变化的时候，只要ID不变，就不需要重新建立连接。</p>
+<p>​ 自定义重传机制：由于TCP实现超时重传是使用序号机制，而超时的包和重发的包序列号一直，导致无法估计超时的准确时间。QUIC自定义了一个序列号，每次发送包时增加1，同时定义了offset的概念，判断两个包是否相同，这样可以准确估计超时的时间。</p>
 </blockquote>
-<h4 id="多线程reactor">多线程reactor</h4>
+<h3 id="http和https">HTTP和HTTPS</h3>
 <blockquote>
-<p>优化了Handler，handler只负责数据读取，然后将数据分发给worker线程处理，worker线程处理完成后将结果返回给handler。</p>
-<p>优点：充分利用多核CPU处理能力</p>
-<p>缺点：多线程数据共享和访问比较困难。reactor负责承担所有事件响应，容易成为瓶颈。</p>
+<p>HTTP是超文本文件传输协议通信使用明文传输，HTTPS则是基于HTTP协议通过SSL(处于TCP/IP协议与各种应用层协议之间)或TLS(前身是SSL)提供加密处理数据、验证对方身份及数据完整性保护。</p>
+<p>HTTPS的特点：</p>
+<p>​ 内容加密：采用混合加密技术，中间者无法直接查看明文内容。</p>
+<p>​ 验证身份：通过证书认证客户端访问的是自己的服务器。</p>
+<p>​ 保护数据完整性：防止传输的内容被中间人冒充或篡改。</p>
+<p>Https流程：</p>
+<p>​ 1.客户端向服务器发送请求，提供如下信息：</p>
+<p>​ 支持的协议版本，如TLS1.0。一个客户端产生的随机数，稍后用于生成“对话秘钥”。支持的加密算法，如RSA。支持的压缩算法。</p>
+<p>​ 2.服务器收到请求后，向客户端做出回应，内容包括：</p>
+<p>​ 确认使用的加密通信协议版本，如TLS1.0。一个服务器生成的随机数，用于生成对话秘钥。确认使用的加密方法。服务器证书。</p>
+<p>​ 3.客户端收到服务器回应后会验证服务器证书。若证书不是可信机构颁布、或证书域名和实际域名不一致、或证书已经过期则会警告访问者。</p>
+<p>​ 4.若证书没有问题，客户端取出证书中的公钥，然后向服务器发送消息：</p>
+<p>​ 一个随机数，用于服务器公钥加密，防止窃听。</p>
+<p>​ 编码改变通知，表示随后的信息都将用双方商定的加密方法和秘钥发送。</p>
+<p>​ 客户端握手结束通知，表示客户端的握手阶段已经结束。这一项同时也是前面发送的所有内容的hash值，用于服务器校验。</p>
+<p>​ 5.服务端回应，当服务端收到客户端的第三个随机数后，计算生成本次会话的会话密钥，然后向客户端发送信息：</p>
+<p>​ 编码改变通知，表示随后的信息将用双方商定的加密方法和密钥发送。</p>
+<p>​ 服务器握手结束通知，表示服务器的握手阶段已经结束。这一项同时也是前面发送的所有内容的hash值，用来供客户端校验。</p>
+<p>证书验证过程：CA机构在签发证书的时候，都会使用自己的私钥对证书进行签名，如果我们使用的是购买的证书，那么很有可能，颁发这个证书的CA机构的公钥已经预置在操作系统中。这样浏览器就可以使用CA机构的公钥对服务器的证书进行验签，验签之后得到的是CA机构使用sha256得到的证书摘要，客户端就会对服务器发送过来的证书使用sha256进行哈希计算得到一份摘要，然后对比之前由CA得出来的摘要，就可以知道这个证书是不是正确的，是否被修改过。</p>
 </blockquote>
-<h4 id="主从reactor模型">主从Reactor模型</h4>
+<h2 id="socket的建立流程">Socket的建立流程</h2>
 <blockquote>
-<figure>
-<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/主从reactor.png" alt="主从reactor"><figcaption aria-hidden="true">主从reactor</figcaption>
-</figure>
-<p>主Reactor负责将新连接分发给Acceptor，然后主Reactor将连接分发给从reactor。从reactor会将连接加入连接队列进行监听，并创建一个handler用于处理。新事件发生时，从reactor会调用连接对应的handler进行处理，handler负责数据读取，而业务仍交给worker处理。</p>
-<p>优点：父线程与子线程的数据交互简单职责明确，父线程只需要接收新连接，子线程完成后续的业务处理。</p>
+<p>服务端socket创建socket -&gt; bind -&gt; listen -&gt;accept -&gt; read/write -&gt; close</p>
+<p>客户端创建socket -&gt; connect -&gt; read/write -&gt; close</p>
 </blockquote>
-<h3 id="proactor模型">Proactor模型</h3>
+<h2 id="tcp和udp">TCP和UDP</h2>
+<h3 id="tcp和udp的区别">TCP和UDP的区别</h3>
 <blockquote>
-<figure>
-<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/proactor模型.png" alt="proactor模型"><figcaption aria-hidden="true">proactor模型</figcaption>
-</figure>
-<p>异步网络模型。</p>
-<p>组件：Proactor Initiator、Proactor 、Handler 、AsyOptProcessor。即一个初始化器，一个注册器，一个proactor，一个handler</p>
-<p>流程：initiator创建Proactor 、Handler ，然后Proactor 和Handler 都通过AsyOptProcessor注册到内核。</p>
-<p>AsyOptProcessor处理注册请求，并处理I/O操作。</p>
-<p>AsyOptProcessor完成I/O操作后会通知Proactor，Proactor根据不同的事件类型回调不同的Handler进行业务处理。</p>
-<p>优点：效率较reactor模型更高。</p>
-<p>缺点：编程更加复杂。</p>
-<p>​ 内存使用更加困难。</p>
-<p>​ 需要操作系统支持。</p>
+<p>TCP是面向连接的，UDP是无连接的。</p>
+<p>TCP消耗资源较大，UDP消耗资源较少。</p>
+<p>TCP是字节流传输，UDP是数据报传输。</p>
+<p>TCP可靠性高，UDP不保证消息可靠性。</p>
+<p>TCP可以进行流量控制，UDP不具有流量控制的能力。</p>
+<p>TCP适用于对于消息准确性和顺序要求较高的场景，UDP应用于对于通信效率、准确性要求相对较低的场景。</p>
+</blockquote>
+<h3 id="tcp是怎么保证可靠性的">TCP是怎么保证可靠性的？</h3>
+<blockquote>
+<p>1、使用报文里的校验和字段。</p>
+<p>2、使用了序列号机制，即每次发送报文都会附上相应的序列号，而接收到请求的那方会发送ACK对报文进行确认，同时ACK也会附带对应应答的序列号，此时发送方就可以对接收到ACK附带的序列号进行检测。若序列号正确再发送其他的报文，若错误则重发。</p>
+<p>3、超时重传：即报文在发出一定时间内未收到接收方的，发送方就会重传。</p>
+<p>4、三次握手和四次挥手机制。</p>
+<p>5、流量控制：由于接收端处理数据的速度是有限的，为了不让过多的数据让接收端无法处理，tcp报文中有个窗口大小字段，可以让接收端在接收报文，发出ACK信号时附上该值，让发送方及时调整。</p>
+<p>6、拥塞控制：流量控制是发送方接收方之间，而拥塞控制是相对整个网络通信环境的。TCP采用<strong>慢启动、拥塞避免和快恢复、快重传</strong>的方式来降低网络拥塞的可能。此外还有<strong>BIC、CUBIC、BBR拥塞控制</strong>。</p>
+<p>​ <strong>慢启动</strong>：即开始阶段，当在一个RTT时间内，每收到一个确认即让拥塞窗口大小增加1，直到超过了阈值大小。</p>
+<p>​ <strong>拥塞避免</strong>：超过阈值后会当一个RTT时间内，只让拥塞窗口大小增加1。</p>
+<p>​ <strong>慢恢复</strong>：当遇到网络拥塞，即出现丢包时会将拥塞窗口大小直接变为1，让阈值减半，然后进行慢启动过程。</p>
+<p>​ <strong>快重传</strong>：要求接收方，每收到一个失序的报文段就立即发出重复确认。收到连续三个冗余ACK，则重新发送报文段。因为TCP使用累积确认的机制，即接收端受到比期望序号大的报文，会重复发送最近一次确认的报文段的确认信号。一般和快恢复配合使用。</p>
+<p>​ <strong>reno快恢复</strong>：当遇到三个连续重复ack时，让阈值减半，拥塞窗口大小变为阈值，然后将拥塞窗口大小+3，重传丢失的报文段，如果再收到重复ACK则拥塞窗口再+1，直到收到新数据包的ACK，将窗口设置为阈值，进入拥塞避免状态。</p>
+<p>​ <strong>new_reno快恢复</strong>：reno快恢复只会对一个包丢失进行处理，若丢失了许多包导致的三个重复ACK，则会让拥塞窗口大小连续下降。这种算法本质上是当丢失多个包时如果接收到其中一个包，只会发出部分ACK，直到接收到所有丢失的包才发出完整的ACK，此时才结束快恢复状态，进入拥塞避免。</p>
+<p>​ <strong>BIC</strong>：在reno版本的拥塞控制中，进入拥塞避免状态时，每过一个RTT才让拥塞窗口自增1，当RTT很长时，达到最佳拥塞窗口的时间很长。而BIC算法会将发生丢包的那个拥塞窗口大小视为Wmax，降到一半阈值大小的拥塞窗口大小视为Wmin，利用二分法去探寻当前最佳窗口大小。而当十分逼近Wmax时，此时可以认为网络环境变好，需要探寻更大的窗口，这时利用之前二分的反过程来探寻新窗口。显然RTT时间短的连接会更早达到上限，故而该算法是抢占带宽的算法。</p>
+<p>​ <strong>CUBIC</strong>：本质上就是将RTT这个因子从分析过程中抽取出来，通过数学的手段利用数学公式将BIC的过程拟合出来。通过调节公式的参数来调整窗口调整的速度。</p>
+<p>​ <strong>BBR</strong>：将网络拥塞和丢包区分开，因为丢包可能是因为传输错误。而BBR的主要目的是为了在存在一定丢包率的网络链路上拆分利用带宽，以及降低网络链路上buffer占用率，从而降低延迟。原有算法的缺点：使用丢包作为判断发送网络拥塞的条件，使用窗口判断会导致缓冲区膨胀的问题，导致网络延迟和由于缓冲区被占满导致丢包的问题。</p>
+<p>​ BBR通过不考虑丢包来解决第一个问题，通过利用估计带宽和延迟来避免直接，而带宽和延迟不能同时测量，因为带宽大之后延迟变高，延迟低带宽则低。BBR选择交替测量，用一段时间内的带宽极大值和延迟极小值来作为估计值。</p>
+<p>​ BBR算法阶段：startup慢启动阶段 -&gt; Drain排空阶段 -&gt; Probe_BW带宽探测阶段 -&gt; Probe_RTT延迟探测阶段</p>
+<p>​ 慢启动阶段：类似于原本的慢启动，指数增加发送速率，当连续三次发现投递率不再增长，说明管道被填满，进入Drain排空阶段。</p>
+<p>​ 排空阶段：指数降低发送速率，将多发送的buffer排空。</p>
+<p>​ 带宽探测阶段：排空后，进入稳定状态，BBR改变发送速率进行带宽探测，先在一个RTT时间增加发送速率探测最大带宽，若RTT没有变化，减小发送速率排空发送的包，后六个周期使用更新后的估计带宽发送。</p>
+<p>​ 延迟探测阶段：BBR每过10秒，如果估计延迟不变进入延迟探测阶段，BBR在这段时间内发送查看固定为4。</p>
+</blockquote>
+<h3 id="tcp握手与挥手">TCP握手与挥手</h3>
+<h4 id="tcp三次握手">TCP三次握手</h4>
+<blockquote>
+<p>三次握手的流程：</p>
+<table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">A</th>
+<th style="text-align: center;">B</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">A发送SYN信号及A的初始序号x，此时A进入SYN_SEND状态</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"></td>
+<td style="text-align: center;">B接收到了A发送的SYN信号与A初始序号x，需要对SYN信号发送ACK应答且应答序号为x+1，同时也向A发出SYN信号和自己的序号y，然后进入SYN_RECV状态</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">A接收到服务端发送的SYN和ACK信号，会发送ACK信号并将序号设为y+1，然后发送给客户端，发送完毕后A进入ESTABLISHED状态，完成三次握手。</td>
+<td style="text-align: center;">B收到ACK也进入ESTABLISHED状态</td>
+</tr>
+</tbody>
+</table>
+<p><strong>为什么不是四次握手，如将B的SYN信号和ACK信号拆开发送</strong>。原因：避免资源浪费。</p>
+<p><strong>为什么B需要等待A的ACK信号？即为什么不是两次握手？</strong>原因：本质上为了避免旧重复连接造成资源浪费的问题，若B发出SYN和ACK信号后直接进入ESTABLISHED状态，假定A、B先前存在连接，然后断开了连接，而此时B在之后的一段时间中收到了A早期发送的SYN信号，若B直接进入ESTABLISHED状态，此时显然A是没有连接需求的，也不会向B发送数据，而B也不知道这一点，这样就会浪费掉连接资源。而使用三次握手，A、B之间存在序列号，若发生之前的情况，B会对A发出信号和自己的ACK序号，此时A收到ACK时就会发现自己当前的序列号不能和B的ACK对应，就会给B发送RESET信号，从而避免资源浪费。并且三次握手也可以双方的序列号被可靠的同步。</p>
+<p>第三次握手时就可以携带数据了。</p>
+<p><strong>SYN攻击</strong>：即随机IP访问服务器发送大量SYN请求。导致服务器的SYN接收队列即未连接队列被占满。</p>
+<p>解决方法：</p>
+<p>​ tcp建立连接时分为syn队列和accept队列，可以启用tcp_syncookies ，当syn队列被占满时，会给客户端将一个cookie值放入序列号字段中，当客户端发送ACK正确时，直接将连接放入accept队列，然后等待accept函数被调用。</p>
+</blockquote>
+<h4 id="tcp四次挥手">TCP四次挥手</h4>
+<blockquote>
+<p>四次挥手的流程：</p>
+<table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">A</th>
+<th style="text-align: center;">B</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">A发送FIN信号及自己的序列号给B，然后进入FIN_WAIT1状态</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"></td>
+<td style="text-align: center;">B接收到了A发送的FIN信号会向A发送ACK，然后进入CLOSE_WAIT状态</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">客户端收到ACK信号进入FIN_WAIT2状态</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"></td>
+<td style="text-align: center;">一段时间后，服务端发送完数据，就会给客户端发送FIN报文，此时服务端进入LAST_ACK状态</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">当客户端接收到FIN信号时发送ACK信号给服务端，此时客户端会进入TIME_WAIT状态。若超过2MSL没有收到回复则客户端关闭连接进入CLOSED状态。</td>
+<td style="text-align: center;">当服务端接收到ACK信号时会关闭连接进入CLOSED状态</td>
+</tr>
+</tbody>
+</table>
+<p><strong>为什么断开连接需要四次挥手？</strong></p>
+<p>​ 因为TCP连接是全双工的，所以必须保证每个方向都单独进行关闭。当客户端想关闭自己这方的连接时，服务端可能还需要发送消息，故客户端只能先发送FIN，然后等待服务端完成了自己操作后发出FIN才完成一个连接两个方向的关闭。</p>
+<p><strong>为什么客户端发送ACK信号后还需要等待2MSL长度的时间？</strong></p>
+<p>​ 主要有两个原因：</p>
+<p>​ 1、如果ACK信号在传输过程中丢失了，客户端可以等待服务端重新发送FIN报文，此时再发送ACK报文来保证连接被正常关闭。</p>
+<p>​ 2、2MSL时间是网络TCP生存时间的两倍，设置这个时间是为了给服务器足够的超时重传时间，也让客户端可以等待网络中在之前连接中发出的包全部消失。</p>
+</blockquote>
+<h5 id="time_wait相关问题">TIME_WAIT相关问题</h5>
+<blockquote>
+<p>为什么要有TIME_WAIT状态。主要有两个原因：</p>
+<p>​ 1、如果ACK信号在传输过程中丢失了，客户端可以等待服务端重新发送FIN报文，此时再发送ACK报文来保证连接被正常关闭。</p>
+<p>​ 2、2MSL时间是网络TCP生存时间的两倍，设置这个时间是为了给服务器足够的超时重传时间，也让客户端可以等待网络中在之前连接中发出的包全部消失。</p>
+<p>TIME_WAIT/CLOSE_WAIT状态过多怎么办？</p>
+<p>​ CLOSE_WAIT和TIME_WAIT状态的连接也会占用服务端的fd，可能超过Linux fd上限。可以通过调节Linux对应time wait参数，如net.ipv4.tcp_timestamps时间戳、net.ipv4.tcp_tw_recycle快速回收(会导致NAT网络冲突，因为NAT网络识别时只有一个host，而不同客户端timestamps可能不同，快速回收机制会丢弃timestamps非递增的包)、net.ipv4.tcp_tw_reuse重用机制。</p>
+</blockquote>
+<h3 id="tcp半打开半关闭半连接">TCP半打开、半关闭、半连接</h3>
+<blockquote>
+<p>半打开：一方异常关闭，另一方不知情，处于半打开的状态。</p>
+<p>​ 解决方案：当不知情的一方发送数据给异常关闭方时，异常关闭方会发送RST信号，要求重置连接。</p>
+<p>​ TCP也提供了心跳机制，通过开启SO_KEEPALIVE并设置对应参数来配置。开启心跳后TCP服务端会定期发送心跳包，若没有响应则隔更短的时间连续发送若干次，从而获知客户端断开连接了，从而及时关闭连接。</p>
+<p><strong>既然TCP也有心跳机制，为什么应用层还往往要设计心跳机制呢？</strong></p>
+<p>​ 主要原因：TCP心跳是在传输层的机制，而且只能判断当前连接是否出现异常，无法反应应用层的情况。而我们在应用层设计的心跳机制往往是为了判断应用能否正常提供服务。而且如果服务不是使用TCP传输，应用层自制心跳机制也会加强应用的通用性</p>
+<p>半关闭：对应四次挥手的FIN_WAIT2状态。</p>
+<p>半连接：主动发起握手的一方不发最后一次ACK，使得服务端处于SYN_RECV状态。存在SYN泛洪攻击。</p>
+</blockquote>
+<h2 id="其他协议">其他协议</h2>
+<h3 id="arp协议">ARP协议</h3>
+<blockquote>
+
 </blockquote>
 
       
@@ -449,7 +625,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/27/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/27/">27</a><span class="page-number current">28</span><a class="page-number" href="/page/29/">29</a><span class="space">&hellip;</span><a class="page-number" href="/page/54/">54</a><a class="extend next" rel="next" href="/page/29/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/27/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/27/">27</a><span class="page-number current">28</span><a class="page-number" href="/page/29/">29</a><span class="space">&hellip;</span><a class="page-number" href="/page/55/">55</a><a class="extend next" rel="next" href="/page/29/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -494,13 +670,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">185k</span>
+    <span title="站点总字数">190k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:48</span>
+    <span title="站点阅读时长">2:53</span>
   </span>
 </div>
 <div class="busuanzi-count">

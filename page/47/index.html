@@ -198,7 +198,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">54</span>
+          <span class="site-state-item-count">55</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/computerNetwork/%E7%AC%AC2%E7%AB%A0-%E7%89%A9%E7%90%86%E5%B1%82/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/computerNetwork/%E7%AC%AC1%E7%AB%A0-%E6%A6%82%E8%AE%BA/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/computerNetwork/%E7%AC%AC2%E7%AB%A0-%E7%89%A9%E7%90%86%E5%B1%82/" class="post-title-link" itemprop="url">物理层</a>
+          <a href="/2021/02/20/computerNetwork/%E7%AC%AC1%E7%AB%A0-%E6%A6%82%E8%AE%BA/" class="post-title-link" itemprop="url">概论</a>
         </h2>
 
         <div class="post-meta-container">
@@ -288,7 +288,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：17:46:40" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:05:46" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -312,14 +312,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>870</span>
+      <span>1.8k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>2 分钟</span>
     </span>
 </div>
 
@@ -330,54 +330,169 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="物理层">物理层</h1>
-<h2 id="物理层的基本概念">物理层的基本概念</h2>
+          <h1 id="概论">概论</h1>
+<h2 id="网络大小划分">网络大小划分</h2>
 <blockquote>
-<p>尼奎斯特定理 $ C = 2Blog_2V $ 。C为最大数据速率，B为带宽频率，V为离散等级。</p>
-<p>香农定理<span class="math inline">\(C = B log_2(1+S/N)\)</span> 。S/N是信噪比，<span class="math inline">\(10log_{10}S/N\)</span>为分贝，B为带宽频率，C为最大数据速率。</p>
+<p>个域网</p>
+<p>局域网：用于企业时被称为企业网络</p>
+<p>城域网</p>
+<p>广域网</p>
+<p>互联网</p>
 </blockquote>
-<h3 id="物理层的主要任务">物理层的主要任务</h3>
-<p>物理层解决如何在连接各种计算机的传输媒体上传输数据比特流。</p>
-<p>确定与传输媒体的接口的一些特性:</p>
+<h2 id="报文的不同称呼">报文的不同称呼</h2>
 <blockquote>
-<p>机械特性:如接口形状、大小、引线数目</p>
-<p>电气特性:如规定电压范围</p>
-<p>功能特性:如规定-5V表示0</p>
-<p>过程特性/规程特性:规定建立连接时各个相关部件的工作步骤</p>
+<p>网络层中叫数据包/包</p>
 </blockquote>
-<h2 id="数据通信的基础知识">数据通信的基础知识</h2>
+<h1 id="因特网边缘部分的通信方式">因特网边缘部分的通信方式</h1>
 <blockquote>
-<p>单向通信/单工通信 ---------只能有一个方向的通信而没有反方向的交互，如电台</p>
-<p>半双工通信---------通信双方都可以发送消息，但不能双方同时发送。如对讲机</p>
-<p>全双工通信--------通信的双方-可以同时发送和接收消息。如电话</p>
-<p>数据比特流传输距离较短,用解调器变为模拟信号后传输距离会加长。</p>
-<p>数据--------传送消息的实体</p>
-<p>信号--------数据的电气/电磁表现</p>
-<p>​ 模拟信号--------连续</p>
-<p>​ 数字信号---------离散</p>
-<p>码元----------在使用时间域的波形表示数字信号时，代表不同离散数值的基本波形</p>
-<p>信号调制方法:调幅、调频、调相</p>
+<h4 id="客户服务器方式-cs">客户服务器方式 C/S</h4>
+<h4 id="对等方式-p2ppeer-to-peer">对等方式 P2P(peer to peer)</h4>
+<p>既是服务器又是客户机</p>
 </blockquote>
-<h2 id="物理层下的传输媒体">物理层下的传输媒体</h2>
-<h3 id="导向传输媒体">导向传输媒体</h3>
+<h1 id="数据交换方式">数据交换方式</h1>
 <blockquote>
-<p><span class="math display">\[
-常用传输频率10^4-------- 10^{16}
-\]</span></p>
-<p>双绞线:</p>
-<p>​ 屏蔽双绞线STP</p>
-<p>​ 无屏蔽双绞线UTP</p>
-<p>同轴电缆:</p>
-<p>​ 50Ω同轴电缆用于数字传输，基带同轴电缆</p>
-<p>​ 75Ω同轴电缆用于模拟传输，宽带同轴电缆</p>
+<h4 id="电路交换---面向连接">电路交换---面向连接</h4>
+<p>交换机位于中心，需要连接时会通过电路连接两个主机。</p>
+<p>建立连接:申请占用通信资源。</p>
+<p>通话:一直占用通信资源。</p>
+<p>释放连接:释放通信资源</p>
+<p>适用于数据量很大的实时传输，核心路由器之间可以用电路交换</p>
+<h4 id="报文交换">报文交换</h4>
+<p>报文一般比分组长的多</p>
+<p>报文发送时间长</p>
+<h4 id="分组交换计算机使用的方式">分组交换:计算机使用的方式</h4>
+<p>发送端对报文进行拆分成不同小组，添加首部组合成一个数据然后发送给接收端。</p>
+<p>接收端对数据进行拆除首部，然后根据首部的信息将收到的数据组合成报文</p>
 </blockquote>
-<h2 id="信道复用技术">信道复用技术</h2>
+<h1 id="局域网和广域网不单单从覆盖范围划分还要从使用的技术是什么">局域网和广域网不单单从覆盖范围划分，还要从使用的技术是什么</h1>
 <blockquote>
-<p>频分复用:每个用户使用不同的频率传递。</p>
-<p>时分复用:将单位时间划分为若干个时间片，每个用户使用对应的时间片传递。 统计时分复用在发送数据时在数据中添加标记，接收方根据标记判定谁接收并将标记去除。</p>
-<p>波分复用:每个用户使用不同的波长传递。</p>
-<p>码分复用:自己的码片乘积为1，同他人码片乘积为0，传输的信号为原数据同对应码片的乘积，总的传输信号为各个设备传输的信号之和，接收者只要将总信号同自己的码片相乘即可得到需要接收的值。</p>
-<p>码分复用的缺点:设备数变多后码片需要越多</p>
+<p>局域网 自己购买设备、自己维护、带宽固定 距离100米内</p>
+<p>广域网 花钱买服务、花钱买带宽</p>
+</blockquote>
+<h1 id="网络的拓扑结构">网络的拓扑结构</h1>
+<blockquote>
+<p>总线型、环形、星型、树型、网状结构</p>
+</blockquote>
+<h1 id="网络工作方式">网络工作方式</h1>
+<blockquote>
+<p>资源子网、通信子网、接入网</p>
+</blockquote>
+<h1 id="计算机网络的性能">计算机网络的性能</h1>
+<blockquote>
+<p>速率:主机在数字信道传送数据位数的速率，也成为data rate 或bit rate。</p>
+<p>带宽:数据信道所能传送的最高数据率。</p>
+<p>吞吐量:单位时间内通过某个网络的数据量。</p>
+<p>时延:</p>
+<blockquote>
+<p>发送时延 数据块长度/信道带宽</p>
+<p>传播时延:信道长度/信号在信道上的传播速率</p>
+<p>处理时延:在</p>
+<p>排队时延:在接收方主机处等待的时间</p>
+</blockquote>
+<p>时延带宽积 :传播时延 * 带宽</p>
+<p>往返时间RTT:从发送方发送数据开始到发送方收到接收方确认。</p>
+<p>利用率:</p>
+<blockquote>
+<p>信道利用率 = 有数据通过时间 / (有 + 无数据通过的时间)</p>
+<p>网络利用率：信道利用率加权平均值</p>
+</blockquote>
+<p>非性能指标:费用、质量、标准化、可靠性、可扩展性、可升级性、管理与维护</p>
+</blockquote>
+<h1 id="计算机网络的体系结构">计算机网络的体系结构</h1>
+<blockquote>
+<p>OSI(开放式系统互联)七层模型:分层有利于标准化，且分层后各层之间的变化不会影响到其他层，尽量降低了相互之间的依赖。</p>
+<p>物理层:规定电压、接口标准</p>
+<p>数据链路层:输入如何封装，添加物理层地址，MAC</p>
+<p>网络层:选择最佳路径，IP地址编址</p>
+<p>传输层:可靠传输(建立会话)、不可靠传输(不建立会话)、流量控制。</p>
+<p>会话层:服务和客户端建立的会话。 netstat -nb</p>
+<p>表示层:加密、压缩、编码，开发人员考虑。</p>
+<p>应用层: 能够产生网络流量，能够和用户交互的应用程序。</p>
+</blockquote>
+<h1 id="网络排错">网络排错</h1>
+<blockquote>
+<p>需要从底层到高层逐一排查</p>
+</blockquote>
+<h1 id="网络安全和osi参考模型的关系">网络安全和OSI参考模型的关系</h1>
+<blockquote>
+<p>物理层安全</p>
+<p>数据链路层安全:ADSL、无线AP</p>
+<p>网络层安全</p>
+<p>应用层安全: SQL注入漏洞、上传漏洞</p>
+</blockquote>
+<h1 id="一些基本概念">一些基本概念</h1>
+<blockquote>
+<p>实体:交换信息的硬件或软件进程。</p>
+<p>协议:控制两个对等实体通信的规则。</p>
+<p>服务:下层向上层提供服务，上层需要使用下层提供的服务来实现本层的功能。</p>
+<p>服务访问点:相邻两层实体间交换信息的地方。</p>
+<p>AP接入点和无线路由器和基站作用相差不大，主要负责中继无线计算机之间的数据包，还负责中继无线计算机和Internet之间的数据包。</p>
+<p>IEEE802.11俗称WIFI。以太网IEEE802.3。</p>
+<p>将两个或多个网络连接起来并提供必要转换的机器，其硬件和软件方面的总称是网关。路由器就是一个网关，在网络层交换数据包。</p>
+<p>不可靠的无连接服务通常称为数据报服务。</p>
+</blockquote>
+<h1 id="tpcip">TPC/IP</h1>
+<blockquote>
+<p>五层模型:</p>
+<p>应用层:</p>
+<blockquote>
+<p>数据单元:传输数据单元PDU</p>
+</blockquote>
+<p>运输层:</p>
+<blockquote>
+<p>数据单元:报文</p>
+</blockquote>
+<p>网络层:</p>
+<blockquote>
+<p>数据单元:(IP数据报/IP分组/包)</p>
+</blockquote>
+<p>数据链路层:</p>
+<blockquote>
+<p>数据单元:数据帧</p>
+</blockquote>
+<p>物理层:</p>
+<blockquote>
+<p>数据单元:比特010101</p>
+</blockquote>
+</blockquote>
+<h1 id="osi参考模型">OSI参考模型</h1>
+<blockquote>
+<p>应用层:</p>
+<p>​ 所有可以和用户交互产生网络流量的程序。</p>
+<p>​ 文件传输FTP、电子邮件SMTP、万维网HTTP</p>
+<p>表示层</p>
+<p>​ 用于处理两个通信系统中交换信息的表示方式。</p>
+<p>​ 数据格式变换、数据加密解密、数据压缩和恢复</p>
+<p>​ JPEG、ASCII</p>
+<p>会话层</p>
+<p>​ 向表示层实体/用户进程提供建立连接并在连接上有序地传输数据。</p>
+<p>​ 建立、管理、终止会话。</p>
+<p>​ 使用检验点可以使会话在通信失效时从检验点/同步点进行恢复通信，实现数据同步。</p>
+<p>​ ADSP、ASP</p>
+<p>传输层</p>
+<p>​ 负责主机中两个进程的通信，即端到端的通信。传输单位是报文/用户数据报</p>
+<p>​ 可靠传输、不可靠传输</p>
+<p>​ 差错控制</p>
+<p>​ 复用分用</p>
+<p>网络层</p>
+<p>​ 路由选择</p>
+<p>​ 流量控制</p>
+<p>​ 差错控制</p>
+<p>​ 拥塞控制</p>
+<p>数据链路层 加上报头和报尾。</p>
+<p>​ 把网络层传下来的数据报组装成帧</p>
+<p>​ 差错控制</p>
+<p>​ 流量控制</p>
+<p>​ 接入控制</p>
+<p>​ SDLC、HDLC、PPP、STP</p>
+<p>物理层</p>
+<p>​ 在物理媒体上实现比特流的透明传输</p>
+<p>​ 定义接口特性</p>
+<p>​ 定义传输模式</p>
+<p>​ 定义传输速率</p>
+<p>​ 比特同步</p>
+<p>​ 比特编码</p>
+<p>​ RJ45、802.3</p>
 </blockquote>
 
       
@@ -398,7 +513,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/46/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/46/">46</a><span class="page-number current">47</span><a class="page-number" href="/page/48/">48</a><span class="space">&hellip;</span><a class="page-number" href="/page/54/">54</a><a class="extend next" rel="next" href="/page/48/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/46/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/46/">46</a><span class="page-number current">47</span><a class="page-number" href="/page/48/">48</a><span class="space">&hellip;</span><a class="page-number" href="/page/55/">55</a><a class="extend next" rel="next" href="/page/48/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -443,13 +558,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">185k</span>
+    <span title="站点总字数">190k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:48</span>
+    <span title="站点阅读时长">2:53</span>
   </span>
 </div>
 <div class="busuanzi-count">
