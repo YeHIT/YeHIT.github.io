@@ -198,7 +198,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">55</span>
+          <span class="site-state-item-count">56</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E9%9D%A2%E7%BB%8F/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%AA%81%E5%87%BB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E9%9D%A2%E7%BB%8F/" class="post-title-link" itemprop="url">面经</a>
+          <a href="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%AA%81%E5%87%BB/" class="post-title-link" itemprop="url">操作系统突击</a>
         </h2>
 
         <div class="post-meta-container">
@@ -294,7 +294,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-04-03 12:31:09" itemprop="dateModified" datetime="2021-04-03T12:31:09+08:00">2021-04-03</time>
+        <time title="修改时间：2021-04-01 16:25:42" itemprop="dateModified" datetime="2021-04-01T16:25:42+08:00">2021-04-01</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -302,7 +302,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/" itemprop="url" rel="index"><span itemprop="name">面试总结</span></a>
+          <a href="/categories/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/" itemprop="url" rel="index"><span itemprop="name">面试突击</span></a>
         </span>
     </span>
 
@@ -314,14 +314,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>2k</span>
+      <span>1.5k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
+      <span>1 分钟</span>
     </span>
 </div>
 
@@ -332,151 +332,66 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="面经">面经</h1>
-<h2 id="腾讯">腾讯</h2>
-<h3 id="腾讯云一面">腾讯云一面</h3>
+          <h1 id="操作系统突击">操作系统突击</h1>
+<h2 id="进程线程和协程">进程、线程和协程</h2>
 <blockquote>
-<p>1、自我介绍和项目介绍</p>
-<p>2、我看你之前面过一次，为什么挂了，你相对上次来说有什么提高？</p>
-<p>3、java内存结构及各功能</p>
-<p>4、堆栈的线程安全问题</p>
-<p>5、HashMap和CurrenthashMap(说了一会面试官没啥兴趣就换了个问题)</p>
-<p>6、四次挥手</p>
-<p>7、Java线程池</p>
-<p>8、乐观锁和悲观锁</p>
-<p>9、分布式锁</p>
-<p>10、项目亮点</p>
-<p>11、项目有没有进行压测？</p>
-<p>12、说说熟悉的算法</p>
-<p>13、数据库了解的情况</p>
-<p>14、redis为什么快</p>
-<p>15、多路复用</p>
-<p>16、Netty 线程模型-reactor模型</p>
-<p>17、你对微服务有什么理解？</p>
-<p>18、你觉得怎么实现RPC？</p>
-<p>19、自己的优缺点</p>
-<p>20、反问，面试官说觉得我挺不错，学习能力也很强，挺优秀，但是他们这边有横向对比，一听就感觉要挂了。</p>
+<p>进程是操作系统资源分配和调度的基本单位。每个进程有着自己的独立内存空间，不同进程之间使用进程间通信来通信。操作系统是以进程为单位分配系统资源(如CPU时间片、内存等资源)，<strong>进程是资源分配的最小单位</strong>。每个进程都有自己的地址空间，一般情况下，包括文本区域、数据区域和堆栈。</p>
+<p>进程间通信的方法：</p>
+<p>​ 管道：一种半双工的通信方式，数据只能单向流动，且只能在具有亲缘关系的进程间调用。</p>
+<p>​ 消息队列：即将消息使用链表的形式存放在内核中并由消息队列标识符标识。</p>
+<p>​ 信号量：本质上是一种计数器，可以用于控制多个进程对共享资源的访问。</p>
+<p>​ 共享内存：映射一段能被其他进程所访问的内存，这个共享内存由一个进程创建，但由多个进程共享。它是最快的IPC方式，针对其他进程间通信效率低而设计的。</p>
+<p>​ 信号：一种事件通知机制，进程可以通过发送信号给另一个进程，另一个进程则会根据收到的信号执行对应的处理方。</p>
+<p>​ socket：</p>
+<p>线程是依附于进程，是<strong>操作系统调度的最小单位</strong>。</p>
+<p>线程间通信的方法：</p>
+<p>​ 锁机制。</p>
+<p>​ 信号量机制。</p>
+<p>​ 信号机制。</p>
+<p>​ volatile变量。</p>
+<p>协程：不被操作系统内核所管理，完全是由程序所控制。</p>
 </blockquote>
-<h4 id="结果">结果</h4>
+<h2 id="上下文切换过程">上下文切换过程</h2>
 <blockquote>
-<p>第二天流程结束，感觉像是我第一次面试腾讯的部门，这次捞我起来检验成果的？有点奇怪。</p>
+<p>用户态到内核态什么时候切换？</p>
+<p>​ 中断、系统调用、发生异常。</p>
+<p>用户态内核态切换过程主要需要保存用户态的寄存器，返回时会切换回用户态。</p>
+<p><strong>进程上下文切换发生的场景</strong>：</p>
+<p>​ 1.运行中的进程执行完终止了，CPU 会释放出来，新的基础进程就可以被调度到CPU上运行了。</p>
+<p>​ 2. 运行中的进程时间片用完，进程被挂起</p>
+<p>​ 3.运行中的进程资源不足，进程被挂起</p>
+<p>​ 4.运行中的进程执行Sleep方法主动挂起</p>
+<p>​ 5.新进程优先级更高，运行中的进程被挂起</p>
+<p>​ 6.发生硬件中断，运行中的进程会被中断挂起，转而执行内核中的中断服务程序。</p>
+<p>进程上下文主要包含两个部分：<strong>寄存器如PC</strong>和<strong>操作系统所需的特定数据PCB</strong></p>
+<p><strong>进程是由内核来管理和调度的，进程的切换只能发生在内核态。</strong>进程上下文包括虚拟内存、栈、全局变量等用户空间资源，还包括内核堆栈、寄存器等内核空间的状态。切换时需要保存的信息更多，而加入另一个进程的上下文时，也需要加载这个进程的虚拟内存和用户栈。</p>
+<p>线程是操作系统调度的最小单位。同时线程会共享父进程的虚拟内存和全局变量等资源，因此父进程的资源加上线上自己的私有数据就叫做线程的上下文。</p>
+<p>线程上下文切换：</p>
+<p>​ 当线程属于同一个进程时，全局变量、虚拟内存不需要切换，只需要切换私有数据和寄存器等不共享的数据。</p>
+<p>​ 当线程属于不同进程时，同进程切换。</p>
 </blockquote>
-<h3 id="腾讯大数据数据库优化一面">腾讯大数据数据库优化一面</h3>
+<h2 id="调度算法">调度算法</h2>
 <blockquote>
-<p>1、自我介绍和项目介绍</p>
-<p>2、入职意愿和实习时间</p>
-<p>3、JDK8特性</p>
-<p>4、ArrayList和线程安全List</p>
-<p>5、大数据量中找topK</p>
-<p>6、HashMap和TreeMap</p>
-<p>7、反问，了解到部门技术栈我基本全部不会，面试官告知只要有学习意愿其实都没啥问题。离谱.jpg</p>
+<p><strong>先来先服务调度算法FCFS</strong>、<strong>短作业（进程）优先调度算法SJF（非抢占）</strong>、<strong>基于时间片的轮转调度算法RR</strong>、<strong>多级反馈队列算法FB</strong></p>
 </blockquote>
-<h3 id="腾讯大数据数据库优化二面">腾讯大数据数据库优化二面</h3>
+<h2 id="死锁的四个条件">死锁的四个条件</h2>
 <blockquote>
-<p>前提：电话面且面试官电话莫名有杂音</p>
-<p>1、自我介绍</p>
-<p>2、哲学家问题</p>
-<p>3、线程和进程</p>
-<p>4、口述做算法的网站，沟通了五分钟终于成功进入。</p>
-<p>5、纯白板，无题目，面试官口述算法题，第一遍确认题意后写了一版代码，约经过7-8分钟，面试官说我理解错了题目意思。然后反复扯了10分钟还是没懂题目是啥，面试就这样了。</p>
+<p><strong>互斥</strong>：某种资源一次只能运行一个进程访问。</p>
+<p><strong>请求保持</strong>：一个进程占有资源，但还有资源没有满足。</p>
+<p><strong>不可抢占</strong>：不可以去抢夺别人已拥有的资源。</p>
+<p><strong>循环等待</strong>：存在一个进程链，每个进程都占有下一个进程所需的至少一种资源。</p>
 </blockquote>
-<h4 id="结果-1">结果</h4>
+<h2 id="fork是如何创建子进程的">fork是如何创建子进程的？</h2>
 <blockquote>
-<p>二面后流程结束，回想起来还是不知道那个人想问的是什么算法题，估计面评裂开，第一次遇到不给题目而是口述的算法题，且反馈电话有杂音也没法处理，有点想投诉。</p>
+<p>fork会先为新进程创建和父进程值相同的内核栈、进程信息等，然后判断当前用户进程数是否超过数量，对父子进程进行区分，将部分描述符置为0，给进程分配对应的进程id，将进程设置为就绪状态，放入就绪队列，等待CPU调度。</p>
 </blockquote>
-<h3 id="腾讯s2线一面">腾讯S2线一面</h3>
+<h2 id="硬中断和软中断">硬中断和软中断</h2>
 <blockquote>
-<p>1、自我介绍和项目介绍</p>
-<p>2、TCP和UDP的区别</p>
-<p>3、TCP怎么实现可靠性的？</p>
-<p>4、拥塞控制大概是怎么样的？</p>
-<p>5、HTTPS会不会？大致流程</p>
-<p>6、对称加密和非对称加密算法了解吗？</p>
-<p>7、Java HashMap的hash算法及具体扩容逻辑。</p>
-<p>8、为什么hash算法不直接使用取模？</p>
-<p>9、数据库事务隔离级别</p>
-<p>10、可重复读怎么实现的</p>
-<p>11、操作系统进程通信</p>
-<p>12、操作系统IO模型，BIO、NIO、AIO</p>
-<p>13、大概讲一下select、poll、epoll。</p>
-<p>14、IO多路复用复用了什么？</p>
-<p>15、10个有序文件合并。</p>
-<p>16、排序算法及分析</p>
-<p>17、反问</p>
-</blockquote>
-<h3 id="腾讯s2线二面">腾讯S2线二面</h3>
-<blockquote>
-<p>聊聊了自己基本情况和入职意向，属于一个调查向的面试。</p>
-</blockquote>
-<h3 id="腾讯s2线三面">腾讯S2线三面</h3>
-<blockquote>
-<p>1、自我介绍和项目介绍</p>
-<p>2、HTTP请求方式有哪些</p>
-<p>3、GET、POST区别</p>
-<p>4、HTTPS会不</p>
-<p>5、对称加密和非对称加密优劣势</p>
-<p>6、Netty主从reactor模型</p>
-<p>7、聊到select、poll、epoll说说区别</p>
-<p>8、protobuf优势及原理</p>
-<p>9、你自己测试过序列化框架的性能吗？</p>
-<p>10、设计模式动态代理JDK代理和cglib代理具体怎么做的</p>
-<p>11、redis怎么用的</p>
-<p>12、一致性哈希知道吗？具体说说</p>
-<p>12、聊聊对微服务的理解</p>
-<p>13、zk至少几台集群？</p>
-<p>14、zk选主算法会吗？ZAB/PAXOS</p>
-<p>15、那你说说Raft吧</p>
-<p>16、职业规划</p>
-<p>17、聊天，说感觉我底层了解的还可以，还和我聊了聊一些职业道路的发展问题，说建议多深入了解底层，提升核心竞争力，最好自己动手实现一下raft还有有机会压测一下系统。</p>
-</blockquote>
-<h3 id="hr面">HR面</h3>
-<blockquote>
-<p>聊聊基本情况、个人职业规划、入职时间、工作意向等。</p>
-<p>反问环节让我注意邮箱可能来的邮件，让我记得扫码。</p>
-</blockquote>
-<h4 id="结果-2">结果</h4>
-<blockquote>
-<p>第二天流程结束，人晕了。</p>
-</blockquote>
-<h2 id="携程">携程</h2>
-<h3 id="携程一面">携程一面</h3>
-<blockquote>
-<p>1、写个二分找区间的题</p>
-<p>2、http哪层、tcp哪层</p>
-<p>3、三次握手、四次挥手</p>
-<p>4、tcp客户端超时，服务端会报错吗或者说没有正常四次挥手流程服务端会报错吗？</p>
-<p>​ 半关闭问题</p>
-<p>5、new一个scanf对象，怎么JVM分配空间的？</p>
-<p>​ Java new对象的过程：类加载过程(加载、验证、准备、解析、初始化)</p>
-<p>6、对象除了分配到堆还能分配到哪？</p>
-<p>7、无了</p>
-</blockquote>
-<h4 id="结果-3">结果</h4>
-<blockquote>
-<p>一面面试体验很差，缺少反馈，但是奇怪地通过了一面，被发送了二面邀请，然后拒绝了。</p>
-</blockquote>
-<h2 id="美团到家事业群-外卖业务">美团到家事业群-外卖业务</h2>
-<h3 id="美团一面">美团一面</h3>
-<blockquote>
-<p>1、自我介绍</p>
-<p>2、他自我介绍</p>
-<p>3、Java线程安全是怎么定义的？</p>
-<p>4、Java锁是怎么阻塞线程/进程的？我说了synchronized。</p>
-<p>5、synchronized锁类和锁类实例有什么区别？我说锁类会阻塞访问类的线程，锁实例阻塞访问实例的线程好像错了。</p>
-<p>6、Java线程池，具体流程</p>
-<p>7、操作系统死锁条件及解决方案</p>
-<p>8、Innodb索引结构，简单讲了讲B+树。</p>
-<p>9、聚簇索引和非聚簇索引。</p>
-<p>10、举了具体例子让我说说叶子节点存储的是什么。</p>
-<p>11、非聚簇索引直接存地址可以吗？</p>
-<p>12、存地址有什么问题吗？想到Myisam的相对地址处理，想的太复杂了，当时只说地址需要维护，没回答出具体的点，面试完意识到可能是想问页分裂问题。</p>
-<p>13、volatile具体场景有什么？</p>
-<p>14、来个简单的算法题：判断平衡二叉树</p>
-<p>15、我说还就那个不会，换一题。判断链表有没有环。</p>
-</blockquote>
-<h3 id="结果-4">结果</h3>
-<blockquote>
-<p>第二天面试官加我要求二面。</p>
+<p>硬中断是由硬件产生的，比如，像磁盘，网卡，键盘，时钟等。硬中断可以直接中断CPU。它会引起内核中相关的代码被触发。</p>
+<p>软中断的处理非常像硬中断。然而，它们仅仅是由当前正在运行的进程所产生的。一般而言软中断是I/O请求。</p>
+<p>二者的区别：</p>
+<p>​ 软中断是由运行的进程发出的，它会中断进程正在执行的代码，然后将请求发给内核。</p>
+<p>​ 硬中断是由硬件产生的，它会中断CPU正在执行的代码。</p>
 </blockquote>
 
       
@@ -497,7 +412,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/22/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><span class="page-number current">23</span><a class="page-number" href="/page/24/">24</a><span class="space">&hellip;</span><a class="page-number" href="/page/55/">55</a><a class="extend next" rel="next" href="/page/24/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/22/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><span class="page-number current">23</span><a class="page-number" href="/page/24/">24</a><span class="space">&hellip;</span><a class="page-number" href="/page/56/">56</a><a class="extend next" rel="next" href="/page/24/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -542,13 +457,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">190k</span>
+    <span title="站点总字数">192k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:53</span>
+    <span title="站点阅读时长">2:55</span>
   </span>
 </div>
 <div class="busuanzi-count">

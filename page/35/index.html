@@ -198,7 +198,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">55</span>
+          <span class="site-state-item-count">56</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/JavaBasicKnowledge/Object/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/JavaBasicKnowledge/ConcurrentHashMap/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/JavaBasicKnowledge/Object/" class="post-title-link" itemprop="url">Object类分析</a>
+          <a href="/2021/02/20/JavaBasicKnowledge/ConcurrentHashMap/" class="post-title-link" itemprop="url">ConcurrentHashMap分析</a>
         </h2>
 
         <div class="post-meta-container">
@@ -288,7 +288,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:01:33" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:00:15" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -312,14 +312,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>2.5k</span>
+      <span>5.4k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
+      <span>5 分钟</span>
     </span>
 </div>
 
@@ -330,102 +330,49 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="object类">Object类</h1>
+          <h1 id="concurrenthashmap">ConcurrentHashMap</h1>
+<h2 id="初始化">初始化</h2>
 <blockquote>
-<p>Object类是Java中未指定父类的类的默认继承类，也可以说是所有类的祖先。本文档编写目的为通过查看Java源码来加强自己对Object类的理解。不涉及native实现的方法。</p>
+<p>无参构造</p>
+<p>带初始容量的构造</p>
+<p>带初始容量和负载因子的构造</p>
+<p>带初始容量和负载因子及并发级别的构造：并发级别会规定初始化时最少需要的大小</p>
+<p>传入Map的构造</p>
 </blockquote>
-<h4 id="registernatives">registerNatives()</h4>
+<h2 id="put操作">Put操作</h2>
 <blockquote>
-<p>native实现，目的是在底层创建对应的java本机函数使JVM找到native方法</p>
+<p>先计算key的hash值，然后判断当前是否存在table，若不存在table则调用initTable方法，这里使用了线程相关及CAS</p>
+<p>若存在table判断则判断当前桶位是否为null，为null则创建新结点插入，这里使用CAS锁(会有ABA问题)</p>
+<p>然后判断当前结点hash值是否为MOVE，(本质上就是判断当前结点是否为ForwardingNode)，若为MOVE则帮助扩容(此时已经有线程在执行扩容操作了)。</p>
+<p>若不是则进行插入操作，此时使用synchronized(f)将当前结点锁住，然后再次判断当前结点f是否为需要插入的位置。</p>
+<p>插入完成后判断bitcount是否超过TREEIFY_THRESHOLD，若超过则树化。</p>
+<p>最后让集合的大小加一，使用了同步方法。</p>
 </blockquote>
-<h4 id="getclass">getClass()</h4>
+<h2 id="inittable">initTable</h2>
 <blockquote>
-<p>返回当前对象运行时对应的类对象，且这个类是静态类型擦除后的结果。如T-&gt;Object;List<String>-&gt;List</String></p>
+<p>sizeCtl为-1时表示在初始化</p>
+<p>当table为空或table长度为0时无限循环，判断此时sizeCtl是否小于0，(当一个线程抢夺成功后会让sizeCtl值为-1，其他线程抢占失败后会进入Thread.yield())，抢夺成功的线程则会判断当前sc值是否大于0，若大于0说明初始化时传入了初始容量，使用该容量创建数组，然后将sc值改为当前容量的0.75。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> ((tab = table) == <span class="keyword">null</span> || tab.length == <span class="number">0</span>) &#123;</span><br><span class="line"> <span class="keyword">if</span> ((sc = sizeCtl) &lt; <span class="number">0</span>)</span><br><span class="line">     Thread.yield(); <span class="comment">// lost initialization race; just spin</span></span><br><span class="line"> <span class="keyword">else</span> <span class="keyword">if</span> (U.compareAndSwapInt(<span class="keyword">this</span>, SIZECTL, sc, -<span class="number">1</span>)) &#123;</span><br><span class="line">     <span class="keyword">try</span> &#123;</span><br><span class="line">         <span class="keyword">if</span> ((tab = table) == <span class="keyword">null</span> || tab.length == <span class="number">0</span>) &#123;</span><br><span class="line">             <span class="keyword">int</span> n = (sc &gt; <span class="number">0</span>) ? sc : DEFAULT_CAPACITY;</span><br><span class="line">             <span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">             Node&lt;K,V&gt;[] nt = (Node&lt;K,V&gt;[])<span class="keyword">new</span> Node&lt;?,?&gt;[n];</span><br><span class="line">             table = tab = nt;</span><br><span class="line">             sc = n - (n &gt;&gt;&gt; <span class="number">2</span>);</span><br><span class="line">         &#125;</span><br><span class="line">     &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">         sizeCtl = sc;</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="keyword">break</span>;</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="扩容">扩容</h2>
 </blockquote>
-<h4 id="hashcode">hashCode()</h4>
 <blockquote>
-<p>返回当前对象的hash值，在同一个程序执行中，约定当对象相同时即执行equals方法比较的信息不被更改时，不管调用几次hashcode方法，均要返回相同的值。但不要求不同程序产生相同的hashcode</p>
-<p>如果两个对象可通过equals方法判定相同，则调用hashcode方法会产生两个相同的值。</p>
-<p>如果两个对象通过equals方法判定不同，也不要求hashcode方法产生两个不同的值，但如果产生不同的值会提升哈希表的性能。</p>
-<p>如果可以的话，不同对象应该有不同的hash值，这个通常可以根据将对象在内存中的地址转化为整数来实现，但不强制要求。</p>
+<p>sizeCtl &lt; 0时表示在扩容</p>
+<p>sizeCtl在扩容时高16位表示扩容标识，低16位表示并行扩容线程数+1。</p>
+<p>计算扩容戳本质上是计算当前table长度的前导0个数再或运算一个1000 0000 0000 0000。目的是让sizeCtl在移位后变为负数。</p>
+<p>帮助扩容：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> Node&lt;K,V&gt;[] helpTransfer(Node&lt;K,V&gt;[] tab, Node&lt;K,V&gt; f) &#123;</span><br><span class="line">Node&lt;K,V&gt;[] nextTab; <span class="keyword">int</span> sc;</span><br><span class="line"><span class="comment">// 当table不为空且当前结点为ForwardingNode且当前结点存在nextTable时</span></span><br><span class="line"><span class="keyword">if</span> (tab != <span class="keyword">null</span> &amp;&amp; (f <span class="keyword">instanceof</span> ForwardingNode) &amp;&amp;</span><br><span class="line">(nextTab = ((ForwardingNode&lt;K,V&gt;)f).nextTable) != <span class="keyword">null</span>) &#123;</span><br><span class="line"><span class="comment">//产生扩容戳</span></span><br><span class="line"><span class="keyword">int</span> rs = resizeStamp(tab.length);</span><br><span class="line"><span class="keyword">while</span> (nextTab == nextTable &amp;&amp; table == tab &amp;&amp;</span><br><span class="line">      (sc = sizeCtl) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">   <span class="keyword">if</span> ((sc &gt;&gt;&gt; RESIZE_STAMP_SHIFT) != rs || sc == rs + <span class="number">1</span> ||</span><br><span class="line">       sc == rs + MAX_RESIZERS || transferIndex &lt;= <span class="number">0</span>)</span><br><span class="line">       <span class="keyword">break</span>;</span><br><span class="line">   <span class="keyword">if</span> (U.compareAndSwapInt(<span class="keyword">this</span>, SIZECTL, sc, sc + <span class="number">1</span>)) &#123;</span><br><span class="line">       transfer(tab, nextTab);</span><br><span class="line">       <span class="keyword">break</span>;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> nextTab;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> table;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>具体的扩容方法：</p>
+<p>先利用CPU数和当前table大小同最小区间间隔进行比较，如果小于最小区间间隔则将间隔设置为MIN_TRANSFER_STRIDE即16。</p>
+<p>具体扩容则是每个线程抢夺table的一个区间区间大小为设置的区间间隔大小，如[nextIndex - stride，nextIndex - 1]，抢夺区间的操作使用CAS。</p>
+<p>每个线程对于对应区间都会进行依次操作，这里使用synchronized来锁住当前操作的结点。</p>
+<p>处理完成后，最后一个正在进行的线程会判断设置finishing标志，最终完成扩容，并设置sizeCtl为原table的1.5倍，即新table的0.75倍。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">transfer</span><span class="params">(Node&lt;K,V&gt;[] tab, Node&lt;K,V&gt;[] nextTab)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n = tab.length, stride;</span><br><span class="line">    <span class="keyword">if</span> ((stride = (NCPU &gt; <span class="number">1</span>) ? (n &gt;&gt;&gt; <span class="number">3</span>) / NCPU : n) &lt; MIN_TRANSFER_STRIDE)</span><br><span class="line">        stride = MIN_TRANSFER_STRIDE; <span class="comment">// subdivide range</span></span><br><span class="line">    <span class="keyword">if</span> (nextTab == <span class="keyword">null</span>) &#123;            <span class="comment">// initiating</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">            Node&lt;K,V&gt;[] nt = (Node&lt;K,V&gt;[])<span class="keyword">new</span> Node&lt;?,?&gt;[n &lt;&lt; <span class="number">1</span>];</span><br><span class="line">            nextTab = nt;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Throwable ex) &#123;      <span class="comment">// try to cope with OOME</span></span><br><span class="line">            sizeCtl = Integer.MAX_VALUE;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        nextTable = nextTab;</span><br><span class="line">        transferIndex = n;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> nextn = nextTab.length;</span><br><span class="line">    ForwardingNode&lt;K,V&gt; fwd = <span class="keyword">new</span> ForwardingNode&lt;K,V&gt;(nextTab);</span><br><span class="line">    <span class="keyword">boolean</span> advance = <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">boolean</span> finishing = <span class="keyword">false</span>; <span class="comment">// to ensure sweep before committing nextTab</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>, bound = <span class="number">0</span>;;) &#123;</span><br><span class="line">        Node&lt;K,V&gt; f; <span class="keyword">int</span> fh;</span><br><span class="line">        <span class="keyword">while</span> (advance) &#123;</span><br><span class="line">            <span class="keyword">int</span> nextIndex, nextBound;</span><br><span class="line">            <span class="keyword">if</span> (--i &gt;= bound || finishing)</span><br><span class="line">                advance = <span class="keyword">false</span>;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> ((nextIndex = transferIndex) &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">                i = -<span class="number">1</span>;</span><br><span class="line">                advance = <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (U.compareAndSwapInt</span><br><span class="line">                     (<span class="keyword">this</span>, TRANSFERINDEX, nextIndex,</span><br><span class="line">                      nextBound = (nextIndex &gt; stride ?</span><br><span class="line">                                   nextIndex - stride : <span class="number">0</span>))) &#123;</span><br><span class="line">                bound = nextBound;</span><br><span class="line">                i = nextIndex - <span class="number">1</span>;</span><br><span class="line">                advance = <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (i &lt; <span class="number">0</span> || i &gt;= n || i + n &gt;= nextn) &#123;</span><br><span class="line">            <span class="keyword">int</span> sc;</span><br><span class="line">            <span class="keyword">if</span> (finishing) &#123;</span><br><span class="line">                nextTable = <span class="keyword">null</span>;</span><br><span class="line">                table = nextTab;</span><br><span class="line">                sizeCtl = (n &lt;&lt; <span class="number">1</span>) - (n &gt;&gt;&gt; <span class="number">1</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (U.compareAndSwapInt(<span class="keyword">this</span>, SIZECTL, sc = sizeCtl, sc - <span class="number">1</span>)) &#123;</span><br><span class="line">                <span class="keyword">if</span> ((sc - <span class="number">2</span>) != resizeStamp(n) &lt;&lt; RESIZE_STAMP_SHIFT)</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                finishing = advance = <span class="keyword">true</span>;</span><br><span class="line">                i = n; <span class="comment">// recheck before commit</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> ((f = tabAt(tab, i)) == <span class="keyword">null</span>)</span><br><span class="line">            advance = casTabAt(tab, i, <span class="keyword">null</span>, fwd);</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> ((fh = f.hash) == MOVED)</span><br><span class="line">            advance = <span class="keyword">true</span>; <span class="comment">// already processed</span></span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (f) &#123;</span><br><span class="line">                <span class="keyword">if</span> (tabAt(tab, i) == f) &#123;</span><br><span class="line">                    Node&lt;K,V&gt; ln, hn;</span><br><span class="line">                    <span class="keyword">if</span> (fh &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">                        <span class="keyword">int</span> runBit = fh &amp; n;</span><br><span class="line">                        Node&lt;K,V&gt; lastRun = f;</span><br><span class="line">                        <span class="keyword">for</span> (Node&lt;K,V&gt; p = f.next; p != <span class="keyword">null</span>; p = p.next) &#123;</span><br><span class="line">                            <span class="keyword">int</span> b = p.hash &amp; n;</span><br><span class="line">                            <span class="keyword">if</span> (b != runBit) &#123;</span><br><span class="line">                                runBit = b;</span><br><span class="line">                                lastRun = p;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">if</span> (runBit == <span class="number">0</span>) &#123;</span><br><span class="line">                            ln = lastRun;</span><br><span class="line">                            hn = <span class="keyword">null</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">else</span> &#123;</span><br><span class="line">                            hn = lastRun;</span><br><span class="line">                            ln = <span class="keyword">null</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">for</span> (Node&lt;K,V&gt; p = f; p != lastRun; p = p.next) &#123;</span><br><span class="line">                            <span class="keyword">int</span> ph = p.hash; K pk = p.key; V pv = p.val;</span><br><span class="line">                            <span class="keyword">if</span> ((ph &amp; n) == <span class="number">0</span>)</span><br><span class="line">                                ln = <span class="keyword">new</span> Node&lt;K,V&gt;(ph, pk, pv, ln);</span><br><span class="line">                            <span class="keyword">else</span></span><br><span class="line">                                hn = <span class="keyword">new</span> Node&lt;K,V&gt;(ph, pk, pv, hn);</span><br><span class="line">                        &#125;</span><br><span class="line">                        setTabAt(nextTab, i, ln);</span><br><span class="line">                        setTabAt(nextTab, i + n, hn);</span><br><span class="line">                        setTabAt(tab, i, fwd);</span><br><span class="line">                        advance = <span class="keyword">true</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">else</span> <span class="keyword">if</span> (f <span class="keyword">instanceof</span> TreeBin) &#123;</span><br><span class="line">                        TreeBin&lt;K,V&gt; t = (TreeBin&lt;K,V&gt;)f;</span><br><span class="line">                        TreeNode&lt;K,V&gt; lo = <span class="keyword">null</span>, loTail = <span class="keyword">null</span>;</span><br><span class="line">                        TreeNode&lt;K,V&gt; hi = <span class="keyword">null</span>, hiTail = <span class="keyword">null</span>;</span><br><span class="line">                        <span class="keyword">int</span> lc = <span class="number">0</span>, hc = <span class="number">0</span>;</span><br><span class="line">                        <span class="keyword">for</span> (Node&lt;K,V&gt; e = t.first; e != <span class="keyword">null</span>; e = e.next) &#123;</span><br><span class="line">                            <span class="keyword">int</span> h = e.hash;</span><br><span class="line">                            TreeNode&lt;K,V&gt; p = <span class="keyword">new</span> TreeNode&lt;K,V&gt;</span><br><span class="line">                                (h, e.key, e.val, <span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line">                            <span class="keyword">if</span> ((h &amp; n) == <span class="number">0</span>) &#123;</span><br><span class="line">                                <span class="keyword">if</span> ((p.prev = loTail) == <span class="keyword">null</span>)</span><br><span class="line">                                    lo = p;</span><br><span class="line">                                <span class="keyword">else</span></span><br><span class="line">                                    loTail.next = p;</span><br><span class="line">                                loTail = p;</span><br><span class="line">                                ++lc;</span><br><span class="line">                            &#125;</span><br><span class="line">                            <span class="keyword">else</span> &#123;</span><br><span class="line">                                <span class="keyword">if</span> ((p.prev = hiTail) == <span class="keyword">null</span>)</span><br><span class="line">                                    hi = p;</span><br><span class="line">                                <span class="keyword">else</span></span><br><span class="line">                                    hiTail.next = p;</span><br><span class="line">                                hiTail = p;</span><br><span class="line">                                ++hc;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                        ln = (lc &lt;= UNTREEIFY_THRESHOLD) ? untreeify(lo) :</span><br><span class="line">                            (hc != <span class="number">0</span>) ? <span class="keyword">new</span> TreeBin&lt;K,V&gt;(lo) : t;</span><br><span class="line">                        hn = (hc &lt;= UNTREEIFY_THRESHOLD) ? untreeify(hi) :</span><br><span class="line">                            (lc != <span class="number">0</span>) ? <span class="keyword">new</span> TreeBin&lt;K,V&gt;(hi) : t;</span><br><span class="line">                        setTabAt(nextTab, i, ln);</span><br><span class="line">                        setTabAt(nextTab, i + n, hn);</span><br><span class="line">                        setTabAt(tab, i, fwd);</span><br><span class="line">                        advance = <span class="keyword">true</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </blockquote>
-<h4 id="equals">equals()</h4>
+<h2 id="tips">tips</h2>
 <blockquote>
-<p>判断某些对象是否equals to调用该方法的对象。</p>
-<p>实现了非空对象引用上的等价关系判断。</p>
-<p>四个特性:自反、对称、传递、一致。</p>
-<p>自反: x.equals(x) == true</p>
-<p>对称: x.equals(y) == y.equals(x)</p>
-<p>传递: x.equals(y), y.equals(z) ------&gt; x.equals(z)</p>
-<p>一致: 只要用于equals比较的信息不被改变，则不管调用几次equals方法其值总是不变的。</p>
-<p>非空对象引用同null比较值总是为false。</p>
-<p>对象之间equals比较只有两个对象是完全相同即地址一致时才会返回true。</p>
-<p>为了维持hashcode的原则，在重写equals方法的时候，往往需要重写hashcode方法。</p>
-</blockquote>
-<h4 id="clone">clone()</h4>
-<blockquote>
-<p>根据对象的类复制一个对象的副本。</p>
-<p>往往有</p>
-<p>​ x.clone() != x;</p>
-<p>​ x.clone().getClass() == x.getClass()</p>
-<p>​ x.clone.equals(x) == true</p>
-<p>​ 通常返回的clone对象都是调用super.clone得到的。</p>
-<p>​ clone的对象需要和被clone的对象相互独立。这便要求对被clone对象中所有可变属性进行复制，并用副本的引用替换对这些对象的引用。</p>
-<p>Object类的clone方法</p>
-<p>​ 首先需要继承Cloneable接口。数组类型默认实现了Cloneable接口，且T类型的数组clone的结果的类型为T，需要注意的时，数组clone是直接复制原数组的值即对象引用只是将引用拷贝了，故为浅拷贝。</p>
-<p>Object对象没有实现Cloneable接口，故对Object对象使用clone会产生异常。CloneNotSupportedException</p>
-</blockquote>
-<h4 id="tostring">toString()</h4>
-<blockquote>
-<p>返回对象的字符串表示形式。往往需要重写这个方法。</p>
-<p>这个方法的默认表现为“类名+@+hashcode的十六进制表示”</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">getClass().getName() + <span class="string">&#x27;@&#x27;</span> + Integer.toHexString(hashCode())</span><br></pre></td></tr></table></figure>
-</blockquote>
-<h4 id="notify">notify()</h4>
-<blockquote>
-<p>唤醒正在wait()该线程所拥有的对象的一个线程。如果有多个线程都在wait该对象，则随机唤醒一个线程，由具体实现决定。</p>
-<p>被唤醒的线程只有在对象没有被锁定的情况下才能执行。且被唤醒的线程仍然需要以通常的方式同其他线程竞争对象的使用权，没有其他特权。</p>
-<p>该方法只能由当前具有对象使用权的线程调用，获取对象使用权的方式</p>
-<p>​ 1.执行对象的synchronize修饰的方法</p>
-<p>​ 2.执行synchronize修饰的代码段。</p>
-<p>​ 3.执行synchronize修饰的静态方法。</p>
-<p>未拥有对象monitor的线程调用会抛出IllegalMonitorStateException异常。</p>
-</blockquote>
-<h4 id="notifyall">notifyAll()</h4>
-<blockquote>
-<p>唤醒正在wait()该线程所拥有的对象的所有线程。</p>
-</blockquote>
-<h4 id="waitlong-timeout">wait(long timeout)</h4>
-<blockquote>
-<p>让当前线程等待一段时间，直到被notify/notifyAll/一段时间过后唤醒。</p>
-<p>调用该方法的线程必须有对象的monitor。</p>
-<p>该方法会让线程进入该对象的等待集中，然后放弃对该对象的所有同步声明。 出于线程调度目的，该线程被禁用，并且在发生以下四种情况之一之前一直处于休眠状态：</p>
-<ol type="1">
-<li>某些线程调用了notify方法并恰好唤醒该线程。</li>
-<li>某些线程调用了notifyAll方法。</li>
-<li>某些线程调用了interrupt方法。</li>
-<li>一段特定时间过去。若为设置特定时间线程会等到被notify为止。</li>
-</ol>
-<p>从wait方法返回的对象和线程的同步状态会和调用该方法时的状态完全相同。</p>
-<p>存在虚假唤醒(spurious wakeup)的问题需要在while中调用wait来避免。</p>
-<p>如果该线程在等待之前，或等待期间被另一个线程调用该线程的interrupt()方法，那么当被interrupt线程获得锁之后，会立刻抛出InterruptedException异常，我们可以对这个异常进行捕获，然后处理，以实现线程的唤醒和通信。</p>
-<p>wait方法将当前线程放入该对象的等待集中，只会解锁该对象，若当前线程还锁定了其他对象，那么这些对象不会被解锁。(死锁)</p>
-</blockquote>
-<h4 id="waitlong-timeout-int-nanos">wait(long timeout, int nanos)</h4>
-<blockquote>
-<p>同一个参数的wait基本一致，但可以输入纳秒级的精度。实际上只是nanos大于0直接让timeout++而已。</p>
-</blockquote>
-<h4 id="wait">wait()</h4>
-<blockquote>
-<p>不支持超时自动唤醒。相当于wait(0)</p>
-</blockquote>
-<h4 id="finalize">finalize()</h4>
-<blockquote>
-<p>当资源不可达时GC会自动调用对象的finalize方法</p>
-<p>这个方法内部可以执行任何操作，包括让这个对象重新可达。但往往只是执行清除操作，如中断I/O连接。</p>
-<p>Java编程语言对于所有的对象都不能够保证哪个线程会调用它的finalize方法。然而可以保证一点，调用终结方法的线程必然不会被任何用户可见的同步锁锁住。如果一个没有被捕获的异常在执行终结方法时被抛出，异常会被忽略并且哪个对象的终结过程会被终止。</p>
-<p>调用该方法后，java虚拟机会再次判断对象是否可达，若仍不可达对象往往会被摧毁。</p>
-<p>finalize()方法不会调用多次。</p>
+<p>最大容量为2^30，默认容量16，默认并发级别16(为了兼容之前的版本)，默认负载因子0.75。最大数字大小Integer.MAX_VALUE - 8。</p>
+<p>树阈值8，链表阈值6。最小树化容量64(只有大于该值时才会树化)</p>
+<p>若key为null，会报空指针异常。</p>
 </blockquote>
 
       
@@ -446,7 +393,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/34/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/34/">34</a><span class="page-number current">35</span><a class="page-number" href="/page/36/">36</a><span class="space">&hellip;</span><a class="page-number" href="/page/55/">55</a><a class="extend next" rel="next" href="/page/36/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/34/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/34/">34</a><span class="page-number current">35</span><a class="page-number" href="/page/36/">36</a><span class="space">&hellip;</span><a class="page-number" href="/page/56/">56</a><a class="extend next" rel="next" href="/page/36/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -491,13 +438,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">190k</span>
+    <span title="站点总字数">192k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:53</span>
+    <span title="站点阅读时长">2:55</span>
   </span>
 </div>
 <div class="busuanzi-count">

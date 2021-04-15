@@ -198,7 +198,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">55</span>
+          <span class="site-state-item-count">56</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/13/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E5%A5%87%E6%80%AA%E7%9A%84%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/18/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1%E7%AA%81%E5%87%BB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/13/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E5%A5%87%E6%80%AA%E7%9A%84%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" class="post-title-link" itemprop="url">查缺补漏</a>
+          <a href="/2021/03/18/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1%E7%AA%81%E5%87%BB/" class="post-title-link" itemprop="url">系统设计突击</a>
         </h2>
 
         <div class="post-meta-container">
@@ -286,10 +286,16 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2021-03-13 00:00:00 / 修改时间：23:46:32" itemprop="dateCreated datePublished" datetime="2021-03-13T00:00:00+08:00">2021-03-13</time>
+      <time title="创建时间：2021-03-18 00:00:00" itemprop="dateCreated datePublished" datetime="2021-03-18T00:00:00+08:00">2021-03-18</time>
     </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-19 16:42:34" itemprop="dateModified" datetime="2021-03-19T16:42:34+08:00">2021-03-19</time>
+      </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
@@ -308,7 +314,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>125</span>
+      <span>827</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -326,11 +332,63 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="查缺补漏">查缺补漏</h1>
-<h2 id="git的rebase和merge有什么区别">git的rebase和merge有什么区别？</h2>
+          <h1 id="系统设计突击">系统设计突击</h1>
+<h2 id="如何设计微博关注功能即feed流设计">如何设计微博关注功能？即Feed流设计</h2>
 <blockquote>
-<p>生成的代码树有区别。git merge的代码树可以精准地看到每次提交，合并时会产生一个合并点，且还保留先前提交的具体信息。</p>
-<p>git rebase的代码树比较简单。会忽略每个子分支的具体提交，只留下合并点。</p>
+<p>该问题主要看产品类型，具体分类如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">类型</th>
+<th style="text-align: left;">关注关系</th>
+<th style="text-align: left;">是否有大V</th>
+<th style="text-align: left;">时效性</th>
+<th style="text-align: left;">排序</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">微博类</td>
+<td style="text-align: left;">单向</td>
+<td style="text-align: left;">有</td>
+<td style="text-align: left;">秒~分</td>
+<td style="text-align: left;">时间</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">抖音类</td>
+<td style="text-align: left;">单向/无</td>
+<td style="text-align: left;">有</td>
+<td style="text-align: left;">秒~分</td>
+<td style="text-align: left;">推荐</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">朋友圈类</td>
+<td style="text-align: left;">双向</td>
+<td style="text-align: left;">无</td>
+<td style="text-align: left;">秒</td>
+<td style="text-align: left;">时间</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">私信类</td>
+<td style="text-align: left;">双向</td>
+<td style="text-align: left;">无</td>
+<td style="text-align: left;">秒</td>
+<td style="text-align: left;">时间</td>
+</tr>
+</tbody>
+</table>
+<p>微博关注功能的主要难点在于，一个用户的粉丝数可能十分巨大，导致消息如何推送是一个问题。</p>
+<p>常见的设计方法：</p>
+<p>​ 首先将数据库分为，存储库和关系库。</p>
+<p>​ 存储库需要可靠存储用户的消息，不能丢失。需要能够支持读取某个人分布的所有消息。支持数据永久存储。</p>
+<p>​ 技术选型主要考虑关系型数据库Mysql或Nosql。其中Nosql水平拓展能力较高，方便在数据量巨大时的使用。</p>
+<p>​ 存储的信息往往可以是userID和messageID。</p>
+<p>​ 关系库则是用于存储用户之间的关系的。</p>
+<p><strong>数据的同步方式即用户怎么接收推送的？</strong></p>
+<p>​ 1.推模式(写扩散)：发送者发送一个消息后，立即将消息推送给发送者，此时发送者不一定在线，需要将消息同步到一个同步库中。一条消息要发送给多个粉丝所以需要复制多份，要求数据库支持大量写请求。用户上线时只需要读取自己的数据库，找到消息即可。</p>
+<p>​ 2.拉模式(读扩散)：这是一种拉的方式，即发送者发送消息后，数据只写入自己对应的数据库，然后用户上线时直接从自己的数据库中读取，此时消息的写入操作仅一次，消息的读取操作次数最多会达到最大粉丝数。因此这种设计要求数据库要有极强的读能力。但是这种设计存在一个问题，即每个用户需要记录自己上次读到了关注者的哪条消息，若关注者数量大，则需要占用大量空间存储该数据。</p>
+<p>​ 3.推拉结合模式：推模式在单向关系中因为存在大V，一天消息写扩散可能几百万次。而这些用户可能一大半都是僵尸用户，永远不会上线。存在资源浪费。而拉模式需要记录上次读取消息的位置，架构比较复杂。因此往往设计为普通用户使用推模式，大V使用拉模式，这样平衡架构复杂性和资源使用。</p>
+<p><strong>其他具体功能设计见https://developer.aliyun.com/article/706808</strong></p>
 </blockquote>
 
       
@@ -351,7 +409,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/13/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><span class="page-number current">14</span><a class="page-number" href="/page/15/">15</a><span class="space">&hellip;</span><a class="page-number" href="/page/55/">55</a><a class="extend next" rel="next" href="/page/15/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/13/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><span class="page-number current">14</span><a class="page-number" href="/page/15/">15</a><span class="space">&hellip;</span><a class="page-number" href="/page/56/">56</a><a class="extend next" rel="next" href="/page/15/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -396,13 +454,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">190k</span>
+    <span title="站点总字数">192k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:53</span>
+    <span title="站点阅读时长">2:55</span>
   </span>
 </div>
 <div class="busuanzi-count">
