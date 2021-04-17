@@ -198,7 +198,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-count">58</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/01/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/mybatis/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/" class="post-title-link" itemprop="url">I/O模型及I/O线程模型</a>
+          <a href="/2021/03/01/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/mybatis/" class="post-title-link" itemprop="url">mybatis突击</a>
         </h2>
 
         <div class="post-meta-container">
@@ -287,14 +287,14 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2021-02-28 23:30:00" itemprop="dateCreated datePublished" datetime="2021-02-28T23:30:00+08:00">2021-02-28</time>
+      <time title="创建时间：2021-03-01 00:00:00" itemprop="dateCreated datePublished" datetime="2021-03-01T00:00:00+08:00">2021-03-01</time>
     </span>
       <span class="post-meta-item">
         <span class="post-meta-item-icon">
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-17 13:45:48" itemprop="dateModified" datetime="2021-03-17T13:45:48+08:00">2021-03-17</time>
+        <time title="修改时间：2021-04-01 15:26:17" itemprop="dateModified" datetime="2021-04-01T15:26:17+08:00">2021-04-01</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -302,7 +302,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
+          <a href="/categories/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/" itemprop="url" rel="index"><span itemprop="name">面试突击</span></a>
         </span>
     </span>
 
@@ -314,7 +314,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>1.6k</span>
+      <span>729</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -332,103 +332,26 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="io模型及io线程模型">I/O模型及I/O线程模型</h1>
-<h2 id="io模型">I/O模型</h2>
-<h3 id="阻塞型iobio">阻塞型I/O(BIO)</h3>
+          <h1 id="mybatis突击">mybatis突击</h1>
+<h2 id="和">#{}和$</h2>
 <blockquote>
-<p>线程调用recvfrom，持续等待直到复制完成。</p>
-<figure>
-<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/阻塞型IO.png" alt="阻塞型IO"><figcaption aria-hidden="true">阻塞型IO</figcaption>
-</figure>
-<p>优点：程序简单</p>
-<p>缺点：每个连接需要独立进程/线程，并发量大时维护程序的线程切换开销大。</p>
+<p>#{} mybatis会创建PreparedStatement参数占位符，并使用占位符安全地设置参数。</p>
+<p>${} mybatis不会执行转义，可以在sql插入一个不转义的字符串。</p>
+<p>如果需要输入大量特殊字符，可以使用&lt;[CDATA[ ]]&gt; 标签。</p>
 </blockquote>
-<h3 id="非阻塞型io">非阻塞型I/O</h3>
+<h2 id="常见标签">常见标签</h2>
 <blockquote>
-<p>线程调用recvfrom，不持续等待，而是不断轮询操作系统内核。</p>
-<figure>
-<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/非阻塞型IO.png" alt="非阻塞型IO"><figcaption aria-hidden="true">非阻塞型IO</figcaption>
-</figure>
-<p>优点：不会阻塞在内核的等待数据过程，每次发起的 I/O 请求可以立即返回，不用阻塞等待，实时性较好。</p>
-<p>缺点：轮询占用大量CPU时间，系统资源利用率低。</p>
+<p>&lt;resultMap&gt;、&lt;association&gt;、&lt;sql&gt;、&lt;sql&gt;标签里面还有一些如&lt;if&gt;、&lt;trim&gt;之类的用于动态sql。</p>
 </blockquote>
-<h3 id="io多路复用nio">I/O多路复用(NIO)</h3>
+<h2 id="mybatis流程">Mybatis流程</h2>
+<h2 id="dao代理">dao代理</h2>
 <blockquote>
-<p>如select、poll、epoll，用一个描述符管理多个描述符，同时管理多个I/O操作，当有事件发生时才堵塞进行复制。</p>
-<figure>
-<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/NIO.png" alt="NIO"><figcaption aria-hidden="true">NIO</figcaption>
-</figure>
-<p>优点：节省大量系统资源。</p>
-<p>缺点：在并发量低时延迟较多线程+堵塞I/O更高，因为I/O多路复用对单个连接需要进行两次系统调用。</p>
-</blockquote>
-<h3 id="信号驱动型io">信号驱动型I/O</h3>
-<blockquote>
-<p>使用信号来驱动，当数据准备好时进程会受到一个信号，在信号处理函数中处理数据。</p>
-<figure>
-<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/信号驱动型IO.png" alt="信号驱动型IO"><figcaption aria-hidden="true">信号驱动型IO</figcaption>
-</figure>
-<p>优点：线程没有在等待数据时被阻塞，提高资源利用率。</p>
-<p>缺点：信号I/O在大量I/O操作时可能会因为信号序列溢出导致无法通知。</p>
-</blockquote>
-<h3 id="异步ioaio">异步I/O(AIO)</h3>
-<blockquote>
-<p>类似于信号驱动I/O，但是AIO会在内核完成了数据复制操作后才给线程发送信号，线程无须等待。</p>
-<figure>
-<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/异步IO.png" alt="img"><figcaption aria-hidden="true">img</figcaption>
-</figure>
-<p>优点：异步I/O充分利用DMA，让I/O操作和计算重叠。</p>
-<p>缺点：AIO需要操作系统支持，目前AIO在linux中还不完善，且AIO代码编写复杂。</p>
-</blockquote>
-<h2 id="io线程模型">I/O线程模型</h2>
-<h3 id="传统阻塞-io-服务模型">传统阻塞 I/O 服务模型</h3>
-<blockquote>
-<p>采用阻塞式I/O获取输入数据，每个连接都需要独立的线程完成数据输入、业务处理、数据返回的完整操作。</p>
-<p>缺点：</p>
-<p>​ 并发数较大时需要大量线程。</p>
-<p>​ 连接后若没有数据会被阻塞在read操作上。</p>
-</blockquote>
-<h3 id="reactor模式">Reactor模式</h3>
-<blockquote>
-<p>I/O复用结合线程池</p>
-<p>主要组件为Reactor、Acceptor、Handler</p>
-<p>非阻塞同步网络模型。</p>
-</blockquote>
-<h4 id="单线程reactor">单线程reactor</h4>
-<blockquote>
-<p>Reactor对象通过select监控请求事件，收到事件后通过Dispatch分发。</p>
-<p>若是连接事件通过Acceptor处理。然后创建一个Handler处理连接后的事件</p>
-<p>若不是连接事件则交给Handler处理。</p>
-<p>优点：单线程不用考虑线程切换开销。</p>
-<p>缺点：只有一个线程无法完全发挥多核CPU的性能。</p>
-</blockquote>
-<h4 id="多线程reactor">多线程reactor</h4>
-<blockquote>
-<p>优化了Handler，handler只负责数据读取，然后将数据分发给worker线程处理，worker线程处理完成后将结果返回给handler。</p>
-<p>优点：充分利用多核CPU处理能力</p>
-<p>缺点：多线程数据共享和访问比较困难。reactor负责承担所有事件响应，容易成为瓶颈。</p>
-</blockquote>
-<h4 id="主从reactor模型">主从Reactor模型</h4>
-<blockquote>
-<figure>
-<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/主从reactor.png" alt="主从reactor"><figcaption aria-hidden="true">主从reactor</figcaption>
-</figure>
-<p>主Reactor负责将新连接分发给Acceptor，然后主Reactor将连接分发给从reactor。从reactor会将连接加入连接队列进行监听，并创建一个handler用于处理。新事件发生时，从reactor会调用连接对应的handler进行处理，handler负责数据读取，而业务仍交给worker处理。</p>
-<p>优点：父线程与子线程的数据交互简单职责明确，父线程只需要接收新连接，子线程完成后续的业务处理。</p>
-</blockquote>
-<h3 id="proactor模型">Proactor模型</h3>
-<blockquote>
-<figure>
-<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/proactor模型.png" alt="proactor模型"><figcaption aria-hidden="true">proactor模型</figcaption>
-</figure>
-<p>异步网络模型。</p>
-<p>组件：Proactor Initiator、Proactor 、Handler 、AsyOptProcessor。即一个初始化器，一个注册器，一个proactor，一个handler</p>
-<p>流程：initiator创建Proactor 、Handler ，然后Proactor 和Handler 都通过AsyOptProcessor注册到内核。</p>
-<p>AsyOptProcessor处理注册请求，并处理I/O操作。</p>
-<p>AsyOptProcessor完成I/O操作后会通知Proactor，Proactor根据不同的事件类型回调不同的Handler进行业务处理。</p>
-<p>优点：效率较reactor模型更高。</p>
-<p>缺点：编程更加复杂。</p>
-<p>​ 内存使用更加困难。</p>
-<p>​ 需要操作系统支持。</p>
+<p>mybatis使用JDK动态代理实现。mapper的方法不能重载，因为Mybatis是使用包名+类+方法名作为key去查找xml的sql执行的。</p>
+<p>JDK动态代理是基于接口的代理。不实现接口的话可以使用cglig的动态代理。</p>
+<p>JDK动态代理本质上就是根据接口的方法产生一个继承了Proxy类实现了需要代理接口的代理子类，该子类中存在代理接口的方法对象，而这些方法对象会在静态块利用反射进行创建，而调用执行方法时会使用this.h.ivoke调用执行，其中h即为实现动态代理时的InvactionHandler。</p>
+<p>缺点：要求方法实现接口。</p>
+<p>cglib动态代理是基于代理类的思想实现的。代理过程会生成一个需要被代理的类B对象。也会创建对应的方法。但是在方法invoke时cglib做了fast class的优化，jdk动态代理invoke时是使用反射的技术进行调用方法的，而cglib则会随着方法的调用产生fast class，产生了一个对应方法的具体实现，使用时利用index映射关系找到对应方法，直接执行，不需要执行反射过程。</p>
+<p>缺点：不能代理final方法。</p>
 </blockquote>
 
       
@@ -449,7 +372,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/29/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/29/">29</a><span class="page-number current">30</span><a class="page-number" href="/page/31/">31</a><span class="space">&hellip;</span><a class="page-number" href="/page/56/">56</a><a class="extend next" rel="next" href="/page/31/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/29/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/29/">29</a><span class="page-number current">30</span><a class="page-number" href="/page/31/">31</a><span class="space">&hellip;</span><a class="page-number" href="/page/58/">58</a><a class="extend next" rel="next" href="/page/31/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -494,13 +417,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">192k</span>
+    <span title="站点总字数">195k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:55</span>
+    <span title="站点阅读时长">2:58</span>
   </span>
 </div>
 <div class="busuanzi-count">

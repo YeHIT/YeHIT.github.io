@@ -198,7 +198,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-count">58</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/01/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/mybatis/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/03/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E8%87%AA%E5%B7%B1%E7%9A%84%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/01/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/mybatis/" class="post-title-link" itemprop="url">mybatis突击</a>
+          <a href="/2021/03/03/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E8%87%AA%E5%B7%B1%E7%9A%84%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" class="post-title-link" itemprop="url">自己的项目总结</a>
         </h2>
 
         <div class="post-meta-container">
@@ -287,14 +287,14 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2021-03-01 00:00:00" itemprop="dateCreated datePublished" datetime="2021-03-01T00:00:00+08:00">2021-03-01</time>
+      <time title="创建时间：2021-03-03 00:00:00" itemprop="dateCreated datePublished" datetime="2021-03-03T00:00:00+08:00">2021-03-03</time>
     </span>
       <span class="post-meta-item">
         <span class="post-meta-item-icon">
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-04-01 15:26:17" itemprop="dateModified" datetime="2021-04-01T15:26:17+08:00">2021-04-01</time>
+        <time title="修改时间：2021-03-19 23:07:58" itemprop="dateModified" datetime="2021-03-19T23:07:58+08:00">2021-03-19</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -314,7 +314,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>729</span>
+      <span>1k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -332,26 +332,37 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="mybatis突击">mybatis突击</h1>
-<h2 id="和">#{}和$</h2>
+          <h1 id="自己的项目总结">自己的项目总结</h1>
+<h2 id="为什么使用protobuf">为什么使用protobuf？</h2>
 <blockquote>
-<p>#{} mybatis会创建PreparedStatement参数占位符，并使用占位符安全地设置参数。</p>
-<p>${} mybatis不会执行转义，可以在sql插入一个不转义的字符串。</p>
-<p>如果需要输入大量特殊字符，可以使用&lt;[CDATA[ ]]&gt; 标签。</p>
+<p>因为protobuf兼容性好、序列化性能高、且序列化出的数据体积小，会降低网络通信的传输负担。</p>
+<p>当然json的优点在于易读，且许多项目都是使用json传输的。</p>
+<p>protobuf兼容性好的原因：</p>
+<p>​ protobuf在编码消息时会把消息分为tag域和value域，tag域用于标注出这个value对应的类型，且protobuf解析时也是按照序号对应解析的，假如说服务端消息序号为1、2、3、4，而客户端使用的是旧消息1、2、4，此时在客户端接收到消息时客户端会发现缺失了一个3号位，此时读取tag就会获知这个是什么类型的数据，跳过对应位数解析即可。</p>
+<p>protobuf序列化性能高的原因：</p>
+<p>​ 主要是因为编码方式导致protobuf序列化过程中只需要进行数字的简单运算，同时protobuf还在框架层面上同编译器共同完成序列化，所以序列化速度非常快。</p>
+<p>protobuf序列化出的数据体积小的原因：</p>
+<p>​ protobuf采用T-L-V，即tag-length-value的编码方法来针对字符串。</p>
+<p>​ protobuf采用T-V的结果来针对整数，其中tag的值会利用位运算先将序号左移3位然后或上对应的type值，减少空间占用。</p>
+<p>​ 因为protobuf对于数字采用了特定的Varint编码。对于值越小的数字使用越少的字节表示。如对应int32的数字，如果数字较小，只使用了其中的8位，那么发送时也只会发送最后8位。</p>
 </blockquote>
-<h2 id="常见标签">常见标签</h2>
+<h2 id="netty通讯时选择的是什么协议为什么选择这个协议">Netty通讯时选择的是什么协议？为什么选择这个协议？</h2>
 <blockquote>
-<p>&lt;resultMap&gt;、&lt;association&gt;、&lt;sql&gt;、&lt;sql&gt;标签里面还有一些如&lt;if&gt;、&lt;trim&gt;之类的用于动态sql。</p>
+<p>选用TCP来实现的，因为认为TCP传输更加可靠。</p>
 </blockquote>
-<h2 id="mybatis流程">Mybatis流程</h2>
-<h2 id="dao代理">dao代理</h2>
+<h3 id="使用tcp通讯时有没有遇到粘包问题怎么处理的">使用TCP通讯时有没有遇到粘包问题？怎么处理的？</h3>
 <blockquote>
-<p>mybatis使用JDK动态代理实现。mapper的方法不能重载，因为Mybatis是使用包名+类+方法名作为key去查找xml的sql执行的。</p>
-<p>JDK动态代理是基于接口的代理。不实现接口的话可以使用cglig的动态代理。</p>
-<p>JDK动态代理本质上就是根据接口的方法产生一个继承了Proxy类实现了需要代理接口的代理子类，该子类中存在代理接口的方法对象，而这些方法对象会在静态块利用反射进行创建，而调用执行方法时会使用this.h.ivoke调用执行，其中h即为实现动态代理时的InvactionHandler。</p>
-<p>缺点：要求方法实现接口。</p>
-<p>cglib动态代理是基于代理类的思想实现的。代理过程会生成一个需要被代理的类B对象。也会创建对应的方法。但是在方法invoke时cglib做了fast class的优化，jdk动态代理invoke时是使用反射的技术进行调用方法的，而cglib则会随着方法的调用产生fast class，产生了一个对应方法的具体实现，使用时利用index映射关系找到对应方法，直接执行，不需要执行反射过程。</p>
-<p>缺点：不能代理final方法。</p>
+<p>粘包问题本质上是由于TCP自身是以流传输的发送传递数据的，而TCP默认又会开启Nagle算法，所谓Nagle算法就是TCP协议要求让一个连接中最多只能有一个未被确认的小分组，而对于后续的小分组采用累积最后合并发送的形式发送。这样就导致客户端分次发送的数据被服务端接收时变为连续的数据。</p>
+<p>粘包问题有许多解决方案：</p>
+<p>​ 规定每次发送消息只能发送固定长度的，未到固定长度的使用空白填补。</p>
+<p>​ 消息利用特殊分隔符分隔，接收时利用分隔符进行拆分。</p>
+<p>​ 在发送消息前在消息内容前添加消息长度字段，接收时利用长度字段进行接收。</p>
+<p>我使用的是最后一种。</p>
+</blockquote>
+<h2 id="redis的使用">redis的使用</h2>
+<h2 id="为什么使用zookeeper作为服务发现框架">为什么使用zookeeper作为服务发现框架？</h2>
+<blockquote>
+<p>可选项：redis、zookeeper(CP)、etcd(CP)、Eureka(AP)[juˈriːkə]。</p>
 </blockquote>
 
       
@@ -372,7 +383,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/27/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/27/">27</a><span class="page-number current">28</span><a class="page-number" href="/page/29/">29</a><span class="space">&hellip;</span><a class="page-number" href="/page/56/">56</a><a class="extend next" rel="next" href="/page/29/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/27/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/27/">27</a><span class="page-number current">28</span><a class="page-number" href="/page/29/">29</a><span class="space">&hellip;</span><a class="page-number" href="/page/58/">58</a><a class="extend next" rel="next" href="/page/29/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -417,13 +428,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">192k</span>
+    <span title="站点总字数">195k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:55</span>
+    <span title="站点阅读时长">2:58</span>
   </span>
 </div>
 <div class="busuanzi-count">

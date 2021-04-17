@@ -198,7 +198,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-count">58</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/Linux/Linux%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%9F%BA%E6%9C%AC%E6%8C%87%E4%BB%A4/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/Linux/Linux%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%9F%BA%E6%9C%AC%E6%8C%87%E4%BB%A4/" class="post-title-link" itemprop="url">Linux介绍及基本指令</a>
+          <a href="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/" class="post-title-link" itemprop="url">I/O模型及I/O线程模型</a>
         </h2>
 
         <div class="post-meta-container">
@@ -286,10 +286,16 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:19:26" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+      <time title="创建时间：2021-02-28 23:30:00" itemprop="dateCreated datePublished" datetime="2021-02-28T23:30:00+08:00">2021-02-28</time>
     </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-17 13:45:48" itemprop="dateModified" datetime="2021-03-17T13:45:48+08:00">2021-03-17</time>
+      </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
@@ -297,10 +303,6 @@
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
           <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
-        </span>
-          ，
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
         </span>
     </span>
 
@@ -312,14 +314,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>2k</span>
+      <span>1.6k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
+      <span>1 分钟</span>
     </span>
 </div>
 
@@ -330,101 +332,103 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="linux介绍及基本指令">Linux介绍及基本指令</h1>
-<h2 id="linux区别">Linux区别</h2>
+          <h1 id="io模型及io线程模型">I/O模型及I/O线程模型</h1>
+<h2 id="io模型">I/O模型</h2>
+<h3 id="阻塞型iobio">阻塞型I/O(BIO)</h3>
 <blockquote>
-<p>Ubantu：分为用户版和服务器版。</p>
-<p>​ 用户版，有着良好的用户界面，有强大的软件支持。</p>
-<p>​ 服务器版比较少用。</p>
-<p>Debian：系统十分稳定，内核非常小。</p>
-<p>RedHat：是一个商用的操作系统，性能非常好，软件支持也非常好。</p>
-<p>Centos：基本上相当于RedHat的复刻版本。免费。</p>
+<p>线程调用recvfrom，持续等待直到复制完成。</p>
+<figure>
+<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/阻塞型IO.png" alt="阻塞型IO"><figcaption aria-hidden="true">阻塞型IO</figcaption>
+</figure>
+<p>优点：程序简单</p>
+<p>缺点：每个连接需要独立进程/线程，并发量大时维护程序的线程切换开销大。</p>
 </blockquote>
-<h2 id="根目录下各目录对应的功能">根目录下各目录对应的功能</h2>
-<h2 id="在linux中获取帮助">在linux中获取帮助</h2>
+<h3 id="非阻塞型io">非阻塞型I/O</h3>
 <blockquote>
-<p>man 命令名：查看命令的操作说明</p>
-<p>命令行 --help：查看命令的语法</p>
+<p>线程调用recvfrom，不持续等待，而是不断轮询操作系统内核。</p>
+<figure>
+<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/非阻塞型IO.png" alt="非阻塞型IO"><figcaption aria-hidden="true">非阻塞型IO</figcaption>
+</figure>
+<p>优点：不会阻塞在内核的等待数据过程，每次发起的 I/O 请求可以立即返回，不用阻塞等待，实时性较好。</p>
+<p>缺点：轮询占用大量CPU时间，系统资源利用率低。</p>
 </blockquote>
-<h2 id="linux基本命令">Linux基本命令</h2>
+<h3 id="io多路复用nio">I/O多路复用(NIO)</h3>
 <blockquote>
-<p>ls：查看当前目录中所有文件及目录</p>
-<p>ll：查看当前目录内所有文件及目录详细信息。详细信息具体查看方式。以drwxr-xr-x为例(第一个字符拆出，然后每三个字符表示一个内容)：</p>
-<p>d：文件类型，目录。rwx：拥有者权限，可读，可写，可执行。r-x：用户组权限，可读，不可写，可执行。r-x：其他组权限，可读，不可写，可执行。</p>
-<p>具体文件类型有：d：路径。<em>-</em>：文件。 l ：连接(快捷方式)。b：表示可按块随机读写的设备。c：设备文件里的串行端口设备，如键盘、设备。</p>
-<p>表示权限的三个字符可以用0~7的数字表示。如rwx为7，r-x为5。</p>
-<p>ls -al：查看所有文件及目录包括隐藏目录。</p>
-<p>pwd：查看当前所在层级</p>
-<p>echo xxx：打印xxx</p>
-<p>date：查看日期</p>
-<p>cal：查看日历</p>
-<p>grep xxx：用于查看包含xxx的对象。</p>
-<p>curl 网址：向对应网址发出http请求。curl -i www.baidu.com ：向百度首页发出请求，会返回响应头。</p>
-<p>history：查看先前输入过的命令。</p>
-<p>df：查看磁盘使用情况。</p>
+<p>如select、poll、epoll，用一个描述符管理多个描述符，同时管理多个I/O操作，当有事件发生时才堵塞进行复制。</p>
+<figure>
+<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/NIO.png" alt="NIO"><figcaption aria-hidden="true">NIO</figcaption>
+</figure>
+<p>优点：节省大量系统资源。</p>
+<p>缺点：在并发量低时延迟较多线程+堵塞I/O更高，因为I/O多路复用对单个连接需要进行两次系统调用。</p>
 </blockquote>
-<h2 id="文件基本命令">文件基本命令</h2>
+<h3 id="信号驱动型io">信号驱动型I/O</h3>
 <blockquote>
-<p>vi xxx：打开临时记事本，基本可以认为是创建文件。</p>
-<p>mkdir xxx：创建文件夹</p>
-<p>rm -rf xxx：删除目录。</p>
-<p>cp a b ：把a文件复制到b处</p>
-<p>mv a b ：把a文件移动到b处（也可以当做重命名使用）</p>
-<p>tail -number xx：查看文件最后number行内容(可以用于监控日志使用tail -F/-f xxx)-F，-f分别为追踪文件名和追踪文件索引。</p>
-<p>cat xxx：查看文件内容，往往伴随着grep使用如 cat a.txt | grep "a:xxx"。</p>
-<p>less xxx：查看文件一页的内容。</p>
-<p>find xxx：查找文件(可以查找所有文件)。</p>
-<p>whereis xx：查找命令所在目录(只能查找二进制类的文件)。</p>
-<p>which xxx：在PATH变量指定的路径中搜索指定的系统命令的位置。</p>
-<p>sh xxx.sh：执行shell命令。这种执行sh文件不需要本身具有权限。</p>
-<p>path/xxx.sh：执行shell命令。sh文件本身需要有权限。(如./xxx.sh其中.表示当前目录)</p>
+<p>使用信号来驱动，当数据准备好时进程会受到一个信号，在信号处理函数中处理数据。</p>
+<figure>
+<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/信号驱动型IO.png" alt="信号驱动型IO"><figcaption aria-hidden="true">信号驱动型IO</figcaption>
+</figure>
+<p>优点：线程没有在等待数据时被阻塞，提高资源利用率。</p>
+<p>缺点：信号I/O在大量I/O操作时可能会因为信号序列溢出导致无法通知。</p>
 </blockquote>
-<h2 id="文件解压缩">文件解压缩</h2>
+<h3 id="异步ioaio">异步I/O(AIO)</h3>
 <blockquote>
-<p>zip -r 压缩后路径加名字 需要压缩的文件：压缩，如zip -r a.zip a.txt。这个命令需要yum install zip</p>
-<p>unzip -d 解压缩到的路径 解压缩的包：解压缩，如unzip -d . a.zip。这个命令需要yum install unzip。</p>
-<p>tar -cvf 压缩后路径加名字 需要压缩的文件：压缩，如tar -cvf a.txt。</p>
-<p>tar -zcvf 压缩后路径加名字 需要压缩的文件：压缩，如tar -zcvf a.txt。压缩后占的空间更少</p>
-<p>tar -xvf 解压缩到的路径 解压缩的包：解压缩，如tar -xvf a.txt。</p>
-<p>tar -zxvf 解压缩到的路径 解压缩的包：压缩，如tar -zxvf a.txt。</p>
-<p>tar的参数：c：表示create，即压缩，z：约等于zip，即打包后空间会更小，v：压缩后展示压缩包中文件名字。f：表示结束。x：extract，即解压缩。</p>
-<p>b：表示查看压缩包内容。其中c、x、b同时只能存在一个。</p>
+<p>类似于信号驱动I/O，但是AIO会在内核完成了数据复制操作后才给线程发送信号，线程无须等待。</p>
+<figure>
+<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/异步IO.png" alt="img"><figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p>优点：异步I/O充分利用DMA，让I/O操作和计算重叠。</p>
+<p>缺点：AIO需要操作系统支持，目前AIO在linux中还不完善，且AIO代码编写复杂。</p>
 </blockquote>
-<h2 id="文件传输">文件传输</h2>
+<h2 id="io线程模型">I/O线程模型</h2>
+<h3 id="传统阻塞-io-服务模型">传统阻塞 I/O 服务模型</h3>
 <blockquote>
-<p>scp 目录加文件名 用户名@IP地址:目录加文件名：将文件传输利用网络传输到另一个服务器。如scp ./a.txt root@10.0.2.6:~/b.txt</p>
+<p>采用阻塞式I/O获取输入数据，每个连接都需要独立的线程完成数据输入、业务处理、数据返回的完整操作。</p>
+<p>缺点：</p>
+<p>​ 并发数较大时需要大量线程。</p>
+<p>​ 连接后若没有数据会被阻塞在read操作上。</p>
 </blockquote>
-<h2 id="进程管理命令">进程管理命令</h2>
+<h3 id="reactor模式">Reactor模式</h3>
 <blockquote>
-<p>top ：查看当前系统使用情况。</p>
-<p>ps：查看进程情况。</p>
-<p>ps aux：查看所有正在执行的进程。经常和grep配合使用。如ps aux | grep "top"</p>
-<p>lsof -i:port ：根据端口号查看进程。需要yum install lsof</p>
-<p>kill 进程号：杀死进程。</p>
-<p>kill -9 进程号：强制杀死进程。</p>
-<p>service xxx start：启动服务。</p>
-<p>service xxxx stop：关闭服务。</p>
+<p>I/O复用结合线程池</p>
+<p>主要组件为Reactor、Acceptor、Handler</p>
+<p>非阻塞同步网络模型。</p>
 </blockquote>
-<h2 id="权限管理命令">权限管理命令</h2>
+<h4 id="单线程reactor">单线程reactor</h4>
 <blockquote>
-<p>chmod xxx aaa：设置aaa的权限为xxx。第一个x为拥有者权限，第二个x为用户组权限，第三个x为其他组权限。如chmod 777 a.txt：表示将a.txt的权限均设为可读、可写、可执行。</p>
+<p>Reactor对象通过select监控请求事件，收到事件后通过Dispatch分发。</p>
+<p>若是连接事件通过Acceptor处理。然后创建一个Handler处理连接后的事件</p>
+<p>若不是连接事件则交给Handler处理。</p>
+<p>优点：单线程不用考虑线程切换开销。</p>
+<p>缺点：只有一个线程无法完全发挥多核CPU的性能。</p>
 </blockquote>
-<h2 id="软件安装命令">软件安装命令</h2>
+<h4 id="多线程reactor">多线程reactor</h4>
 <blockquote>
-<p>yum install xxxx：安装xxxx</p>
-<p>yum install ifconfig -y：安装时自动同意。</p>
+<p>优化了Handler，handler只负责数据读取，然后将数据分发给worker线程处理，worker线程处理完成后将结果返回给handler。</p>
+<p>优点：充分利用多核CPU处理能力</p>
+<p>缺点：多线程数据共享和访问比较困难。reactor负责承担所有事件响应，容易成为瓶颈。</p>
 </blockquote>
-<h2 id="安全相关命令">安全相关命令</h2>
+<h4 id="主从reactor模型">主从Reactor模型</h4>
 <blockquote>
-<p>systemctl disable firewalld ：关闭防火墙。</p>
+<figure>
+<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/主从reactor.png" alt="主从reactor"><figcaption aria-hidden="true">主从reactor</figcaption>
+</figure>
+<p>主Reactor负责将新连接分发给Acceptor，然后主Reactor将连接分发给从reactor。从reactor会将连接加入连接队列进行监听，并创建一个handler用于处理。新事件发生时，从reactor会调用连接对应的handler进行处理，handler负责数据读取，而业务仍交给worker处理。</p>
+<p>优点：父线程与子线程的数据交互简单职责明确，父线程只需要接收新连接，子线程完成后续的业务处理。</p>
 </blockquote>
-<h2 id="关机命令">关机命令</h2>
+<h3 id="proactor模型">Proactor模型</h3>
 <blockquote>
-<p>shutdown：关机</p>
-<p>reboot：重启</p>
-<p>poweroff：关机</p>
-<p>halt：进入系统停止的模式，屏幕可能保留一些信息，取决于电源管理模式。</p>
-<p>systemctl suspend：休眠</p>
+<figure>
+<img src="/2021/02/28/JavaBasicKnowledge/IO%E6%A8%A1%E5%9E%8B/proactor模型.png" alt="proactor模型"><figcaption aria-hidden="true">proactor模型</figcaption>
+</figure>
+<p>异步网络模型。</p>
+<p>组件：Proactor Initiator、Proactor 、Handler 、AsyOptProcessor。即一个初始化器，一个注册器，一个proactor，一个handler</p>
+<p>流程：initiator创建Proactor 、Handler ，然后Proactor 和Handler 都通过AsyOptProcessor注册到内核。</p>
+<p>AsyOptProcessor处理注册请求，并处理I/O操作。</p>
+<p>AsyOptProcessor完成I/O操作后会通知Proactor，Proactor根据不同的事件类型回调不同的Handler进行业务处理。</p>
+<p>优点：效率较reactor模型更高。</p>
+<p>缺点：编程更加复杂。</p>
+<p>​ 内存使用更加困难。</p>
+<p>​ 需要操作系统支持。</p>
 </blockquote>
 
       
@@ -445,7 +449,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/32/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/32/">32</a><span class="page-number current">33</span><a class="page-number" href="/page/34/">34</a><span class="space">&hellip;</span><a class="page-number" href="/page/56/">56</a><a class="extend next" rel="next" href="/page/34/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/32/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/32/">32</a><span class="page-number current">33</span><a class="page-number" href="/page/34/">34</a><span class="space">&hellip;</span><a class="page-number" href="/page/58/">58</a><a class="extend next" rel="next" href="/page/34/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -490,13 +494,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">192k</span>
+    <span title="站点总字数">195k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:55</span>
+    <span title="站点阅读时长">2:58</span>
   </span>
 </div>
 <div class="busuanzi-count">

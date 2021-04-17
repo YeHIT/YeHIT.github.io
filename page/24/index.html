@@ -198,7 +198,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-count">58</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E9%9D%A2%E7%BB%8F/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/redis%E7%AA%81%E5%87%BB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E9%9D%A2%E7%BB%8F/" class="post-title-link" itemprop="url">面经</a>
+          <a href="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/redis%E7%AA%81%E5%87%BB/" class="post-title-link" itemprop="url">redis突击</a>
         </h2>
 
         <div class="post-meta-container">
@@ -294,7 +294,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-04-03 12:31:09" itemprop="dateModified" datetime="2021-04-03T12:31:09+08:00">2021-04-03</time>
+        <time title="修改时间：2021-04-02 15:46:16" itemprop="dateModified" datetime="2021-04-02T15:46:16+08:00">2021-04-02</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -302,7 +302,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/" itemprop="url" rel="index"><span itemprop="name">面试总结</span></a>
+          <a href="/categories/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/" itemprop="url" rel="index"><span itemprop="name">面试突击</span></a>
         </span>
     </span>
 
@@ -314,14 +314,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>2k</span>
+      <span>5.8k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
+      <span>5 分钟</span>
     </span>
 </div>
 
@@ -332,151 +332,213 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="面经">面经</h1>
-<h2 id="腾讯">腾讯</h2>
-<h3 id="腾讯云一面">腾讯云一面</h3>
+          <h1 id="redis突击">redis突击</h1>
+<h2 id="redis为什么快">redis为什么快？</h2>
 <blockquote>
-<p>1、自我介绍和项目介绍</p>
-<p>2、我看你之前面过一次，为什么挂了，你相对上次来说有什么提高？</p>
-<p>3、java内存结构及各功能</p>
-<p>4、堆栈的线程安全问题</p>
-<p>5、HashMap和CurrenthashMap(说了一会面试官没啥兴趣就换了个问题)</p>
-<p>6、四次挥手</p>
-<p>7、Java线程池</p>
-<p>8、乐观锁和悲观锁</p>
-<p>9、分布式锁</p>
-<p>10、项目亮点</p>
-<p>11、项目有没有进行压测？</p>
-<p>12、说说熟悉的算法</p>
-<p>13、数据库了解的情况</p>
-<p>14、redis为什么快</p>
-<p>15、多路复用</p>
-<p>16、Netty 线程模型-reactor模型</p>
-<p>17、你对微服务有什么理解？</p>
-<p>18、你觉得怎么实现RPC？</p>
-<p>19、自己的优缺点</p>
-<p>20、反问，面试官说觉得我挺不错，学习能力也很强，挺优秀，但是他们这边有横向对比，一听就感觉要挂了。</p>
+<p>单线程：因为一开始的redis认为redis速度的瓶颈不在于cpu运算速度，而往往在于网络带宽和机器内存大小。所以redis主要使用单线程，编程简单且没有线程切换的开销。此外单线程实际上避免了锁的开销。</p>
+<p>数据存放在内存中。</p>
+<p>使用了I/O多路复用技术，非阻塞I/O。</p>
 </blockquote>
-<h4 id="结果">结果</h4>
+<h3 id="redis线程模型">redis线程模型</h3>
 <blockquote>
-<p>第二天流程结束，感觉像是我第一次面试腾讯的部门，这次捞我起来检验成果的？有点奇怪。</p>
+<p>Redis处理网络请求是使用单线程Reactor模型，通过IO多路复用技术提高并发。</p>
+<p>Redis内部使用file event handler，该处理器是单线程的，故redis叫做单线程模型。</p>
+<p>客户端和redis的通信过程：</p>
+<figure>
+<img src="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/redis%E7%AA%81%E5%87%BB/redis客户端操作流程.png" alt="redis客户端操作流程"><figcaption aria-hidden="true">redis客户端操作流程</figcaption>
+</figure>
 </blockquote>
-<h3 id="腾讯大数据数据库优化一面">腾讯大数据数据库优化一面</h3>
+<h2 id="redis多线程版本">redis多线程版本</h2>
 <blockquote>
-<p>1、自我介绍和项目介绍</p>
-<p>2、入职意愿和实习时间</p>
-<p>3、JDK8特性</p>
-<p>4、ArrayList和线程安全List</p>
-<p>5、大数据量中找topK</p>
-<p>6、HashMap和TreeMap</p>
-<p>7、反问，了解到部门技术栈我基本全部不会，面试官告知只要有学习意愿其实都没啥问题。离谱.jpg</p>
+<p>redis6.0之后redis核心流程支持多线程网络IO。由于redis使用场景越来越多，往往redis同时需要支持大量请求，此时完全单线程的reactor模型渐渐成为redis性能瓶颈，因为同一时间可能需要处理许多网络IO，因此redis在核心流程中，redis选择加入多线程来支持网络IO的读写，本质上就是多线程reactor模型。但是核心的执行逻辑还是采用单线程执行，只是在IO部分采用多线程。</p>
 </blockquote>
-<h3 id="腾讯大数据数据库优化二面">腾讯大数据数据库优化二面</h3>
+<h2 id="redis数据结构">redis数据结构</h2>
 <blockquote>
-<p>前提：电话面且面试官电话莫名有杂音</p>
-<p>1、自我介绍</p>
-<p>2、哲学家问题</p>
-<p>3、线程和进程</p>
-<p>4、口述做算法的网站，沟通了五分钟终于成功进入。</p>
-<p>5、纯白板，无题目，面试官口述算法题，第一遍确认题意后写了一版代码，约经过7-8分钟，面试官说我理解错了题目意思。然后反复扯了10分钟还是没懂题目是啥，面试就这样了。</p>
+<p>API数据结构：String、Hash、List、Set、SortedSet、HyperLogLog(可以用于去重统计网页每天的用户访问量数据且使用内存空间小，但是存在误差)、Geo、Bitmap(可以用来记录用户的在线状态，使用天为key，用户id作为offset)、Stream(主要用于消息队列)</p>
 </blockquote>
-<h4 id="结果-1">结果</h4>
+<h3 id="redis底层数据结构">redis底层数据结构</h3>
 <blockquote>
-<p>二面后流程结束，回想起来还是不知道那个人想问的是什么算法题，估计面评裂开，第一次遇到不给题目而是口述的算法题，且反馈电话有杂音也没法处理，有点想投诉。</p>
+<p>SDS、dict、ziplist、quicklist、skiplist、intset。</p>
+<p>SDS：redis自己实现的动态字符串。结构如下，该结构将字符串长度作为一个单独字段，使得每次查询字符串长度的时间复杂度为O(1)。</p>
+<p>该字符串的优势：</p>
+<p>​ 降低获取字符串长度的时间复杂度到O(1)。</p>
+<p>​ API 是安全的，不会造成缓冲区溢出。即使用时会预先检测当前大小是否足够使用。</p>
+<p>​ 减少了修改字符串时的内存重分配次数。</p>
+<p>​ 兼容c字符串的同时，提高了一些字符串工具方法的效率。</p>
+<p>​ 二进制安全（数据写入的格式和读取的格式一致）。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> __<span class="title">attribute__</span> ((__<span class="title">packed__</span>)) <span class="title">sdshdr8</span> &#123;</span></span><br><span class="line"> <span class="comment">//字符串真实长度</span></span><br><span class="line"> <span class="keyword">uint8_t</span> len; <span class="comment">/* used */</span></span><br><span class="line"> <span class="comment">//字符串除头部和终止符外的长度，即已分配的长度</span></span><br><span class="line"> <span class="keyword">uint8_t</span> alloc; <span class="comment">/* excluding the header and null terminator */</span></span><br><span class="line"> <span class="keyword">unsigned</span> <span class="keyword">char</span> flags; <span class="comment">/* 3 lsb of type, 5 unused bits */</span></span><br><span class="line"> <span class="keyword">char</span> buf[];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>dict：redis实现的类似哈希表结构。具体结构如下：</p>
+<p>它和传统的哈希算法类似，采用拉链法来解决冲突。主要不同在于它使用增量式重哈希的方法进行重哈希。在需要扩展内存时避免一次性对所有key进行重哈希，而是将重哈希操作分散到对dict的各个增删改查操作中去。每次只对一部分key进行重哈希，每次重哈希之间不影响dict操作。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dict</span> &#123;</span></span><br><span class="line"> dictType *type;</span><br><span class="line"> <span class="keyword">void</span> *privdata;</span><br><span class="line"> <span class="comment">//为了增量式重hash，redis的dict结构包含两个哈希表</span></span><br><span class="line"> dictht ht[<span class="number">2</span>];</span><br><span class="line"> <span class="keyword">long</span> rehashidx; <span class="comment">/* rehashing not in progress if rehashidx == -1 */</span></span><br><span class="line"> <span class="keyword">unsigned</span> <span class="keyword">long</span> iterators; <span class="comment">/* number of iterators currently running */</span></span><br><span class="line">&#125; dict;</span><br></pre></td></tr></table></figure>
+<p>ziplist：经过特殊编码的双向链表。一个普通的双向链表，链表中每一项都占用独立的一块内存，各项之间用地址指针（或引用）连接起来。这种方式会带来大量的内存碎片，而且地址指针也会占用额外的内存。而 ziplist 却是将表中每一项存放在前后 <strong>连续的地址空间</strong> 内，一个 ziplist 整体占用一大块内存。它是一个表（list），但其实不是一个链表（linked list）。</p>
+<p>优点：减少了两个指针空间开销，节约内存。</p>
+<p>缺点：每次插入或修改可能引发realloc，导致内存拷贝，降低性能。</p>
+<p>​ 当数据过多时查找操作开销大，性能低。</p>
+<p>quicklist：是以ziplist为节点组成的双向链表，ziplist本身也是可以维持数据项先后顺序的列表，且是内存紧缩的列表。</p>
+<p>设计思路：空间和时间的折中。双向链表便于两端的push和pop操作，但内存开销大。ziplist是连续内存，存储效率高但不利于修改。quicklist则将二者进行结合。可以通过list-max-ziplist-size配置quicklist的ziplist最大长度。</p>
+<p>skiplist：跳表，是一种有序的数据结构，通过每个节点维持多个指向其他结点的指针，达到快速访问结点的目的。</p>
+<p>intset：由整数组成的<strong>有序集合</strong>，从而在上面进行二分查找。其内存分配类似ziplist也使用连续内存空间。其用于存储元素都是整数的小集合。</p>
 </blockquote>
-<h3 id="腾讯s2线一面">腾讯S2线一面</h3>
+<h3 id="api数据结构和底层数据结构的关联">API数据结构和底层数据结构的关联</h3>
 <blockquote>
-<p>1、自我介绍和项目介绍</p>
-<p>2、TCP和UDP的区别</p>
-<p>3、TCP怎么实现可靠性的？</p>
-<p>4、拥塞控制大概是怎么样的？</p>
-<p>5、HTTPS会不会？大致流程</p>
-<p>6、对称加密和非对称加密算法了解吗？</p>
-<p>7、Java HashMap的hash算法及具体扩容逻辑。</p>
-<p>8、为什么hash算法不直接使用取模？</p>
-<p>9、数据库事务隔离级别</p>
-<p>10、可重复读怎么实现的</p>
-<p>11、操作系统进程通信</p>
-<p>12、操作系统IO模型，BIO、NIO、AIO</p>
-<p>13、大概讲一下select、poll、epoll。</p>
-<p>14、IO多路复用复用了什么？</p>
-<p>15、10个有序文件合并。</p>
-<p>16、排序算法及分析</p>
-<p>17、反问</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">API数据结构</th>
+<th style="text-align: center;">限制</th>
+<th style="text-align: center;">具体底层实现</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">string</td>
+<td style="text-align: center;">512 MB</td>
+<td style="text-align: center;">SDS</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">list</td>
+<td style="text-align: center;">最大长度 <span class="math inline">\(2^{32}-1\)</span></td>
+<td style="text-align: center;">quicklist</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">set</td>
+<td style="text-align: center;">最大容量 <span class="math inline">\(2^{32}-1\)</span></td>
+<td style="text-align: center;">intset(小整数集) 、dict</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">sorted set</td>
+<td style="text-align: center;">最大容量 <span class="math inline">\(2^{32}-1\)</span></td>
+<td style="text-align: center;">ziplist(小集合)、dict + skiplist</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">hash</td>
+<td style="text-align: center;">最大KV容量 <span class="math inline">\(2^{32}-1\)</span></td>
+<td style="text-align: center;">ziplist(小集合)、dict</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">bitmap</td>
+<td style="text-align: center;">512 MB</td>
+<td style="text-align: center;">SDS</td>
+</tr>
+</tbody>
+</table>
 </blockquote>
-<h3 id="腾讯s2线二面">腾讯S2线二面</h3>
+<h2 id="redis数据淘汰机制">redis数据淘汰机制</h2>
 <blockquote>
-<p>聊聊了自己基本情况和入职意向，属于一个调查向的面试。</p>
+<p>redis的回收过期对象策略，分为<strong>定期删除</strong>和<strong>惰性删除</strong>两种。</p>
+<p><strong>定期删除</strong>即默认x时间随机抽取一些设置了过期时间的key去检查是否过期，过期了则删除。</p>
+<p><strong>惰性删除</strong>即等到使用到这个key时再去检测是否过期，若过期则删除。</p>
+<p>当redis内存使用超过一定限制时会进行内存淘汰，redis的内存淘汰策略：</p>
+<p>​ 主要分为针对设置了过期时间key和未设置过期时间key。</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">默认策略noeviction</th>
+<th style="text-align: center;">到达阈值时再申请内存报错</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">allkeys-lru</td>
+<td style="text-align: center;">对所有key采用LRU策略删除。(实际上是采样删除)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">volatile-lru</td>
+<td style="text-align: center;">在设置过期时间的key中使用LRU策略删除</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">allkeys-random</td>
+<td style="text-align: center;">在主键空间中，随机移除某个key</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">volatile-random</td>
+<td style="text-align: center;">在设置了过期时间的key中，随机删除某个key</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">volatile-ttl</td>
+<td style="text-align: center;">在设置过期时间的key中，过期时间早的优先被删除</td>
+</tr>
+</tbody>
+</table>
+<p>随机淘汰、ttl淘汰即淘汰即将过期的数据、LRU淘汰最近最少使用的数据。</p>
 </blockquote>
-<h3 id="腾讯s2线三面">腾讯S2线三面</h3>
+<h2 id="缓存击穿缓存雪崩缓存穿透">缓存击穿、缓存雪崩、缓存穿透</h2>
 <blockquote>
-<p>1、自我介绍和项目介绍</p>
-<p>2、HTTP请求方式有哪些</p>
-<p>3、GET、POST区别</p>
-<p>4、HTTPS会不</p>
-<p>5、对称加密和非对称加密优劣势</p>
-<p>6、Netty主从reactor模型</p>
-<p>7、聊到select、poll、epoll说说区别</p>
-<p>8、protobuf优势及原理</p>
-<p>9、你自己测试过序列化框架的性能吗？</p>
-<p>10、设计模式动态代理JDK代理和cglib代理具体怎么做的</p>
-<p>11、redis怎么用的</p>
-<p>12、一致性哈希知道吗？具体说说</p>
-<p>12、聊聊对微服务的理解</p>
-<p>13、zk至少几台集群？</p>
-<p>14、zk选主算法会吗？ZAB/PAXOS</p>
-<p>15、那你说说Raft吧</p>
-<p>16、职业规划</p>
-<p>17、聊天，说感觉我底层了解的还可以，还和我聊了聊一些职业道路的发展问题，说建议多深入了解底层，提升核心竞争力，最好自己动手实现一下raft还有有机会压测一下系统。</p>
+<p><strong>缓存雪崩</strong>：本质上就是在redis中存放的大量key过期时间设置为相同时间，导致同一时间大批key都过期了，从而导致一瞬间大量请求都进入数据库中，使得数据库瞬间承受大量流量直接无法提供服务。</p>
+<p>解决方案：在设置key的过期时间时添加一个随机初始值，让每个key的过期时间尽量分散。</p>
+<p><strong>缓存穿透</strong>：指缓存中没有且数据库中也不存在的值被反复请求，如数据库采用自增id，显然都只能是正数，而请求不断访问负数id，会导致流量一直进入数据库，使数据库压力过大，无法提供服务。</p>
+<p>解决方案：首先考虑能不能再未访问缓存前就拦截，比如在接口层面进行参数校验，判断id是否合法，用户是否正常。</p>
+<p>​ 其次，利用布隆过滤器，将无法访问的数据库先加载到布隆过滤器中，当访问缓存时先通过布隆过滤器过滤，发现未命中才去访问redis。</p>
+<p>​ 还可以在访问到无效key时，先给这个key附上一个临时值，让同时访问到这个key的用户可以临时使用缓存。</p>
+<p><strong>缓存击穿</strong>：指缓存中本来存在的热点key，到了过期时间，大量请求直接访问到数据库，使得数据库压力过大，无法提供服务。</p>
+<p>解决方案：本质上就是解决<strong>热点key</strong>问题，如果已经发现了热点key，可以将对应key的过期时间设置为永不过期。还可以通过设置互斥锁(redis分布式锁)来让请求串行化避免同时有大量请求打入数据库。</p>
+<p>主要问题在于怎么确定热点key：</p>
+<p>​ 根据业务需求提前找出热点key。</p>
+<p>​ 当客户端发出请求时收集对应key数据，然后分析这些数据找出热点key。</p>
+<p>​ 如果在redis集群前还设计了代理层，可以在代理层统计具体数据。</p>
+<p>找出热点key后可以通过以下方法解决：</p>
+<p>​ 采用二级缓存，即在本地JVM上创建一个hashmap存储缓存。</p>
+<p>​ 可以对redis的key切片，即key+随机值均匀分布到多个redis实例上，访问时也随机访问即可。</p>
 </blockquote>
-<h3 id="hr面">HR面</h3>
+<h2 id="redis集群部署">redis集群部署</h2>
 <blockquote>
-<p>聊聊基本情况、个人职业规划、入职时间、工作意向等。</p>
-<p>反问环节让我注意邮箱可能来的邮件，让我记得扫码。</p>
+<p>主要由redis Sentinel哨兵集群和redis cluster集群。</p>
+<p>redis sentinel哨兵集群：本质上就是一台redis实例作为主，多台redis实例作为从，每个实例中都有一个sentinel作为哨兵，且哨兵数目至少为3个。哨兵作用是查看主redis是否宕机了，若超过一半的哨兵认为主redis宕机，那么就会执行切换流程。哨兵用于监听主机消息，从机则是用于处理读请求，主机负责写请求。</p>
+<p>而redis cluster集群：redis哨兵集群的改进版本，多机版本的redis，通过分槽来管理每个redis的数据命中，让数据可以分散到各个redis实例中。常见场景为3主3从，即将槽分为三个区间，每个redis主机负责一个区间，然后主机之间充当哨兵的作用，检测到某个主机宕机了，则让对应从机升级。</p>
 </blockquote>
-<h4 id="结果-2">结果</h4>
+<h2 id="redis-持久化rdb和aof">redis 持久化RDB和AOF</h2>
 <blockquote>
-<p>第二天流程结束，人晕了。</p>
+<p>因为redis集群部署时往往存在主从的概念，主从之间怎么传递数据呢？</p>
+<p>首先这个问题要知道redis持久化的方式。</p>
+<p>redis提供两种持久化的方式：RDB和AOF</p>
+<p><strong>RDB</strong>：在指定时间间隔对数据进行快照全量备份。</p>
+<p>​ 触发方式：</p>
+<p>​ 命令触发：Save：阻塞当前redis服务器，直到持久化完成。</p>
+<p>​ bgsave：fork一个子进程，由子进程负责持久化过程。</p>
+<p>​ 自动触发：根据配置文件的save m n配置规则自动触发。</p>
+<p>​ 从节点全量复制时，主节点发送rdb文件给从节点完成复制操作，主节点触发bgsave。</p>
+<p>​ 执行debug reload时</p>
+<p>​ 执行shutdown且没有开启aof时也会触发。</p>
+<p>​ 数据恢复方式：将备份文件(dump.rdb)移动到redis安装目录并启动服务即可。</p>
+<p>优点：RDB会产生多个数据文件，每个数据文件分别都代表了某一时刻Redis里的数据。且RBD对redis的性能影响较小，因为同步数据时只是fork了一个子进程进行持久化的，且数据恢复时比AOF来的快。</p>
+<p>缺点：RDB是快照文件，默认5分钟或者更久时间才生成一次，导致五分钟内数据丢失。且若RDB生成数据快照时文件很大会导致客户端暂停几毫秒甚至几秒。</p>
+<p><strong>AOF</strong>：相当于把每条指令作为日志，通过追加写入的方式写入到日志文件。类似binlog。</p>
+<p>​ 一般来说AOF可以更好地保护数据不丢失，一般设置每隔1秒执行一次AOF持久化，redis会通过一个后台线程执行一次fsync操作。</p>
+<p>​ 由于AOF是对指令作为日志进行写入，所以往往让AOF文件体积过大，redis对这种现象提供了AOF重写机制，但是即使执行重写操作也不会影响客户端对redis的读写，因为redis在重写rewrite aof时会对指令进行压缩，创建出一份需要恢复数据的最小日志出来。创建新日志时老日志文件还是照常写入，当新的merge的日志文件ready时，再交换新老日志文件即可。</p>
+<p>优点：可以每秒一次数据持久化，让数据丢失最多不超过一秒，且日志写入是以追加写入的方式进行的，避免磁盘的随机写。</p>
+<p>​ AOF文件一般是可读的方式进行写入的，打开AOF文件可以看到先前执行的操作。</p>
+<p>缺点：数据相同时AOF的文件大小往往远大于RDB大小，AOF开启后，redis支持的写QPS比RDB支持的写QPS小。</p>
+<p><strong>具体持久化选择</strong>：RDB+AOF，每隔一段时间使用RDB进行全量备份，然后数据恢复时利用RDB文件快速恢复，再使用AOF文件对RDB文件缺少的数据进行补充。</p>
 </blockquote>
-<h2 id="携程">携程</h2>
-<h3 id="携程一面">携程一面</h3>
+<h3 id="redis主从数据同步">redis主从数据同步</h3>
 <blockquote>
-<p>1、写个二分找区间的题</p>
-<p>2、http哪层、tcp哪层</p>
-<p>3、三次握手、四次挥手</p>
-<p>4、tcp客户端超时，服务端会报错吗或者说没有正常四次挥手流程服务端会报错吗？</p>
-<p>​ 半关闭问题</p>
-<p>5、new一个scanf对象，怎么JVM分配空间的？</p>
-<p>​ Java new对象的过程：类加载过程(加载、验证、准备、解析、初始化)</p>
-<p>6、对象除了分配到堆还能分配到哪？</p>
-<p>7、无了</p>
+<p>一般来说redis主机负责写入操作，redis从机负责读操作。二者数据同步就是利用redis持久化机制实现的。</p>
+<p>当启动一个从机slave时，它会发送一个<strong>psync</strong>指令给主机，若这个从机是第一次连接到主机，主机会进行一次全量复制。主机启动一个线程生成RDB快照，然后把新的写请求都缓存到内存中，RDB文件生成后，主机会将RDB文件发送给从机，从机获取RDB后会将数据写入磁盘，然后加载到内存。最后主机将内存中缓存的新命令发送给slave进行同步。</p>
 </blockquote>
-<h4 id="结果-3">结果</h4>
+<h2 id="redis常见用法">redis常见用法</h2>
+<h3 id="假如redis里面有1亿个key其中有10w个key是以某个固定的已知的前缀开头的如何将它们全部找出来">假如Redis里面有1亿个key，其中有10w个key是以某个固定的已知的前缀开头的，如何将它们全部找出来？</h3>
 <blockquote>
-<p>一面面试体验很差，缺少反馈，但是奇怪地通过了一面，被发送了二面邀请，然后拒绝了。</p>
+<p>使用keys指令，然后给定pattern即可查询出结果。</p>
+<p>由于redis是单线程的，使用keys指令在数据量大时可能导致redis被堵塞，可以通过scan index MATCH pattern的形式来达到同样的目的。且scan由于可以设置下标，一次查询的key数据量不会过大，不容易堵塞redis。</p>
 </blockquote>
-<h2 id="美团到家事业群-外卖业务">美团到家事业群-外卖业务</h2>
-<h3 id="美团一面">美团一面</h3>
+<h3 id="redis实现分布式锁">redis实现分布式锁</h3>
 <blockquote>
-<p>1、自我介绍</p>
-<p>2、他自我介绍</p>
-<p>3、Java线程安全是怎么定义的？</p>
-<p>4、Java锁是怎么阻塞线程/进程的？我说了synchronized。</p>
-<p>5、synchronized锁类和锁类实例有什么区别？我说锁类会阻塞访问类的线程，锁实例阻塞访问实例的线程好像错了。</p>
-<p>6、Java线程池，具体流程</p>
-<p>7、操作系统死锁条件及解决方案</p>
-<p>8、Innodb索引结构，简单讲了讲B+树。</p>
-<p>9、聚簇索引和非聚簇索引。</p>
-<p>10、举了具体例子让我说说叶子节点存储的是什么。</p>
-<p>11、非聚簇索引直接存地址可以吗？</p>
-<p>12、存地址有什么问题吗？想到Myisam的相对地址处理，想的太复杂了，当时只说地址需要维护，没回答出具体的点，面试完意识到可能是想问页分裂问题。</p>
-<p>13、volatile具体场景有什么？</p>
-<p>14、来个简单的算法题：判断平衡二叉树</p>
-<p>15、我说还就那个不会，换一题。判断链表有没有环。</p>
+<p>通过设置setnx key和key的expire过期时间。</p>
 </blockquote>
-<h3 id="结果-4">结果</h3>
+<h3 id="redis实现异步队列">redis实现异步队列</h3>
 <blockquote>
-<p>第二天面试官加我要求二面。</p>
+<p>通过list结构，<strong>rpush</strong>生成消息，<strong>lpop</strong>消费消息，或者使用<strong>blpop</strong>消费消息，使得没有消息可以消费时可以堵塞住消费者。</p>
+</blockquote>
+<h3 id="redis实现延时队列">redis实现延时队列</h3>
+<blockquote>
+<p>通过redis的SortedSet结构，以时间戳作为score，消息内容作为key，通过ZADD KEY timestamp task来生产消息，消费者通过轮询ZRANGEBYSCORE KEY -inf +inf limit 0 1 WITHSCORES的方式来获取数据，然后比对时间戳消息，若存储的时间戳大于当前时间戳则说明还无须执行，让消费者sleep一段时间再轮询。</p>
+<p>具体架构</p>
+<figure>
+<img src="/2021/03/04/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/redis%E7%AA%81%E5%87%BB/延迟队列架构.png" alt="延迟队列架构"><figcaption aria-hidden="true">延迟队列架构</figcaption>
+</figure>
+<p>生产者通过hash算法将延迟任务分散到不同的redis key中避免一个key存储大量延时消息。</p>
+<p>然后对每个redis key建立一个Event处理进程，所有的处理进程只负责分发消息，具体的业务逻辑则引入额外的消息队列进行处理。</p>
+<p>Event进程则采用Zookeeper选主单进程部署的方式，避免Event进程宕机后，redis key消息堆积的情况。</p>
 </blockquote>
 
       
@@ -497,7 +559,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/23/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><span class="page-number current">24</span><a class="page-number" href="/page/25/">25</a><span class="space">&hellip;</span><a class="page-number" href="/page/56/">56</a><a class="extend next" rel="next" href="/page/25/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/23/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><span class="page-number current">24</span><a class="page-number" href="/page/25/">25</a><span class="space">&hellip;</span><a class="page-number" href="/page/58/">58</a><a class="extend next" rel="next" href="/page/25/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -542,13 +604,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">192k</span>
+    <span title="站点总字数">195k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:55</span>
+    <span title="站点阅读时长">2:58</span>
   </span>
 </div>
 <div class="busuanzi-count">

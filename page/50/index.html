@@ -198,7 +198,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-count">58</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/computerNetwork/%E7%AC%AC1%E7%AB%A0-%E6%A6%82%E8%AE%BA/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/" class="post-title-link" itemprop="url">网络层</a>
+          <a href="/2021/02/20/computerNetwork/%E7%AC%AC1%E7%AB%A0-%E6%A6%82%E8%AE%BA/" class="post-title-link" itemprop="url">概论</a>
         </h2>
 
         <div class="post-meta-container">
@@ -288,7 +288,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：17:14:02" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:05:46" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -312,7 +312,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>2.5k</span>
+      <span>1.8k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -330,181 +330,169 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="网络层">网络层</h1>
-<h2 id="网络层传输单元为数据报">网络层传输单元为数据报</h2>
-<h2 id="网络层提供的两种服务">网络层提供的两种服务</h2>
+          <h1 id="概论">概论</h1>
+<h2 id="网络大小划分">网络大小划分</h2>
 <blockquote>
-<p>网络层关注的是如何将分组从源端沿着网络路劲送达目的端。</p>
-<p>它向运输层通过了虚电路服务和数据报服务。</p>
-<p>计算机通信的过程中可靠交付由端系统负责，而不是网络负责。</p>
-<p>虚电路服务</p>
-<p>​ 通过指定数据的逻辑连接，向端系统保证了数据的按序到达，免去了端系统在顺序控制上的开销。</p>
-<p>​ 逻辑上的连接而非真正建立了一条物理连接。</p>
-<p>数据报服务</p>
-<p>​ 网络层向上提供简单灵活的、<strong>无连接的</strong>、尽最大努力交付的数据报服务。</p>
-<p>​ 优点:传输网络不提供端到端的可靠传输服务，使得网络造价降低，运行方式灵活，适用多种应用。</p>
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: center;">两个服务对比</th>
-<th style="text-align: center;">虚电路服务</th>
-<th style="text-align: center;">数据报服务</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;">思路</td>
-<td style="text-align: center;">可靠通信由网络保证</td>
-<td style="text-align: center;">可靠通信由用户主机保证</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">连接的建立</td>
-<td style="text-align: center;">必须有</td>
-<td style="text-align: center;">不需要</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">终点地址</td>
-<td style="text-align: center;">仅在连接建立阶段使用，每个分组使用短的虚电路号</td>
-<td style="text-align: center;">每个分组都要有终点的完整地址</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">分组的转发</td>
-<td style="text-align: center;">属于同一条虚电路的分组均按照同一路由进行转发</td>
-<td style="text-align: center;">每个分组独立选择路由进行转发</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">当结点出故障时</td>
-<td style="text-align: center;">所有通过出故障结点的虚电路均不能工作</td>
-<td style="text-align: center;">出故障的结点可能丢失分组，一些路由可能发生变化</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">分组的顺序</td>
-<td style="text-align: center;">总数按发送顺序到达终点</td>
-<td style="text-align: center;">到达终点时不一定按发送顺序</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">端到端的差错处理和流量控制</td>
-<td style="text-align: center;">可以由网络负责,也可以由用户主机负责</td>
-<td style="text-align: center;">由用户主机负责</td>
-</tr>
-</tbody>
-</table>
+<p>个域网</p>
+<p>局域网：用于企业时被称为企业网络</p>
+<p>城域网</p>
+<p>广域网</p>
+<p>互联网</p>
 </blockquote>
-<h2 id="网际协议ip">网际协议IP</h2>
-<h3 id="虚拟互联网">虚拟互联网</h3>
+<h2 id="报文的不同称呼">报文的不同称呼</h2>
 <blockquote>
-<p>网络互连的设备:</p>
-<p>​ 概念:中间设备又称为中间系统或中继系统</p>
-<p>​ 物理层中继系统:转发器。</p>
-<p>​ 数据链路层中继系统:网桥或桥接器。</p>
-<p>​ 网络层中继系统:路由器。</p>
-<p>​ 网络层以上的中继系统:网关。</p>
-<p>网络层协议:IP协议最主要。与IP协议配套的协议:</p>
-<p>​ ARP地址解析协议。(位于底层)解析MAC地址</p>
-<p>​ RARP逆地址解析协议。(位于底层)</p>
-<p>​ ICMP网际控制报文协议。(位于顶层)报告网络故障</p>
-<p>​ IGMP网际组管理协议。(位于顶层)</p>
+<p>网络层中叫数据包/包</p>
 </blockquote>
-<h2 id="ipv4地址组成">IPv4地址组成</h2>
+<h1 id="因特网边缘部分的通信方式">因特网边缘部分的通信方式</h1>
 <blockquote>
-<p>IPv4地址由32位IP组成，其中分为网络ID和主机ID。主机ID不能全为0(全0表示网段)也不能全为1(全1表示广播)</p>
-<p>A类地址:前8位为网络ID，后24位为主机ID。 0xxxxxxx | x....x 1~126 (127的地址用于做循环测试，本机地址)</p>
-<p>B类地址:前16位为网络ID，后8位为主机ID。 10x.....x | x....x 128~191</p>
-<p>C类地址:前24位为网络ID，后8位为主机ID。 110x....x | x...x 192~223</p>
-<p>D类组播使用。 1110| x.....x(多播地址) 224~239</p>
-<p>E类研究使用。 1111| x.....x(保留为今后使用) 240~255</p>
-<p>特殊的几个地址:</p>
-<p>​ 127.0.0.1 本地环回地址</p>
-<p>​ 169.254.0.0 微软在无法自动获取IP时自动分给计算机的IP地址。</p>
-<p>​ 保留的私网地址。</p>
-<ul>
-<li>10.0.0.0 ------ 10.255.255.255</li>
-<li>172.16.0.0 ------ 127.31.255.255</li>
-<li>192.168.0.0 ------- 192.168.255.255</li>
-</ul>
+<h4 id="客户服务器方式-cs">客户服务器方式 C/S</h4>
+<h4 id="对等方式-p2ppeer-to-peer">对等方式 P2P(peer to peer)</h4>
+<p>既是服务器又是客户机</p>
 </blockquote>
-<h2 id="子网掩码的作用">子网掩码的作用</h2>
+<h1 id="数据交换方式">数据交换方式</h1>
 <blockquote>
-<p>同IP地址作与运算，得到的结果用于判断两个IP是否位于同一网段，从而判断这两个IP的信息交换是否要通过路由器。</p>
-<p>可以用于屏蔽IP地址的主机ID部分，来凸显IP地址的网络ID部分，借此判断两个IP能否直接信息交换。</p>
-<p>还可以将大的IP网络划分为若干小的网络。(划分子网、等分划分/边长划分)</p>
-<p>超网:通过子网掩码把若干个小网络合并为一个大网络。</p>
+<h4 id="电路交换---面向连接">电路交换---面向连接</h4>
+<p>交换机位于中心，需要连接时会通过电路连接两个主机。</p>
+<p>建立连接:申请占用通信资源。</p>
+<p>通话:一直占用通信资源。</p>
+<p>释放连接:释放通信资源</p>
+<p>适用于数据量很大的实时传输，核心路由器之间可以用电路交换</p>
+<h4 id="报文交换">报文交换</h4>
+<p>报文一般比分组长的多</p>
+<p>报文发送时间长</p>
+<h4 id="分组交换计算机使用的方式">分组交换:计算机使用的方式</h4>
+<p>发送端对报文进行拆分成不同小组，添加首部组合成一个数据然后发送给接收端。</p>
+<p>接收端对数据进行拆除首部，然后根据首部的信息将收到的数据组合成报文</p>
 </blockquote>
-<h2 id="ip地址与mac地址">IP地址与MAC地址</h2>
+<h1 id="局域网和广域网不单单从覆盖范围划分还要从使用的技术是什么">局域网和广域网不单单从覆盖范围划分，还要从使用的技术是什么</h1>
 <blockquote>
-<p>网络层以上使用IP地址，链路层及以下使用MAC地址</p>
-<figure>
-<img src="/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/IP地址和MAC地址.png" alt="IP地址和MAC地址"><figcaption aria-hidden="true">IP地址和MAC地址</figcaption>
-</figure>
-<p>相比于IP数据报，MAC帧增加了</p>
-<p>交换机基于数据帧的MAC地址转发数据帧，路由器基于数据包的IP地址转发数据包。</p>
-<p>数据包在传输过程不变，过网络设备数据帧要用新的物理层地址重新封装。</p>
-<p>MAC地址决定了数据帧下一跳哪个设备接收，而IP地址决定了数据包的起点和终点</p>
+<p>局域网 自己购买设备、自己维护、带宽固定 距离100米内</p>
+<p>广域网 花钱买服务、花钱买带宽</p>
 </blockquote>
-<h2 id="协议">协议</h2>
+<h1 id="网络的拓扑结构">网络的拓扑结构</h1>
 <blockquote>
-<p>ARP协议:将IP地址转化为物理地址。会使用到广播。</p>
-<p>RARP协议:将物理地址转化为IP地址。</p>
-<p>ARP欺骗。</p>
+<p>总线型、环形、星型、树型、网状结构</p>
 </blockquote>
-<h2 id="ip数据报">IP数据报</h2>
+<h1 id="网络工作方式">网络工作方式</h1>
 <blockquote>
-<p>IP数据报的首部和数据两部分组成。首部的前一部分是固定，共20字节，是所有IP数据报必须具有的。</p>
-<figure>
-<img src="/2021/02/20/computerNetwork/%E7%AC%AC4%E7%AB%A0-%E7%BD%91%E7%BB%9C%E5%B1%82/IP地址.png" alt="IP地址"><figcaption aria-hidden="true">IP地址</figcaption>
-</figure>
-<p>在首部的固定部分的后面是一些可选字段，其长度是可变的。</p>
-<p>各字段</p>
-<p>0-4位版本(表示为IPv4/IPv6) 4-8位首部长度(最小值为固定长度部分共20个字节。可表示最大15个单位，一个单位4个字节，故首部最大60个字节) 8-16区分服务(数据包所需的服务，定义优先级) 16-32总长度(数据包总大小，一般为1500)</p>
-<p>标识(每产生一个数据包就增加1) 标志(判断数据包是否分片) 片偏移(偏移量单位为8个字节)</p>
-<p>TTL生存时间值，指定IP包被路由器丢弃之前允许通过的最大网段数量。</p>
-<p>协议用于指明上层协议是什么，如ICMP、TCP、UDP等。</p>
-<p>首部校验和用于校验数据报是否可用。计算过程:发送端把数据报首部的信息拆成许多单字，然后初始校验和为0，将校验和同这些单字进行反码运算求和，结果取反码即为校验和。接收方重复此过程，若结果为0则保留，不为0则直接丢弃。</p>
-<p>源地址、目的地址即为IP地址。</p>
-<p>可选字段用于支持排错、测量及安全等措施</p>
+<p>资源子网、通信子网、接入网</p>
 </blockquote>
-<h2 id="数据路由">数据路由</h2>
+<h1 id="计算机网络的性能">计算机网络的性能</h1>
 <blockquote>
-<p>数据路由在不同网段转发数据报。能去能回--------网络畅通。</p>
-<p>负载均衡</p>
+<p>速率:主机在数字信道传送数据位数的速率，也成为data rate 或bit rate。</p>
+<p>带宽:数据信道所能传送的最高数据率。</p>
+<p>吞吐量:单位时间内通过某个网络的数据量。</p>
+<p>时延:</p>
+<blockquote>
+<p>发送时延 数据块长度/信道带宽</p>
+<p>传播时延:信道长度/信号在信道上的传播速率</p>
+<p>处理时延:在</p>
+<p>排队时延:在接收方主机处等待的时间</p>
 </blockquote>
-<h2 id="icmp协议">ICMP协议</h2>
+<p>时延带宽积 :传播时延 * 带宽</p>
+<p>往返时间RTT:从发送方发送数据开始到发送方收到接收方确认。</p>
+<p>利用率:</p>
 <blockquote>
-<p>报文类型:ICMP差错报告报文、ICMP询问报文</p>
-<p>报文前四个字节格式统一共3个字段:类型、代码、检验和，接着的四个字节内容与ICMP的类型有关。</p>
-<p>差错报告报文共五种:终点不可达、源点抑制(发数据报的速度过快)、时间超过、参数问题、改变路由/重定向。</p>
-<p>询问报文有两种:回送请求和回答报文、时间戳请求和回答报文。</p>
+<p>信道利用率 = 有数据通过时间 / (有 + 无数据通过的时间)</p>
+<p>网络利用率：信道利用率加权平均值</p>
 </blockquote>
-<h2 id="动态路由协议">动态路由协议</h2>
-<blockquote>
-<p>RIP最早的动态路由协议，周期性广播，30s广播一次。跳数16次。</p>
+<p>非性能指标:费用、质量、标准化、可靠性、可扩展性、可升级性、管理与维护</p>
 </blockquote>
-<h2 id="ospf协议开放式最短路径优先---动态路由协议">OSPF协议(开放式最短路径优先)---动态路由协议</h2>
-<h2 id="bgp------外部网关协议">BGP ---- 外部网关协议</h2>
+<h1 id="计算机网络的体系结构">计算机网络的体系结构</h1>
 <blockquote>
-<p>不同自治系统的路由器之间交换路由信息的协议</p>
-<p>报文类型：</p>
-<p>OPEN</p>
-<p>UDDATE</p>
-<p>KEEPALIVE</p>
-<p>NOTIFICATION</p>
-<p>ROUTE-REFRESH</p>
-<p>重要属性：</p>
-<p>AS-PATH: 包含前缀通告所经过的AS序列</p>
-<p>NEXT-HOP(下一跳): 开始一个AS-PATH的路由器接口，指向下一跳AS.</p>
+<p>OSI(开放式系统互联)七层模型:分层有利于标准化，且分层后各层之间的变化不会影响到其他层，尽量降低了相互之间的依赖。</p>
+<p>物理层:规定电压、接口标准</p>
+<p>数据链路层:输入如何封装，添加物理层地址，MAC</p>
+<p>网络层:选择最佳路径，IP地址编址</p>
+<p>传输层:可靠传输(建立会话)、不可靠传输(不建立会话)、流量控制。</p>
+<p>会话层:服务和客户端建立的会话。 netstat -nb</p>
+<p>表示层:加密、压缩、编码，开发人员考虑。</p>
+<p>应用层: 能够产生网络流量，能够和用户交互的应用程序。</p>
 </blockquote>
-<h2 id="nat和pat">NAT和PAT</h2>
+<h1 id="网络排错">网络排错</h1>
 <blockquote>
-
+<p>需要从底层到高层逐一排查</p>
 </blockquote>
-<h2 id="igmp-组播多播">IGMP 组播/多播</h2>
-<h2 id="dhcp">DHCP</h2>
+<h1 id="网络安全和osi参考模型的关系">网络安全和OSI参考模型的关系</h1>
 <blockquote>
-
+<p>物理层安全</p>
+<p>数据链路层安全:ADSL、无线AP</p>
+<p>网络层安全</p>
+<p>应用层安全: SQL注入漏洞、上传漏洞</p>
 </blockquote>
-<h2 id="arp">ARP</h2>
+<h1 id="一些基本概念">一些基本概念</h1>
 <blockquote>
-<p>默认网关为网络上的最低地址，如192.32.65.0/24的默认网关为192.32.65.1</p>
+<p>实体:交换信息的硬件或软件进程。</p>
+<p>协议:控制两个对等实体通信的规则。</p>
+<p>服务:下层向上层提供服务，上层需要使用下层提供的服务来实现本层的功能。</p>
+<p>服务访问点:相邻两层实体间交换信息的地方。</p>
+<p>AP接入点和无线路由器和基站作用相差不大，主要负责中继无线计算机之间的数据包，还负责中继无线计算机和Internet之间的数据包。</p>
+<p>IEEE802.11俗称WIFI。以太网IEEE802.3。</p>
+<p>将两个或多个网络连接起来并提供必要转换的机器，其硬件和软件方面的总称是网关。路由器就是一个网关，在网络层交换数据包。</p>
+<p>不可靠的无连接服务通常称为数据报服务。</p>
+</blockquote>
+<h1 id="tpcip">TPC/IP</h1>
+<blockquote>
+<p>五层模型:</p>
+<p>应用层:</p>
+<blockquote>
+<p>数据单元:传输数据单元PDU</p>
+</blockquote>
+<p>运输层:</p>
+<blockquote>
+<p>数据单元:报文</p>
+</blockquote>
+<p>网络层:</p>
+<blockquote>
+<p>数据单元:(IP数据报/IP分组/包)</p>
+</blockquote>
+<p>数据链路层:</p>
+<blockquote>
+<p>数据单元:数据帧</p>
+</blockquote>
+<p>物理层:</p>
+<blockquote>
+<p>数据单元:比特010101</p>
+</blockquote>
+</blockquote>
+<h1 id="osi参考模型">OSI参考模型</h1>
+<blockquote>
+<p>应用层:</p>
+<p>​ 所有可以和用户交互产生网络流量的程序。</p>
+<p>​ 文件传输FTP、电子邮件SMTP、万维网HTTP</p>
+<p>表示层</p>
+<p>​ 用于处理两个通信系统中交换信息的表示方式。</p>
+<p>​ 数据格式变换、数据加密解密、数据压缩和恢复</p>
+<p>​ JPEG、ASCII</p>
+<p>会话层</p>
+<p>​ 向表示层实体/用户进程提供建立连接并在连接上有序地传输数据。</p>
+<p>​ 建立、管理、终止会话。</p>
+<p>​ 使用检验点可以使会话在通信失效时从检验点/同步点进行恢复通信，实现数据同步。</p>
+<p>​ ADSP、ASP</p>
+<p>传输层</p>
+<p>​ 负责主机中两个进程的通信，即端到端的通信。传输单位是报文/用户数据报</p>
+<p>​ 可靠传输、不可靠传输</p>
+<p>​ 差错控制</p>
+<p>​ 复用分用</p>
+<p>网络层</p>
+<p>​ 路由选择</p>
+<p>​ 流量控制</p>
+<p>​ 差错控制</p>
+<p>​ 拥塞控制</p>
+<p>数据链路层 加上报头和报尾。</p>
+<p>​ 把网络层传下来的数据报组装成帧</p>
+<p>​ 差错控制</p>
+<p>​ 流量控制</p>
+<p>​ 接入控制</p>
+<p>​ SDLC、HDLC、PPP、STP</p>
+<p>物理层</p>
+<p>​ 在物理媒体上实现比特流的透明传输</p>
+<p>​ 定义接口特性</p>
+<p>​ 定义传输模式</p>
+<p>​ 定义传输速率</p>
+<p>​ 比特同步</p>
+<p>​ 比特编码</p>
+<p>​ RJ45、802.3</p>
 </blockquote>
 
       
@@ -525,7 +513,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/49/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/49/">49</a><span class="page-number current">50</span><a class="page-number" href="/page/51/">51</a><span class="space">&hellip;</span><a class="page-number" href="/page/56/">56</a><a class="extend next" rel="next" href="/page/51/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/49/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/49/">49</a><span class="page-number current">50</span><a class="page-number" href="/page/51/">51</a><span class="space">&hellip;</span><a class="page-number" href="/page/58/">58</a><a class="extend next" rel="next" href="/page/51/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -570,13 +558,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">192k</span>
+    <span title="站点总字数">195k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:55</span>
+    <span title="站点阅读时长">2:58</span>
   </span>
 </div>
 <div class="busuanzi-count">
