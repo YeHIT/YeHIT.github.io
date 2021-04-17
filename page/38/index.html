@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/JavaBasicKnowledge/Object/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/JavaBasicKnowledge/Object/" class="post-title-link" itemprop="url">Object类分析</a>
+          <a href="/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" class="post-title-link" itemprop="url">多线程相关</a>
         </h2>
 
         <div class="post-meta-container">
@@ -288,7 +288,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:01:33" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：17:12:35" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -312,14 +312,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>2.5k</span>
+      <span>573</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
+      <span>1 分钟</span>
     </span>
 </div>
 
@@ -330,102 +330,30 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="object类">Object类</h1>
+          <h1 id="多线程">多线程</h1>
+<h2 id="进程和线程">进程和线程</h2>
 <blockquote>
-<p>Object类是Java中未指定父类的类的默认继承类，也可以说是所有类的祖先。本文档编写目的为通过查看Java源码来加强自己对Object类的理解。不涉及native实现的方法。</p>
+<p>进程是执行程序的一次执行过程，是一个动态的概念。是系统资源分配的单位。</p>
+<p>通常一个进程中包含多个线程，一个进程至少含一个线程。线程是CPU调度和执行的单位。</p>
 </blockquote>
-<h4 id="registernatives">registerNatives()</h4>
+<h3 id="java创建线程的方式">JAVA创建线程的方式</h3>
 <blockquote>
-<p>native实现，目的是在底层创建对应的java本机函数使JVM找到native方法</p>
-</blockquote>
-<h4 id="getclass">getClass()</h4>
-<blockquote>
-<p>返回当前对象运行时对应的类对象，且这个类是静态类型擦除后的结果。如T-&gt;Object;List<String>-&gt;List</String></p>
-</blockquote>
-<h4 id="hashcode">hashCode()</h4>
-<blockquote>
-<p>返回当前对象的hash值，在同一个程序执行中，约定当对象相同时即执行equals方法比较的信息不被更改时，不管调用几次hashcode方法，均要返回相同的值。但不要求不同程序产生相同的hashcode</p>
-<p>如果两个对象可通过equals方法判定相同，则调用hashcode方法会产生两个相同的值。</p>
-<p>如果两个对象通过equals方法判定不同，也不要求hashcode方法产生两个不同的值，但如果产生不同的值会提升哈希表的性能。</p>
-<p>如果可以的话，不同对象应该有不同的hash值，这个通常可以根据将对象在内存中的地址转化为整数来实现，但不强制要求。</p>
-</blockquote>
-<h4 id="equals">equals()</h4>
-<blockquote>
-<p>判断某些对象是否equals to调用该方法的对象。</p>
-<p>实现了非空对象引用上的等价关系判断。</p>
-<p>四个特性:自反、对称、传递、一致。</p>
-<p>自反: x.equals(x) == true</p>
-<p>对称: x.equals(y) == y.equals(x)</p>
-<p>传递: x.equals(y), y.equals(z) ------&gt; x.equals(z)</p>
-<p>一致: 只要用于equals比较的信息不被改变，则不管调用几次equals方法其值总是不变的。</p>
-<p>非空对象引用同null比较值总是为false。</p>
-<p>对象之间equals比较只有两个对象是完全相同即地址一致时才会返回true。</p>
-<p>为了维持hashcode的原则，在重写equals方法的时候，往往需要重写hashcode方法。</p>
-</blockquote>
-<h4 id="clone">clone()</h4>
-<blockquote>
-<p>根据对象的类复制一个对象的副本。</p>
-<p>往往有</p>
-<p>​ x.clone() != x;</p>
-<p>​ x.clone().getClass() == x.getClass()</p>
-<p>​ x.clone.equals(x) == true</p>
-<p>​ 通常返回的clone对象都是调用super.clone得到的。</p>
-<p>​ clone的对象需要和被clone的对象相互独立。这便要求对被clone对象中所有可变属性进行复制，并用副本的引用替换对这些对象的引用。</p>
-<p>Object类的clone方法</p>
-<p>​ 首先需要继承Cloneable接口。数组类型默认实现了Cloneable接口，且T类型的数组clone的结果的类型为T，需要注意的时，数组clone是直接复制原数组的值即对象引用只是将引用拷贝了，故为浅拷贝。</p>
-<p>Object对象没有实现Cloneable接口，故对Object对象使用clone会产生异常。CloneNotSupportedException</p>
-</blockquote>
-<h4 id="tostring">toString()</h4>
-<blockquote>
-<p>返回对象的字符串表示形式。往往需要重写这个方法。</p>
-<p>这个方法的默认表现为“类名+@+hashcode的十六进制表示”</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">getClass().getName() + <span class="string">&#x27;@&#x27;</span> + Integer.toHexString(hashCode())</span><br></pre></td></tr></table></figure>
-</blockquote>
-<h4 id="notify">notify()</h4>
-<blockquote>
-<p>唤醒正在wait()该线程所拥有的对象的一个线程。如果有多个线程都在wait该对象，则随机唤醒一个线程，由具体实现决定。</p>
-<p>被唤醒的线程只有在对象没有被锁定的情况下才能执行。且被唤醒的线程仍然需要以通常的方式同其他线程竞争对象的使用权，没有其他特权。</p>
-<p>该方法只能由当前具有对象使用权的线程调用，获取对象使用权的方式</p>
-<p>​ 1.执行对象的synchronize修饰的方法</p>
-<p>​ 2.执行synchronize修饰的代码段。</p>
-<p>​ 3.执行synchronize修饰的静态方法。</p>
-<p>未拥有对象monitor的线程调用会抛出IllegalMonitorStateException异常。</p>
-</blockquote>
-<h4 id="notifyall">notifyAll()</h4>
-<blockquote>
-<p>唤醒正在wait()该线程所拥有的对象的所有线程。</p>
-</blockquote>
-<h4 id="waitlong-timeout">wait(long timeout)</h4>
-<blockquote>
-<p>让当前线程等待一段时间，直到被notify/notifyAll/一段时间过后唤醒。</p>
-<p>调用该方法的线程必须有对象的monitor。</p>
-<p>该方法会让线程进入该对象的等待集中，然后放弃对该对象的所有同步声明。 出于线程调度目的，该线程被禁用，并且在发生以下四种情况之一之前一直处于休眠状态：</p>
 <ol type="1">
-<li>某些线程调用了notify方法并恰好唤醒该线程。</li>
-<li>某些线程调用了notifyAll方法。</li>
-<li>某些线程调用了interrupt方法。</li>
-<li>一段特定时间过去。若为设置特定时间线程会等到被notify为止。</li>
+<li>继承Thread类，重写run方法。调用是使用start方法调用，若使用run方法调用则变为单线程。</li>
+<li>实现runnable接口，重写run方法，执行线程需丢入runnable接口实现类，调用start方法。(避免使用继承)</li>
+<li>实现callable接口，需要返回值类型，重写call方法，需要抛出异常。(可以返回结果，可以抛出异常)<img src="/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/实现callable.png" alt="实现callable"></li>
 </ol>
-<p>从wait方法返回的对象和线程的同步状态会和调用该方法时的状态完全相同。</p>
-<p>存在虚假唤醒(spurious wakeup)的问题需要在while中调用wait来避免。</p>
-<p>如果该线程在等待之前，或等待期间被另一个线程调用该线程的interrupt()方法，那么当被interrupt线程获得锁之后，会立刻抛出InterruptedException异常，我们可以对这个异常进行捕获，然后处理，以实现线程的唤醒和通信。</p>
-<p>wait方法将当前线程放入该对象的等待集中，只会解锁该对象，若当前线程还锁定了其他对象，那么这些对象不会被解锁。(死锁)</p>
 </blockquote>
-<h4 id="waitlong-timeout-int-nanos">wait(long timeout, int nanos)</h4>
+<h2 id="java线程的状态">Java线程的状态</h2>
 <blockquote>
-<p>同一个参数的wait基本一致，但可以输入纳秒级的精度。实际上只是nanos大于0直接让timeout++而已。</p>
-</blockquote>
-<h4 id="wait">wait()</h4>
-<blockquote>
-<p>不支持超时自动唤醒。相当于wait(0)</p>
-</blockquote>
-<h4 id="finalize">finalize()</h4>
-<blockquote>
-<p>当资源不可达时GC会自动调用对象的finalize方法</p>
-<p>这个方法内部可以执行任何操作，包括让这个对象重新可达。但往往只是执行清除操作，如中断I/O连接。</p>
-<p>Java编程语言对于所有的对象都不能够保证哪个线程会调用它的finalize方法。然而可以保证一点，调用终结方法的线程必然不会被任何用户可见的同步锁锁住。如果一个没有被捕获的异常在执行终结方法时被抛出，异常会被忽略并且哪个对象的终结过程会被终止。</p>
-<p>调用该方法后，java虚拟机会再次判断对象是否可达，若仍不可达对象往往会被摧毁。</p>
-<p>finalize()方法不会调用多次。</p>
+<p>NEW、RUNNABLE、BLOCKED、WAITING、TIMED_WAITING、TERMINATED</p>
+<p>NEW：线程还没有启动。</p>
+<p>RUNNABLE：线程已经在jvm中运行了，但可能还在等待操作系统的处理器之类的资源。</p>
+<p>BLOCKED：线程等待monitor lock。</p>
+<p>WAITING：正在等待另一个线程执行的状态。</p>
+<p>TIMED_WAITING：有着指定特定等待时间等待另一个线程执行的状态。</p>
+<p>TERMINATED：线程终止，线程已经结束执行。</p>
+<p>线程分为用户线程和守护线程(Daemon)，虚拟机必须确保用户线程执行完毕，虚拟机不用等待守护线程执行完毕。可以通过调用线程的setDaemon(true)，将某个线程变为守护线程</p>
 </blockquote>
 
       
@@ -491,13 +419,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">196k</span>
+    <span title="站点总字数">197k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:58</span>
+    <span title="站点阅读时长">2:59</span>
   </span>
 </div>
 <div class="busuanzi-count">
