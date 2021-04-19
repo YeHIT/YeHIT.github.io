@@ -198,7 +198,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-count">61</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/23/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E5%AE%9E%E9%99%85%E5%BC%80%E5%8F%91%E9%81%87%E5%88%B0%E9%97%AE%E9%A2%98%E5%8F%8A%E6%96%B9%E6%A1%88/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/26/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/23/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E5%AE%9E%E9%99%85%E5%BC%80%E5%8F%91%E9%81%87%E5%88%B0%E9%97%AE%E9%A2%98%E5%8F%8A%E6%96%B9%E6%A1%88/" class="post-title-link" itemprop="url">实际开发遇到问题及方案</a>
+          <a href="/2021/03/26/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80/" class="post-title-link" itemprop="url">分布式基础</a>
         </h2>
 
         <div class="post-meta-container">
@@ -286,17 +286,23 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2021-03-23 00:00:00 / 修改时间：19:49:51" itemprop="dateCreated datePublished" datetime="2021-03-23T00:00:00+08:00">2021-03-23</time>
+      <time title="创建时间：2021-03-26 00:00:00" itemprop="dateCreated datePublished" datetime="2021-03-26T00:00:00+08:00">2021-03-26</time>
     </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-04-02 00:40:57" itemprop="dateModified" datetime="2021-04-02T00:40:57+08:00">2021-04-02</time>
+      </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/" itemprop="url" rel="index"><span itemprop="name">面试突击</span></a>
+          <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
         </span>
     </span>
 
@@ -308,14 +314,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>346</span>
+      <span>3.2k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>3 分钟</span>
     </span>
 </div>
 
@@ -326,18 +332,182 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="实际开发遇到问题及方案">实际开发遇到问题及方案</h1>
-<h2 id="什么是内存泄漏怎么确定内存泄漏">什么是内存泄漏，怎么确定内存泄漏</h2>
+          <h1 id="分布式基础">分布式基础</h1>
+<h2 id="分布式怎么进行数据切分访问">分布式怎么进行数据切分访问？</h2>
 <blockquote>
-<p>简单来说内存泄漏就是使用了内存空间后，在不使用的情况下没有及时的释放对应空间。</p>
-<p>在Java中虽然存在GC机制，但有时也有产生内存泄漏的现象。</p>
-<p>​ 如：使用ThreadLocal、使用静态集合类引用数据、使用单例模式创建的对象引用的过多对象。</p>
-<p>Java确定内存泄漏的方式：</p>
-<p>​ 如果内存泄漏了一般来说会频繁触发GC，可以先使用linux的top指令查看当前java进程具体情况，如果频繁GC往往会导致CPU使用率异常。</p>
-<p>​ 如果确认异常，再通过jmap指令生成dump文件，用于之后查看。</p>
-<p>​ 通过jstat查看当前虚拟机情况，主要观察GC频率。</p>
-<p>​ 使用jhat或者其他可视化工具分析dump文件，找到对应内存使用巨大的类。</p>
-<p>​ 找到类后，分析具体代码解决问题即可。</p>
+<p>显然分布式服务中，必然存在服务集群，一般而言是怎么访问这些集群的呢？往往使用hash来将用户划分到不同的区域，以简单的hash函数为例：</p>
+<p>​ 假设存在6台服务器，此时采用的hash函数为(key)%6，这样选择对应的服务器。显然是可以实现功能的。当如果服务器的数量突然减少或增加了，此时hash函数将要变化，而这时原有的映射关系将直接无用。怎么解决这个问题呢？<strong>一致性hash！</strong></p>
+<p><strong>一致性hash算法</strong></p>
+<p>​ 即使用2^32作为取模的数，将整个区域视为一个圆环，先对服务器进行哈希处理，让其发布在圆环的不同位置，然后当有请求到来时，对请求进行哈希处理，此时会发现请求也落在圆环的某个位置，然后沿顺时针查找该位置离哪个服务器最近，即可找到对应提供服务的服务器。此时若需要添加服务器，只需往圆环上添加新位置即可，只需局部调整，无须全部更新。</p>
+<figure>
+<img src="/2021/03/26/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80/一致性哈希环.png" alt="一致性哈希环"><figcaption aria-hidden="true">一致性哈希环</figcaption>
+</figure>
+<p>​ 当然这样有时会导致某些数据累积在同一台服务器上，一致性hash为了解决这个问题引入了虚拟节点机制，即用一个服务器结点计算多次哈希，在每个计算位置放置服务器结点，以保障数据可以比较合理的分布。</p>
+<p>一些分布式集群使用一致性hash(或类似原理)的场景：</p>
+<p>​ redis cluster：类似于一致性hash的思想，对于redis集群采用哈希槽的设计思想，即redis cluster有固定的16384即16K个哈希槽(因为16384个槽在传递配置信息时只需要传输2k的位图，16k/ 8bit = 2k，且16k大小的槽足够redis集群使用了)，对请求进行哈希操作时使用16384作为模数，让请求分布到槽中，而每个主机会负责管理一部分的槽。在进行主机的切换拓展时可以通过指定哪个槽由哪个主机负责来实现拓展和移除主机。</p>
+</blockquote>
+<h2 id="分布式集群怎么选主">分布式集群怎么选主？</h2>
+<blockquote>
+<p>分布式集群中往往需要一个主进行管理操作，一般是通过主进行写操作，通过从机进行读操作。</p>
+<p>选主的算法：<strong>基于序号的选主算法(Bully算法)</strong>、<strong>多数派选主算法(Raft和ZAB算法)</strong></p>
+</blockquote>
+<h3 id="bully算法">Bully算法</h3>
+<blockquote>
+<p>选主过程主要分为三种消息</p>
+<table>
+<thead>
+<tr class="header">
+<th><strong>#</strong></th>
+<th><strong>消息类型</strong></th>
+<th><strong>消息描述</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>Election消息</td>
+<td>用于发起选举</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>Alive消息</td>
+<td>对Election消息的应答</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>Victory</td>
+<td>竞选成功的节点向其他节点宣誓主权</td>
+</tr>
+</tbody>
+</table>
+<p>触发选举的时机有两个：</p>
+<p>​ 错误结点恢复。</p>
+<p>​ 检测到master节点故障。</p>
+<p>选举过程：</p>
+<p>​ 1.各节点都判断自己的ID是否最大，若是最大的则直接向其他结点发送Victory消息。</p>
+<p>​ 2.若自己不是当前存活的结点中ID最大的，需要向比自己大的结点发送Election消息。</p>
+<p>​ 3.在规定时间内若没有收到任何结点的Alive消息，则会认为自己为最大的结点，并像其他结点发送Victory消息。若收到比自己大的结点的Alive消息，则会等待收到最大结点的Victory消息。</p>
+<p>​ 4.若收到了比自己小的节点发来的Election消息，则会回复Alive消息。</p>
+<p>优点：选举速度快、算法复杂度低、实现简单。</p>
+<p>缺点：所有节点需要每个节点的相关信息，需要额外信息存储。</p>
+<p>​ 若一个ID比现有集群的master大的结点加入，且不稳定即频繁退出、加入，会导致当前集群频繁进行选主。</p>
+</blockquote>
+<h3 id="raft算法---投票">Raft算法---投票</h3>
+<blockquote>
+<p>Etcd使用raft算法。</p>
+<p>raft集群各角色：</p>
+<table>
+<thead>
+<tr class="header">
+<th>角色</th>
+<th><strong>角色描述</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Leader</strong></td>
+<td>主节点，同一时刻只有一个主节点，负责整个集群的协调和管理</td>
+</tr>
+<tr class="even">
+<td><strong>Candidate</strong></td>
+<td>候选节点，只有候选节点才可以被选为新Leader，每个节点都可能成为候选节点</td>
+</tr>
+<tr class="odd">
+<td><strong>Follower</strong></td>
+<td>Leader的追随者，该角色不能发起选主</td>
+</tr>
+</tbody>
+</table>
+<p>触发选主时机：</p>
+<p>​ Leader故障或任期满。</p>
+<p><strong>数据提交流程</strong>：</p>
+<p>​ Leader收到数据操作请求时，先产生对应log，然后把log的请求发送给各个Follower。每个follower收到请求后会选择是否听从命令，听从返回true，反对返回false。当超过半数的follower成功写log，leader则开始第二阶段的提交，正式写入数据，然后也给其follower发送请求，当超过半数follower成功写入数据，该请求才正式完成。若这两个步骤其中某个步骤没有超过半数的follower成功执行，则这个事务不成功。</p>
+<p><strong>选主流程</strong>：</p>
+<figure>
+<img src="/2021/03/26/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80/raft选主.png" alt="raft选主"><figcaption aria-hidden="true">raft选主</figcaption>
+</figure>
+<p>初始化时各个结点均为Follower，每个Follower内部维护了一个随机的timer。timer时间到了没有人主动联系时就会变为candidate。</p>
+<p>当出现candidate节点时，candidate节点会发送请求给follower节点，每个follower节点只能投一张票。</p>
+<p>对于相同情况的candidate，follower按照先来先投票的策略投票。</p>
+<p>发起选主的结点若得到一半以上的结点，则会成为主节点，状态变为Leader，其他结点会由Candidate变为Follower状态，此时Leader和Follower通过心跳保持连接。当follower接收到心跳信号时会刷新内部timer。</p>
+<p>若Leader任期到了，Leader会降为Follower，进行新一轮选主。</p>
+<p><strong>选主可能的问题</strong></p>
+<p>​ 当参选的candidate内部数据是缺失/错误的时，如何解决冲突？</p>
+<p>​ 1.可以当candidate变为Leader前，从所有的follower处获取数据。</p>
+<p>​ 2.当follower遇见这种candidate时不投票给他。(Raft选择的做法)。</p>
+<p>​ Raft具体解决方案：</p>
+<p>​ 在candidate请求被投票时会传递term、lastLogIndex、lastLogTerm三个信息。</p>
+<table>
+<thead>
+<tr class="header">
+<th>参数名</th>
+<th>参数含义</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>term</strong></td>
+<td>自身所处的选举周期</td>
+</tr>
+<tr class="even">
+<td><strong>lastLogIndex</strong></td>
+<td>log最新的index值</td>
+</tr>
+<tr class="odd">
+<td><strong>lastLogTerm</strong></td>
+<td>log中最近的index是在哪个term产生的</td>
+</tr>
+</tbody>
+</table>
+<p>​ 投票结点内部会维护currentTerm，节点自身所处term。log[]自身log集合。commitIndex，log中最后被提交的index值。</p>
+<p>​ 当term&lt;currentTrem时，拒绝投票。</p>
+<p>​ 当已经投票给其他结点时，拒绝投票。</p>
+<p>​ log匹配时，投票。</p>
+<p><strong>优点</strong>：选举速度快，算法复杂度低，易于实现。新结点加入时不会频繁切主，需要得到半数以上支持才会切主。</p>
+<p><strong>缺点</strong>：通信量大。</p>
+</blockquote>
+<h3 id="zab算法----优先级的民主投票">ZAB算法 -- 优先级的民主投票</h3>
+<blockquote>
+<p>ZAB是Zookeeper实现分布式协调而设计的。</p>
+<p>ZAB选主的角色：</p>
+<p>​ Leader：主节点。</p>
+<p>​ Follower：跟随者。</p>
+<p>​ Observer：观察者。</p>
+<p>ZAB选举过程中，集群节点的状态：</p>
+<table>
+<thead>
+<tr class="header">
+<th>状态</th>
+<th><strong>状态描述</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Looking</strong></td>
+<td>选举状态，此状态下集群中没有Leader，自己进入选主状态。</td>
+</tr>
+<tr class="even">
+<td><strong>Leading</strong></td>
+<td>领导者状态，已选好主且当前结点为Leader</td>
+</tr>
+<tr class="odd">
+<td><strong>Following</strong></td>
+<td>追随者状态，选为Leader后，其他结点转为Following</td>
+</tr>
+<tr class="even">
+<td><strong>Observing</strong></td>
+<td>观察者状态，持观望态度</td>
+</tr>
+</tbody>
+</table>
+<p>ZAB算法的每个结点都有唯一三元组(server_id，server_zxId，epoch)表示。server_id为当前节点的ID，server_zxId为当前节点存放数据的最新值id，epoch为当前选主进行的轮数。</p>
+<p>具体选主时通过(vote_id，vote_zxId)表示投票给哪个节点，选主唯一原则是server_zxId值最大则成为Leader，如果相同则看server_id最大值。</p>
+<p><strong>具体选主流程：</strong></p>
+<p>​ 1.系统初始化时，即第一轮选主，epoch=1，所有节点zxID=0，此时所有节点都推选自己，将投票信息广播出去。</p>
+<p>​ 2.此时epoch和zxId都是相同的，根据ZAB算法判断，会依据server_id最大者为推选对象，节点更新vote_id重新广播。</p>
+<p>​ 3.节点都推选了server_id最大者后，该节点进入Leading状态，其他结点为Following状态，Leader和Follower建立心跳机制。</p>
+<p>优点：对系统无特殊要求。</p>
+<p>缺点：选举时间长，复杂度高。</p>
 </blockquote>
 
       
@@ -358,7 +528,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/14/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/14/">14</a><span class="page-number current">15</span><a class="page-number" href="/page/16/">16</a><span class="space">&hellip;</span><a class="page-number" href="/page/60/">60</a><a class="extend next" rel="next" href="/page/16/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/14/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/14/">14</a><span class="page-number current">15</span><a class="page-number" href="/page/16/">16</a><span class="space">&hellip;</span><a class="page-number" href="/page/61/">61</a><a class="extend next" rel="next" href="/page/16/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -403,13 +573,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">200k</span>
+    <span title="站点总字数">201k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:02</span>
+    <span title="站点阅读时长">3:03</span>
   </span>
 </div>
 <div class="busuanzi-count">

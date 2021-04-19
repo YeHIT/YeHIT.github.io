@@ -198,7 +198,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-count">61</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/JVMKnowledge/1.JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/28/netty%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91/C10K%E9%97%AE%E9%A2%98%E7%9A%84%E8%A7%A3%E5%86%B3%E5%8F%8AIO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/JVMKnowledge/1.JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" class="post-title-link" itemprop="url">1.JAVA内存管理</a>
+          <a href="/2021/02/28/netty%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91/C10K%E9%97%AE%E9%A2%98%E7%9A%84%E8%A7%A3%E5%86%B3%E5%8F%8AIO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/" class="post-title-link" itemprop="url">C10K问题的解决及I/O多路复用</a>
         </h2>
 
         <div class="post-meta-container">
@@ -287,14 +287,14 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2021-02-20 12:26:00" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+      <time title="创建时间：2021-02-28 23:30:00" itemprop="dateCreated datePublished" datetime="2021-02-28T23:30:00+08:00">2021-02-28</time>
     </span>
       <span class="post-meta-item">
         <span class="post-meta-item-icon">
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-24 18:15:31" itemprop="dateModified" datetime="2021-03-24T18:15:31+08:00">2021-03-24</time>
+        <time title="修改时间：2021-04-02 18:48:53" itemprop="dateModified" datetime="2021-04-02T18:48:53+08:00">2021-04-02</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -302,7 +302,11 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/JVM/" itemprop="url" rel="index"><span itemprop="name">JVM</span></a>
+          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
         </span>
     </span>
 
@@ -314,14 +318,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>3.2k</span>
+      <span>2k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>3 分钟</span>
+      <span>2 分钟</span>
     </span>
 </div>
 
@@ -332,112 +336,64 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="java内存管理">JAVA内存管理</h1>
-<h2 id="java内存区域">Java内存区域</h2>
-<h3 id="总览">总览</h3>
+          <h1 id="c10k问题的解决及io多路复用">C10K问题的解决及I/O多路复用</h1>
+<h2 id="c10k问题">C10K问题</h2>
 <blockquote>
-<p>堆+栈+程序计数器</p>
-<p>堆: 方法区 + 堆</p>
-<p>栈: 虚拟机栈 + 本地方法栈</p>
+<p>即网络通信时单机服务器保持的TCP连接数超过10K即1万，导致服务器压力过大无法承载。</p>
 </blockquote>
-<figure>
-<img src="/2021/02/20/JVMKnowledge/1.JAVA%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Java内存区域.png" alt="Java内存区域"><figcaption aria-hidden="true">Java内存区域</figcaption>
-</figure>
-<h3 id="各部分的作用">各部分的作用</h3>
-<h4 id="程序计数器">程序计数器</h4>
+<h2 id="发生c10k问题的原因">发生C10K问题的原因</h2>
 <blockquote>
-<p>是当前线程所执行的字节码的行号指示器。各线程均有一个程序计数器。如果执行的是Java方法，则程序计数器记录的值为正在执行的虚拟机字节码的地址。若执行的是本地方法，则此时程序计数器的值为undefined。该区域没有规定任何OutOfMemoryError情况。</p>
+<p>本质上是操作系统的问题，操作系统使用的都是传统阻塞I/O模型，处理方式都是requests per thread，导致并发10K和并发100的关键在于CPU。</p>
 </blockquote>
-<h4 id="java虚拟机栈">Java虚拟机栈</h4>
+<h2 id="解决方法">解决方法</h2>
 <blockquote>
-<p>生命周期和线程一致，且是线程私有的。当每个方法被执行时，Java虚拟机栈就会创建一个栈帧来保存局部变量表、操作数栈、动态连接、方法出口等信息。每个方法从被调用到执行完毕的过程，对应着一个栈帧在虚拟机栈中入栈到出栈的过程。</p>
-<p>局部变量表用于存储各种Java虚拟机的<strong>基本数据类型</strong>、<strong>对象引用</strong>(reference类型，不等同与对象本身，可以是对象起始地址的引用指针，也可以是指向一个代表对象句柄或其他与此对象有关的位置)和<strong>returnAdress类型</strong>(指向了一条字节码指令的地址)。在虚拟机栈中，这些数据类型都是用变量槽来表示的。其中64位的long和double占两个变量槽，其他的均只占一个变量槽。局部变量表的大小在<strong>编译期间</strong>就已经完成，故方法所需栈帧分配的局部变量表空间是完全确定的，且不会发生改变。这里空间是指变量槽数，不是具体字节/比特数。</p>
-<p>当调用的方法是非static方法时，局部变量表中第0索引的Slot变量槽默认是this关键字指向的对象。</p>
-<p>可能出现的异常：</p>
-<p>​ StackOverflowError：线程请求栈深度超过虚拟机允许的深度。</p>
-<p>​ OutOfMemoryError：当虚拟机栈容量可以动态拓展时，不能申请到足够的内存。</p>
+<p>原始的TCP连接需要一个线程/进程处理一个连接。</p>
+<p>改进为同一个线程/进程处理多个连接。即使用I/O多路复用技术</p>
 </blockquote>
-<h4 id="本地方法栈">本地方法栈</h4>
+<h2 id="io多路复用技术的发展">I/O多路复用技术的发展</h2>
+<h3 id="原始情况">原始情况</h3>
 <blockquote>
-<p>和虚拟机栈类似，虚拟机栈为虚拟机执行Java方法服务，而本地方法栈是为虚拟机使用到的本地方法服务。</p>
+<p>最简单的思路为利用循环挨个处理每个连接，每个连接对应一个socket，当所有socket都有数据时这个方法可行，但若某个socket没有数据会导致线程/进程被阻塞。</p>
 </blockquote>
-<h4 id="java堆">Java堆</h4>
+<h3 id="select">Select</h3>
 <blockquote>
-<p>Java堆是虚拟机所管理的内存中最大的一块。它是被所有线程共享的一块内存区域，在虚拟机启动时创建。java堆的唯一目的就是存放对象实例。它也是垃圾收集器管理的内存区域。大部分垃圾收集器都是基于分代收集理论设计的。</p>
-<p>从分配内存的角度看，所有线程共享的Java堆可以划分出多个线程私有的分配缓冲区。</p>
-<p>可能出现的异常：</p>
-<p>​ OutOfMemoryError：Java堆中没有内存完成实例分配，且堆无法再拓展。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 该函数准许进程指示内核等待多个事件中的任何一个发送，并只在有一个或多个事件发生或经历一段指定的时间后才唤醒。</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">select</span><span class="params">(<span class="keyword">int</span> maxfdp1,fd_set *readset,fd_set *writeset,fd_set *exceptset,<span class="keyword">const</span> struct timeval *timeout)</span></span></span><br></pre></td></tr></table></figure>
+<p>该函数会传递readset、writeset、exceptset，即读事件、写事件、异常事件，使用fd_set来告知内核同时监控多个文件句柄，最后是timeout是时间参数，可以分为三种情况：一直等待某个描述字直到事件就绪回调、等待到某个时间若某个描述字事件不就绪则不等待、根本不等待某个描述字。</p>
+<p>回调后可以通过FD_ISSET 来逐个查看fd_set中的句柄状态，当连接数大时效率较低，因此select存在句柄管理上限。</p>
+<p>且fd_set只有一个字段关注事件和发生事件，使用前往往要初始化。</p>
+<p>此外fd_set在调用select时需要反复在用户态和内核态传递。</p>
 </blockquote>
-<h4 id="方法区">方法区</h4>
+<h3 id="poll">Poll</h3>
 <blockquote>
-<p>HotSpot：JDK8后使用在本地内存中实现的元空间来代替JDK7中永久代还剩余的内容，JDK6之前使用永久代来实现方法区。</p>
-<p>方法区是各个线程共享的内存区域，用于存储已被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等数据。</p>
-<p>这个区域的回收目标主要是针对常量池的回收和对类型的卸载。</p>
-<p>可能出现的异常：</p>
-<p>​ OutOfMemoryError：方法区无法满足新的内存分配需求。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">poll</span> <span class="params">( struct pollfd * fds, <span class="keyword">unsigned</span> <span class="keyword">int</span> nfds, <span class="keyword">int</span> timeout)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>本质上和select没有区别，都需要轮询，但是poll没有最大文件描述符的限制</p>
+<p>pollfd存在事件字段和发生事件字段，使用前不用重复初始化。</p>
+<p>此外pollfd在调用poll时需要反复在用户态和内核态传递。</p>
 </blockquote>
-<h5 id="运行时常量池">运行时常量池</h5>
+<h3 id="epoll">Epoll</h3>
 <blockquote>
-<p>运行时常量池是方法区的一部分。该部分用于存放编译器生成的各种字面量与符号引用即常量池表。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建一个epoll的句柄，用于管理size个监听数目，返回一个fd值。</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_create</span><span class="params">(<span class="keyword">int</span> size)</span></span>;</span><br><span class="line"><span class="comment">// epoll的事件注册函数，会先注册需要监听的事件类型，epfd为epoll_create的返回值。</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_ctl</span><span class="params">(<span class="keyword">int</span> epfd, <span class="keyword">int</span> op, <span class="keyword">int</span> fd, struct epoll_event *event)</span></span>;</span><br><span class="line"><span class="comment">// 等待事件的发生，只会返回需要处理的事件文件描述符</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_wait</span><span class="params">(<span class="keyword">int</span> epfd, struct epoll_event * events, <span class="keyword">int</span> maxevents, <span class="keyword">int</span> timeout)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>epoll_event在用户态和内核态的传递只需要在epoll_ctl进行一次。</p>
+<p>且事件触发时只会返回触发事件的文件描述符，避免遍历全部的文件描述符。</p>
+<p>有ET模式和LT模式</p>
+<p>Level Triggered (LT) 水平触发 socket接收缓冲区不为空 有数据可读 读事件一直触发 socket发送缓冲区不满 可以继续写入数据 写事件一直触发 符合思维习惯，epoll_wait返回的事件就是socket的状态</p>
+<p>Edge Triggered (ET) 边沿触发 socket的接收缓冲区状态变化时触发读事件，即空的接收缓冲区刚接收到数据时触发读事件 socket的发送缓冲区状态变化时触发写事件，即满的缓冲区刚空出空间时触发读事件 仅在状态变化时触发事件</p>
+<p>LT的编程与poll/select接近，符合一直以来的习惯，不易出错。 ET的编程可以做到更加简洁，某些场景下更加高效，但另一方面容易遗漏事件，容易产生bug。</p>
 </blockquote>
-<h4 id="直接内存">直接内存</h4>
+<h3 id="epoll性能高的原因">Epoll性能高的原因</h3>
 <blockquote>
-<p>直接内存不是虚拟机运行时数据区的一部分，也不是Java虚拟机规范中定义的内存区域。</p>
-<p>如JDK1.4引入的NIO可以使用Native函数分配堆外内存，然后通过一个存储在Java堆里的DirectByteBuffer对象作为这块内存的引用进行操作。</p>
-<p>本机的直接内存的分配不会受到Java堆大小的限制，但是会受到本机总内存大小及处理器寻址空间的限制。</p>
+<p>显然首要的点在于，当事件就绪时epoll返回的是就绪事件组。</p>
+<p>epoll_create会在内核中创建红黑树用于存储epoll_ctl传递来的socket，还会创建一个就绪事件的双向链表。</p>
+<p>由于使用了红黑树结构，使得epoll查找、删除socket结点的效率都更高，poll则是通过每次从用户态到内核态传递链表结构来实现的。故而效率低。</p>
+<p>此外epoll采用epoll_wait来获取结果，由于epoll对应的红黑树结构是由内核直接维护的，每次调用epoll_wait无须再次传递参数，这也有效地提高了性能。</p>
 </blockquote>
-<h2 id="hotspot虚拟机对象相关内容">HotSpot虚拟机对象相关内容</h2>
-<h3 id="对象创建">对象创建</h3>
+<h2 id="c10m">C10M</h2>
 <blockquote>
-<p>步骤分为：类加载检查 -&gt; 分配内存 -&gt; 初始化 -&gt; 对象设置 -&gt; 等待执行构造函数</p>
-<p>类加载检查：当Java虚拟机遇到一条字节码new指令时，首先检查这个指令的参数是否可以从常量池地位到一个类的符号引用，并且检查这个符号引用代表的类是否已经被加载、解析、初始化过。若没有执行相应类的类加载过程。</p>
-<p>分配内存：类加载完成后对象所需内存大小可以完全确定，分配内存的方法分为指针碰撞法和空闲列表法。</p>
-<p>​ 指针碰撞法：将Java堆的内存视为绝对规整，使用过的内存在一边，未使用过的内存在另一边，分配内存时只需要将指针朝未使用过的内存那边移动即可。该方法要求垃圾收集器需要有空间压缩整理能力。</p>
-<p>​ 空闲列表法：Java堆的内存中使用过的内存和未使用过的内存交错在一起，需要维护一个列表记录哪些内存块可用。</p>
-<p>分配内存时需要考虑并发问题：即当A利用指针分配内存但还为修改指针位置时，B也使用原来的指针分配内存。解决该问题可以使用CAS加失败重试或把内存操作按照线程划分在不同的空间之中进行，即每个线程在Java堆中预先分配一小块内存，称为TLAB(本地线程分配缓冲)，只有本地缓冲区的内存用完了，分配新缓冲区时才需要同步锁定。</p>
-<p>初始化：虚拟机将分配到的内存空间都初始化为0值。</p>
-<p>对象设置：将对象信息如对象是哪个类的实例、如何找到类的元数据信息、对象的GC分代年龄等存入对象的对象头中。</p>
-<p>等待执行构造函数：虚拟机等到执行了<init>()方法，完成对对象的全部初始化，此时对象才算被完全的构造出来。</init></p>
-</blockquote>
-<h3 id="对象内存布局">对象内存布局</h3>
-<blockquote>
-<p>存储布局划分为三个部分：对象头、实例数据、对齐填充(padding)</p>
-<p>对象头可以分为两类：</p>
-<p>​ 一类存储对象自身的运行时数据，如HashCode、GC分代年龄、锁状态标识、线程持有的锁、偏向线程ID、偏向时间戳等。被称为Mark Word。</p>
-<p>​ 另一类为类型指针，即对象指向它的类型元数据的指针。Java虚拟机通过这个指针来确定该对象是哪个类的实例。若对象为Java数组，对象头中还要一块用于记录数组长度的数据。</p>
-<p>实例数据：即对象真正存储的有效信息，无论是从父类继承还是子类自己定义的字段。存储顺序可以通过(-XX:FieldsAllocationStyle参数)及字段在源码中定义顺序来调整。HotSpot默认分配顺序会将相同宽度的字段分配到一起存放，如longs/doubles。</p>
-<p>padding：即填充部分，无意义，只是用于将数据对齐。</p>
-</blockquote>
-<h3 id="对象访问定位">对象访问定位</h3>
-<blockquote>
-<p>Java程序会通过栈上的reference数据来操作栈上的具体对象。</p>
-<p>主流的访问方式分为句柄和直接指针：</p>
-<p>​ 句柄：Java堆中可能划分出一块内存作为句柄池，reference存储的就是对象的句柄地址，而句柄包含对象实例数据与类型数据各自具体的地址信息。</p>
-<p>​ 直接指针：reference存储的就是对象地址，访问对象本身不需要多一次间接访问。</p>
-<p>​ 两者的优点：句柄访问的优势在于reference存储的是稳定的句柄地址，对象被移动(垃圾回收时对象常常需要被移动)时只需要改变句柄中实例数据指针即可。直接指针的优势在于速度更快，减少了一次指针定位的开销。</p>
-</blockquote>
-<h2 id="触发异常的情况">触发异常的情况</h2>
-<h3 id="java堆内存的outofmemoryerror异常">Java堆内存的OutOfMemoryError异常</h3>
-<blockquote>
-<p>不断创建对象且保证GC Roots到对象之间有可达路径来避免垃圾回收机制清除这些对象。</p>
-</blockquote>
-<h3 id="虚拟机栈和本地方法栈溢出">虚拟机栈和本地方法栈溢出</h3>
-<blockquote>
-<p>-Xss设置栈容量。</p>
-<p>1）如果线程请求的栈深度大于虚拟机所允许的最大深度，将抛出StackOverflowError异常。</p>
-<p>2）如果虚拟机的栈内存允许动态扩展，当扩展栈容量无法申请到足够的内存时，将抛出OutOfMemoryError异常。</p>
-<p>创建太多线程也会导致OutOfMemoryError异常。</p>
-</blockquote>
-<h2 id="方法区和运行时常量池溢出">方法区和运行时常量池溢出</h2>
-<blockquote>
-<p>运行时常量池，从JDK7开始后原本存放到永久代的字符串常量池被移动到Java堆中。</p>
-<p>-XX：PermSize和-XX：MaxPermSize限制永久代大小。</p>
-<p>方法区溢出会在运行时产生大量的类时出现，OutOfMemoryError。</p>
-</blockquote>
-<h3 id="本机直接内存溢出">本机直接内存溢出</h3>
-<blockquote>
-<p>大小默认与Java堆最大值一致。可以通过-XX：MaxDirectMemorySize参数指定。</p>
-<p>直接或间接(NIO)使用了太多是Unsafe::allocateMemory()分配过多的直接内存会触发OutOfMemoryError异常。</p>
+<p>即并发量上升到10M，此时瓶颈变为了操作系统。</p>
+<p>可能的解决方案：</p>
+<p>​ 让数据报直接传递到业务逻辑，不经过linux协议栈。</p>
+<p>​ 自己管理内存，如将内存预留一部分，并使用更大的内存分页进行管理。</p>
+<p>​ 多线程核间绑定，将线程同处理器核心进行绑定，最大化核心Cache利用，实现无锁设计，避免线程切换开销。</p>
 </blockquote>
 
       
@@ -458,7 +414,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/35/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/35/">35</a><span class="page-number current">36</span><a class="page-number" href="/page/37/">37</a><span class="space">&hellip;</span><a class="page-number" href="/page/60/">60</a><a class="extend next" rel="next" href="/page/37/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/35/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/35/">35</a><span class="page-number current">36</span><a class="page-number" href="/page/37/">37</a><span class="space">&hellip;</span><a class="page-number" href="/page/61/">61</a><a class="extend next" rel="next" href="/page/37/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -503,13 +459,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">200k</span>
+    <span title="站点总字数">201k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:02</span>
+    <span title="站点阅读时长">3:03</span>
   </span>
 </div>
 <div class="busuanzi-count">
