@@ -198,20 +198,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">58</span>
+          <span class="site-state-item-count">60</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-count">19</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">33</span>
+        <span class="site-state-item-count">34</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/computerNetwork/%E7%AC%AC1%E7%AB%A0-%E6%A6%82%E8%AE%BA/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/JavaBasicKnowledge/HashMap/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/computerNetwork/%E7%AC%AC1%E7%AB%A0-%E6%A6%82%E8%AE%BA/" class="post-title-link" itemprop="url">概论</a>
+          <a href="/2021/02/20/JavaBasicKnowledge/HashMap/" class="post-title-link" itemprop="url">HashMap分析</a>
         </h2>
 
         <div class="post-meta-container">
@@ -288,7 +288,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:05:46" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:00:44" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -300,7 +300,7 @@
         </span>
           ，
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
+          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
         </span>
     </span>
 
@@ -312,7 +312,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>1.8k</span>
+      <span>1.7k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -330,169 +330,69 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="概论">概论</h1>
-<h2 id="网络大小划分">网络大小划分</h2>
+          <h1 id="hashmap">HashMap</h1>
+<h2 id="hashmap初始化">HashMap初始化</h2>
 <blockquote>
-<p>个域网</p>
-<p>局域网：用于企业时被称为企业网络</p>
-<p>城域网</p>
-<p>广域网</p>
-<p>互联网</p>
+<p>初始化时可以设置初始大小和负载因子。默认负载因子0.75，默认容量为16。</p>
+<p>HashMap的threshold为负载因子 * 容量。</p>
 </blockquote>
-<h2 id="报文的不同称呼">报文的不同称呼</h2>
+<h2 id="hashmap的get方法">HashMap的get方法</h2>
 <blockquote>
-<p>网络层中叫数据包/包</p>
+<p>就是根据传入的key求出对应的hash值，然后根据hash值和数组长度-1进行&amp;运算获得对应下标位置，获取位置后判断当前结点是树结点还是链表结点，从而采取不同的处理方式。</p>
 </blockquote>
-<h1 id="因特网边缘部分的通信方式">因特网边缘部分的通信方式</h1>
+<h2 id="hashmap的remove方法">HashMap的remove方法</h2>
 <blockquote>
-<h4 id="客户服务器方式-cs">客户服务器方式 C/S</h4>
-<h4 id="对等方式-p2ppeer-to-peer">对等方式 P2P(peer to peer)</h4>
-<p>既是服务器又是客户机</p>
+<p>根据传入的key求出对应hash值，找到对应桶位，然后根据对应结点的类型为树结点还是链表结点，根据不同结点的类型执行不同的删除操作。链表需要改变指向，树则需要再次平衡。</p>
 </blockquote>
-<h1 id="数据交换方式">数据交换方式</h1>
+<h2 id="hashmap的resize方法">HashMap的resize方法</h2>
 <blockquote>
-<h4 id="电路交换---面向连接">电路交换---面向连接</h4>
-<p>交换机位于中心，需要连接时会通过电路连接两个主机。</p>
-<p>建立连接:申请占用通信资源。</p>
-<p>通话:一直占用通信资源。</p>
-<p>释放连接:释放通信资源</p>
-<p>适用于数据量很大的实时传输，核心路由器之间可以用电路交换</p>
-<h4 id="报文交换">报文交换</h4>
-<p>报文一般比分组长的多</p>
-<p>报文发送时间长</p>
-<h4 id="分组交换计算机使用的方式">分组交换:计算机使用的方式</h4>
-<p>发送端对报文进行拆分成不同小组，添加首部组合成一个数据然后发送给接收端。</p>
-<p>接收端对数据进行拆除首部，然后根据首部的信息将收到的数据组合成报文</p>
+<p>先判断当前是否有table，如果没有table且未设置初始大小，则初始化容量为默认值，阈值为默认值 * 负载因子的数组。若设置了初始大小则初始化容量为设置的大小的二次幂值的数组。</p>
+<p>若存在table，先判断旧容量是否大于最大值，若大于则设置阈值为Integer.MAX_VALUE，返回table，否则判断旧容量左移1位后是否不超过最大容量且判断当前容量是否超过默认容量16，若不超过最大容量且当前容量超过默认容量则将旧阈值左移一位。否则将计算newCap * loadFactor，判断新容量是否大于最大容量，若不大于则使用newCap * loadFactor作为新阈值，使用newCap作为数组的新容量。</p>
+<p>创建完新数组后，需要将旧table的数据复制到新table之中。</p>
+<p>复制的过程：</p>
+<p>​ 遍历桶位，若某个桶位只有一个元素则直接根据hash值&amp;新数组容量-1判断需要插入到新数组的什么位置。</p>
+<p>​ 若该元素是树结点则使用spilt方法，插入到新数组。</p>
+<p>​ 若桶位存在多个链表结点，则大致流程为使用4个指针来记录新旧两个数组的头尾链表位置。即先记录头位置，然后将头位置赋值给尾位置，利用尾位置不断连接结点，最后将头结点赋值给桶位元素。</p>
 </blockquote>
-<h1 id="局域网和广域网不单单从覆盖范围划分还要从使用的技术是什么">局域网和广域网不单单从覆盖范围划分，还要从使用的技术是什么</h1>
+<h2 id="hashmap的put方法">HashMap的put方法</h2>
 <blockquote>
-<p>局域网 自己购买设备、自己维护、带宽固定 距离100米内</p>
-<p>广域网 花钱买服务、花钱买带宽</p>
+<p>获取已存在的table，若当前table不存在则resize一个table，若存在则找到对应桶位，根据结点类型采取不同的插入操作，对于链表，插入完成后还会判断当前桶位元素个数是否大于树化阈值，若大于则将桶树化。对于树结点，插入时需要进行平衡。最后插入完成后，判断当前HashMap元素个数是否大于总阈值，若大于则resize扩容。</p>
 </blockquote>
-<h1 id="网络的拓扑结构">网络的拓扑结构</h1>
+<h2 id="tips">tips</h2>
 <blockquote>
-<p>总线型、环形、星型、树型、网状结构</p>
+<p>jdk8后，HashMap红黑树和链表转化是根据泊松分布的，链表转化为树阈值为8，树退化为链表阈值为6。</p>
+<p>且红黑树的排序是根据节点的hashcode大小，对于实现了Comparable接口的则使用compare方法来比较。</p>
+<p>hashmap默认负载因子0.75，默认容量为16，最大容量为2^30次方，且容量必须为2的次幂大小，因为使用位运算来执行取模操作。</p>
+<p>hashmap在操作时会自增modcount，若在遍历时对hashmap执行了操作，则会由于modcount改变而抛出异常。</p>
+<p>HashMap线程非安全，HashTable线程安全，ConcurrentHashMap线程安全。</p>
+<p>HashTable本质是上是将各方法都加上了synchronized。</p>
 </blockquote>
-<h1 id="网络工作方式">网络工作方式</h1>
+<h2 id="面试题">面试题</h2>
+<h3 id="key为null时执行put操作数据放在哪个桶位">key为null时，执行put操作，数据放在哪个桶位？</h3>
 <blockquote>
-<p>资源子网、通信子网、接入网</p>
+<p>key为null时HashMap求出的hash值为0，故放在第0个桶位。</p>
 </blockquote>
-<h1 id="计算机网络的性能">计算机网络的性能</h1>
+<h3 id="hashmap的hash函数为什么需要将hash值移位并异或">HashMap的hash函数为什么需要将hash值移位并异或？</h3>
 <blockquote>
-<p>速率:主机在数字信道传送数据位数的速率，也成为data rate 或bit rate。</p>
-<p>带宽:数据信道所能传送的最高数据率。</p>
-<p>吞吐量:单位时间内通过某个网络的数据量。</p>
-<p>时延:</p>
-<blockquote>
-<p>发送时延 数据块长度/信道带宽</p>
-<p>传播时延:信道长度/信号在信道上的传播速率</p>
-<p>处理时延:在</p>
-<p>排队时延:在接收方主机处等待的时间</p>
+<p>注释里有说，为了让高位的hash值对数据产生影响。</p>
 </blockquote>
-<p>时延带宽积 :传播时延 * 带宽</p>
-<p>往返时间RTT:从发送方发送数据开始到发送方收到接收方确认。</p>
-<p>利用率:</p>
+<h3 id="为什么hashmap内部的散列表数组长度一定是2的次方数">为什么HashMap内部的散列表数组长度一定是2的次方数？</h3>
 <blockquote>
-<p>信道利用率 = 有数据通过时间 / (有 + 无数据通过的时间)</p>
-<p>网络利用率：信道利用率加权平均值</p>
+<p>让查找位置时使用数组长度-1的值会对应2进制的000011111111，后位均为1，提高HashMap的散列性。</p>
 </blockquote>
-<p>非性能指标:费用、质量、标准化、可靠性、可扩展性、可升级性、管理与维护</p>
-</blockquote>
-<h1 id="计算机网络的体系结构">计算机网络的体系结构</h1>
+<h3 id="hashmap内部的散列表结构什么时候初始化初始化大小有几种情况">HashMap内部的散列表结构，什么时候初始化？初始化大小有几种情况？</h3>
 <blockquote>
-<p>OSI(开放式系统互联)七层模型:分层有利于标准化，且分层后各层之间的变化不会影响到其他层，尽量降低了相互之间的依赖。</p>
-<p>物理层:规定电压、接口标准</p>
-<p>数据链路层:输入如何封装，添加物理层地址，MAC</p>
-<p>网络层:选择最佳路径，IP地址编址</p>
-<p>传输层:可靠传输(建立会话)、不可靠传输(不建立会话)、流量控制。</p>
-<p>会话层:服务和客户端建立的会话。 netstat -nb</p>
-<p>表示层:加密、压缩、编码，开发人员考虑。</p>
-<p>应用层: 能够产生网络流量，能够和用户交互的应用程序。</p>
+<p>构造方法共四种：无参构造、传入初始容量、传入初始容量及负载因子、传入Map</p>
+<p>传入Map时会调用resize会初始化。</p>
+<p>resize时会初始化。</p>
 </blockquote>
-<h1 id="网络排错">网络排错</h1>
+<h3 id="hashmap为什么需要扩容扩容又是如何实现的">HashMap为什么需要扩容，扩容又是如何实现的？</h3>
 <blockquote>
-<p>需要从底层到高层逐一排查</p>
+<p>因为数组过小，会导致插入时会插入到同一个桶位导致查询效率下降，故用空间换时间的方式优化。</p>
 </blockquote>
-<h1 id="网络安全和osi参考模型的关系">网络安全和OSI参考模型的关系</h1>
+<h3 id="jdk8为什么hashmap引入红黑树">JDK8为什么HashMap引入红黑树？</h3>
 <blockquote>
-<p>物理层安全</p>
-<p>数据链路层安全:ADSL、无线AP</p>
-<p>网络层安全</p>
-<p>应用层安全: SQL注入漏洞、上传漏洞</p>
-</blockquote>
-<h1 id="一些基本概念">一些基本概念</h1>
-<blockquote>
-<p>实体:交换信息的硬件或软件进程。</p>
-<p>协议:控制两个对等实体通信的规则。</p>
-<p>服务:下层向上层提供服务，上层需要使用下层提供的服务来实现本层的功能。</p>
-<p>服务访问点:相邻两层实体间交换信息的地方。</p>
-<p>AP接入点和无线路由器和基站作用相差不大，主要负责中继无线计算机之间的数据包，还负责中继无线计算机和Internet之间的数据包。</p>
-<p>IEEE802.11俗称WIFI。以太网IEEE802.3。</p>
-<p>将两个或多个网络连接起来并提供必要转换的机器，其硬件和软件方面的总称是网关。路由器就是一个网关，在网络层交换数据包。</p>
-<p>不可靠的无连接服务通常称为数据报服务。</p>
-</blockquote>
-<h1 id="tpcip">TPC/IP</h1>
-<blockquote>
-<p>五层模型:</p>
-<p>应用层:</p>
-<blockquote>
-<p>数据单元:传输数据单元PDU</p>
-</blockquote>
-<p>运输层:</p>
-<blockquote>
-<p>数据单元:报文</p>
-</blockquote>
-<p>网络层:</p>
-<blockquote>
-<p>数据单元:(IP数据报/IP分组/包)</p>
-</blockquote>
-<p>数据链路层:</p>
-<blockquote>
-<p>数据单元:数据帧</p>
-</blockquote>
-<p>物理层:</p>
-<blockquote>
-<p>数据单元:比特010101</p>
-</blockquote>
-</blockquote>
-<h1 id="osi参考模型">OSI参考模型</h1>
-<blockquote>
-<p>应用层:</p>
-<p>​ 所有可以和用户交互产生网络流量的程序。</p>
-<p>​ 文件传输FTP、电子邮件SMTP、万维网HTTP</p>
-<p>表示层</p>
-<p>​ 用于处理两个通信系统中交换信息的表示方式。</p>
-<p>​ 数据格式变换、数据加密解密、数据压缩和恢复</p>
-<p>​ JPEG、ASCII</p>
-<p>会话层</p>
-<p>​ 向表示层实体/用户进程提供建立连接并在连接上有序地传输数据。</p>
-<p>​ 建立、管理、终止会话。</p>
-<p>​ 使用检验点可以使会话在通信失效时从检验点/同步点进行恢复通信，实现数据同步。</p>
-<p>​ ADSP、ASP</p>
-<p>传输层</p>
-<p>​ 负责主机中两个进程的通信，即端到端的通信。传输单位是报文/用户数据报</p>
-<p>​ 可靠传输、不可靠传输</p>
-<p>​ 差错控制</p>
-<p>​ 复用分用</p>
-<p>网络层</p>
-<p>​ 路由选择</p>
-<p>​ 流量控制</p>
-<p>​ 差错控制</p>
-<p>​ 拥塞控制</p>
-<p>数据链路层 加上报头和报尾。</p>
-<p>​ 把网络层传下来的数据报组装成帧</p>
-<p>​ 差错控制</p>
-<p>​ 流量控制</p>
-<p>​ 接入控制</p>
-<p>​ SDLC、HDLC、PPP、STP</p>
-<p>物理层</p>
-<p>​ 在物理媒体上实现比特流的透明传输</p>
-<p>​ 定义接口特性</p>
-<p>​ 定义传输模式</p>
-<p>​ 定义传输速率</p>
-<p>​ 比特同步</p>
-<p>​ 比特编码</p>
-<p>​ RJ45、802.3</p>
+<p>因为数据增大时链表的查询速度低。</p>
 </blockquote>
 
       
@@ -513,7 +413,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/47/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/47/">47</a><span class="page-number current">48</span><a class="page-number" href="/page/49/">49</a><span class="space">&hellip;</span><a class="page-number" href="/page/58/">58</a><a class="extend next" rel="next" href="/page/49/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/47/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/47/">47</a><span class="page-number current">48</span><a class="page-number" href="/page/49/">49</a><span class="space">&hellip;</span><a class="page-number" href="/page/60/">60</a><a class="extend next" rel="next" href="/page/49/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -558,13 +458,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">197k</span>
+    <span title="站点总字数">200k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:59</span>
+    <span title="站点阅读时长">3:02</span>
   </span>
 </div>
 <div class="busuanzi-count">

@@ -198,20 +198,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">58</span>
+          <span class="site-state-item-count">60</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-count">19</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">33</span>
+        <span class="site-state-item-count">34</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/JavaBasicKnowledge/HashMap/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/JavaBasicKnowledge/Object/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/JavaBasicKnowledge/HashMap/" class="post-title-link" itemprop="url">HashMap分析</a>
+          <a href="/2021/02/20/JavaBasicKnowledge/Object/" class="post-title-link" itemprop="url">Object类分析</a>
         </h2>
 
         <div class="post-meta-container">
@@ -288,7 +288,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:00:44" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:01:33" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -312,7 +312,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>1.7k</span>
+      <span>2.5k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -330,69 +330,102 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="hashmap">HashMap</h1>
-<h2 id="hashmap初始化">HashMap初始化</h2>
+          <h1 id="object类">Object类</h1>
 <blockquote>
-<p>初始化时可以设置初始大小和负载因子。默认负载因子0.75，默认容量为16。</p>
-<p>HashMap的threshold为负载因子 * 容量。</p>
+<p>Object类是Java中未指定父类的类的默认继承类，也可以说是所有类的祖先。本文档编写目的为通过查看Java源码来加强自己对Object类的理解。不涉及native实现的方法。</p>
 </blockquote>
-<h2 id="hashmap的get方法">HashMap的get方法</h2>
+<h4 id="registernatives">registerNatives()</h4>
 <blockquote>
-<p>就是根据传入的key求出对应的hash值，然后根据hash值和数组长度-1进行&amp;运算获得对应下标位置，获取位置后判断当前结点是树结点还是链表结点，从而采取不同的处理方式。</p>
+<p>native实现，目的是在底层创建对应的java本机函数使JVM找到native方法</p>
 </blockquote>
-<h2 id="hashmap的remove方法">HashMap的remove方法</h2>
+<h4 id="getclass">getClass()</h4>
 <blockquote>
-<p>根据传入的key求出对应hash值，找到对应桶位，然后根据对应结点的类型为树结点还是链表结点，根据不同结点的类型执行不同的删除操作。链表需要改变指向，树则需要再次平衡。</p>
+<p>返回当前对象运行时对应的类对象，且这个类是静态类型擦除后的结果。如T-&gt;Object;List<String>-&gt;List</String></p>
 </blockquote>
-<h2 id="hashmap的resize方法">HashMap的resize方法</h2>
+<h4 id="hashcode">hashCode()</h4>
 <blockquote>
-<p>先判断当前是否有table，如果没有table且未设置初始大小，则初始化容量为默认值，阈值为默认值 * 负载因子的数组。若设置了初始大小则初始化容量为设置的大小的二次幂值的数组。</p>
-<p>若存在table，先判断旧容量是否大于最大值，若大于则设置阈值为Integer.MAX_VALUE，返回table，否则判断旧容量左移1位后是否不超过最大容量且判断当前容量是否超过默认容量16，若不超过最大容量且当前容量超过默认容量则将旧阈值左移一位。否则将计算newCap * loadFactor，判断新容量是否大于最大容量，若不大于则使用newCap * loadFactor作为新阈值，使用newCap作为数组的新容量。</p>
-<p>创建完新数组后，需要将旧table的数据复制到新table之中。</p>
-<p>复制的过程：</p>
-<p>​ 遍历桶位，若某个桶位只有一个元素则直接根据hash值&amp;新数组容量-1判断需要插入到新数组的什么位置。</p>
-<p>​ 若该元素是树结点则使用spilt方法，插入到新数组。</p>
-<p>​ 若桶位存在多个链表结点，则大致流程为使用4个指针来记录新旧两个数组的头尾链表位置。即先记录头位置，然后将头位置赋值给尾位置，利用尾位置不断连接结点，最后将头结点赋值给桶位元素。</p>
+<p>返回当前对象的hash值，在同一个程序执行中，约定当对象相同时即执行equals方法比较的信息不被更改时，不管调用几次hashcode方法，均要返回相同的值。但不要求不同程序产生相同的hashcode</p>
+<p>如果两个对象可通过equals方法判定相同，则调用hashcode方法会产生两个相同的值。</p>
+<p>如果两个对象通过equals方法判定不同，也不要求hashcode方法产生两个不同的值，但如果产生不同的值会提升哈希表的性能。</p>
+<p>如果可以的话，不同对象应该有不同的hash值，这个通常可以根据将对象在内存中的地址转化为整数来实现，但不强制要求。</p>
 </blockquote>
-<h2 id="hashmap的put方法">HashMap的put方法</h2>
+<h4 id="equals">equals()</h4>
 <blockquote>
-<p>获取已存在的table，若当前table不存在则resize一个table，若存在则找到对应桶位，根据结点类型采取不同的插入操作，对于链表，插入完成后还会判断当前桶位元素个数是否大于树化阈值，若大于则将桶树化。对于树结点，插入时需要进行平衡。最后插入完成后，判断当前HashMap元素个数是否大于总阈值，若大于则resize扩容。</p>
+<p>判断某些对象是否equals to调用该方法的对象。</p>
+<p>实现了非空对象引用上的等价关系判断。</p>
+<p>四个特性:自反、对称、传递、一致。</p>
+<p>自反: x.equals(x) == true</p>
+<p>对称: x.equals(y) == y.equals(x)</p>
+<p>传递: x.equals(y), y.equals(z) ------&gt; x.equals(z)</p>
+<p>一致: 只要用于equals比较的信息不被改变，则不管调用几次equals方法其值总是不变的。</p>
+<p>非空对象引用同null比较值总是为false。</p>
+<p>对象之间equals比较只有两个对象是完全相同即地址一致时才会返回true。</p>
+<p>为了维持hashcode的原则，在重写equals方法的时候，往往需要重写hashcode方法。</p>
 </blockquote>
-<h2 id="tips">tips</h2>
+<h4 id="clone">clone()</h4>
 <blockquote>
-<p>jdk8后，HashMap红黑树和链表转化是根据泊松分布的，链表转化为树阈值为8，树退化为链表阈值为6。</p>
-<p>且红黑树的排序是根据节点的hashcode大小，对于实现了Comparable接口的则使用compare方法来比较。</p>
-<p>hashmap默认负载因子0.75，默认容量为16，最大容量为2^30次方，且容量必须为2的次幂大小，因为使用位运算来执行取模操作。</p>
-<p>hashmap在操作时会自增modcount，若在遍历时对hashmap执行了操作，则会由于modcount改变而抛出异常。</p>
-<p>HashMap线程非安全，HashTable线程安全，ConcurrentHashMap线程安全。</p>
-<p>HashTable本质是上是将各方法都加上了synchronized。</p>
+<p>根据对象的类复制一个对象的副本。</p>
+<p>往往有</p>
+<p>​ x.clone() != x;</p>
+<p>​ x.clone().getClass() == x.getClass()</p>
+<p>​ x.clone.equals(x) == true</p>
+<p>​ 通常返回的clone对象都是调用super.clone得到的。</p>
+<p>​ clone的对象需要和被clone的对象相互独立。这便要求对被clone对象中所有可变属性进行复制，并用副本的引用替换对这些对象的引用。</p>
+<p>Object类的clone方法</p>
+<p>​ 首先需要继承Cloneable接口。数组类型默认实现了Cloneable接口，且T类型的数组clone的结果的类型为T，需要注意的时，数组clone是直接复制原数组的值即对象引用只是将引用拷贝了，故为浅拷贝。</p>
+<p>Object对象没有实现Cloneable接口，故对Object对象使用clone会产生异常。CloneNotSupportedException</p>
 </blockquote>
-<h2 id="面试题">面试题</h2>
-<h3 id="key为null时执行put操作数据放在哪个桶位">key为null时，执行put操作，数据放在哪个桶位？</h3>
+<h4 id="tostring">toString()</h4>
 <blockquote>
-<p>key为null时HashMap求出的hash值为0，故放在第0个桶位。</p>
+<p>返回对象的字符串表示形式。往往需要重写这个方法。</p>
+<p>这个方法的默认表现为“类名+@+hashcode的十六进制表示”</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">getClass().getName() + <span class="string">&#x27;@&#x27;</span> + Integer.toHexString(hashCode())</span><br></pre></td></tr></table></figure>
 </blockquote>
-<h3 id="hashmap的hash函数为什么需要将hash值移位并异或">HashMap的hash函数为什么需要将hash值移位并异或？</h3>
+<h4 id="notify">notify()</h4>
 <blockquote>
-<p>注释里有说，为了让高位的hash值对数据产生影响。</p>
+<p>唤醒正在wait()该线程所拥有的对象的一个线程。如果有多个线程都在wait该对象，则随机唤醒一个线程，由具体实现决定。</p>
+<p>被唤醒的线程只有在对象没有被锁定的情况下才能执行。且被唤醒的线程仍然需要以通常的方式同其他线程竞争对象的使用权，没有其他特权。</p>
+<p>该方法只能由当前具有对象使用权的线程调用，获取对象使用权的方式</p>
+<p>​ 1.执行对象的synchronize修饰的方法</p>
+<p>​ 2.执行synchronize修饰的代码段。</p>
+<p>​ 3.执行synchronize修饰的静态方法。</p>
+<p>未拥有对象monitor的线程调用会抛出IllegalMonitorStateException异常。</p>
 </blockquote>
-<h3 id="为什么hashmap内部的散列表数组长度一定是2的次方数">为什么HashMap内部的散列表数组长度一定是2的次方数？</h3>
+<h4 id="notifyall">notifyAll()</h4>
 <blockquote>
-<p>让查找位置时使用数组长度-1的值会对应2进制的000011111111，后位均为1，提高HashMap的散列性。</p>
+<p>唤醒正在wait()该线程所拥有的对象的所有线程。</p>
 </blockquote>
-<h3 id="hashmap内部的散列表结构什么时候初始化初始化大小有几种情况">HashMap内部的散列表结构，什么时候初始化？初始化大小有几种情况？</h3>
+<h4 id="waitlong-timeout">wait(long timeout)</h4>
 <blockquote>
-<p>构造方法共四种：无参构造、传入初始容量、传入初始容量及负载因子、传入Map</p>
-<p>传入Map时会调用resize会初始化。</p>
-<p>resize时会初始化。</p>
+<p>让当前线程等待一段时间，直到被notify/notifyAll/一段时间过后唤醒。</p>
+<p>调用该方法的线程必须有对象的monitor。</p>
+<p>该方法会让线程进入该对象的等待集中，然后放弃对该对象的所有同步声明。 出于线程调度目的，该线程被禁用，并且在发生以下四种情况之一之前一直处于休眠状态：</p>
+<ol type="1">
+<li>某些线程调用了notify方法并恰好唤醒该线程。</li>
+<li>某些线程调用了notifyAll方法。</li>
+<li>某些线程调用了interrupt方法。</li>
+<li>一段特定时间过去。若为设置特定时间线程会等到被notify为止。</li>
+</ol>
+<p>从wait方法返回的对象和线程的同步状态会和调用该方法时的状态完全相同。</p>
+<p>存在虚假唤醒(spurious wakeup)的问题需要在while中调用wait来避免。</p>
+<p>如果该线程在等待之前，或等待期间被另一个线程调用该线程的interrupt()方法，那么当被interrupt线程获得锁之后，会立刻抛出InterruptedException异常，我们可以对这个异常进行捕获，然后处理，以实现线程的唤醒和通信。</p>
+<p>wait方法将当前线程放入该对象的等待集中，只会解锁该对象，若当前线程还锁定了其他对象，那么这些对象不会被解锁。(死锁)</p>
 </blockquote>
-<h3 id="hashmap为什么需要扩容扩容又是如何实现的">HashMap为什么需要扩容，扩容又是如何实现的？</h3>
+<h4 id="waitlong-timeout-int-nanos">wait(long timeout, int nanos)</h4>
 <blockquote>
-<p>因为数组过小，会导致插入时会插入到同一个桶位导致查询效率下降，故用空间换时间的方式优化。</p>
+<p>同一个参数的wait基本一致，但可以输入纳秒级的精度。实际上只是nanos大于0直接让timeout++而已。</p>
 </blockquote>
-<h3 id="jdk8为什么hashmap引入红黑树">JDK8为什么HashMap引入红黑树？</h3>
+<h4 id="wait">wait()</h4>
 <blockquote>
-<p>因为数据增大时链表的查询速度低。</p>
+<p>不支持超时自动唤醒。相当于wait(0)</p>
+</blockquote>
+<h4 id="finalize">finalize()</h4>
+<blockquote>
+<p>当资源不可达时GC会自动调用对象的finalize方法</p>
+<p>这个方法内部可以执行任何操作，包括让这个对象重新可达。但往往只是执行清除操作，如中断I/O连接。</p>
+<p>Java编程语言对于所有的对象都不能够保证哪个线程会调用它的finalize方法。然而可以保证一点，调用终结方法的线程必然不会被任何用户可见的同步锁锁住。如果一个没有被捕获的异常在执行终结方法时被抛出，异常会被忽略并且哪个对象的终结过程会被终止。</p>
+<p>调用该方法后，java虚拟机会再次判断对象是否可达，若仍不可达对象往往会被摧毁。</p>
+<p>finalize()方法不会调用多次。</p>
 </blockquote>
 
       
@@ -413,7 +446,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/48/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/48/">48</a><span class="page-number current">49</span><a class="page-number" href="/page/50/">50</a><span class="space">&hellip;</span><a class="page-number" href="/page/58/">58</a><a class="extend next" rel="next" href="/page/50/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/48/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/48/">48</a><span class="page-number current">49</span><a class="page-number" href="/page/50/">50</a><span class="space">&hellip;</span><a class="page-number" href="/page/60/">60</a><a class="extend next" rel="next" href="/page/50/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -458,13 +491,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">197k</span>
+    <span title="站点总字数">200k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:59</span>
+    <span title="站点阅读时长">3:02</span>
   </span>
 </div>
 <div class="busuanzi-count">

@@ -198,20 +198,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">58</span>
+          <span class="site-state-item-count">60</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-count">19</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">33</span>
+        <span class="site-state-item-count">34</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/Linux/Linux%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%9F%BA%E6%9C%AC%E6%8C%87%E4%BB%A4/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/computerNetwork/%E7%AC%AC2%E7%AB%A0-%E7%89%A9%E7%90%86%E5%B1%82/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/Linux/Linux%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%9F%BA%E6%9C%AC%E6%8C%87%E4%BB%A4/" class="post-title-link" itemprop="url">Linux介绍及基本指令</a>
+          <a href="/2021/02/20/computerNetwork/%E7%AC%AC2%E7%AB%A0-%E7%89%A9%E7%90%86%E5%B1%82/" class="post-title-link" itemprop="url">物理层</a>
         </h2>
 
         <div class="post-meta-container">
@@ -288,7 +288,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:19:26" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：17:46:40" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -300,7 +300,7 @@
         </span>
           ，
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
         </span>
     </span>
 
@@ -312,14 +312,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>2k</span>
+      <span>870</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
+      <span>1 分钟</span>
     </span>
 </div>
 
@@ -330,101 +330,54 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="linux介绍及基本指令">Linux介绍及基本指令</h1>
-<h2 id="linux区别">Linux区别</h2>
+          <h1 id="物理层">物理层</h1>
+<h2 id="物理层的基本概念">物理层的基本概念</h2>
 <blockquote>
-<p>Ubantu：分为用户版和服务器版。</p>
-<p>​ 用户版，有着良好的用户界面，有强大的软件支持。</p>
-<p>​ 服务器版比较少用。</p>
-<p>Debian：系统十分稳定，内核非常小。</p>
-<p>RedHat：是一个商用的操作系统，性能非常好，软件支持也非常好。</p>
-<p>Centos：基本上相当于RedHat的复刻版本。免费。</p>
+<p>尼奎斯特定理 $ C = 2Blog_2V $ 。C为最大数据速率，B为带宽频率，V为离散等级。</p>
+<p>香农定理<span class="math inline">\(C = B log_2(1+S/N)\)</span> 。S/N是信噪比，<span class="math inline">\(10log_{10}S/N\)</span>为分贝，B为带宽频率，C为最大数据速率。</p>
 </blockquote>
-<h2 id="根目录下各目录对应的功能">根目录下各目录对应的功能</h2>
-<h2 id="在linux中获取帮助">在linux中获取帮助</h2>
+<h3 id="物理层的主要任务">物理层的主要任务</h3>
+<p>物理层解决如何在连接各种计算机的传输媒体上传输数据比特流。</p>
+<p>确定与传输媒体的接口的一些特性:</p>
 <blockquote>
-<p>man 命令名：查看命令的操作说明</p>
-<p>命令行 --help：查看命令的语法</p>
+<p>机械特性:如接口形状、大小、引线数目</p>
+<p>电气特性:如规定电压范围</p>
+<p>功能特性:如规定-5V表示0</p>
+<p>过程特性/规程特性:规定建立连接时各个相关部件的工作步骤</p>
 </blockquote>
-<h2 id="linux基本命令">Linux基本命令</h2>
+<h2 id="数据通信的基础知识">数据通信的基础知识</h2>
 <blockquote>
-<p>ls：查看当前目录中所有文件及目录</p>
-<p>ll：查看当前目录内所有文件及目录详细信息。详细信息具体查看方式。以drwxr-xr-x为例(第一个字符拆出，然后每三个字符表示一个内容)：</p>
-<p>d：文件类型，目录。rwx：拥有者权限，可读，可写，可执行。r-x：用户组权限，可读，不可写，可执行。r-x：其他组权限，可读，不可写，可执行。</p>
-<p>具体文件类型有：d：路径。<em>-</em>：文件。 l ：连接(快捷方式)。b：表示可按块随机读写的设备。c：设备文件里的串行端口设备，如键盘、设备。</p>
-<p>表示权限的三个字符可以用0~7的数字表示。如rwx为7，r-x为5。</p>
-<p>ls -al：查看所有文件及目录包括隐藏目录。</p>
-<p>pwd：查看当前所在层级</p>
-<p>echo xxx：打印xxx</p>
-<p>date：查看日期</p>
-<p>cal：查看日历</p>
-<p>grep xxx：用于查看包含xxx的对象。</p>
-<p>curl 网址：向对应网址发出http请求。curl -i www.baidu.com ：向百度首页发出请求，会返回响应头。</p>
-<p>history：查看先前输入过的命令。</p>
-<p>df：查看磁盘使用情况。</p>
+<p>单向通信/单工通信 ---------只能有一个方向的通信而没有反方向的交互，如电台</p>
+<p>半双工通信---------通信双方都可以发送消息，但不能双方同时发送。如对讲机</p>
+<p>全双工通信--------通信的双方-可以同时发送和接收消息。如电话</p>
+<p>数据比特流传输距离较短,用解调器变为模拟信号后传输距离会加长。</p>
+<p>数据--------传送消息的实体</p>
+<p>信号--------数据的电气/电磁表现</p>
+<p>​ 模拟信号--------连续</p>
+<p>​ 数字信号---------离散</p>
+<p>码元----------在使用时间域的波形表示数字信号时，代表不同离散数值的基本波形</p>
+<p>信号调制方法:调幅、调频、调相</p>
 </blockquote>
-<h2 id="文件基本命令">文件基本命令</h2>
+<h2 id="物理层下的传输媒体">物理层下的传输媒体</h2>
+<h3 id="导向传输媒体">导向传输媒体</h3>
 <blockquote>
-<p>vi xxx：打开临时记事本，基本可以认为是创建文件。</p>
-<p>mkdir xxx：创建文件夹</p>
-<p>rm -rf xxx：删除目录。</p>
-<p>cp a b ：把a文件复制到b处</p>
-<p>mv a b ：把a文件移动到b处（也可以当做重命名使用）</p>
-<p>tail -number xx：查看文件最后number行内容(可以用于监控日志使用tail -F/-f xxx)-F，-f分别为追踪文件名和追踪文件索引。</p>
-<p>cat xxx：查看文件内容，往往伴随着grep使用如 cat a.txt | grep "a:xxx"。</p>
-<p>less xxx：查看文件一页的内容。</p>
-<p>find xxx：查找文件(可以查找所有文件)。</p>
-<p>whereis xx：查找命令所在目录(只能查找二进制类的文件)。</p>
-<p>which xxx：在PATH变量指定的路径中搜索指定的系统命令的位置。</p>
-<p>sh xxx.sh：执行shell命令。这种执行sh文件不需要本身具有权限。</p>
-<p>path/xxx.sh：执行shell命令。sh文件本身需要有权限。(如./xxx.sh其中.表示当前目录)</p>
+<p><span class="math display">\[
+常用传输频率10^4-------- 10^{16}
+\]</span></p>
+<p>双绞线:</p>
+<p>​ 屏蔽双绞线STP</p>
+<p>​ 无屏蔽双绞线UTP</p>
+<p>同轴电缆:</p>
+<p>​ 50Ω同轴电缆用于数字传输，基带同轴电缆</p>
+<p>​ 75Ω同轴电缆用于模拟传输，宽带同轴电缆</p>
 </blockquote>
-<h2 id="文件解压缩">文件解压缩</h2>
+<h2 id="信道复用技术">信道复用技术</h2>
 <blockquote>
-<p>zip -r 压缩后路径加名字 需要压缩的文件：压缩，如zip -r a.zip a.txt。这个命令需要yum install zip</p>
-<p>unzip -d 解压缩到的路径 解压缩的包：解压缩，如unzip -d . a.zip。这个命令需要yum install unzip。</p>
-<p>tar -cvf 压缩后路径加名字 需要压缩的文件：压缩，如tar -cvf a.txt。</p>
-<p>tar -zcvf 压缩后路径加名字 需要压缩的文件：压缩，如tar -zcvf a.txt。压缩后占的空间更少</p>
-<p>tar -xvf 解压缩到的路径 解压缩的包：解压缩，如tar -xvf a.txt。</p>
-<p>tar -zxvf 解压缩到的路径 解压缩的包：压缩，如tar -zxvf a.txt。</p>
-<p>tar的参数：c：表示create，即压缩，z：约等于zip，即打包后空间会更小，v：压缩后展示压缩包中文件名字。f：表示结束。x：extract，即解压缩。</p>
-<p>b：表示查看压缩包内容。其中c、x、b同时只能存在一个。</p>
-</blockquote>
-<h2 id="文件传输">文件传输</h2>
-<blockquote>
-<p>scp 目录加文件名 用户名@IP地址:目录加文件名：将文件传输利用网络传输到另一个服务器。如scp ./a.txt root@10.0.2.6:~/b.txt</p>
-</blockquote>
-<h2 id="进程管理命令">进程管理命令</h2>
-<blockquote>
-<p>top ：查看当前系统使用情况。</p>
-<p>ps：查看进程情况。</p>
-<p>ps aux：查看所有正在执行的进程。经常和grep配合使用。如ps aux | grep "top"</p>
-<p>lsof -i:port ：根据端口号查看进程。需要yum install lsof</p>
-<p>kill 进程号：杀死进程。</p>
-<p>kill -9 进程号：强制杀死进程。</p>
-<p>service xxx start：启动服务。</p>
-<p>service xxxx stop：关闭服务。</p>
-</blockquote>
-<h2 id="权限管理命令">权限管理命令</h2>
-<blockquote>
-<p>chmod xxx aaa：设置aaa的权限为xxx。第一个x为拥有者权限，第二个x为用户组权限，第三个x为其他组权限。如chmod 777 a.txt：表示将a.txt的权限均设为可读、可写、可执行。</p>
-</blockquote>
-<h2 id="软件安装命令">软件安装命令</h2>
-<blockquote>
-<p>yum install xxxx：安装xxxx</p>
-<p>yum install ifconfig -y：安装时自动同意。</p>
-</blockquote>
-<h2 id="安全相关命令">安全相关命令</h2>
-<blockquote>
-<p>systemctl disable firewalld ：关闭防火墙。</p>
-</blockquote>
-<h2 id="关机命令">关机命令</h2>
-<blockquote>
-<p>shutdown：关机</p>
-<p>reboot：重启</p>
-<p>poweroff：关机</p>
-<p>halt：进入系统停止的模式，屏幕可能保留一些信息，取决于电源管理模式。</p>
-<p>systemctl suspend：休眠</p>
+<p>频分复用:每个用户使用不同的频率传递。</p>
+<p>时分复用:将单位时间划分为若干个时间片，每个用户使用对应的时间片传递。 统计时分复用在发送数据时在数据中添加标记，接收方根据标记判定谁接收并将标记去除。</p>
+<p>波分复用:每个用户使用不同的波长传递。</p>
+<p>码分复用:自己的码片乘积为1，同他人码片乘积为0，传输的信号为原数据同对应码片的乘积，总的传输信号为各个设备传输的信号之和，接收者只要将总信号同自己的码片相乘即可得到需要接收的值。</p>
+<p>码分复用的缺点:设备数变多后码片需要越多</p>
 </blockquote>
 
       
@@ -445,7 +398,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/52/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/52/">52</a><span class="page-number current">53</span><a class="page-number" href="/page/54/">54</a><span class="space">&hellip;</span><a class="page-number" href="/page/58/">58</a><a class="extend next" rel="next" href="/page/54/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/52/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/52/">52</a><span class="page-number current">53</span><a class="page-number" href="/page/54/">54</a><span class="space">&hellip;</span><a class="page-number" href="/page/60/">60</a><a class="extend next" rel="next" href="/page/54/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -490,13 +443,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">197k</span>
+    <span title="站点总字数">200k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:59</span>
+    <span title="站点阅读时长">3:02</span>
   </span>
 </div>
 <div class="busuanzi-count">
