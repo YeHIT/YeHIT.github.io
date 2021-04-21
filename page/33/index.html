@@ -198,7 +198,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-count">62</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/01/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/mybatis/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/01/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%9F%BA%E7%A1%80%E7%AA%81%E5%87%BB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/01/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/mybatis/" class="post-title-link" itemprop="url">mybatis突击</a>
+          <a href="/2021/03/01/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%9F%BA%E7%A1%80%E7%AA%81%E5%87%BB/" class="post-title-link" itemprop="url">java基础突击</a>
         </h2>
 
         <div class="post-meta-container">
@@ -294,7 +294,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-04-01 15:26:17" itemprop="dateModified" datetime="2021-04-01T15:26:17+08:00">2021-04-01</time>
+        <time title="修改时间：2021-04-01 15:30:13" itemprop="dateModified" datetime="2021-04-01T15:30:13+08:00">2021-04-01</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -314,14 +314,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>729</span>
+      <span>3.3k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>3 分钟</span>
     </span>
 </div>
 
@@ -332,26 +332,97 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="mybatis突击">mybatis突击</h1>
-<h2 id="和">#{}和$</h2>
+          <h1 id="java基础突击">java基础突击</h1>
+<h2 id="java基本类型">java基本类型</h2>
+<h3 id="各类型占的位数">各类型占的位数</h3>
 <blockquote>
-<p>#{} mybatis会创建PreparedStatement参数占位符，并使用占位符安全地设置参数。</p>
-<p>${} mybatis不会执行转义，可以在sql插入一个不转义的字符串。</p>
-<p>如果需要输入大量特殊字符，可以使用&lt;[CDATA[ ]]&gt; 标签。</p>
+<figure>
+<img src="/2021/03/01/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/java%E5%9F%BA%E7%A1%80%E7%AA%81%E5%87%BB/java基本类型.png" alt="java基本类型"><figcaption aria-hidden="true">java基本类型</figcaption>
+</figure>
+<p>Byte、Short、Integer、Long：默认创建了数值为[-128,127]的相应类型的缓存数据，Character创建了数值在[0,127]范围内的缓存数据。</p>
+<p>Boolean则是自定义两个static的Boolean值为TRUE、FALSE。</p>
 </blockquote>
-<h2 id="常见标签">常见标签</h2>
+<h3 id="和equals">==和equals</h3>
 <blockquote>
-<p>&lt;resultMap&gt;、&lt;association&gt;、&lt;sql&gt;、&lt;sql&gt;标签里面还有一些如&lt;if&gt;、&lt;trim&gt;之类的用于动态sql。</p>
+<p>没有覆盖equals方法时，二者相同。</p>
+<p>"=="运算符的两个操作数都是包装器类型的引用，则是比较指向的是否是同一个对象，而如果其中有一个操作数是表达式（即包含算术运算）则比较的是数值（即会触发自动拆箱的过程）</p>
 </blockquote>
-<h2 id="mybatis流程">Mybatis流程</h2>
-<h2 id="dao代理">dao代理</h2>
+<h3 id="基本类型自动装箱和拆箱">基本类型自动装箱和拆箱</h3>
 <blockquote>
-<p>mybatis使用JDK动态代理实现。mapper的方法不能重载，因为Mybatis是使用包名+类+方法名作为key去查找xml的sql执行的。</p>
-<p>JDK动态代理是基于接口的代理。不实现接口的话可以使用cglig的动态代理。</p>
-<p>JDK动态代理本质上就是根据接口的方法产生一个继承了Proxy类实现了需要代理接口的代理子类，该子类中存在代理接口的方法对象，而这些方法对象会在静态块利用反射进行创建，而调用执行方法时会使用this.h.ivoke调用执行，其中h即为实现动态代理时的InvactionHandler。</p>
-<p>缺点：要求方法实现接口。</p>
-<p>cglib动态代理是基于代理类的思想实现的。代理过程会生成一个需要被代理的类B对象。也会创建对应的方法。但是在方法invoke时cglib做了fast class的优化，jdk动态代理invoke时是使用反射的技术进行调用方法的，而cglib则会随着方法的调用产生fast class，产生了一个对应方法的具体实现，使用时利用index映射关系找到对应方法，直接执行，不需要执行反射过程。</p>
-<p>缺点：不能代理final方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">        Integer a = <span class="number">1</span>;</span><br><span class="line">        Integer b = <span class="number">2</span>;</span><br><span class="line">        Integer c = <span class="number">3</span>;</span><br><span class="line">        Integer d = <span class="number">3</span>;</span><br><span class="line">        Integer e = <span class="number">321</span>;</span><br><span class="line">        Integer f = <span class="number">321</span>;</span><br><span class="line">        Long g = <span class="number">3L</span>;</span><br><span class="line">        Long h = <span class="number">2L</span>;</span><br><span class="line">		<span class="comment">//由于c、d都是直接赋值，会调用Integer.valueOf方法，获取缓存，返回true</span></span><br><span class="line">        System.out.println(c==d);</span><br><span class="line">		<span class="comment">//e、f值大于缓存区间了，返回false</span></span><br><span class="line">        System.out.println(e==f);</span><br><span class="line">		<span class="comment">//a+b先自动拆箱然后运算，==比较数值，返回true</span></span><br><span class="line">        System.out.println(c==(a+b));</span><br><span class="line">		<span class="comment">//a+b先自动拆箱然后运算，equals会先自动装箱，然后比较，Integer重写了equals，当传入Integer时，也是比较数值，返回true</span></span><br><span class="line">        System.out.println(c.equals(a+b));</span><br><span class="line">		<span class="comment">//a+b先自动拆箱然后运算，==比较数值，返回true</span></span><br><span class="line">        System.out.println(g==(a+b));</span><br><span class="line">		<span class="comment">//a+b先自动拆箱然后运算，equals会先自动装箱，然后比较，Long重写了equals，当传入Long时，也是比较数值，而此时传入Integer，返回false</span></span><br><span class="line">        System.out.println(g.equals(a+b));</span><br><span class="line">		<span class="comment">//a+b先自动拆箱然后运算，equals会先自动装箱，然后比较，Long重写了equals，当传入Long时，也是比较数值，返回true</span></span><br><span class="line">        System.out.println(g.equals(a+h));</span><br><span class="line">答案：</span><br><span class="line"><span class="keyword">true</span></span><br><span class="line"><span class="keyword">false</span></span><br><span class="line"><span class="keyword">true</span></span><br><span class="line"><span class="keyword">true</span></span><br><span class="line"><span class="keyword">true</span></span><br><span class="line"><span class="keyword">false</span></span><br><span class="line"><span class="keyword">true</span></span><br></pre></td></tr></table></figure>
+<h3 id="java泛型">Java泛型</h3>
+</blockquote>
+<blockquote>
+<p>泛型提供了编译时类型安全检测机制，该机制允许程序员在编译时检测到非法的类型。泛型的本质是参数化类型，也就是说所操作的数据类型被指定为一个参数。</p>
+<p>而泛型在Java中实现是使用伪泛型来实现的，即虽然声明的是ArrayList<String>但是最后实际上会进行类型擦除变为ArrayList。而String被擦除后会变为Object。</String></p>
+</blockquote>
+<h3 id="重写和重载">重写和重载</h3>
+<blockquote>
+<p>重载：方法名相同参数不同</p>
+<p>重写：子类重写父类方法。</p>
+<p>​ 返回值类型、方法名、参数列表必须相同，抛出的异常范围小于等于父类，访问修饰符范围大于等于父类。</p>
+<p>​ 如果父类方法访问修饰符为 private/final/static 则子类就不能重写该方法，但是被 static 修饰的方法能够被再次声明。</p>
+<p>​ 构造方法无法被重写。</p>
+</blockquote>
+<h3 id="stringstringbuffer和stringbuilder">String、StringBuffer和StringBuilder</h3>
+<blockquote>
+<p>String：底层是final修饰的char数组。存在不可变特性。</p>
+<p>为什么要不可变：1.复用hashcode避免重复计算。2.字符串是不可变的，才能实现字符串常量池，让同一个字符串可以从常量池中查找，实现资源复用。</p>
+<p>3.因为字符串是不可变的所以它是线程安全的。</p>
+<p>String的equals方法，先判断两个对象是否相等，若不相等再判断对象是否为String实例，若是遍历字符串逐一判断字符是否相等，全部相等则返回相等。</p>
+<p>String计算hashcode：通过h = 31 * h + val[i];计算。</p>
+<p>StringBuffer和StringBuilder都是AbstractStringBuilder的子类，本质都是一样的。</p>
+<p>StringBuffer：线程安全，因为使用synchronized修饰。底层是没有final修饰的char数组，初始化时默认大小是16，通过append方法来添加字符，添加时需要判断当前size是否需要扩容，扩容机制为原char数组长度 * 2 + 2。然后添加时就是利用给定的目的数组和size偏移对数组进行复制。</p>
+<p>StringBuilder：线程不安全。底层也是没有final修饰的char数组，初始化默认大小是16，通过append添加。</p>
+</blockquote>
+<h2 id="java容器">java容器</h2>
+<h3 id="arrays.sort怎么排序的">Arrays.sort()怎么排序的？</h3>
+<blockquote>
+<p>根据排序对象分为两种：</p>
+<p>​ 对于基本类型，使用DualPivotQuicksort.sort()</p>
+<p>​ 对于数量小于QUICKSORT_THRESHOLD = 286的数组，再进行分类，若小于INSERTION_SORT_THRESHOLD = 47，使用leftmost再选择排序模式，模式分为插入排序和改进的插入排序。</p>
+<p>​ 若大于INSERTION_SORT_THRESHOLD = 47，则使用DualPivotQuicksort双轴快排。</p>
+<p>​ 而对于数量较大的，先判断数组是否为高度结构化，若不是高度结构化则使用DualPivotQuicksort，否则使用归并排序。</p>
+<p>​ 对于实现了Comparable接口的类型，使用ComparableTimSort.sort()。</p>
+<p>​ 对于数量小于MIN_MERGE = 32的数组，使用二分插入排序。</p>
+<p>​ 对于数量大于MIN_MERGE的数组，使用timSort排序(大量优化的归并排序)。</p>
+</blockquote>
+<h3 id="arraylist具体实现">ArrayList具体实现</h3>
+<blockquote>
+<p>默认容量10，底层是数组，默认实现的拷贝方式是浅拷贝。</p>
+<p>add方法：</p>
+<p>​ 让size+1，然后判断是否需要扩容，如果初始化时没有参数则让size同默认值比较，否则直接让size和当前数组长度比较，若大于则进行扩容。</p>
+<p>​ 扩容即将旧数组长度扩大1.5倍然后转化为新数组长度，通过newCapacity = oldCapacity + (oldCapacity &gt;&gt; 1);的位运算加速计算。</p>
+<p>​ 若扩容后的值小于size，则让值变为size，若扩容后的值大于数组最大长度，则判断size是否大于数组最大长度，若大于则扩容后的值为Integer.MAX_VALUE，否则为数组最大长度。</p>
+<p>​ 扩容具体操作则是使用Arrays.copyOf()，本质上就是System.arraycopy()。属于浅拷贝。</p>
+</blockquote>
+<h3 id="vector">Vector</h3>
+<blockquote>
+<p>本质上就是将常用的方法使用synchronized锁住，只是扩容机制不同。</p>
+<p>Vector初始化时可以初始化每次扩容的大小，若没有设置该值则每次扩容一倍，否则每次扩容对应大小。</p>
+</blockquote>
+<h3 id="linkedlist">LinkedList</h3>
+<blockquote>
+<p>底层是链表。</p>
+</blockquote>
+<h3 id="collections.synchronizedlist">Collections.SynchronizedList</h3>
+<blockquote>
+<p>类似Vector，但是可以将不同的List转化为线程安全的List，底层是通过Synchronized(mutex)，在synchronized块中调用List的通用方法实现的。</p>
+</blockquote>
+<h3 id="copyonwritearraylist">CopyOnWriteArrayList</h3>
+<blockquote>
+<p>适用于读多写少的场景，因为每次操作需要复制数组。·</p>
+<p>底层使用ReentrantLock在add操作时上锁，add操作结束后释放。正如名字所说，每次添加操作都需要在原数组的基础上复制一个大小增加对应长度的数组进行使用。</p>
+<p>remove时也需要上锁，也是在原数组的基础上复制一个大小减少对应长度的数组进行使用。</p>
+<p>其计算hashcode的方法类似String，也是使用h = 31 * h + 对应对象的hashcode;</p>
+</blockquote>
+<h2 id="基础知识点">基础知识点</h2>
+<h3 id="浅拷贝和深拷贝">浅拷贝和深拷贝</h3>
+<blockquote>
+<p>浅拷贝拷贝对象时如果对象中含有其他对象，则只会拷贝这些对象的引用，如果对其中对象进行修改会相互影响。</p>
+<p>深拷贝即当拷贝对象中含有其他对象时，会创建一个另外的对象，让两个对象互不影响。</p>
+<p>实现深拷贝的方式：</p>
+<p>​ 要被拷贝的类实现clonable接口，并且让这个类中对应对象的类也实现clonable接口，然后重写clone方法，被拷贝对象的clone方法需要将对应对象的clone赋值给该对象。如：this.a = a.clone();</p>
 </blockquote>
 
       
@@ -372,7 +443,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/32/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/32/">32</a><span class="page-number current">33</span><a class="page-number" href="/page/34/">34</a><span class="space">&hellip;</span><a class="page-number" href="/page/61/">61</a><a class="extend next" rel="next" href="/page/34/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/32/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/32/">32</a><span class="page-number current">33</span><a class="page-number" href="/page/34/">34</a><span class="space">&hellip;</span><a class="page-number" href="/page/62/">62</a><a class="extend next" rel="next" href="/page/34/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -417,13 +488,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">204k</span>
+    <span title="站点总字数">205k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:05</span>
+    <span title="站点阅读时长">3:06</span>
   </span>
 </div>
 <div class="busuanzi-count">

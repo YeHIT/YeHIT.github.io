@@ -198,7 +198,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-count">62</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/04/16/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/Golang/Golang%E8%A1%A5%E5%85%85%E7%9F%A5%E8%AF%86/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/04/18/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/C++/%E5%88%9D%E8%AF%86C++/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/04/16/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/Golang/Golang%E8%A1%A5%E5%85%85%E7%9F%A5%E8%AF%86/" class="post-title-link" itemprop="url">Golang补充知识</a>
+          <a href="/2021/04/18/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/C++/%E5%88%9D%E8%AF%86C++/" class="post-title-link" itemprop="url">初识C++</a>
         </h2>
 
         <div class="post-meta-container">
@@ -287,14 +287,14 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2021-04-16 00:00:00" itemprop="dateCreated datePublished" datetime="2021-04-16T00:00:00+08:00">2021-04-16</time>
+      <time title="创建时间：2021-04-18 00:00:00" itemprop="dateCreated datePublished" datetime="2021-04-18T00:00:00+08:00">2021-04-18</time>
     </span>
       <span class="post-meta-item">
         <span class="post-meta-item-icon">
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-04-17 16:00:13" itemprop="dateModified" datetime="2021-04-17T16:00:13+08:00">2021-04-17</time>
+        <time title="修改时间：2021-04-21 20:30:50" itemprop="dateModified" datetime="2021-04-21T20:30:50+08:00">2021-04-21</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -302,11 +302,11 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Golang/" itemprop="url" rel="index"><span itemprop="name">Golang</span></a>
+          <a href="/categories/C/" itemprop="url" rel="index"><span itemprop="name">C++</span></a>
         </span>
           ，
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Golang/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a>
+          <a href="/categories/C/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a>
         </span>
     </span>
 
@@ -318,14 +318,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>1.7k</span>
+      <span>1.6k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
+      <span>1 分钟</span>
     </span>
 </div>
 
@@ -336,40 +336,73 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="golang补充知识">Golang补充知识</h1>
-<h2 id="error和panic">error和panic</h2>
+          <h1 id="初识c">初识C++</h1>
 <blockquote>
-<p>error类比为异常、panic类比为错误，errror可恢复，panic不能恢复会让程序直接终止</p>
+<p>这篇文章标题虽然是初识C++，但并不会具体描述C++的常见语法，而是会关注一些C++在常见语法中的奇特技巧。建议有其他编程语言经验者阅读。</p>
 </blockquote>
-<h2 id="recover-从panic恢复">recover 从panic恢复</h2>
+<h2 id="推荐书籍">推荐书籍</h2>
 <blockquote>
-<p>recover是用于拦截运行时panic的函数，它只有在defer调用的函数中有效</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">test</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">var</span> a[<span class="number">10</span>]<span class="keyword">int</span></span><br><span class="line">    <span class="comment">// 会发生数组越界panic</span></span><br><span class="line">    a[<span class="number">11</span>] = <span class="number">111</span></span><br><span class="line">    <span class="keyword">defer</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="comment">// 可以从panic恢复，并打印对应的错误报告</span></span><br><span class="line">        <span class="keyword">if</span> err := <span class="built_in">recover</span>(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">            fmt.Println(err)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="字符串处理">字符串处理</h2>
+<p>对于有编程语言经验的人，推荐《C++ Primer》，相比《C++ Primer Plus》，这本书进度更快且内容更加简洁且有一定难度。</p>
+</blockquote>
+<h2 id="配置环境">配置环境</h2>
+<blockquote>
+<p>使用Visual Studio Code编写C++。使用MinGW编译器<a target="_blank" rel="noopener" href="https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/">下载地址</a>，下载MinGW-W64-install.exe(安装不成功报error res可以尝试mingw-get-setup安装)。</p>
+<figure>
+<img src="/2021/04/18/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/C++/%E5%88%9D%E8%AF%86C++/mingw安装.png" alt="mingw安装"><figcaption aria-hidden="true">mingw安装</figcaption>
+</figure>
+<p>安装完成后，配置环境变量，将对应MinGW路径(如D:-w64)设置到Path中。然后cmd执行gcc -v查看是否安装成功</p>
+<figure>
+<img src="/2021/04/18/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/C++/%E5%88%9D%E8%AF%86C++/安装检测.png" alt="安装检测"><figcaption aria-hidden="true">安装检测</figcaption>
+</figure>
+<p>这里我使用Visual Studio Code需要安装C++拓展。</p>
+<figure>
+<img src="/2021/04/18/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/C++/%E5%88%9D%E8%AF%86C++/C++拓展.png" alt="C++拓展"><figcaption aria-hidden="true">C++拓展</figcaption>
+</figure>
+<p>具体文件配置可以查看<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/87864677">VSCode配置C++环境</a></p>
+</blockquote>
+<h2 id="一个完整的程序">一个完整的程序</h2>
+<blockquote>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="comment">// 命名空间</span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;hello&quot;</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="变量">变量</h2>
+</blockquote>
+<h3 id="变量的声明和定义">变量的声明和定义</h3>
+<blockquote>
+<p>变量声明规定了变量的类型和名字，而变量定义还会为变量创建与名字关联的实体。可多次声明但只能定义一次。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> j; <span class="comment">// 既是声明也是定义</span></span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">int</span> j; <span class="comment">// 只进行了声明</span></span><br></pre></td></tr></table></figure>
+<h3 id="变量作用域">变量作用域</h3>
 </blockquote>
 <blockquote>
-<p>字符串操作strings包和字符串转换strconv包。具体API查询文档即可<a target="_blank" rel="noopener" href="https://studygolang.com/pkgdoc">Go API文档</a></p>
-<p>正则表达式，使用regexp包。</p>
-<p>json处理encoding/json包</p>
-</blockquote>
-<h2 id="文件操作">文件操作</h2>
-<blockquote>
-<p>使用os、io包可以标准操作文件</p>
-<p>bufio包实现了有缓冲的I/O</p>
-</blockquote>
-<h2 id="定时器">定时器</h2>
-<blockquote>
-<p>time包下NewTimer()方法和NewTicker()方法</p>
-<p>NewTimer只计时一次，NewTicker无限计时</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    timer := time.NewTimer(<span class="number">1</span> * time.Second)</span><br><span class="line">    fmt.Println(time.Now())</span><br><span class="line">    t := &lt;- timer.C</span><br><span class="line">    fmt.Println(t)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="select实现超时">Select实现超时</h2>
+<p>C++的作用域是通过{}来分隔的。而<strong>::</strong>操作符可以用来访问全局域中的变量。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="comment">// 命名空间</span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="keyword">int</span> reused = <span class="number">42</span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> reused = <span class="number">22</span>;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; reused &lt;&lt; <span class="built_in">endl</span>; <span class="comment">// 22</span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; ::reused &lt;&lt; <span class="built_in">endl</span>; <span class="comment">// 42，访问全局域的变量</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="指针变量空指针值">指针变量空指针值</h3>
 </blockquote>
 <blockquote>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">    quit := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">bool</span>)</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">for</span> &#123;</span><br><span class="line">            <span class="keyword">select</span> &#123;</span><br><span class="line">            <span class="keyword">case</span> num := &lt;- ch:</span><br><span class="line">                fmt.Println(num)</span><br><span class="line">            <span class="keyword">case</span> &lt;- time.After(<span class="number">3</span> * time.Second):</span><br><span class="line">                fmt.Println(<span class="string">&quot;超时&quot;</span>)</span><br><span class="line">                quit &lt;- <span class="literal">true</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;()</span><br><span class="line">    &lt;- quit</span><br><span class="line">    fmt.Println(<span class="string">&quot;程序结束&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="创建tcp服务器">创建TCP服务器</h2>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> *p1 = <span class="literal">nullptr</span>;</span><br><span class="line"><span class="keyword">int</span> *p2 = <span class="number">0</span>;</span><br><span class="line"><span class="comment">// p3需要引入#include cstdlib</span></span><br><span class="line"><span class="keyword">int</span> *p3 = <span class="literal">NULL</span>;</span><br></pre></td></tr></table></figure>
+<h3 id="各种各样的const">各种各样的const</h3>
 </blockquote>
 <blockquote>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;net&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">server</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 监听</span></span><br><span class="line">	listener, err := net.Listen(<span class="string">&quot;tcp&quot;</span>, <span class="string">&quot;127.0.0.1:8080&quot;</span>)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Println(err)</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 退出后停止监听</span></span><br><span class="line">	<span class="keyword">defer</span> listener.Close()</span><br><span class="line">	<span class="comment">// 接收连接</span></span><br><span class="line">	conn, err := listener.Accept()</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Println(err)</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 释放连接</span></span><br><span class="line">	<span class="keyword">defer</span> conn.Close()</span><br><span class="line">	buf := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">1024</span>)</span><br><span class="line">	n,err1 := conn.Read(buf)</span><br><span class="line">	<span class="keyword">if</span> err1 != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Println(err1)</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Println(<span class="string">&quot;server receive:&quot;</span> ,<span class="keyword">string</span>(buf[:n]))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">client</span><span class="params">()</span></span> &#123;</span><br><span class="line">	conn, err := net.Dial(<span class="string">&quot;tcp&quot;</span>, <span class="string">&quot;127.0.0.1:8080&quot;</span>)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Println(err)</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">defer</span> conn.Close()</span><br><span class="line">	conn.Write([]<span class="keyword">byte</span>(<span class="string">&quot;how are you&quot;</span>))</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">go</span> server()</span><br><span class="line">	<span class="keyword">go</span> client()</span><br><span class="line">	<span class="keyword">for</span>  &#123;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>指向常量的指针，意味着该指针不能改变对应常量，但可以改变指针指向。</p>
+<p>常量指针，不能改变指针指向。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> errNumb = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> *p1 = &amp;errNumb; <span class="comment">// p1不能改变errNumb，这个const也叫底层const</span></span><br><span class="line"><span class="keyword">int</span> *<span class="keyword">const</span> curErr = &amp;errNumb; <span class="comment">// curErr会一直指向errNumb，这个const也叫顶层const</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">double</span> pi = <span class="number">3.14159</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">double</span> *<span class="keyword">const</span> pip = &amp;pi; <span class="comment">// 指向常量的常量指针</span></span><br></pre></td></tr></table></figure>
+<h3 id="任意类型的指针-void">任意类型的指针 void *</h3>
+</blockquote>
+<h3 id="指针声明的坑">指针声明的坑</h3>
+<blockquote>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>* p1,p2,p3; <span class="comment">// 实际上只有p1是指针.</span></span><br><span class="line"><span class="comment">// 所以go语言优化了声明</span></span><br></pre></td></tr></table></figure>
+<h3 id="类型别名">类型别名</h3>
+</blockquote>
+<blockquote>
+<p>typedef或使用using</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">double</span> wages;</span><br><span class="line"><span class="keyword">using</span> IN = <span class="keyword">int</span>;</span><br></pre></td></tr></table></figure>
+<h3 id="自动类型识别auto和获取自动推断的类型">自动类型识别auto和获取自动推断的类型</h3>
+</blockquote>
+<blockquote>
+<p>编译器自动推断类型使用auto</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> item = val1 + val2;</span><br></pre></td></tr></table></figure>
+<h2 id="结构体语法">结构体语法</h2>
+</blockquote>
+<blockquote>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Student</span> &#123;</span></span><br><span class="line">    <span class="built_in">string</span> name;</span><br><span class="line">    <span class="keyword">int</span> age;</span><br><span class="line">    <span class="keyword">int</span> sex;</span><br><span class="line">&#125;s3;	<span class="comment">// 创建结构体时创建了一个结构体变量</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">Student</span> <span class="title">s1</span> =</span> &#123;<span class="string">&quot;xxx&quot;</span>,<span class="number">1</span>,<span class="number">2</span>&#125;;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">Student</span> <span class="title">s2</span> ;</span></span><br><span class="line">    s2.name = <span class="string">&quot;yyy&quot;</span>;</span><br><span class="line">    s2.age = <span class="number">1</span>;</span><br><span class="line">    s2.sex = <span class="number">2</span>;</span><br><span class="line">    <span class="comment">// 省略struct关键字</span></span><br><span class="line">    Student S4;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </blockquote>
 
       
@@ -390,7 +423,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/61/">61</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/62/">62</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -435,13 +468,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">204k</span>
+    <span title="站点总字数">205k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:05</span>
+    <span title="站点阅读时长">3:06</span>
   </span>
 </div>
 <div class="busuanzi-count">

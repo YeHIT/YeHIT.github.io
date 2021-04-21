@@ -198,7 +198,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-count">62</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/codeAnalyse/SpringBoot%E5%8E%9F%E7%90%86/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/codeAnalyse/SpringBoot%E5%8E%9F%E7%90%86/" class="post-title-link" itemprop="url">SpringBoot原理分析</a>
+          <a href="/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" class="post-title-link" itemprop="url">多线程相关</a>
         </h2>
 
         <div class="post-meta-container">
@@ -288,7 +288,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：17:18:29" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：17:12:35" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -296,7 +296,11 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">源码分析</span></a>
+          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
         </span>
     </span>
 
@@ -308,7 +312,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>1.6k</span>
+      <span>573</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -326,49 +330,30 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="springboot原理">SpringBoot原理</h1>
-<h2 id="springbootapplication"><span class="citation" data-cites="SpringBootApplication">@SpringBootApplication</span></h2>
+          <h1 id="多线程">多线程</h1>
+<h2 id="进程和线程">进程和线程</h2>
 <blockquote>
-<p>本质上是</p>
-<p><span class="citation" data-cites="SpringBootConfiguration">@SpringBootConfiguration</span>：实际是@Configuration</p>
-<p><span class="citation" data-cites="EnableAutoConfiguration">@EnableAutoConfiguration</span>：由@AutoConfigurationPackage、<span class="citation" data-cites="Import">@Import</span>({AutoConfigurationImportSelector.class})组成。</p>
-<p><span class="citation" data-cites="ComponentScan">@ComponentScan</span>：启用自动扫描，默认扫描所在类的同级类和同级目录下的所有类。</p>
-<p>即这个注解实现了注册配置类、启用自动配置、启用自动扫描。</p>
+<p>进程是执行程序的一次执行过程，是一个动态的概念。是系统资源分配的单位。</p>
+<p>通常一个进程中包含多个线程，一个进程至少含一个线程。线程是CPU调度和执行的单位。</p>
 </blockquote>
-<h2 id="springapplication.runtestapplication.classargs的实际流程">SpringApplication.run(TestApplication.class,args)的实际流程</h2>
+<h3 id="java创建线程的方式">JAVA创建线程的方式</h3>
 <blockquote>
-<p>利用传入的类创建一个SpringApplication实例执行了run方法。</p>
-<h3 id="具体创建实例的流程">具体创建实例的流程：</h3>
+<ol type="1">
+<li>继承Thread类，重写run方法。调用是使用start方法调用，若使用run方法调用则变为单线程。</li>
+<li>实现runnable接口，重写run方法，执行线程需丢入runnable接口实现类，调用start方法。(避免使用继承)</li>
+<li>实现callable接口，需要返回值类型，重写call方法，需要抛出异常。(可以返回结果，可以抛出异常)<img src="/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/实现callable.png" alt="实现callable"></li>
+</ol>
 </blockquote>
+<h2 id="java线程的状态">Java线程的状态</h2>
 <blockquote>
-<figure>
-<img src="/2021/02/20/codeAnalyse/SpringBoot%E5%8E%9F%E7%90%86/SpringBootAplication初始化过程.png" alt="SpringBootAplication初始化过程"><figcaption aria-hidden="true">SpringBootAplication初始化过程</figcaption>
-</figure>
-<p>倒数第四行加载了web应用的配置，具体流程是使用默认的类加载器去查找当前是否使用了对应的类。结果可以得出NONE、SERVLET、REACTIVE。</p>
-<p>倒数三行之前都是加载主配置。</p>
-<p>倒数第三、二行分别是创建初始化器和监听器。创建的流程均为先获取到类加载器，然后查找当前项目中所使用到的初始化器、监听器类名，再利用类名创建类实例，最后将这些实例按优先级排序即可。</p>
-<p>创建类实例的方法即为通过反射调用类的构造方法创建。它们都使用了getSpringFactoriesInstances方法。这个方法是先通过读取META-INF/spring.factories文件内容来获取配置，并将配置放入map中。实际中会读取到项目所有jar包中的META-INF/spring.factories。然后利用传入的类名进行匹配找到所需的初始化器/监听器。</p>
-<p>按优先级排序，Spring则是通过继承OrderComparator(实现了Comparator接口的类来完成的)，这里利用了模板方法模式，通过完成了findOrder方法，通过比较注解的优先级的方式来findOrder，若未设定优先级则设为最低优先级LOWEST_PRECEDENCE这个值为Integer.MAX_VALUE。</p>
-<ul>
-<li>（1）先判断有没有实现PriorityOrdered，实现PriorityOrdered比没实现的有高优先级</li>
-<li>（2）第一步如果比较不出来，判断有没有实现Ordered，如果实现了，取实现方法的int值比较</li>
-<li>前两步都是OrderComparator的默认实现。</li>
-<li>（3）如果没有实现Ordered，判断有没有org.springframework.core.annotation.Order注解， 有注解，取注解上的order值，进行比较</li>
-<li>（4）如果没有Order注解，判断有没有javax.annotation.Priority注解，取注解上的值比较</li>
-<li>若以上都没找到则spring会返回null</li>
-<li>（5）OrderComparator接收到null，返回Integer.MAX_VALUE即LOWEST_PRECEDENCE，值越大优先级越低</li>
-</ul>
-<p>最后一行找到主程序类是通过获取当前程序运行栈，通过找到栈中执行main方法的类，得到主程序类名。</p>
-</blockquote>
-<h3 id="创建实例后执行run方法的流程">创建实例后执行run方法的流程</h3>
-<blockquote>
-
-</blockquote>
-<h2 id="自动配置原理">自动配置原理</h2>
-<blockquote>
-<p><span class="citation" data-cites="EnableAutoConfiguration">@EnableAutoConfiguration</span> = <span class="citation" data-cites="AutoConfigurationPackage">@AutoConfigurationPackage</span> + <span class="citation" data-cites="Import">@Import</span>({AutoConfigurationImportSelector.class})</p>
-<p><span class="citation" data-cites="AutoConfigurationPackage">@AutoConfigurationPackage</span> = <span class="citation" data-cites="Import">@Import</span>({Registrar.class})</p>
-<p>故@EnableAutoConfiguration实际上相当于引入了AutoConfigurationImportSelector和Registrar。</p>
+<p>NEW、RUNNABLE、BLOCKED、WAITING、TIMED_WAITING、TERMINATED</p>
+<p>NEW：线程还没有启动。</p>
+<p>RUNNABLE：线程已经在jvm中运行了，但可能还在等待操作系统的处理器之类的资源。</p>
+<p>BLOCKED：线程等待monitor lock。</p>
+<p>WAITING：正在等待另一个线程执行的状态。</p>
+<p>TIMED_WAITING：有着指定特定等待时间等待另一个线程执行的状态。</p>
+<p>TERMINATED：线程终止，线程已经结束执行。</p>
+<p>线程分为用户线程和守护线程(Daemon)，虚拟机必须确保用户线程执行完毕，虚拟机不用等待守护线程执行完毕。可以通过调用线程的setDaemon(true)，将某个线程变为守护线程</p>
 </blockquote>
 
       
@@ -389,7 +374,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/44/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/44/">44</a><span class="page-number current">45</span><a class="page-number" href="/page/46/">46</a><span class="space">&hellip;</span><a class="page-number" href="/page/61/">61</a><a class="extend next" rel="next" href="/page/46/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/44/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/44/">44</a><span class="page-number current">45</span><a class="page-number" href="/page/46/">46</a><span class="space">&hellip;</span><a class="page-number" href="/page/62/">62</a><a class="extend next" rel="next" href="/page/46/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -434,13 +419,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">204k</span>
+    <span title="站点总字数">205k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:05</span>
+    <span title="站点阅读时长">3:06</span>
   </span>
 </div>
 <div class="busuanzi-count">

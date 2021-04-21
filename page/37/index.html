@@ -198,7 +198,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-count">62</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/28/netty%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91/C10K%E9%97%AE%E9%A2%98%E7%9A%84%E8%A7%A3%E5%86%B3%E5%8F%8AIO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" class="post-title-link" itemprop="url">多线程相关</a>
+          <a href="/2021/02/28/netty%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91/C10K%E9%97%AE%E9%A2%98%E7%9A%84%E8%A7%A3%E5%86%B3%E5%8F%8AIO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/" class="post-title-link" itemprop="url">C10K问题的解决及I/O多路复用</a>
         </h2>
 
         <div class="post-meta-container">
@@ -286,10 +286,16 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：17:12:35" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+      <time title="创建时间：2021-02-28 23:30:00" itemprop="dateCreated datePublished" datetime="2021-02-28T23:30:00+08:00">2021-02-28</time>
     </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-04-02 18:48:53" itemprop="dateModified" datetime="2021-04-02T18:48:53+08:00">2021-04-02</time>
+      </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
@@ -300,7 +306,7 @@
         </span>
           ，
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
         </span>
     </span>
 
@@ -312,14 +318,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>573</span>
+      <span>2k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>2 分钟</span>
     </span>
 </div>
 
@@ -330,30 +336,64 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="多线程">多线程</h1>
-<h2 id="进程和线程">进程和线程</h2>
+          <h1 id="c10k问题的解决及io多路复用">C10K问题的解决及I/O多路复用</h1>
+<h2 id="c10k问题">C10K问题</h2>
 <blockquote>
-<p>进程是执行程序的一次执行过程，是一个动态的概念。是系统资源分配的单位。</p>
-<p>通常一个进程中包含多个线程，一个进程至少含一个线程。线程是CPU调度和执行的单位。</p>
+<p>即网络通信时单机服务器保持的TCP连接数超过10K即1万，导致服务器压力过大无法承载。</p>
 </blockquote>
-<h3 id="java创建线程的方式">JAVA创建线程的方式</h3>
+<h2 id="发生c10k问题的原因">发生C10K问题的原因</h2>
 <blockquote>
-<ol type="1">
-<li>继承Thread类，重写run方法。调用是使用start方法调用，若使用run方法调用则变为单线程。</li>
-<li>实现runnable接口，重写run方法，执行线程需丢入runnable接口实现类，调用start方法。(避免使用继承)</li>
-<li>实现callable接口，需要返回值类型，重写call方法，需要抛出异常。(可以返回结果，可以抛出异常)<img src="/2021/02/20/JavaBasicKnowledge/%E5%A4%9A%E7%BA%BF%E7%A8%8B/实现callable.png" alt="实现callable"></li>
-</ol>
+<p>本质上是操作系统的问题，操作系统使用的都是传统阻塞I/O模型，处理方式都是requests per thread，导致并发10K和并发100的关键在于CPU。</p>
 </blockquote>
-<h2 id="java线程的状态">Java线程的状态</h2>
+<h2 id="解决方法">解决方法</h2>
 <blockquote>
-<p>NEW、RUNNABLE、BLOCKED、WAITING、TIMED_WAITING、TERMINATED</p>
-<p>NEW：线程还没有启动。</p>
-<p>RUNNABLE：线程已经在jvm中运行了，但可能还在等待操作系统的处理器之类的资源。</p>
-<p>BLOCKED：线程等待monitor lock。</p>
-<p>WAITING：正在等待另一个线程执行的状态。</p>
-<p>TIMED_WAITING：有着指定特定等待时间等待另一个线程执行的状态。</p>
-<p>TERMINATED：线程终止，线程已经结束执行。</p>
-<p>线程分为用户线程和守护线程(Daemon)，虚拟机必须确保用户线程执行完毕，虚拟机不用等待守护线程执行完毕。可以通过调用线程的setDaemon(true)，将某个线程变为守护线程</p>
+<p>原始的TCP连接需要一个线程/进程处理一个连接。</p>
+<p>改进为同一个线程/进程处理多个连接。即使用I/O多路复用技术</p>
+</blockquote>
+<h2 id="io多路复用技术的发展">I/O多路复用技术的发展</h2>
+<h3 id="原始情况">原始情况</h3>
+<blockquote>
+<p>最简单的思路为利用循环挨个处理每个连接，每个连接对应一个socket，当所有socket都有数据时这个方法可行，但若某个socket没有数据会导致线程/进程被阻塞。</p>
+</blockquote>
+<h3 id="select">Select</h3>
+<blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 该函数准许进程指示内核等待多个事件中的任何一个发送，并只在有一个或多个事件发生或经历一段指定的时间后才唤醒。</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">select</span><span class="params">(<span class="keyword">int</span> maxfdp1,fd_set *readset,fd_set *writeset,fd_set *exceptset,<span class="keyword">const</span> struct timeval *timeout)</span></span></span><br></pre></td></tr></table></figure>
+<p>该函数会传递readset、writeset、exceptset，即读事件、写事件、异常事件，使用fd_set来告知内核同时监控多个文件句柄，最后是timeout是时间参数，可以分为三种情况：一直等待某个描述字直到事件就绪回调、等待到某个时间若某个描述字事件不就绪则不等待、根本不等待某个描述字。</p>
+<p>回调后可以通过FD_ISSET 来逐个查看fd_set中的句柄状态，当连接数大时效率较低，因此select存在句柄管理上限。</p>
+<p>且fd_set只有一个字段关注事件和发生事件，使用前往往要初始化。</p>
+<p>此外fd_set在调用select时需要反复在用户态和内核态传递。</p>
+</blockquote>
+<h3 id="poll">Poll</h3>
+<blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">poll</span> <span class="params">( struct pollfd * fds, <span class="keyword">unsigned</span> <span class="keyword">int</span> nfds, <span class="keyword">int</span> timeout)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>本质上和select没有区别，都需要轮询，但是poll没有最大文件描述符的限制</p>
+<p>pollfd存在事件字段和发生事件字段，使用前不用重复初始化。</p>
+<p>此外pollfd在调用poll时需要反复在用户态和内核态传递。</p>
+</blockquote>
+<h3 id="epoll">Epoll</h3>
+<blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建一个epoll的句柄，用于管理size个监听数目，返回一个fd值。</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_create</span><span class="params">(<span class="keyword">int</span> size)</span></span>;</span><br><span class="line"><span class="comment">// epoll的事件注册函数，会先注册需要监听的事件类型，epfd为epoll_create的返回值。</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_ctl</span><span class="params">(<span class="keyword">int</span> epfd, <span class="keyword">int</span> op, <span class="keyword">int</span> fd, struct epoll_event *event)</span></span>;</span><br><span class="line"><span class="comment">// 等待事件的发生，只会返回需要处理的事件文件描述符</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_wait</span><span class="params">(<span class="keyword">int</span> epfd, struct epoll_event * events, <span class="keyword">int</span> maxevents, <span class="keyword">int</span> timeout)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>epoll_event在用户态和内核态的传递只需要在epoll_ctl进行一次。</p>
+<p>且事件触发时只会返回触发事件的文件描述符，避免遍历全部的文件描述符。</p>
+<p>有ET模式和LT模式</p>
+<p>Level Triggered (LT) 水平触发 socket接收缓冲区不为空 有数据可读 读事件一直触发 socket发送缓冲区不满 可以继续写入数据 写事件一直触发 符合思维习惯，epoll_wait返回的事件就是socket的状态</p>
+<p>Edge Triggered (ET) 边沿触发 socket的接收缓冲区状态变化时触发读事件，即空的接收缓冲区刚接收到数据时触发读事件 socket的发送缓冲区状态变化时触发写事件，即满的缓冲区刚空出空间时触发读事件 仅在状态变化时触发事件</p>
+<p>LT的编程与poll/select接近，符合一直以来的习惯，不易出错。 ET的编程可以做到更加简洁，某些场景下更加高效，但另一方面容易遗漏事件，容易产生bug。</p>
+</blockquote>
+<h3 id="epoll性能高的原因">Epoll性能高的原因</h3>
+<blockquote>
+<p>显然首要的点在于，当事件就绪时epoll返回的是就绪事件组。</p>
+<p>epoll_create会在内核中创建红黑树用于存储epoll_ctl传递来的socket，还会创建一个就绪事件的双向链表。</p>
+<p>由于使用了红黑树结构，使得epoll查找、删除socket结点的效率都更高，poll则是通过每次从用户态到内核态传递链表结构来实现的。故而效率低。</p>
+<p>此外epoll采用epoll_wait来获取结果，由于epoll对应的红黑树结构是由内核直接维护的，每次调用epoll_wait无须再次传递参数，这也有效地提高了性能。</p>
+</blockquote>
+<h2 id="c10m">C10M</h2>
+<blockquote>
+<p>即并发量上升到10M，此时瓶颈变为了操作系统。</p>
+<p>可能的解决方案：</p>
+<p>​ 让数据报直接传递到业务逻辑，不经过linux协议栈。</p>
+<p>​ 自己管理内存，如将内存预留一部分，并使用更大的内存分页进行管理。</p>
+<p>​ 多线程核间绑定，将线程同处理器核心进行绑定，最大化核心Cache利用，实现无锁设计，避免线程切换开销。</p>
 </blockquote>
 
       
@@ -374,7 +414,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/36/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/36/">36</a><span class="page-number current">37</span><a class="page-number" href="/page/38/">38</a><span class="space">&hellip;</span><a class="page-number" href="/page/61/">61</a><a class="extend next" rel="next" href="/page/38/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/36/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/36/">36</a><span class="page-number current">37</span><a class="page-number" href="/page/38/">38</a><span class="space">&hellip;</span><a class="page-number" href="/page/62/">62</a><a class="extend next" rel="next" href="/page/38/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -419,13 +459,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">204k</span>
+    <span title="站点总字数">205k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:05</span>
+    <span title="站点阅读时长">3:06</span>
   </span>
 </div>
 <div class="busuanzi-count">

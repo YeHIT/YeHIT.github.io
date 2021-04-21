@@ -198,7 +198,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-count">62</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/21/JVMKnowledge/3.%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/23/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E5%AE%9E%E9%99%85%E5%BC%80%E5%8F%91%E9%81%87%E5%88%B0%E9%97%AE%E9%A2%98%E5%8F%8A%E6%96%B9%E6%A1%88/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/21/JVMKnowledge/3.%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7/" class="post-title-link" itemprop="url">3.常用工具</a>
+          <a href="/2021/03/23/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/%E5%AE%9E%E9%99%85%E5%BC%80%E5%8F%91%E9%81%87%E5%88%B0%E9%97%AE%E9%A2%98%E5%8F%8A%E6%96%B9%E6%A1%88/" class="post-title-link" itemprop="url">实际开发遇到问题及方案</a>
         </h2>
 
         <div class="post-meta-container">
@@ -286,23 +286,17 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
+      
 
-      <time title="创建时间：2021-03-21 00:00:00" itemprop="dateCreated datePublished" datetime="2021-03-21T00:00:00+08:00">2021-03-21</time>
+      <time title="创建时间：2021-03-23 00:00:00 / 修改时间：19:49:51" itemprop="dateCreated datePublished" datetime="2021-03-23T00:00:00+08:00">2021-03-23</time>
     </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-24 18:11:30" itemprop="dateModified" datetime="2021-03-24T18:11:30+08:00">2021-03-24</time>
-      </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/JVM/" itemprop="url" rel="index"><span itemprop="name">JVM</span></a>
+          <a href="/categories/%E9%9D%A2%E8%AF%95%E7%AA%81%E5%87%BB/" itemprop="url" rel="index"><span itemprop="name">面试突击</span></a>
         </span>
     </span>
 
@@ -314,7 +308,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>683</span>
+      <span>346</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -332,51 +326,18 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="常用工具">常用工具</h1>
-<h2 id="jps">jps</h2>
+          <h1 id="实际开发遇到问题及方案">实际开发遇到问题及方案</h1>
+<h2 id="什么是内存泄漏怎么确定内存泄漏">什么是内存泄漏，怎么确定内存泄漏</h2>
 <blockquote>
-<p>jps用于列出正在运行的虚拟机进程，并显示虚拟机执行主类名称及这些进程的本地虚拟机唯一ID。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jps [ options ] [ hostid ]</span><br></pre></td></tr></table></figure>
-<figure>
-<img src="/2021/03/21/JVMKnowledge/3.%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7/jps.png" alt="jps"><figcaption aria-hidden="true">jps</figcaption>
-</figure>
-</blockquote>
-<h2 id="jstat">jstat</h2>
-<blockquote>
-<p>jstat用于监视虚拟机各种运行状态信息的命令行工具。可以显示本地或远程虚拟机进程中类加载、内存、垃圾收集、即时编译等运行时数据。</p>
-<p>往往通过jps找出对应进程本地虚拟机唯一ID，加上对应参数来查看具体虚拟机信息。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jstat [ option vmid [interval[s|ms] [count]] ]</span><br></pre></td></tr></table></figure>
-<p>如<img src="/2021/03/21/JVMKnowledge/3.%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7/jstat.png" alt="jstat"></p>
-</blockquote>
-<h2 id="jinfo">jinfo</h2>
-<blockquote>
-<p>jinfo的作用是实时查看和调整虚拟机各项参数。</p>
-<p>jinfo + jps查看的唯一ID：打印全部配置信息。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jinfo [ option ] pid</span><br></pre></td></tr></table></figure>
-<figure>
-<img src="/2021/03/21/JVMKnowledge/3.%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7/jinfo.png" alt="jinfo"><figcaption aria-hidden="true">jinfo</figcaption>
-</figure>
-</blockquote>
-<h2 id="jmap">jmap</h2>
-<blockquote>
-<p>Java内存映像工具，jmap命令用于生成堆转储快照即heap dump/dump文件。</p>
-<p>jmap作用除了获取堆转储快照之外，还可以查询finalize执行队列、Java堆和方法区的详细信息，如空间使用率、当前使用的收集器等。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jmap [ option ] vmid</span><br></pre></td></tr></table></figure>
-<figure>
-<img src="/2021/03/21/JVMKnowledge/3.%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7/jmap.png" alt="jmap"><figcaption aria-hidden="true">jmap</figcaption>
-</figure>
-</blockquote>
-<h2 id="jhat">jhat</h2>
-<blockquote>
-<p>jhat一般是同jmap配合使用，通过jhat命令可以分析jmap产生的堆转储快照。一般不用这个指令，因为jhat耗时久且有更好用的工具可以用于分析dump文件。</p>
-</blockquote>
-<h2 id="jstack">jstack</h2>
-<blockquote>
-<p>jstack命令用于生成虚拟机当前时刻的线程快照(threaddump/javacore文件)。线程快照是当前虚拟机内每一条线程正在执行的方法堆栈的集合，生成快照的目的通常是定位线程出现长时间停顿的原因：如死锁、死循环、请求外部资源导致长时间挂起等。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jstack [ option ] vmid</span><br></pre></td></tr></table></figure>
-<figure>
-<img src="/2021/03/21/JVMKnowledge/3.%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7/jstack.png" alt="jstack"><figcaption aria-hidden="true">jstack</figcaption>
-</figure>
+<p>简单来说内存泄漏就是使用了内存空间后，在不使用的情况下没有及时的释放对应空间。</p>
+<p>在Java中虽然存在GC机制，但有时也有产生内存泄漏的现象。</p>
+<p>​ 如：使用ThreadLocal、使用静态集合类引用数据、使用单例模式创建的对象引用的过多对象。</p>
+<p>Java确定内存泄漏的方式：</p>
+<p>​ 如果内存泄漏了一般来说会频繁触发GC，可以先使用linux的top指令查看当前java进程具体情况，如果频繁GC往往会导致CPU使用率异常。</p>
+<p>​ 如果确认异常，再通过jmap指令生成dump文件，用于之后查看。</p>
+<p>​ 通过jstat查看当前虚拟机情况，主要观察GC频率。</p>
+<p>​ 使用jhat或者其他可视化工具分析dump文件，找到对应内存使用巨大的类。</p>
+<p>​ 找到类后，分析具体代码解决问题即可。</p>
 </blockquote>
 
       
@@ -397,7 +358,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/16/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><span class="page-number current">17</span><a class="page-number" href="/page/18/">18</a><span class="space">&hellip;</span><a class="page-number" href="/page/61/">61</a><a class="extend next" rel="next" href="/page/18/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/16/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><span class="page-number current">17</span><a class="page-number" href="/page/18/">18</a><span class="space">&hellip;</span><a class="page-number" href="/page/62/">62</a><a class="extend next" rel="next" href="/page/18/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -442,13 +403,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">204k</span>
+    <span title="站点总字数">205k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:05</span>
+    <span title="站点阅读时长">3:06</span>
   </span>
 </div>
 <div class="busuanzi-count">
