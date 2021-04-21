@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/02/20/codeAnalyse/mybatis%E6%B5%81%E7%A8%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/" class="post-title-link" itemprop="url">SpringBoot常用配置</a>
+          <a href="/2021/02/20/codeAnalyse/mybatis%E6%B5%81%E7%A8%8B/" class="post-title-link" itemprop="url">Mybatis流程源码分析</a>
         </h2>
 
         <div class="post-meta-container">
@@ -288,7 +288,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：17:17:46" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
+      <time title="创建时间：2021-02-20 12:26:00 / 修改时间：16:15:02" itemprop="dateCreated datePublished" datetime="2021-02-20T12:26:00+08:00">2021-02-20</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -296,7 +296,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%A1%86%E6%9E%B6%E5%85%A5%E9%97%A8/" itemprop="url" rel="index"><span itemprop="name">框架入门</span></a>
+          <a href="/categories/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">源码分析</span></a>
         </span>
     </span>
 
@@ -308,14 +308,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>3.9k</span>
+      <span>3.5k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>4 分钟</span>
+      <span>3 分钟</span>
     </span>
 </div>
 
@@ -326,159 +326,59 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="springboot常用配置">SpringBoot常用配置</h1>
-<h2 id="选择不同配置">选择不同配置</h2>
+          <h1 id="mybatis流程">Mybatis流程</h1>
+<h2 id="创建sqlsessionfactory的流程">创建SqlSessionFactory的流程</h2>
 <blockquote>
-<p>也可以通过在类中使用@Profile("xx")来表示这个类只有在xx为active的情况下才可使用。</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/springboot多配置文件设置启用.png" alt="springboot多配置文件设置启用"><figcaption aria-hidden="true">springboot多配置文件设置启用</figcaption>
-</figure>
+<p>由于创建工厂需要许多配置，mybatis利用了Builder模式。</p>
+<p>先创建SqlSessionFactoryBuilder，调用SqlSessionFactoryBuilder的build方法，本质上就是通过解析xml文件，将文件内容映射到Configuration对象中，然后利用这个对象产生builder创建工厂所需的配置，然后创建出SqlSessionFactory。</p>
+<p>具体则是先将xml的输入流传给SqlSessionFactoryBuilder，然后创建一个XMLConfigBuilder，负责解析xml内容放入configuration对象，解析的过程中会按类别解析，通过调用不同的方法解析xml的不同部分。解析mapper还有专门的XMLMapperBuilder其中对于二级缓存的处理也在这里进行。解析完成后configuration对象会保存全部的配置信息。</p>
 </blockquote>
-<h2 id="自动加载配置文件的内容">自动加载配置文件的内容</h2>
+<h2 id="利用sqlsessionfactory创建sqlsession的流程">利用SqlSessionFactory创建SqlSession的流程</h2>
 <blockquote>
-<p><span class="citation" data-cites="Value">@Value</span></p>
-<p><span class="citation" data-cites="ConfigurationProperties">@ConfigurationProperties</span>(prefix = "spring.datasource.druid.write") 使用该注解需要引入且要启用@EnableConfigurationProperties(使用前面一个注解的类.class)</p>
-<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;&#x2F;groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-configuration-processor&lt;&#x2F;artifactId&gt;</span><br><span class="line">    &lt;optional&gt;true&lt;&#x2F;optional&gt;</span><br><span class="line">&lt;&#x2F;dependency&gt;</span><br></pre></td></tr></table></figure></p>
-<p><span class="citation" data-cites="PropertySource">@PropertySource</span></p>
+<p>就是SqlSessionFactory调用openSession，传入ExecutorType、TransactionIsolationLevel、autoCommit三个参数，或让mybatis按默认设置，</p>
+<p>ExecutorType有BatchExecutor、ReuseExecutor、SimpleExecutor、CachingExecutor四种。</p>
+<p>​ BatchExecutor 让update操作变为批处理操作，即让连续的update先累积，等到下一次query操作前再一起执行。是使用List作为批处理存储。对于update操作会复用最近一次的statement。失败了会全部回滚。</p>
+<p>​ ReuseExecutor 复用Statement，利用Map&lt;String, Statement&gt;来判定。</p>
+<p>​ SimpleExecutor 即使用的Statement直接关闭。</p>
+<p>​ CachingExecutor 相当于在前面三个执行者的基础上套了一层缓存机制，让query方法先查看缓存，只有缓存没有时再让三个执行者执行操作。这里的缓存是通过mybatis自己实现的statement对象内部的cache实现的，有些类似hashmap，是利用cache和cachekey获得的结果。</p>
+<p>TransactionIsolationLevel即事物隔离级别。</p>
+<p>​ READ_UNCOMMITTED 读未提交 存在脏读、不可重复读、幻读</p>
+<p>​ READ_COMMITTED 读提交 存在不可重复读、幻读</p>
+<p>​ REPEATABLE_READ 可重复读 存在幻读</p>
+<p>​ SERIALIZABLE 序列化</p>
+<p>autoCommit是否自动提交。</p>
 </blockquote>
-<h2 id="配置文件的加载顺序下覆盖上">配置文件的加载顺序(下覆盖上)</h2>
+<h2 id="利用sqlsession创建mapper">利用SqlSession创建Mapper</h2>
 <blockquote>
-<ol type="1">
-<li>Application properties packaged inside your jar (application.properties and YAML variants).</li>
-<li>Profile-specific application properties packaged inside your jar (application-{profile}.properties and YAML variants).</li>
-<li>Application properties outside of your packaged jar (application.properties and YAML variants)</li>
-<li>Profile-specific application properties outside of your packaged jar (application-{profile}.properties and YAML variants).</li>
-</ol>
+<p>SqlSession使用getMapper方法，实际上是调用了configuration中的mapperRegistry的getMapper方法，这里使用了动态代理的设计模式。同时这里还使用了工厂方法，根据不同的类名创建对应的代理工厂。</p>
+<p>这个动态代理是JDK代理，它需要使用对应类加载器，对应类接口，对应的InvocationHandler。在mybatis中InvocationHandler是MapperProxy，MapperProxy的重写的invoke函数逻辑是对于Object自带的方法直接调用，对于接口默认的方法直接调用(这个特性是由于JDK8让接口方法可以有默认实现)。对于接口的方法则创建一个MapperMethod对象，该对象使用了缓存机制，利用Map&lt;Method, MapperMethod&gt;缓存方法。</p>
+<p>而MapperMethod的excuse即为代理方法的实现，该类中含有MethodSignature、SqlCommand两个内部类用于实现解析sql及方法，而具体方法实现是根据判断当前sql是增删改查中的哪种再调用sqlSession的方法来实现的。</p>
 </blockquote>
-<h2 id="自动加载的-application.properties-的加载顺序下覆盖上">自动加载的 application.properties 的加载顺序(下覆盖上)</h2>
+<h2 id="executor与handler">Executor与Handler</h2>
 <blockquote>
-<ol type="1">
-<li><p>The classpath root</p></li>
-<li><p>The classpath /config package</p></li>
-<li><p>The current directory</p></li>
-<li><p>The /config subdirectory in the current directory</p></li>
-<li><p>Immediate child directories of the /config subdirectory</p></li>
-</ol>
-<p>4、5的差别就是如果config目录的根目录里有application.properties，则会将config子目录的application.properties覆盖。</p>
-<p>而classpath中springboot不会自动扫描config子目录中的目录。</p>
-<p>可以通过修改spring.config.name来修改默认配置文件名。</p>
-<p>修改spring.config.location 可以修改springboot获取配置文件的位置。</p>
-<p>修改spring.config.additional-location可以在springboot默认获取配置文件的位置的基础上补充一些获取配置文件的位置。optional: 前缀</p>
+<p>Executor是通过StatementHandler来执行sql的。StatementHandler先prepare方法配置基础设置，然后使用parameterize来设置statement的参数。若为query操作则StatementHandler会使用ResultSetHandler来处理结果集。</p>
+<p>StatementHandler为抽象interface mybatis基于这个接口实现了抽象类BaseStatementHandler，还实现了路由类RoutingStatementHandler，路由类是用于根据参数创建对应具体类的。而抽象类是作为三个具体类的基础，三个具体类分别为CallableStatementHandler、PreparedStatementHandler、SimpleStatementHandler。</p>
+<p>抽象类提供给三个具体类prepare方法，其中prepare中含有抽象方法instantiateStatement，是由具体子类实现的。(模板方法模式)</p>
 </blockquote>
-<h2 id="可以使用来获取外部目录classpath中不能使用">可以使用*来获取外部目录，classpath中不能使用*</h2>
-<h2 id="可以使用---在.pro配置文件中划分逻辑页">可以使用#---在.pro配置文件中划分逻辑页</h2>
-<h2 id="使用---在.yml配置文件划分逻辑页">使用---在.yml配置文件划分逻辑页</h2>
-<h2 id="在多个配置文件中均存在同一个list的值则只会去最高优先级的list值">在多个配置文件中均存在同一个list的值，则只会去最高优先级的list值</h2>
-<h2 id="在多个配置文件中均存在同一个map的值则使用互补配置的方式构造map">在多个配置文件中均存在同一个Map的值，则使用互补配置的方式构造Map</h2>
-<h2 id="spring自动注入的注解">spring自动注入的注解</h2>
+<h2 id="mybatis对于数据库操作的整体流程">mybatis对于数据库操作的整体流程</h2>
 <blockquote>
-<p><span class="citation" data-cites="Component">@Component</span>("name")将一个类生成一个Bean实例并用spring管理。<span class="citation" data-cites="Controller">@Controller</span>、<span class="citation" data-cites="Repository">@Repository</span>、<span class="citation" data-cites="Service都是类似的功能">@Service都是类似的功能</span>。这些注解要放在类上。</p>
-<p><span class="citation" data-cites="Bean">@Bean</span>("name")将一个方法返回的对象实例用spring管理。该注解放在方法上。</p>
-<p><span class="citation" data-cites="Autowired">@Autowired</span> 自动注入。该注解可以放在构造器方法、方法、参数、属性、注解上。</p>
-<p><span class="citation" data-cites="Primary">@Primary</span> 写在类上或方法上。为了消除自动装配的歧义性，如spring管理了两个都实现了同一父类的类，则存在@Primary 的类会被最先调用。</p>
-<p><span class="citation" data-cites="Qualifier">@Qualifier</span>("name")写在变量、方法、参数、类上、注解上，可以根据传入的name按名字查找spring管理的类。</p>
+<p>先使用builder模式，根据输入的xml输入流，利用对应XML解析对象解析，并将结果最终存入Configuration对象，然后利用Configuration对象创建出一个对应的SqlSessionFactory。</p>
+<p>然后需要通过sqlSessionFactory的openSession方法创建一个SqlSession，这里可以设置SqlSession的Executor、TransactionIsolationLevel和autoCommit。Executor代表这个SqlSession采用什么执行器，执行器是对statement对象的处理。具体执行器共有3种：SimpleExecutor 、ReuseExecutor 、BatchExecutor 。同时若启用了缓存cache，则会在执行器外再包装一层CachingExecutor ，相当于对于查询操作提供了二级缓存。这个缓存是位于mybatis的MappedStatement类中。本质上这种缓存就是一个嵌套的哈希结构。Map&lt;Cache, TransactionalCache&gt;，TransactionalCache也是key-value结构。</p>
+<p>而事物隔离即为正常的数据库事物隔离级别。</p>
+<p>创建完SqlSession后，调用SqlSession的getMapper方法获取对应mapper对象。这里使用了动态代理。mybatis是先根据传入的类对象，通过configuration的配置信息中的MapperRegistry类对象找到对应的proxy工厂，利用代理工厂创建对应的代理对象。代理对象的创建使用的是JDK动态代理，即传入需要代理的类加载器、需要代理的接口、以及InvocationHandler。mybatis的handler是先判断方法是否为Object的，然后判断方法是否为接口默认实现的。只有接口未实现的方法才进行特殊处理，处理过程即为根据方法的类型(增删改查)，执行SqlSession的对应方法。</p>
+<p>SqlSession执行对应方法则是利用SqlSession内部的executor执行对应操作的。所以实际上sql操作还是由executor执行的。而executor执行操作需要利用StatementHandler先后执行prepare初始化基本配置和parameterize处理参数。参数的处理利用了ParameterHandler，这个时候typeHandler就会起作用。若为query操作还需要对返回值进行处理，处理时利用了ResultSetHandler，这个时候typeHandler就会起作用。</p>
 </blockquote>
-<h2 id="spring监听器">Spring监听器</h2>
+<h2 id="mybatis的缓存机制">mybatis的缓存机制</h2>
 <blockquote>
-<p>使用过程:</p>
-<p>​ 自定义事件，继承org.springframework.context.ApplicationEvent类。</p>
-<p>​ 自定义事件监听器，实现org.springframework.context.ApplicationListener接口。</p>
-<p>​ 在spring容器中发布事件。</p>
-<p>实现监听的方式：</p>
-<p>​ 自定义类实现ApplicationListener，在主函数中装载监听。</p>
-<p>​ 自定义类实现ApplicationListener，在接口上加上@Component注解</p>
-<p>​ 自定义类不实现接口，在对应方法上标明@EventListener注解。</p>
-<p>​ 自定义类实现ApplicationListener，在application.properties中配置context.listener.classes</p>
+<p>mybatis共有两个缓存机制：一级缓存和二级缓存。</p>
+<p>一级缓存默认开启且无法关闭。</p>
+<p>二级缓存需要配置。</p>
+<p>一级缓存是Executor的基本实现类BaseExecutor中实现的，本质上是个Map&lt;Object, Object&gt;。由于每个SqlSession里都带有一个Executor，故一级缓存是SqlSession层面的。</p>
+<p>二级缓存则需要手动配置，开启后会在具体的Executor之外使用CachingExecutor包装，这里使用了装饰者模式。二级缓存本质上是在namespace层面的缓存。</p>
 </blockquote>
-<h2 id="spring内置容器的配置">Spring内置容器的配置</h2>
+<h2 id="mybatis是怎么实现和springboot的整合的">mybatis是怎么实现和SpringBoot的整合的？</h2>
 <blockquote>
-<p>修改配置：</p>
-<ol type="1">
-<li><p>可以在application.properties中按server.xxx:的方式修改</p></li>
-<li><p>创建一个配置类通过编写public WebServerFactoryCustomizer<ConfigurableWebServerFactory> customizer()方法来设置。</ConfigurableWebServerFactory></p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/内嵌服务器配置修改.png" alt="内嵌服务器配置修改"><figcaption aria-hidden="true">内嵌服务器配置修改</figcaption>
-</figure></li>
-</ol>
-<p>更换容器：</p>
-<p>​ 通过先将start内的容器依赖去除然后导入新依赖即可。</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/修改内嵌容器.png" alt="修改内嵌容器"><figcaption aria-hidden="true">修改内嵌容器</figcaption>
-</figure>
-</blockquote>
-<h2 id="过滤器和拦截器">过滤器和拦截器</h2>
-<blockquote>
-<p>过滤器：在进入servlet前过滤。</p>
-<p>实现方式：</p>
-<p>​ 创建类实现接口javax.servlet.Filter，加上@Component，然后使用一个如下的配置类注入spring容器。</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/filterConfig.png" alt="filterConfig"><figcaption aria-hidden="true">filterConfig</figcaption>
-</figure>
-<p>​ 创建类实现接口javax.servlet.Filter，加上@WebFilter，然后在主启动类中加上@ServletComponentScan注解。</p>
-<p>拦截器：拦截方法。</p>
-<p>​ 创建类实现HandlerInterceptor接口，然后创建配置类实现WebMvcConfigurer接口，配置类如下。</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/interceptorConfig.png" alt="interceptorConfig"><figcaption aria-hidden="true">interceptorConfig</figcaption>
-</figure>
-</blockquote>
-<h2 id="错误及异常处理">错误及异常处理</h2>
-<h3 id="数值校验">数值校验</h3>
-<blockquote>
-<p>在参数前加入@Valid/<span class="citation" data-cites="Validated注解">@Validated注解</span>，然后跟上BindingResult对象即可获取错误时的错误信息。如图</p>
-<p>利用配置文件ValidationMessages.properties中设置发生错误的提示信息。在bean的注解属性中通过{key}获取属性。</p>
-</blockquote>
-<h3 id="错误页指定">错误页指定</h3>
-<blockquote>
-<p>用到了再查</p>
-</blockquote>
-<h3 id="全局异常处理">全局异常处理</h3>
-<blockquote>
-<p>实现一个异常处理类并加上@ControllerAdvice注解。如图</p>
-<figure>
-<img src="/2021/02/20/codeAnalyse/springboot%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/全局异常处理.png" alt="全局异常处理"><figcaption aria-hidden="true">全局异常处理</figcaption>
-</figure>
-</blockquote>
-<h2 id="日志">日志</h2>
-<h3 id="日志文件输出">日志文件输出</h3>
-<blockquote>
-<p>在application中添加logging.file.path = xxx 默认日志名为spring.log</p>
-<p>或添加logging.file.name = xxxx 默认输出路径为项目当前路径。</p>
-<p>二者不能同时使用。</p>
-</blockquote>
-<h3 id="日志级别控制">日志级别控制</h3>
-<blockquote>
-<p>日志级别有TRACE、DEBUG、INFO、WARN、ERROR、FATAL、OFF。</p>
-<p>logging.level.包名 = xxx级别</p>
-<p>logging.level.root = 设置全局日志级别</p>
-</blockquote>
-<h2 id="文档生成">文档生成</h2>
-<h3 id="swaggle">swaggle</h3>
-<blockquote>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;io.springfox&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;springfox-swagger2&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.9.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line">		</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;io.springfox&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;springfox-swagger-ui&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.9.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableSwagger2</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SwaggerConfig</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Docket <span class="title">api</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Docket(DocumentationType.SWAGGER_2).select()</span><br><span class="line">                .apis(RequestHandlerSelectors.any())</span><br><span class="line">                .paths(PathSelectors.any())</span><br><span class="line">                .build();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>访问http://localhost:8080/v2/api-docs拿到api的json</p>
-<p>访问http://localhost:8080/swagger-ui.html获取页面</p>
-</blockquote>
-<h2 id="监控">监控</h2>
-<blockquote>
-<p>本质上是通过log收集信息，然后利用信息分析。</p>
-</blockquote>
-<h2 id="缓存">缓存</h2>
-<blockquote>
-<p><span class="citation" data-cites="Cacheable">@Cacheable</span>(value = "xx", key = "zz", condition = "yyy")</p>
-<p>​ value 表示缓存名</p>
-<p>​ key为缓存键，需要用SPEL写</p>
-<p>​ condition为缓存触发的条件，需要用SPEL写</p>
-<p>​ 缓存值为对应方法的返回值</p>
-<p><span class="citation" data-cites="CacheEvict">@CacheEvict</span>(beforeInvocation = true表示在方法触发前就移除了缓存) 移除缓存</p>
-<p><span class="citation" data-cites="CachePut">@CachePut</span> 添加缓存</p>
-</blockquote>
-<h2 id="微服务">微服务</h2>
-<blockquote>
-<p>注册中心</p>
-<p>服务提供者</p>
-<p>服务追踪</p>
-<p>服务治理</p>
+
 </blockquote>
 
       
@@ -544,13 +444,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">201k</span>
+    <span title="站点总字数">204k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:03</span>
+    <span title="站点阅读时长">3:05</span>
   </span>
 </div>
 <div class="busuanzi-count">
