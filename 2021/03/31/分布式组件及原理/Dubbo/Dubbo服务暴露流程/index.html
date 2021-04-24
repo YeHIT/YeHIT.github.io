@@ -25,24 +25,24 @@
 <meta name="description" content="Dubbo服务暴露流程 流程是从哪里开始的？  Dubbo启动流程   起始位置DubboBootstrapApplicationListener。 核心类DubboBootstrap。  DubboBootstrap  Dubbo的核心启动类，类内部的ConfigManager存储了解析出的各种配置信息。 添加配置信息的过程是由于Dubbo的配置类都继承AbstractC">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Dubbo服务暴露流程">
-<meta property="og:url" content="http://49.234.221.130/2021/03/31/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo%E6%9C%8D%E5%8A%A1%E6%9A%B4%E9%9C%B2%E6%B5%81%E7%A8%8B/index.html">
+<meta property="og:url" content="http://49.234.221.130/2021/03/31/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo/Dubbo%E6%9C%8D%E5%8A%A1%E6%9A%B4%E9%9C%B2%E6%B5%81%E7%A8%8B/index.html">
 <meta property="og:site_name" content="Yesomething">
 <meta property="og:description" content="Dubbo服务暴露流程 流程是从哪里开始的？  Dubbo启动流程   起始位置DubboBootstrapApplicationListener。 核心类DubboBootstrap。  DubboBootstrap  Dubbo的核心启动类，类内部的ConfigManager存储了解析出的各种配置信息。 添加配置信息的过程是由于Dubbo的配置类都继承AbstractC">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://49.234.221.130/2021/03/31/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo%E6%9C%8D%E5%8A%A1%E6%9A%B4%E9%9C%B2%E6%B5%81%E7%A8%8B/Dubbo启动流程.png">
-<meta property="og:image" content="http://49.234.221.130/2021/03/31/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo%E6%9C%8D%E5%8A%A1%E6%9A%B4%E9%9C%B2%E6%B5%81%E7%A8%8B/start方法流程.png">
-<meta property="og:image" content="http://49.234.221.130/2021/03/31/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo%E6%9C%8D%E5%8A%A1%E6%9A%B4%E9%9C%B2%E6%B5%81%E7%A8%8B/export方法流程.png">
-<meta property="og:image" content="http://49.234.221.130/2021/03/31/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo%E6%9C%8D%E5%8A%A1%E6%9A%B4%E9%9C%B2%E6%B5%81%E7%A8%8B/远程暴露流程.png">
+<meta property="og:image" content="http://49.234.221.130/2021/03/31/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo/Dubbo%E6%9C%8D%E5%8A%A1%E6%9A%B4%E9%9C%B2%E6%B5%81%E7%A8%8B/Dubbo启动流程.png">
+<meta property="og:image" content="http://49.234.221.130/2021/03/31/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo/Dubbo%E6%9C%8D%E5%8A%A1%E6%9A%B4%E9%9C%B2%E6%B5%81%E7%A8%8B/start方法流程.png">
+<meta property="og:image" content="http://49.234.221.130/2021/03/31/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo/Dubbo%E6%9C%8D%E5%8A%A1%E6%9A%B4%E9%9C%B2%E6%B5%81%E7%A8%8B/export方法流程.png">
+<meta property="og:image" content="http://49.234.221.130/2021/03/31/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo/Dubbo%E6%9C%8D%E5%8A%A1%E6%9A%B4%E9%9C%B2%E6%B5%81%E7%A8%8B/远程暴露流程.png">
 <meta property="article:published_time" content="2021-03-30T16:00:00.000Z">
 <meta property="article:modified_time" content="2021-03-31T14:32:24.100Z">
 <meta property="article:author" content="Ye">
 <meta property="article:tag" content="Dubbo">
 <meta property="article:tag" content="分布式">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://49.234.221.130/2021/03/31/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo%E6%9C%8D%E5%8A%A1%E6%9A%B4%E9%9C%B2%E6%B5%81%E7%A8%8B/Dubbo启动流程.png">
+<meta name="twitter:image" content="http://49.234.221.130/2021/03/31/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo/Dubbo%E6%9C%8D%E5%8A%A1%E6%9A%B4%E9%9C%B2%E6%B5%81%E7%A8%8B/Dubbo启动流程.png">
 
 
-<link rel="canonical" href="http://49.234.221.130/2021/03/31/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo%E6%9C%8D%E5%8A%A1%E6%9A%B4%E9%9C%B2%E6%B5%81%E7%A8%8B/">
+<link rel="canonical" href="http://49.234.221.130/2021/03/31/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo/Dubbo%E6%9C%8D%E5%8A%A1%E6%9A%B4%E9%9C%B2%E6%B5%81%E7%A8%8B/">
 
 
 <script class="page-configurations">
@@ -208,7 +208,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">62</span>
+          <span class="site-state-item-count">64</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -221,7 +221,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-count">35</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -274,7 +274,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/31/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo%E6%9C%8D%E5%8A%A1%E6%9A%B4%E9%9C%B2%E6%B5%81%E7%A8%8B/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/03/31/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo/Dubbo%E6%9C%8D%E5%8A%A1%E6%9A%B4%E9%9C%B2%E6%B5%81%E7%A8%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -347,7 +347,7 @@
         <h1 id="dubbo服务暴露流程">Dubbo服务暴露流程</h1>
 <h2 id="流程是从哪里开始的">流程是从哪里开始的？</h2>
 <figure>
-<img src="/2021/03/31/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo%E6%9C%8D%E5%8A%A1%E6%9A%B4%E9%9C%B2%E6%B5%81%E7%A8%8B/Dubbo启动流程.png" alt="Dubbo启动流程"><figcaption aria-hidden="true">Dubbo启动流程</figcaption>
+<img src="/2021/03/31/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo/Dubbo%E6%9C%8D%E5%8A%A1%E6%9A%B4%E9%9C%B2%E6%B5%81%E7%A8%8B/Dubbo启动流程.png" alt="Dubbo启动流程"><figcaption aria-hidden="true">Dubbo启动流程</figcaption>
 </figure>
 <blockquote>
 <p>起始位置DubboBootstrapApplicationListener。</p>
@@ -376,7 +376,7 @@
 <blockquote>
 <p>核心流程</p>
 <figure>
-<img src="/2021/03/31/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo%E6%9C%8D%E5%8A%A1%E6%9A%B4%E9%9C%B2%E6%B5%81%E7%A8%8B/start方法流程.png" alt="start方法流程"><figcaption aria-hidden="true">start方法流程</figcaption>
+<img src="/2021/03/31/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo/Dubbo%E6%9C%8D%E5%8A%A1%E6%9A%B4%E9%9C%B2%E6%B5%81%E7%A8%8B/start方法流程.png" alt="start方法流程"><figcaption aria-hidden="true">start方法流程</figcaption>
 </figure>
 </blockquote>
 <h3 id="分析exportservices方法">分析exportServices()方法</h3>
@@ -389,7 +389,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">export</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (bootstrap == <span class="keyword">null</span>) &#123;</span><br><span class="line">        bootstrap = DubboBootstrap.getInstance();</span><br><span class="line">        bootstrap.initialize();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    checkAndUpdateSubConfigs();</span><br><span class="line"></span><br><span class="line">    <span class="comment">//init serviceMetadata</span></span><br><span class="line">    serviceMetadata.setVersion(getVersion());</span><br><span class="line">    serviceMetadata.setGroup(getGroup());</span><br><span class="line">    serviceMetadata.setDefaultGroup(getGroup());</span><br><span class="line">    serviceMetadata.setServiceType(getInterfaceClass());</span><br><span class="line">    serviceMetadata.setServiceInterfaceName(getInterface());</span><br><span class="line">    serviceMetadata.setTarget(getRef());</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!shouldExport()) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (shouldDelay()) &#123;</span><br><span class="line">        DELAY_EXPORT_EXECUTOR.schedule(<span class="keyword">this</span>::doExport, getDelay(), TimeUnit.MILLISECONDS);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        doExport();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    exported();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>该方法流程为：</p>
 <figure>
-<img src="/2021/03/31/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo%E6%9C%8D%E5%8A%A1%E6%9A%B4%E9%9C%B2%E6%B5%81%E7%A8%8B/export方法流程.png" alt="export方法流程"><figcaption aria-hidden="true">export方法流程</figcaption>
+<img src="/2021/03/31/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo/Dubbo%E6%9C%8D%E5%8A%A1%E6%9A%B4%E9%9C%B2%E6%B5%81%E7%A8%8B/export方法流程.png" alt="export方法流程"><figcaption aria-hidden="true">export方法流程</figcaption>
 </figure>
 </blockquote>
 <h3 id="分析doexport和doexporturls方法">分析doExport()和doExportUrls()方法</h3>
@@ -417,7 +417,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 暴露到远程</span></span><br><span class="line"><span class="keyword">if</span> (!SCOPE_LOCAL.equalsIgnoreCase(scope)) &#123;</span><br><span class="line">    <span class="keyword">if</span> (CollectionUtils.isNotEmpty(registryURLs)) &#123;</span><br><span class="line">        <span class="comment">// 遍历URL</span></span><br><span class="line">        <span class="keyword">for</span> (URL registryURL : registryURLs) &#123;</span><br><span class="line">            <span class="comment">//if protocol is only injvm ,not register</span></span><br><span class="line">            <span class="comment">// 若URL协议为本地协议则跳过</span></span><br><span class="line">            <span class="keyword">if</span> (LOCAL_PROTOCOL.equalsIgnoreCase(url.getProtocol())) &#123;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            url = url.addParameterIfAbsent(DYNAMIC_KEY, registryURL.getParameter(DYNAMIC_KEY));</span><br><span class="line">            <span class="comment">// 加载监视器连接</span></span><br><span class="line">            URL monitorUrl = ConfigValidationUtils.loadMonitor(<span class="keyword">this</span>, registryURL);</span><br><span class="line">            <span class="keyword">if</span> (monitorUrl != <span class="keyword">null</span>) &#123;</span><br><span class="line">                url = url.addParameterAndEncoded(MONITOR_KEY, monitorUrl.toFullString());</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 打印日志</span></span><br><span class="line">            <span class="keyword">if</span> (logger.isInfoEnabled()) &#123;</span><br><span class="line">                <span class="keyword">if</span> (url.getParameter(REGISTER_KEY, <span class="keyword">true</span>)) &#123;</span><br><span class="line">                    logger.info(<span class="string">&quot;Register dubbo service &quot;</span> + interfaceClass.getName() + <span class="string">&quot; url &quot;</span> + url + <span class="string">&quot; to registry &quot;</span> + registryURL);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    logger.info(<span class="string">&quot;Export dubbo service &quot;</span> + interfaceClass.getName() + <span class="string">&quot; to url &quot;</span> + url);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// For providers, this is used to enable custom proxy to generate invoker</span></span><br><span class="line">            String proxy = url.getParameter(PROXY_KEY);</span><br><span class="line">            <span class="keyword">if</span> (StringUtils.isNotEmpty(proxy)) &#123;</span><br><span class="line">                registryURL = registryURL.addParameter(PROXY_KEY, proxy);</span><br><span class="line">            &#125;</span><br><span class="line">			<span class="comment">// 根据代理工厂默认是JavassistProxyFactory产生Invoker对象</span></span><br><span class="line">            Invoker&lt;?&gt; invoker = PROXY_FACTORY.getInvoker(ref, (Class) interfaceClass, registryURL.addParameterAndEncoded(EXPORT_KEY, url.toFullString()));</span><br><span class="line">            DelegateProviderMetaDataInvoker wrapperInvoker = <span class="keyword">new</span> DelegateProviderMetaDataInvoker(invoker, <span class="keyword">this</span>);</span><br><span class="line">			<span class="comment">// 这里export，会默认先调用QosProtocolWrapper的export方法，最后调用到RegistryProtocol.export()方法</span></span><br><span class="line">            Exporter&lt;?&gt; exporter = PROTOCOL.export(wrapperInvoker);</span><br><span class="line">            exporters.add(exporter);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (logger.isInfoEnabled()) &#123;</span><br><span class="line">            logger.info(<span class="string">&quot;Export dubbo service &quot;</span> + interfaceClass.getName() + <span class="string">&quot; to url &quot;</span> + url);</span><br><span class="line">        &#125;</span><br><span class="line">        Invoker&lt;?&gt; invoker = PROXY_FACTORY.getInvoker(ref, (Class) interfaceClass, url);</span><br><span class="line">        DelegateProviderMetaDataInvoker wrapperInvoker = <span class="keyword">new</span> DelegateProviderMetaDataInvoker(invoker, <span class="keyword">this</span>);</span><br><span class="line"></span><br><span class="line">        Exporter&lt;?&gt; exporter = PROTOCOL.export(wrapperInvoker);</span><br><span class="line">        exporters.add(exporter);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    MetadataUtils.publishServiceDefinition(url);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>远程暴露流程：</p>
 <figure>
-<img src="/2021/03/31/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo%E6%9C%8D%E5%8A%A1%E6%9A%B4%E9%9C%B2%E6%B5%81%E7%A8%8B/远程暴露流程.png" alt="远程暴露流程"><figcaption aria-hidden="true">远程暴露流程</figcaption>
+<img src="/2021/03/31/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo/Dubbo%E6%9C%8D%E5%8A%A1%E6%9A%B4%E9%9C%B2%E6%B5%81%E7%A8%8B/远程暴露流程.png" alt="远程暴露流程"><figcaption aria-hidden="true">远程暴露流程</figcaption>
 </figure>
 </blockquote>
 <h2 id="分析服务暴露核心方法registryprotocol.export">分析服务暴露核心方法RegistryProtocol.export()</h2>
@@ -487,7 +487,7 @@
   </li>
   <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="http://49.234.221.130/2021/03/31/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo%E6%9C%8D%E5%8A%A1%E6%9A%B4%E9%9C%B2%E6%B5%81%E7%A8%8B/" title="Dubbo服务暴露流程">http://49.234.221.130/2021/03/31/分布式组件及原理/Dubbo服务暴露流程/</a>
+      <a href="http://49.234.221.130/2021/03/31/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo/Dubbo%E6%9C%8D%E5%8A%A1%E6%9A%B4%E9%9C%B2%E6%B5%81%E7%A8%8B/" title="Dubbo服务暴露流程">http://49.234.221.130/2021/03/31/分布式组件及原理/Dubbo/Dubbo服务暴露流程/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -504,12 +504,12 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2021/03/29/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo%E8%A7%A3%E6%9E%90%E8%BF%87%E7%A8%8B/" rel="prev" title="Dubbo解析过程">
+                <a href="/2021/03/29/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo/Dubbo%E8%A7%A3%E6%9E%90%E8%BF%87%E7%A8%8B/" rel="prev" title="Dubbo解析过程">
                   <i class="fa fa-chevron-left"></i> Dubbo解析过程
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2021/03/31/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo%E5%BC%95%E7%94%A8%E6%9C%8D%E5%8A%A1%E6%B5%81%E7%A8%8B/" rel="next" title="Dubbo引用服务流程">
+                <a href="/2021/03/31/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/Dubbo/Dubbo%E5%BC%95%E7%94%A8%E6%9C%8D%E5%8A%A1%E6%B5%81%E7%A8%8B/" rel="next" title="Dubbo引用服务流程">
                   Dubbo引用服务流程 <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
@@ -565,13 +565,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">205k</span>
+    <span title="站点总字数">206k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:06</span>
+    <span title="站点阅读时长">3:07</span>
   </span>
 </div>
 <div class="busuanzi-count">
