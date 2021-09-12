@@ -1,6 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>hexo博客搭建留档</title>
+    <url>/2021/09/12/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E7%95%99%E6%A1%A3/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/</url>
+    <content><![CDATA[<h1 id="hexo博客搭建留档">hexo博客搭建留档</h1>
+<blockquote>
+<p>官网教程：<a href="https://hexo.io/zh-cn/docs/">文档 | Hexo</a></p>
+<p>写个这个主要为了自己重新熟悉一下博客怎么搭的，顺便方便自己以后忘了重建。</p>
+</blockquote>
+<h2 id="怎么初始化博客">怎么初始化博客？</h2>
+<h3 id="环境搭建">环境搭建</h3>
+<blockquote>
+<p>完成环境初步配置，按官网文档，安装node.js、hexo等即可。</p>
+</blockquote>
+<h3 id="hexo初始化">hexo初始化</h3>
+<blockquote>
+<p>hexo init 博客文件夹名字 即可自动完成博客目录的自动构建。举例：</p>
+<figure>
+<img src="/2021/09/12/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E7%95%99%E6%A1%A3/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/image-20210912154654549.png" alt="image-20210912154654549"><figcaption aria-hidden="true">image-20210912154654549</figcaption>
+</figure>
+</blockquote>
+<h3 id="修改配置">修改配置</h3>
+<blockquote>
+<p>进入目录可以看到如下结构：</p>
+<figure>
+<img src="/2021/09/12/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E7%95%99%E6%A1%A3/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/image-20210912154751119.png" alt="image-20210912154751119"><figcaption aria-hidden="true">image-20210912154751119</figcaption>
+</figure>
+<p>其中_config.yml是博客的配置文件，可以从中修改。主要需要修改的有：</p>
+<figure>
+<img src="/2021/09/12/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E7%95%99%E6%A1%A3/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/image-20210912154955884.png" alt="image-20210912154955884"><figcaption aria-hidden="true">image-20210912154955884</figcaption>
+</figure>
+<p>主要修改博客标题、子标题、作者、语言和时区。</p>
+<figure>
+<img src="/2021/09/12/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E7%95%99%E6%A1%A3/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/image-20210912155151182.png" alt="image-20210912155151182"><figcaption aria-hidden="true">image-20210912155151182</figcaption>
+</figure>
+<p>用于修改博客的部署地址，如果用github配置博客可以不用管。</p>
+<p>还有一些后面用到再说。</p>
+</blockquote>
+<h3 id="启动博客">启动博客</h3>
+<blockquote>
+<p>hexo g 生成静态文件</p>
+<p>hexo s 启动博客</p>
+<p>hexo d 部署博客。 部署前记得先执行hexo g。或者直接执行hexo g -d。也可以执行hexo d -g。</p>
+</blockquote>
+<h2 id="博客里怎么写文章">博客里怎么写文章?</h2>
+<h3 id="创建文章">创建文章</h3>
+<blockquote>
+<p>其实方式很多，我主要习惯自己在博客根目录的source/_posts手动创建一个总文章目录，内含多个子文档。我觉得这样方便自己管理，但是会遇到一些资源相关的问题，我后面会提到。</p>
+<figure>
+<img src="/2021/09/12/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E7%95%99%E6%A1%A3/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/image-20210912160012995.png" alt="image-20210912160012995"><figcaption aria-hidden="true">image-20210912160012995</figcaption>
+</figure>
+<p>也可以用hexo提供的 <code>hexo new [layout] &lt;title&gt;</code> 命令来创建。</p>
+</blockquote>
+<h3 id="编写文章内容">编写文章内容</h3>
+<blockquote>
+<p>创建一个md文件，最上方加上如下内容，可以使得生成的博客页面按自己指定的内容构建。</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">title:</span> <span class="string">文章名</span></span><br><span class="line"><span class="attr">date:</span> <span class="string">文章日期</span></span><br><span class="line"><span class="attr">tags:</span> </span><br><span class="line">    <span class="bullet">-</span> <span class="string">文章属于的tag名</span></span><br><span class="line"><span class="attr">category:</span> 	</span><br><span class="line">	<span class="bullet">-</span> <span class="string">文章父分类</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">文章子分类</span></span><br><span class="line">    <span class="bullet">-</span> [<span class="string">文章父分类</span>,<span class="string">文章子分类</span>]</span><br><span class="line"><span class="meta">---</span></span><br></pre></td></tr></table></figure>
+<h3 id="如何引用图片">如何引用图片</h3>
+</blockquote>
+<blockquote>
+<p>hexo自带的方式是将图片放到相关资源文件夹中，但是我感觉这样不好分类有点麻烦，不如放到文章对应的目录下。</p>
+<p>hexo也提供类似的方式，但是实际使用下来这个文件夹不是很符合自己预期。</p>
+<figure>
+<img src="/2021/09/12/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E7%95%99%E6%A1%A3/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/image-20210912161200017.png" alt="image-20210912161200017"><figcaption aria-hidden="true">image-20210912161200017</figcaption>
+</figure>
+<p>最后我使用的方式如下：</p>
+<figure>
+<img src="/2021/09/12/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E7%95%99%E6%A1%A3/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/image-20210912161342192.png" alt="image-20210912161342192"><figcaption aria-hidden="true">image-20210912161342192</figcaption>
+</figure>
+<p>在_config.yml文件中修改配置信息，在md文件里复制粘贴图片时可以开启“复制到指定路径”功能。我用的md编写工具是Typora，其他的md工具也有类似功能。</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">post_asset_folder:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">marked:</span></span><br><span class="line">  <span class="attr">prependRoot:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">postAsset:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+<figure>
+<img src="/2021/09/12/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E7%95%99%E6%A1%A3/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/image-20210912161500364.png" alt="image-20210912161500364"><figcaption aria-hidden="true">image-20210912161500364</figcaption>
+</figure>
+<p>此时粘贴图片时会在文章目录内自动创建一个图片目录类似这样</p>
+<figure>
+<img src="/2021/09/12/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E7%95%99%E6%A1%A3/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/image-20210912161714351.png" alt="image-20210912161714351"><figcaption aria-hidden="true">image-20210912161714351</figcaption>
+</figure>
+<p>在引用图片时把路径改为如下样式即可实现部署时图片正常显示。</p>
+<figure>
+<img src="/2021/09/12/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E7%95%99%E6%A1%A3/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/image-20210912161800354.png" alt="image-20210912161800354"><figcaption aria-hidden="true">image-20210912161800354</figcaption>
+</figure>
+</blockquote>
+<h2 id="博客最终部署">博客最终部署</h2>
+<h3 id="修改配置-1">修改配置</h3>
+<blockquote>
+<p>编写博客的最后一步就是博客部署到自己的站点上。</p>
+<p>这里为了方便直接使用github提供的github.io作为自己部署的地址。可以在配置文件里修改如下内容：</p>
+<figure>
+<img src="/2021/09/12/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E7%95%99%E6%A1%A3/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/image-20210912164257634.png" alt="image-20210912164257634"><figcaption aria-hidden="true">image-20210912164257634</figcaption>
+</figure>
+</blockquote>
+<h3 id="博客部署">博客部署</h3>
+<blockquote>
+<p>执行hexo d -g指令即可。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>框架入门 - hexo博客搭建</category>
+      </categories>
+      <tags>
+        <tag>框架使用</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>初识grpc</title>
     <url>/2021/04/24/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/grpc/%E5%88%9D%E8%AF%86grpc/</url>
     <content><![CDATA[<h1 id="初识grpc">初识grpc</h1>
@@ -12,8 +115,23 @@
 <blockquote>
 <p>grpc框架是google开发的一个RPC框架，在我看来它和Dubbo的核心区别在于它使用google自研开源序列化框架protobuf作为序列化框架，并使用Http2.0作为通信框架。</p>
 <p>在我看来，想要学习使用grpc首先需要了解go语言当前的包管理机制，此外还需要了解protobuf的基本使用。</p>
-<p>go语言的包管理机制可以查看我编写的博客。</p>
+<p>go语言的包管理机制可以查看我编写的博客<a href="http://49.234.221.130/2021/04/24/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/Golang/Golang%E5%8C%85%E7%AE%A1%E7%90%86/">go包管理</a>。</p>
 </blockquote>
+<h2 id="protobuf基本使用">protobuf基本使用</h2>
+<p><span class="math inline">\(tips: 由于grpc默认是proto3版本，本博客只讲解protobuf3的使用。\)</span></p>
+<blockquote>
+<p>protobuf文件的后缀为<span class="math inline">\(.proto\)</span>。举例如下：</p>
+<figure class="highlight typescript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 由于指定当前使用的protobuf版本</span></span><br><span class="line">syntax = <span class="string">&quot;proto3&quot;</span>;</span><br><span class="line"></span><br><span class="line">message SearchRequest &#123;</span><br><span class="line">	<span class="comment">// 消息类型和序号</span></span><br><span class="line">    <span class="built_in">string</span> query = <span class="number">1</span>;</span><br><span class="line">    int32 page_number = <span class="number">2</span>;</span><br><span class="line">    int32 result_per_page = <span class="number">3</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>而想要使用对应的.proto文件还需要使用对应的protoc来生成对应语言的代码<a href="https://github.com/protocolbuffers/protobuf/releases">protoc下载</a>。</p>
+<p>如执行以下指令生成对应的proto实体类</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">protoc --go_out=out --go_opt=paths=source_relative hello.proto</span><br></pre></td></tr></table></figure>
+<h2 id="protobuf融合grpc的使用">protobuf融合grpc的使用</h2>
+</blockquote>
+<blockquote>
+<figure class="highlight typescript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 标识使用的protobuf版本号</span></span><br><span class="line">syntax = <span class="string">&quot;proto3&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 产生对应go文件所属的包名</span></span><br><span class="line">option go_package = <span class="string">&quot;google.golang.org/grpc/examples/helloworld/helloworld&quot;</span>;</span><br><span class="line"><span class="comment">// 产生Java文件时需要配置</span></span><br><span class="line"><span class="comment">// 如果是true，那么每一个message文件都会有一个单独的class文件；否则，message全部定义在outerclass文件里</span></span><br><span class="line">option java_multiple_files = <span class="literal">true</span>;</span><br><span class="line"><span class="comment">// 标识生成的java文件的package</span></span><br><span class="line">option java_package = <span class="string">&quot;io.grpc.examples.helloworld&quot;</span>;</span><br><span class="line"><span class="comment">// 指定proto文件生成的java类的outerclass类名，即产生的Java类名</span></span><br><span class="line">option java_outer_classname = <span class="string">&quot;HelloWorldProto&quot;</span>;</span><br><span class="line"><span class="comment">// 定义message的包名，该包名只是为了区分名字相同的proto文件，和具体生成代码无关。</span></span><br><span class="line">package helloworld;</span><br><span class="line"></span><br><span class="line"><span class="comment">// grpc需要的定义</span></span><br><span class="line">service Greeter &#123;</span><br><span class="line">  <span class="comment">// Sends a greeting</span></span><br><span class="line">  rpc SayHello (HelloRequest) returns (HelloReply) &#123;&#125;</span><br><span class="line">  rpc SayHelloAgain (HelloRequest) returns (HelloReply) &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// The request message containing the user&#x27;s name.</span></span><br><span class="line">message HelloRequest &#123;</span><br><span class="line">  <span class="built_in">string</span> name = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// The response message containing the greetings</span></span><br><span class="line">message HelloReply &#123;</span><br><span class="line">  <span class="built_in">string</span> message = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="利用protoc生成代码的命令">利用protoc生成代码的命令</h2>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative hello.proto</span><br><span class="line">// --go_out为.pb.go文件生成路径,--go-grpc_out为_grpc.pb.go文件生成路径</span><br><span class="line">// --go_opt=paths=source_relative表示输入文件和输出文件但是处于同一个相对路径</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>分布式</category>
@@ -35,7 +153,7 @@
 <blockquote>
 <p>Go语言自带标准库的包在$GOROOT/src下面，可直接引用。</p>
 <p>自定义的包和第三方包需要放在$GOPATH/src下面才能被引用。</p>
-<p>可以认为GOROOT就是Go语言的标准包，默认各项目都可以使用；GOPATH是项目对于的Go环境需要自己设置。</p>
+<p>可以认为GOROOT就是Go语言的标准包，默认各项目都可以使用；GOPATH则是自己开发的项目，其需要的包需要自己引入。</p>
 </blockquote>
 <h2 id="在goland中设置gopath">在Goland中设置GOPATH</h2>
 <blockquote>

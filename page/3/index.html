@@ -198,20 +198,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">64</span>
+          <span class="site-state-item-count">65</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-count">20</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-count">36</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/04/21/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/C++/C++%E5%B8%B8%E7%94%A8%E7%9F%A5%E8%AF%86/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/04/24/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/Golang/Golang%E5%8C%85%E7%AE%A1%E7%90%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/04/21/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/C++/C++%E5%B8%B8%E7%94%A8%E7%9F%A5%E8%AF%86/" class="post-title-link" itemprop="url">C++常用知识</a>
+          <a href="/2021/04/24/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/Golang/Golang%E5%8C%85%E7%AE%A1%E7%90%86/" class="post-title-link" itemprop="url">Golang包管理</a>
         </h2>
 
         <div class="post-meta-container">
@@ -288,7 +288,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-04-21 00:00:00 / 修改时间：23:47:47" itemprop="dateCreated datePublished" datetime="2021-04-21T00:00:00+08:00">2021-04-21</time>
+      <time title="创建时间：2021-04-24 00:00:00 / 修改时间：21:17:14" itemprop="dateCreated datePublished" datetime="2021-04-24T00:00:00+08:00">2021-04-24</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -296,11 +296,11 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/C/" itemprop="url" rel="index"><span itemprop="name">C++</span></a>
+          <a href="/categories/Golang/" itemprop="url" rel="index"><span itemprop="name">Golang</span></a>
         </span>
           ，
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/C/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a>
+          <a href="/categories/Golang/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a>
         </span>
     </span>
 
@@ -312,7 +312,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>1.1k</span>
+      <span>728</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -330,49 +330,41 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="c常用知识">C++常用知识</h1>
-<h2 id="使用string">使用string</h2>
+          <h1 id="golang包管理">Golang包管理</h1>
+<h2 id="前言">前言</h2>
 <blockquote>
-<p>需要#include <string> 一般可以using std::string</string></p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="built_in">string</span> <span class="title">s1</span><span class="params">(<span class="number">10</span>,<span class="string">&#x27;c&#x27;</span>)</span></span>;</span><br><span class="line"><span class="built_in">string</span> s2 = <span class="string">&quot;xxx&quot;</span>;</span><br></pre></td></tr></table></figure>
-<p>常用函数</p>
-<p>s.empty()</p>
-<p>s.size() ：注意点返回的值是string::size_type类型，返回的是个无符号整数。</p>
+<p>由于我之前一直使用的是Java开发，Java的包管理通过Maven实现，而我在接触Golang时明显感觉到无法理解Golang的包管理机制，因此打算通过这篇博客帮助自己理解Golang的包管理，并以此帮助自己以后的工作。</p>
 </blockquote>
-<h2 id="特殊的for循环">特殊的for循环</h2>
+<h2 id="golang的gopath和goroot">Golang的GOPATH和GOROOT</h2>
 <blockquote>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">string</span> str = <span class="string">&quot;xxxxx&quot;</span>;</span><br><span class="line"><span class="comment">// 类似foreach</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">auto</span> c : str)&#123;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; c;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="使用vector">使用Vector</h2>
+<p>Go语言自带标准库的包在$GOROOT/src下面，可直接引用。</p>
+<p>自定义的包和第三方包需要放在$GOPATH/src下面才能被引用。</p>
+<p>可以认为GOROOT就是Go语言的标准包，默认各项目都可以使用；GOPATH则是自己开发的项目，其需要的包需要自己引入。</p>
 </blockquote>
+<h2 id="在goland中设置gopath">在Goland中设置GOPATH</h2>
 <blockquote>
-<p>Vector使用了C++的模板</p>
-<p>需要#include <vector> 一般可以using std::vector</vector></p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 初始化vector</span></span><br><span class="line"><span class="function"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; <span class="title">v1</span><span class="params">(<span class="number">10</span>)</span></span>; <span class="comment">// 初始化大小为10的vector</span></span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; v2&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>&#125;; <span class="comment">// 初始化vector内容</span></span><br><span class="line"><span class="function"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; <span class="title">v3</span><span class="params">(<span class="number">10</span>,<span class="number">1</span>)</span></span>; <span class="comment">// 初始化v3，共10个元素，每个元素均为1 </span></span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="built_in">string</span>&gt; v4&#123;<span class="number">10</span>,<span class="string">&quot;hi&quot;</span>&#125;; <span class="comment">// 初始化v4，共10个元素，每个元素均为hi</span></span><br></pre></td></tr></table></figure>
-<p>vector.push_back()：vector添加元素</p>
-<p>vector.size()：vector大小</p>
-<p>vector.empty()：vector是否为空</p>
-<p><strong>注意</strong>：可以通过v[i]访问元素，但不能通过v[i]添加元素，即不能v[i] = 11。</p>
+<figure>
+<img src="/2021/04/24/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/Golang/Golang%E5%8C%85%E7%AE%A1%E7%90%86/Goland的GOPATH.png" alt="Goland的GOPATH"><figcaption aria-hidden="true">Goland的GOPATH</figcaption>
+</figure>
+<p>如图，可以通过配置project GOPATH来设置Go项目的包环境，注意只有在GOPATH/src下的包才能被引用。</p>
+<p>导入包的顺序：</p>
+<p>​ 先从GOROOT中寻找，若没有找到则再从配置的GOPATH中寻找，如果配置了多个GOPATH会按顺序查找。</p>
 </blockquote>
-<h2 id="迭代器">迭代器</h2>
+<h2 id="对于基础gopath设置项目的理解">对于基础GOPATH设置项目的理解</h2>
 <blockquote>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> begin = v.begin();</span><br><span class="line"><span class="keyword">auto</span> end = v.end();</span><br><span class="line"><span class="keyword">while</span> (begin != end)&#123;</span><br><span class="line">    ++begin;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="数组">数组</h2>
+<p>我认为通过配置GOPATH来决定项目包的使用有点类似于Java中通过手动导入jar包的行为，这种方式在大量使用包时比较难以管理。这样引入了go当前的包管理机制go module。</p>
 </blockquote>
+<h2 id="go-module">Go module</h2>
+<h3 id="一些配置">一些配置</h3>
 <blockquote>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> arr[<span class="number">10</span>];</span><br><span class="line"><span class="keyword">int</span> *parr[<span class="number">10</span>];</span><br><span class="line"><span class="keyword">int</span> a2[<span class="number">2</span>] = &#123;<span class="number">0</span>,<span class="number">1</span>&#125;;</span><br><span class="line"><span class="comment">// 数组下标往往用size_t类型</span></span><br><span class="line">begin(arr); <span class="comment">// 获取数组首指针</span></span><br><span class="line">end(arr);	<span class="comment">// 获取数组尾指针</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h2 id="c异常处理">C++异常处理</h2>
+<p>首先基本配置需要让GO111MODULE=on</p>
+<p>如果 go get 执行速度过慢需要设置代理，具体流程可以百度一下。</p>
 </blockquote>
+<h3 id="使用流程">使用流程</h3>
 <blockquote>
-<p>关键字try、throw，具体异常可以从stdexcept头文件查看，如exception、runtime_error、range_error等。</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    </span><br><span class="line">&#125; <span class="keyword">catch</span> () &#123;</span><br><span class="line">    </span><br><span class="line">&#125; <span class="keyword">catch</span> () &#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="函数的静态对象">函数的静态对象</h2>
-</blockquote>
-<blockquote>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">count</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 该值即使当函数退出了，仍会保存，下一次调用函数时会复用上一次的值</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">int</span> ctr = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">return</span> ++ctr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="函数可以重载">函数可以重载</h2>
-</blockquote>
-<blockquote>
-<p>重载：同名函数，参数列表不同</p>
+<p>在对应项目目录使用 go mod init + 模块名来初始化模块。</p>
+<p>执行后会产生一个go.mod文件。然后在import包时可以直接获取到对应包自动导入。不需要通过go get来手动获取。而自动获取的包会被放入$GOPATH。</p>
+<p>go 1.16之后不能默认自动导入包，会提示你手动go get导入。</p>
 </blockquote>
 
       
@@ -393,7 +385,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/64/">64</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/65/">65</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -438,13 +430,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">206k</span>
+    <span title="站点总字数">209k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:07</span>
+    <span title="站点阅读时长">3:10</span>
   </span>
 </div>
 <div class="busuanzi-count">

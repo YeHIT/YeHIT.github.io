@@ -30,7 +30,7 @@
 <meta property="og:description" content="初识grpc 前言  在先前的一段时间中，我编写了几篇关于Dubbo的博客，在学习Dubbo的过程中，发现Dubbo3.0其实正在向grpc靠拢，但其文档还没有完成，故我想先从grpc入手，研究二者的区别，同时去学习一些go语言开发的知识。  基本介绍  grpc框架是google开发的一个RPC框架，在我看来它和Dubbo的核心区别在于它使用google自研开源序列化框架proto">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-04-23T16:00:00.000Z">
-<meta property="article:modified_time" content="2021-04-24T07:02:33.748Z">
+<meta property="article:modified_time" content="2021-04-24T15:58:28.830Z">
 <meta property="article:author" content="Ye">
 <meta property="article:tag" content="分布式">
 <meta property="article:tag" content="grpc">
@@ -187,7 +187,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%9D%E8%AF%86grpc"><span class="nav-number">1.</span> <span class="nav-text">初识grpc</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.2.</span> <span class="nav-text">基本介绍</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%9D%E8%AF%86grpc"><span class="nav-number">1.</span> <span class="nav-text">初识grpc</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.2.</span> <span class="nav-text">基本介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#protobuf%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="nav-number">1.3.</span> <span class="nav-text">protobuf基本使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#protobuf%E8%9E%8D%E5%90%88grpc%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="nav-number">1.4.</span> <span class="nav-text">protobuf融合grpc的使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A9%E7%94%A8protoc%E7%94%9F%E6%88%90%E4%BB%A3%E7%A0%81%E7%9A%84%E5%91%BD%E4%BB%A4"><span class="nav-number">1.5.</span> <span class="nav-text">利用protoc生成代码的命令</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -203,20 +203,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">64</span>
+          <span class="site-state-item-count">65</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-count">20</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-count">36</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -294,7 +294,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-04-24 00:00:00 / 修改时间：15:02:33" itemprop="dateCreated datePublished" datetime="2021-04-24T00:00:00+08:00">2021-04-24</time>
+      <time title="创建时间：2021-04-24 00:00:00 / 修改时间：23:58:28" itemprop="dateCreated datePublished" datetime="2021-04-24T00:00:00+08:00">2021-04-24</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -321,14 +321,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>290</span>
+      <span>1.8k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>2 分钟</span>
     </span>
 </div>
 
@@ -348,8 +348,23 @@
 <blockquote>
 <p>grpc框架是google开发的一个RPC框架，在我看来它和Dubbo的核心区别在于它使用google自研开源序列化框架protobuf作为序列化框架，并使用Http2.0作为通信框架。</p>
 <p>在我看来，想要学习使用grpc首先需要了解go语言当前的包管理机制，此外还需要了解protobuf的基本使用。</p>
-<p>go语言的包管理机制可以查看我编写的博客。</p>
+<p>go语言的包管理机制可以查看我编写的博客<a href="http://49.234.221.130/2021/04/24/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/Golang/Golang%E5%8C%85%E7%AE%A1%E7%90%86/">go包管理</a>。</p>
 </blockquote>
+<h2 id="protobuf基本使用">protobuf基本使用</h2>
+<p><span class="math inline">\(tips: 由于grpc默认是proto3版本，本博客只讲解protobuf3的使用。\)</span></p>
+<blockquote>
+<p>protobuf文件的后缀为<span class="math inline">\(.proto\)</span>。举例如下：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 由于指定当前使用的protobuf版本</span></span><br><span class="line">syntax = <span class="string">&quot;proto3&quot;</span>;</span><br><span class="line"></span><br><span class="line">message SearchRequest &#123;</span><br><span class="line">	<span class="comment">// 消息类型和序号</span></span><br><span class="line">    <span class="built_in">string</span> query = <span class="number">1</span>;</span><br><span class="line">    int32 page_number = <span class="number">2</span>;</span><br><span class="line">    int32 result_per_page = <span class="number">3</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>而想要使用对应的.proto文件还需要使用对应的protoc来生成对应语言的代码<a target="_blank" rel="noopener" href="https://github.com/protocolbuffers/protobuf/releases">protoc下载</a>。</p>
+<p>如执行以下指令生成对应的proto实体类</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">protoc --go_out=out --go_opt=paths=source_relative hello.proto</span><br></pre></td></tr></table></figure>
+<h2 id="protobuf融合grpc的使用">protobuf融合grpc的使用</h2>
+</blockquote>
+<blockquote>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 标识使用的protobuf版本号</span></span><br><span class="line">syntax = <span class="string">&quot;proto3&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 产生对应go文件所属的包名</span></span><br><span class="line">option go_package = <span class="string">&quot;google.golang.org/grpc/examples/helloworld/helloworld&quot;</span>;</span><br><span class="line"><span class="comment">// 产生Java文件时需要配置</span></span><br><span class="line"><span class="comment">// 如果是true，那么每一个message文件都会有一个单独的class文件；否则，message全部定义在outerclass文件里</span></span><br><span class="line">option java_multiple_files = <span class="literal">true</span>;</span><br><span class="line"><span class="comment">// 标识生成的java文件的package</span></span><br><span class="line">option java_package = <span class="string">&quot;io.grpc.examples.helloworld&quot;</span>;</span><br><span class="line"><span class="comment">// 指定proto文件生成的java类的outerclass类名，即产生的Java类名</span></span><br><span class="line">option java_outer_classname = <span class="string">&quot;HelloWorldProto&quot;</span>;</span><br><span class="line"><span class="comment">// 定义message的包名，该包名只是为了区分名字相同的proto文件，和具体生成代码无关。</span></span><br><span class="line">package helloworld;</span><br><span class="line"></span><br><span class="line"><span class="comment">// grpc需要的定义</span></span><br><span class="line">service Greeter &#123;</span><br><span class="line">  <span class="comment">// Sends a greeting</span></span><br><span class="line">  rpc SayHello (HelloRequest) returns (HelloReply) &#123;&#125;</span><br><span class="line">  rpc SayHelloAgain (HelloRequest) returns (HelloReply) &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// The request message containing the user&#x27;s name.</span></span><br><span class="line">message HelloRequest &#123;</span><br><span class="line">  <span class="built_in">string</span> name = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// The response message containing the greetings</span></span><br><span class="line">message HelloReply &#123;</span><br><span class="line">  <span class="built_in">string</span> message = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="利用protoc生成代码的命令">利用protoc生成代码的命令</h2>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative hello.proto</span><br><span class="line">// --go_out为.pb.go文件生成路径,--go-grpc_out为_grpc.pb.go文件生成路径</span><br><span class="line">// --go_opt=paths=source_relative表示输入文件和输出文件但是处于同一个相对路径</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
     </div>
 
@@ -407,6 +422,9 @@
                 </a>
             </div>
             <div class="post-nav-item">
+                <a href="/2021/09/12/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E7%95%99%E6%A1%A3/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/" rel="next" title="hexo博客搭建留档">
+                  hexo博客搭建留档 <i class="fa fa-chevron-right"></i>
+                </a>
             </div>
           </div>
     </footer>
@@ -460,13 +478,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">206k</span>
+    <span title="站点总字数">209k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:07</span>
+    <span title="站点阅读时长">3:10</span>
   </span>
 </div>
 <div class="busuanzi-count">

@@ -198,20 +198,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">64</span>
+          <span class="site-state-item-count">65</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-count">20</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-count">36</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -263,7 +263,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/04/24/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/Golang/Golang%E5%8C%85%E7%AE%A1%E7%90%86/">
+    <link itemprop="mainEntityOfPage" href="http://49.234.221.130/2021/04/24/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/grpc/%E5%88%9D%E8%AF%86grpc/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/photo.jpg">
@@ -276,7 +276,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/04/24/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/Golang/Golang%E5%8C%85%E7%AE%A1%E7%90%86/" class="post-title-link" itemprop="url">Golang包管理</a>
+          <a href="/2021/04/24/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%8E%9F%E7%90%86/grpc/%E5%88%9D%E8%AF%86grpc/" class="post-title-link" itemprop="url">初识grpc</a>
         </h2>
 
         <div class="post-meta-container">
@@ -288,7 +288,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-04-24 00:00:00 / 修改时间：16:49:19" itemprop="dateCreated datePublished" datetime="2021-04-24T00:00:00+08:00">2021-04-24</time>
+      <time title="创建时间：2021-04-24 00:00:00 / 修改时间：23:58:28" itemprop="dateCreated datePublished" datetime="2021-04-24T00:00:00+08:00">2021-04-24</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -296,11 +296,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Golang/" itemprop="url" rel="index"><span itemprop="name">Golang</span></a>
-        </span>
-          ，
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Golang/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a>
+          <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
         </span>
     </span>
 
@@ -312,14 +308,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>723</span>
+      <span>1.8k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>2 分钟</span>
     </span>
 </div>
 
@@ -330,42 +326,32 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="golang包管理">Golang包管理</h1>
+          <h1 id="初识grpc">初识grpc</h1>
 <h2 id="前言">前言</h2>
 <blockquote>
-<p>由于我之前一直使用的是Java开发，Java的包管理通过Maven实现，而我在接触Golang时明显感觉到无法理解Golang的包管理机制，因此打算通过这篇博客帮助自己理解Golang的包管理，并以此帮助自己以后的工作。</p>
+<p>在先前的一段时间中，我编写了几篇关于Dubbo的博客，在学习Dubbo的过程中，发现Dubbo3.0其实正在向grpc靠拢，但其文档还没有完成，故我想先从grpc入手，研究二者的区别，同时去学习一些go语言开发的知识。</p>
 </blockquote>
-<h2 id="golang的gopath和goroot">Golang的GOPATH和GOROOT</h2>
+<h2 id="基本介绍">基本介绍</h2>
 <blockquote>
-<p>Go语言自带标准库的包在$GOROOT/src下面，可直接引用。</p>
-<p>自定义的包和第三方包需要放在$GOPATH/src下面才能被引用。</p>
-<p>可以认为GOROOT就是Go语言的标准包，默认各项目都可以使用；GOPATH是项目对于的Go环境需要自己设置。</p>
+<p>grpc框架是google开发的一个RPC框架，在我看来它和Dubbo的核心区别在于它使用google自研开源序列化框架protobuf作为序列化框架，并使用Http2.0作为通信框架。</p>
+<p>在我看来，想要学习使用grpc首先需要了解go语言当前的包管理机制，此外还需要了解protobuf的基本使用。</p>
+<p>go语言的包管理机制可以查看我编写的博客<a href="http://49.234.221.130/2021/04/24/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/Golang/Golang%E5%8C%85%E7%AE%A1%E7%90%86/">go包管理</a>。</p>
 </blockquote>
-<h2 id="在goland中设置gopath">在Goland中设置GOPATH</h2>
+<h2 id="protobuf基本使用">protobuf基本使用</h2>
+<p><span class="math inline">\(tips: 由于grpc默认是proto3版本，本博客只讲解protobuf3的使用。\)</span></p>
 <blockquote>
-<figure>
-<img src="/2021/04/24/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/Golang/Golang%E5%8C%85%E7%AE%A1%E7%90%86/Goland的GOPATH.png" alt="Goland的GOPATH"><figcaption aria-hidden="true">Goland的GOPATH</figcaption>
-</figure>
-<p>如图，可以通过配置project GOPATH来设置Go项目的包环境，注意只有在GOPATH/src下的包才能被引用。</p>
-<p>导入包的顺序：</p>
-<p>​ 先从GOROOT中寻找，若没有找到则再从配置的GOPATH中寻找，如果配置了多个GOPATH会按顺序查找。</p>
+<p>protobuf文件的后缀为<span class="math inline">\(.proto\)</span>。举例如下：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 由于指定当前使用的protobuf版本</span></span><br><span class="line">syntax = <span class="string">&quot;proto3&quot;</span>;</span><br><span class="line"></span><br><span class="line">message SearchRequest &#123;</span><br><span class="line">	<span class="comment">// 消息类型和序号</span></span><br><span class="line">    <span class="built_in">string</span> query = <span class="number">1</span>;</span><br><span class="line">    int32 page_number = <span class="number">2</span>;</span><br><span class="line">    int32 result_per_page = <span class="number">3</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>而想要使用对应的.proto文件还需要使用对应的protoc来生成对应语言的代码<a target="_blank" rel="noopener" href="https://github.com/protocolbuffers/protobuf/releases">protoc下载</a>。</p>
+<p>如执行以下指令生成对应的proto实体类</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">protoc --go_out=out --go_opt=paths=source_relative hello.proto</span><br></pre></td></tr></table></figure>
+<h2 id="protobuf融合grpc的使用">protobuf融合grpc的使用</h2>
 </blockquote>
-<h2 id="对于基础gopath设置项目的理解">对于基础GOPATH设置项目的理解</h2>
 <blockquote>
-<p>我认为通过配置GOPATH来决定项目包的使用有点类似于Java中通过手动导入jar包的行为，这种方式在大量使用包时比较难以管理。这样引入了go当前的包管理机制go module。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 标识使用的protobuf版本号</span></span><br><span class="line">syntax = <span class="string">&quot;proto3&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 产生对应go文件所属的包名</span></span><br><span class="line">option go_package = <span class="string">&quot;google.golang.org/grpc/examples/helloworld/helloworld&quot;</span>;</span><br><span class="line"><span class="comment">// 产生Java文件时需要配置</span></span><br><span class="line"><span class="comment">// 如果是true，那么每一个message文件都会有一个单独的class文件；否则，message全部定义在outerclass文件里</span></span><br><span class="line">option java_multiple_files = <span class="literal">true</span>;</span><br><span class="line"><span class="comment">// 标识生成的java文件的package</span></span><br><span class="line">option java_package = <span class="string">&quot;io.grpc.examples.helloworld&quot;</span>;</span><br><span class="line"><span class="comment">// 指定proto文件生成的java类的outerclass类名，即产生的Java类名</span></span><br><span class="line">option java_outer_classname = <span class="string">&quot;HelloWorldProto&quot;</span>;</span><br><span class="line"><span class="comment">// 定义message的包名，该包名只是为了区分名字相同的proto文件，和具体生成代码无关。</span></span><br><span class="line">package helloworld;</span><br><span class="line"></span><br><span class="line"><span class="comment">// grpc需要的定义</span></span><br><span class="line">service Greeter &#123;</span><br><span class="line">  <span class="comment">// Sends a greeting</span></span><br><span class="line">  rpc SayHello (HelloRequest) returns (HelloReply) &#123;&#125;</span><br><span class="line">  rpc SayHelloAgain (HelloRequest) returns (HelloReply) &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// The request message containing the user&#x27;s name.</span></span><br><span class="line">message HelloRequest &#123;</span><br><span class="line">  <span class="built_in">string</span> name = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// The response message containing the greetings</span></span><br><span class="line">message HelloReply &#123;</span><br><span class="line">  <span class="built_in">string</span> message = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="利用protoc生成代码的命令">利用protoc生成代码的命令</h2>
 </blockquote>
-<h2 id="go-module">Go module</h2>
-<h3 id="一些配置">一些配置</h3>
-<blockquote>
-<p>首先基本配置需要让GO111MODULE=on</p>
-<p>如果 go get 执行速度过慢需要设置代理，具体流程可以百度一下。</p>
-</blockquote>
-<h3 id="使用流程">使用流程</h3>
-<blockquote>
-<p>在对应项目目录使用 go mod init + 模块名来初始化模块。</p>
-<p>执行后会产生一个go.mod文件。然后在import包时可以直接获取到对应包自动导入。不需要通过go get来手动获取。而自动获取的包会被放入$GOPATH。</p>
-<p>go 1.16之后不能默认自动导入包，会提示你手动go get导入。</p>
-</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative hello.proto</span><br><span class="line">// --go_out为.pb.go文件生成路径,--go-grpc_out为_grpc.pb.go文件生成路径</span><br><span class="line">// --go_opt=paths=source_relative表示输入文件和输出文件但是处于同一个相对路径</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
       
     </div>
@@ -385,7 +371,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/64/">64</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/65/">65</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -430,13 +416,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">206k</span>
+    <span title="站点总字数">209k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:07</span>
+    <span title="站点阅读时长">3:10</span>
   </span>
 </div>
 <div class="busuanzi-count">
